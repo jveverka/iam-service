@@ -2,5 +2,7 @@
 [![Build Status](https://travis-ci.org/jveverka/iam-service.svg?branch=master)](https://travis-ci.org/jveverka/iam-service)
 
 # IAM service
-Really simple IAM service
+Really simple IAM service.
+
+This project is __WIP__ !
 

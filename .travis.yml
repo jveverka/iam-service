@@ -9,5 +9,5 @@ before_install:
   - export PATH=gradle-6.1.1/bin:$PATH
   - gradle -version
 script:
-  - gradle clean build installDist
+  - gradle clean build test
 

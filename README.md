@@ -4,5 +4,13 @@
 # IAM service
 Really simple IAM service.
 
+## Data model
+![data-model](docs/IAM-data-model.svg)
+
+## Build and Run
+```
+gradle clean build test
+```
+
 This project is __WIP__ !
 

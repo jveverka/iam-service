@@ -4,6 +4,8 @@
 # IAM service
 Really simple IAM service.
 
+This project is __WIP__ !
+
 ## Data model
 ![data-model](docs/IAM-data-model.svg)
 
@@ -12,5 +14,4 @@ Really simple IAM service.
 gradle clean build test
 ```
 
-This project is __WIP__ !
 

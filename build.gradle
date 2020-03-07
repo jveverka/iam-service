@@ -1,4 +1,12 @@
-apply plugin: "java"
+subprojects {
+    apply plugin: "java"
+}
+
+project(':iam-core') {
+}
 
 project(':iam-service') {
+    dependencies {
+        implementation project(':iam-core')
+    }
 }

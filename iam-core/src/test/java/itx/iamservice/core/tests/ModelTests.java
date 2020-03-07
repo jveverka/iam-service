@@ -9,7 +9,10 @@ import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ModelTests {
 
     private static Model model;
@@ -18,13 +21,11 @@ public class ModelTests {
     private static TokenCache tokenCache;
 
     @BeforeAll
-    private void init() {
+    private static void init() {
         model = ModelUtils.createDefaultModel();
         tokenCache = new TokenCacheImpl();
         clientService = new ClientServiceImpl(model, tokenCache);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
     }
-
-
 
 }

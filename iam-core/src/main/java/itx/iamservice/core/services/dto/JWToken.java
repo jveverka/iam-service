@@ -12,4 +12,8 @@ public class JWToken {
         return token;
     }
 
+    public static JWToken from(String jwt) {
+        return new JWToken(jwt);
+    }
+
 }

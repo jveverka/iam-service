@@ -1,6 +1,6 @@
 package itx.iamservice.core.model;
 
-public class ProjectId extends Id {
+public final class ProjectId extends Id {
 
     public ProjectId(String id) {
         super(id);

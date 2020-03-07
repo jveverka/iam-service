@@ -1,6 +1,8 @@
 package itx.iamservice.core.services.dto;
 
-public class JWToken {
+import java.util.Objects;
+
+public final class JWToken {
 
     private final String token;
 
@@ -16,4 +18,16 @@ public class JWToken {
         return new JWToken(jwt);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JWToken jwToken = (JWToken) o;
+        return Objects.equals(token, jwToken.token);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(token);
+    }
 }

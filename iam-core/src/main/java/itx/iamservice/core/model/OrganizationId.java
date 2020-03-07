@@ -1,6 +1,6 @@
 package itx.iamservice.core.model;
 
-public class OrganizationId extends Id {
+public final class OrganizationId extends Id {
 
     public OrganizationId(String id) {
         super(id);

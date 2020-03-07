@@ -35,6 +35,7 @@ public class TokenUtilsTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void jwTokenValidityTest() throws NoSuchAlgorithmException {
         Long duration = 60L;
         TimeUnit timeUnit = TimeUnit.SECONDS;

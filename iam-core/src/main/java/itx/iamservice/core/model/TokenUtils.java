@@ -60,6 +60,7 @@ public final class TokenUtils {
         return keyPairGenerator.generateKeyPair();
     }
 
+    @SuppressWarnings("unchecked")
     public static DefaultClaims extractClaims(JWToken jwToken) {
         String token = jwToken.getToken();
         String jwTokenWithoutSignature = token.substring(0, token.lastIndexOf('.') + 1);

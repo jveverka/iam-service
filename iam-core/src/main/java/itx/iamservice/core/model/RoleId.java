@@ -1,6 +1,6 @@
 package itx.iamservice.core.model;
 
-public class RoleId extends Id {
+public final class RoleId extends Id {
 
     public RoleId(String id) {
         super(id);

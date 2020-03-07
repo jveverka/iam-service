@@ -6,8 +6,10 @@ public interface TokenCache {
 
     void addRevokedToken(JWToken jwToken);
 
-    void purgeRevokedTokens();
+    int purgeRevokedTokens();
 
     boolean isRevoked(JWToken jwToken);
+
+    int size();
 
 }

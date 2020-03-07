@@ -38,6 +38,11 @@ public class ModelImpl implements Model {
         return Optional.ofNullable(clients.get(clientId));
     }
 
+    @Override
+    public Optional<Project> getProject(ProjectId projectId) {
+        return Optional.ofNullable(projects.get(projectId));
+    }
+
     Map<ProjectId, Project> getProjects() {
         return projects;
     }

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.security.NoSuchAlgorithmException;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ModelTests {
 
@@ -21,9 +23,9 @@ public class ModelTests {
     private static TokenCache tokenCache;
 
     @BeforeAll
-    private static void init() {
+    private static void init() throws NoSuchAlgorithmException {
         model = ModelUtils.createDefaultModel();
-        tokenCache = new TokenCacheImpl();
+        tokenCache = new TokenCacheImpl(model);
         clientService = new ClientServiceImpl(model, tokenCache);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
     }

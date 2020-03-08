@@ -11,12 +11,14 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -83,6 +85,17 @@ public class TokenUtilsTest {
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());
         assertEquals(AUDIENCE, defaultClaims.getAudience());
+    }
+
+    @Test
+    public void identicalTokenGenerationTest() throws NoSuchAlgorithmException {
+        KeyPair keyPair = TokenUtils.generateKeyPair();
+        Date issuedAt = new Date();
+        Date notBefore = issuedAt;
+        Date expirationTime = new Date(issuedAt.getTime() + 3600*1000L);
+        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair);
+        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair);
+        assertFalse(jwt1.equals(jwt2));
     }
 
 }

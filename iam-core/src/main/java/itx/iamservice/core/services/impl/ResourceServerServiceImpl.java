@@ -10,10 +10,14 @@ import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.dto.JWToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 public class ResourceServerServiceImpl implements ResourceServerService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceServerServiceImpl.class);
 
     private final Model model;
     private final TokenCache tokenCache;
@@ -25,15 +29,20 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     @Override
     public boolean verify(JWToken token) {
-        boolean isRevoked = tokenCache.isRevoked(token);
+        boolean isRevoked = this.tokenCache.isRevoked(token);
         if (!isRevoked) {
             DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
             ClientId clientId = ClientId.from(defaultClaims.getSubject());
-            Optional<Client> client = model.getClient(clientId);
+            Optional<Client> client = this.model.getClient(clientId);
             if (client.isPresent()) {
                 Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, client.get().getKeyPair());
+                LOG.info("JWT verified={}", claimsJws.isPresent());
                 return claimsJws.isPresent();
+            } else {
+                LOG.info("JWT subject {} not found", clientId);
             }
+        } else {
+            LOG.info("JWT is revoked: {}", token);
         }
         return false;
     }

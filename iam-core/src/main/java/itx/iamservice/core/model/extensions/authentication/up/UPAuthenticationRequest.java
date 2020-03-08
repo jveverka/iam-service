@@ -19,7 +19,7 @@ public class UPAuthenticationRequest implements AuthenticationRequest<UPCredenti
 
     @Override
     public ClientId getClientId() {
-        return getClientId();
+        return clientId;
     }
 
     @Override

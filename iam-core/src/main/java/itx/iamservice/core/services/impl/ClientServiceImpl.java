@@ -13,6 +13,8 @@ import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.JWToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class ClientServiceImpl implements ClientService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ClientServiceImpl.class);
 
     private final Model model;
     private final TokenCache tokenCache;
@@ -49,6 +53,8 @@ public class ClientServiceImpl implements ClientService {
                     return Optional.of(token);
                 }
             }
+        } else {
+            LOG.info("JWT subject {} not found", authenticationRequest.getClientId());
         }
         return Optional.empty();
     }
@@ -56,19 +62,27 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<JWToken> renew(JWToken token) {
-        DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
-        String subject = defaultClaims.getSubject();
-        Optional<Client> client = model.getClient(ClientId.from(subject));
-        if (client.isPresent()) {
-            Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, client.get().getKeyPair());
-            if (claimsOptional.isPresent()) {
-                Claims claims = claimsOptional.get().getBody();
-                List<String> roles = (List<String>)claims.get(TokenUtils.ROLES_CLAIM);
-                JWToken renewedToken = TokenUtils.issueToken(claims.getSubject(), claims.getIssuer(),
-                        client.get().getDefaultTokenDuration(), TimeUnit.MILLISECONDS, claims.getAudience(),
-                        Set.copyOf(roles), client.get().getKeyPair());
-                return Optional.of(renewedToken);
+        if (!tokenCache.isRevoked(token)) {
+            DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
+            String subject = defaultClaims.getSubject();
+            Optional<Client> client = model.getClient(ClientId.from(subject));
+            if (client.isPresent()) {
+                Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, client.get().getKeyPair());
+                LOG.info("JWT verified={}", claimsOptional.isPresent());
+                if (claimsOptional.isPresent()) {
+                    Claims claims = claimsOptional.get().getBody();
+                    List<String> roles = (List<String>) claims.get(TokenUtils.ROLES_CLAIM);
+                    JWToken renewedToken = TokenUtils.issueToken(claims.getSubject(), claims.getIssuer(),
+                            client.get().getDefaultTokenDuration(), TimeUnit.MILLISECONDS, claims.getAudience(),
+                            Set.copyOf(roles), client.get().getKeyPair());
+                    tokenCache.addRevokedToken(token);
+                    return Optional.of(renewedToken);
+                }
+            } else {
+                LOG.info("JWT subject {} not found", subject);
             }
+        } else {
+            LOG.info("JWT is revoked {}", token);
         }
         return Optional.empty();
     }
@@ -80,10 +94,13 @@ public class ClientServiceImpl implements ClientService {
         Optional<Client> client = model.getClient(ClientId.from(subject));
         if (client.isPresent()) {
             Optional<Jws<Claims>> claims = TokenUtils.verify(token, client.get().getKeyPair());
+            LOG.info("JWT verified={}", claims.isPresent());
             if (claims.isPresent()) {
                 tokenCache.addRevokedToken(token);
                 return true;
             }
+        } else {
+            LOG.info("JWT subject {} not found", subject);
         }
         return false;
     }

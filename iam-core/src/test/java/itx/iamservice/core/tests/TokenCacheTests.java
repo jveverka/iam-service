@@ -48,6 +48,7 @@ public class TokenCacheTests {
     public void afterInitializationTest() {
         int size = tokenCache.size();
         assertTrue(size == 0);
+        assertFalse(tokenCache.isRevoked(jwToken));
     }
 
     @Test
@@ -67,6 +68,12 @@ public class TokenCacheTests {
         };
         int size = tokenCache.size();
         assertTrue(size == 0);
+    }
+
+    @Test
+    @Order(4)
+    public void afterCachePurgeTest() {
+        assertFalse(tokenCache.isRevoked(jwToken));
     }
 
 }

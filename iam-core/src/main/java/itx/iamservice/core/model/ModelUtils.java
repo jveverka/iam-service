@@ -34,7 +34,7 @@ public final class ModelUtils {
         ModelImpl model = new ModelImpl();
         Organization organization = new Organization(createOrganizationId(), "iam-admins", model);
         Project project = new Project(createProjectId(), "iam-admins", organization.getId(), model);
-        Client client = new Client(createClientId(), "iam-admin", project.getId(), TokenUtils.generateKeyPair(), 3600*1000L);
+        Client client = new Client(ClientId.from("iam-admin-id"), "iam-admin", project.getId(), TokenUtils.generateKeyPair(), 3600*1000L);
         UPCredentials upCredentials = new UPCredentials(client.getId(), "iam-secret-77");
         organization.add(project);
         project.add(client);

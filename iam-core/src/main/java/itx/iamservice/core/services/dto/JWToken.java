@@ -30,4 +30,10 @@ public final class JWToken {
     public int hashCode() {
         return Objects.hash(token);
     }
+
+    @Override
+    public String toString() {
+        return token;
+    }
+
 }

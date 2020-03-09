@@ -36,8 +36,8 @@ public class Organization {
                 .collect(Collectors.toList());
     }
 
-    public void remove(ProjectId projectId) {
-        projects.remove(projectId);
+    public boolean remove(ProjectId projectId) {
+        return projects.remove(projectId) != null;
     }
 
     public Optional<Project> getProject(ProjectId projectId) {

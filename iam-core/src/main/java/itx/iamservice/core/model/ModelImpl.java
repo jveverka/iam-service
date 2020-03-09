@@ -25,8 +25,13 @@ public class ModelImpl implements Model {
     }
 
     @Override
-    public void remove(OrganizationId organizationId) {
-        organizations.remove(organizationId);
+    public Optional<Organization> getOrganization(OrganizationId organizationId) {
+        return Optional.ofNullable(organizations.get(organizationId));
+    }
+
+    @Override
+    public boolean remove(OrganizationId organizationId) {
+        return organizations.remove(organizationId) != null;
     }
 
     @Override

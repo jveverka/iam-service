@@ -42,8 +42,8 @@ public class Project {
                 .collect(Collectors.toList());
     }
 
-    public void remove(ClientId clientId) {
-        clients.remove(clientId);
+    public boolean remove(ClientId clientId) {
+        return clients.remove(clientId) != null;
     }
 
     public Optional<Client> getClient(ClientId clientId) {

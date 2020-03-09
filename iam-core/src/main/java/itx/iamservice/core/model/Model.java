@@ -9,7 +9,9 @@ public interface Model {
 
     Collection<Organization> getOrganizations();
 
-    void remove(OrganizationId organizationId);
+    Optional<Organization> getOrganization(OrganizationId organizationId);
+
+    boolean remove(OrganizationId organizationId);
 
     Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
 

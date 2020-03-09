@@ -1,6 +1,5 @@
 package itx.iamservice.core.tests;
 
-import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelUtils;
 import itx.iamservice.core.model.TokenCache;
@@ -26,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClientAuthenticationTests {
 
+    private static final String adminPassword = "top-secret";
+
     private static Model model;
     private static ClientService clientService;
     private static ResourceServerService resourceServerService;
@@ -34,7 +35,7 @@ public class ClientAuthenticationTests {
 
     @BeforeAll
     private static void init() throws NoSuchAlgorithmException {
-        model = ModelUtils.createDefaultModel();
+        model = ModelUtils.createDefaultModel(adminPassword);
         tokenCache = new TokenCacheImpl(model);
         clientService = new ClientServiceImpl(model, tokenCache);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
@@ -43,8 +44,8 @@ public class ClientAuthenticationTests {
     @Test
     @Order(1)
     public void authenticateTest() {
-        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ClientId.from("iam-admin-id"), "iam-secret-77");
-        Optional<JWToken> tokenOptional = clientService.authenticate(authenticationRequest);
+        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_CLIENT, adminPassword);
+        Optional<JWToken> tokenOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
         assertTrue(tokenOptional.isPresent());
         token = tokenOptional.get();
     }
@@ -52,15 +53,15 @@ public class ClientAuthenticationTests {
     @Test
     @Order(2)
     public void verifyValidTokenTest() {
-        boolean result = resourceServerService.verify(token);
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertTrue(result);
     }
 
     @Test
     @Order(3)
     public void renewTokenTest() {
-        Optional<JWToken> tokenOptional = clientService.renew(token);
-        boolean result = resourceServerService.verify(token);
+        Optional<JWToken> tokenOptional = clientService.renew(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertFalse(result);
         assertTrue(tokenOptional.isPresent());
         assertFalse(token.equals(tokenOptional.get()));
@@ -70,28 +71,28 @@ public class ClientAuthenticationTests {
     @Test
     @Order(4)
     public void verifyValidRenewedTokenTest() {
-        boolean result = resourceServerService.verify(token);
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertTrue(result);
     }
 
     @Test
     @Order(5)
     public void logoutTest() {
-        boolean result = clientService.logout(token);
+        boolean result = clientService.logout(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertTrue(result);
     }
 
     @Test
     @Order(6)
     public void verifyInvalidTokenTest() {
-        boolean result = resourceServerService.verify(token);
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertFalse(result);
     }
 
     @Test
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
-        Optional<JWToken> tokenOptional = clientService.renew(token);
+        Optional<JWToken> tokenOptional = clientService.renew(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertTrue(tokenOptional.isEmpty());
     }
 

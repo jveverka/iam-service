@@ -1,5 +1,7 @@
 package itx.iamservice.core.services;
 
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.dto.JWToken;
 
 /**
@@ -11,9 +13,11 @@ public interface ResourceServerService {
 
     /**
      * Verify if JWT token is valid. Time stamps and signature is verified.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
      * @param token {@link JWToken} to verify.
      * @return true if provided {@link JWToken} is valid, false otherwise.
      */
-    boolean verify(JWToken token);
+    boolean verify(OrganizationId organizationId, ProjectId projectId, JWToken token);
 
 }

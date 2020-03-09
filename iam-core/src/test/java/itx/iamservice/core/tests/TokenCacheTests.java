@@ -1,7 +1,10 @@
 package itx.iamservice.core.tests;
 
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelUtils;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenCacheImpl;
 import itx.iamservice.core.model.TokenUtils;
@@ -23,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TokenCacheTests {
 
-    private static final String SUBJECT = "subject";
-    private static final String ISSUER = "issuer";
-    private static final String AUDIENCE = "audience";
+    private static final OrganizationId ORGANIZATION_ID = OrganizationId.from("unique-organization-id");
+    private static final ProjectId PROJECT_ID = ProjectId.from("unique-project-id");
+    private static final ClientId CLIENT_ID = ClientId.from("unique-client-id");
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
     private static final Long DURATION = 3L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
@@ -38,9 +41,9 @@ public class TokenCacheTests {
     @BeforeAll
     private static void init() throws NoSuchAlgorithmException {
         keyPair = TokenUtils.generateKeyPair();
-        model = ModelUtils.createDefaultModel();
+        model = ModelUtils.createDefaultModel("top-secret");
         tokenCache = new TokenCacheImpl(model);
-        jwToken = TokenUtils.issueToken(SUBJECT, ISSUER, DURATION, TIME_UNIT, AUDIENCE, ROLES, keyPair);
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
     }
 
     @Test

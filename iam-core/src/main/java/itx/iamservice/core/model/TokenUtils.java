@@ -25,11 +25,11 @@ public final class TokenUtils {
     private TokenUtils() {
     }
 
-    public static JWToken issueToken(String subject, String issuer, Long duration, TimeUnit timeUnit, String audience, Set<String> roles, KeyPair keyPair) {
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyPair keyPair) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(subject, issuer, audience, expirationTime, notBefore, issuedAt, roles, keyPair);
+        return issueToken(clientId.getId(), organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, keyPair);
     }
 
     public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, KeyPair keyPair) {

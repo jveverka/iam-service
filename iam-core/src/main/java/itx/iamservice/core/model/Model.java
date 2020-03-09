@@ -11,8 +11,6 @@ public interface Model {
 
     void remove(OrganizationId organizationId);
 
-    Optional<Client> getClient(ClientId clientId);
-
-    Optional<Project> getProject(ProjectId projectId);
+    Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
 
 }

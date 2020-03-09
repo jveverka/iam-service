@@ -3,6 +3,9 @@ package itx.iamservice.core.tests;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
+import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
 import org.junit.jupiter.api.Test;
@@ -22,9 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TokenUtilsTest {
 
-    private static final String SUBJECT = "subject";
     private static final String ISSUER = "issuer";
     private static final String AUDIENCE = "audience";
+    private static final String SUBJECT = "subject";
+    private static final OrganizationId ORGANIZATION_ID = OrganizationId.from(ISSUER);
+    private static final ProjectId PROJECT_ID = ProjectId.from(AUDIENCE);
+    private static final ClientId CLIENT_ID = ClientId.from(SUBJECT);
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
     private static final Long DURATION = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
@@ -40,7 +46,7 @@ public class TokenUtilsTest {
     public void jwTokenValidityTest() throws NoSuchAlgorithmException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
-        JWToken jwt = TokenUtils.issueToken(SUBJECT, ISSUER, DURATION, TIME_UNIT, AUDIENCE, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
         assertNotNull(jwt);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair);
         assertTrue(claimsJws.isPresent());
@@ -59,7 +65,7 @@ public class TokenUtilsTest {
     public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(SUBJECT, ISSUER, duration, TIME_UNIT, AUDIENCE, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, duration, TIME_UNIT, ROLES, keyPair);
         Thread.sleep(3*1000L);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair);
         assertTrue(claimsJws.isEmpty());
@@ -68,7 +74,7 @@ public class TokenUtilsTest {
     @Test
     public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(SUBJECT, ISSUER, DURATION, TIME_UNIT, AUDIENCE, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
         keyPair = TokenUtils.generateKeyPair();
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair);
         assertTrue(claimsJws.isEmpty());
@@ -77,7 +83,7 @@ public class TokenUtilsTest {
     @Test
     public void extractTokenTest() throws NoSuchAlgorithmException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(SUBJECT, ISSUER, DURATION, TIME_UNIT, AUDIENCE, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());

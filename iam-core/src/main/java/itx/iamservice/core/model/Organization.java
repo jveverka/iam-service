@@ -1,18 +1,21 @@
 package itx.iamservice.core.model;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Organization {
 
     private final OrganizationId id;
     private final String name;
-    private final ModelImpl model;
+    private final Map<ProjectId, Project> projects;
 
-    public Organization(OrganizationId id, String name, ModelImpl model) {
+    public Organization(OrganizationId id, String name) {
         this.id = id;
         this.name = name;
-        this.model = model;
+        this.projects = new ConcurrentHashMap<>();
     }
 
     public OrganizationId getId() {
@@ -24,17 +27,21 @@ public class Organization {
     }
 
     public void add(Project project) {
-        model.getProjects().put(project.getId(), project);
+        projects.put(project.getId(), project);
     }
 
     public Collection<Project> getProjects() {
-        return model.getProjects().values().stream()
+        return projects.values().stream()
                 .filter(project -> project.getOrganizationId().equals(id))
                 .collect(Collectors.toList());
     }
 
     public void remove(ProjectId projectId) {
-        model.getProjects().remove(projectId);
+        projects.remove(projectId);
+    }
+
+    public Optional<Project> getProject(ProjectId projectId) {
+        return Optional.ofNullable(projects.get(projectId));
     }
 
 }

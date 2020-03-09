@@ -7,6 +7,11 @@ import java.util.UUID;
 
 public final class ModelUtils {
 
+    private static final String IAM_ADMINS_NAME = "iam-admins";
+    public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);
+    public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
+    public static final ClientId IAM_ADMIN_CLIENT = ClientId.from("iam-admin-id");
+
     private ModelUtils() {
     }
 
@@ -30,15 +35,16 @@ public final class ModelUtils {
         return RoleId.from(createId());
     }
 
-    public static Model createDefaultModel() throws NoSuchAlgorithmException {
+    public static Model createDefaultModel(String iamAdminPassword) throws NoSuchAlgorithmException {
         ModelImpl model = new ModelImpl();
-        Organization organization = new Organization(createOrganizationId(), "iam-admins", model);
-        Project project = new Project(createProjectId(), "iam-admins", organization.getId(), model);
-        Client client = new Client(ClientId.from("iam-admin-id"), "iam-admin", project.getId(), TokenUtils.generateKeyPair(), 3600*1000L);
-        UPCredentials upCredentials = new UPCredentials(client.getId(), "iam-secret-77");
+        Organization organization = new Organization(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
+        Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId());
+        Client client = new Client(IAM_ADMIN_CLIENT, "iam-admin", project.getId(), TokenUtils.generateKeyPair(), 3600*1000L);
+        UPCredentials upCredentials = new UPCredentials(client.getId(), iamAdminPassword);
+        client.addCredentials(upCredentials);
         organization.add(project);
         project.add(client);
-        client.addCredentials(upCredentials);
+        model.add(organization);
         return model;
     }
 

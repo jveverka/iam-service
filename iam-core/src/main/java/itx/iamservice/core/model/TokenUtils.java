@@ -13,14 +13,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public final class TokenUtils {
 
     public static final String ROLES_CLAIM = "roles";
-    public static final String NONCE = "nonce";
 
     private TokenUtils() {
     }
@@ -33,7 +32,6 @@ public final class TokenUtils {
     }
 
     public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, KeyPair keyPair) {
-        Random random = new Random();
         String jwToken = Jwts.builder()
                 .setSubject(subject)
                 .signWith(keyPair.getPrivate())
@@ -43,7 +41,7 @@ public final class TokenUtils {
                 .setNotBefore(notBefore)
                 .setAudience(audience)
                 .claim(ROLES_CLAIM, roles)
-                .claim(NONCE, random.nextLong())
+                .setId(UUID.randomUUID().toString())
                 .compact();
         return JWToken.from(jwToken);
     }

@@ -7,6 +7,8 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
@@ -84,6 +86,45 @@ public class ProjectManagerServiceTests {
         assertTrue(all.size() == 1);
         all = projectManagerService.getAll(oid002);
         assertTrue(all.size() == 1);
+    }
+
+    @Test
+    @Order(5)
+    public void addAndRemoveRolesTest() {
+        Role role1 = new Role(RoleId.from("role-001"), "role-001");
+        Role role2 = new Role(RoleId.from("role-002"), "role-002");
+        Collection<Role> roles = projectManagerService.getRoles(oid001, pId001);
+        assertTrue(roles.size() == 0);
+        boolean result = projectManagerService.addRole(oid001, pId001, role1);
+        assertTrue(result);
+        result = projectManagerService.addRole(oid001, pId001, role2);
+        assertTrue(result);
+        roles = projectManagerService.getRoles(oid001, pId001);
+        assertTrue(roles.size() == 2);
+        result= projectManagerService.removeRole(oid001, pId001, role1.getId());
+        assertTrue(result);
+        result= projectManagerService.removeRole(oid001, pId001, role2.getId());
+        assertTrue(result);
+        roles = projectManagerService.getRoles(oid001, pId001);
+        assertTrue(roles.size() == 0);
+    }
+
+    @Test
+    @Order(6)
+    public void removeFirstProject() {
+        boolean result = projectManagerService.remove(oid001, pId001);
+        assertTrue(result);
+        Collection<Project> all = projectManagerService.getAll(oid001);
+        assertTrue(all.size() == 0);
+    }
+
+    @Test
+    @Order(7)
+    public void removeSecondProject() {
+        boolean result = projectManagerService.remove(oid002, pId001);
+        assertTrue(result);
+        Collection<Project> all = projectManagerService.getAll(oid002);
+        assertTrue(all.size() == 0);
     }
 
 }

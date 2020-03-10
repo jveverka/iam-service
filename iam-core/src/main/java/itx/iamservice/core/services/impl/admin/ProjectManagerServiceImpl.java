@@ -6,6 +6,8 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 
 import java.util.Collection;
@@ -26,7 +28,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
         if (organization.isPresent()) {
             Optional<Project> project = organization.get().getProject(projectId);
             if (project.isEmpty()) {
-                organization.get().add(new Project(projectId, name, id, organization.get().getKeyPair().getPrivate()));
+                organization.get().add(new Project(projectId, name, id, organization.get().getPrivateKey()));
                 return true;
             }
         }
@@ -58,6 +60,43 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
             return organization.get().remove(projectId);
         }
         return false;
+    }
+
+    @Override
+    public boolean addRole(OrganizationId id, ProjectId projectId, Role role) {
+        Optional<Organization> organization = model.getOrganization(id);
+        if (organization.isPresent()) {
+            Optional<Project> project = organization.get().getProject(projectId);
+            if (project.isPresent()) {
+                project.get().addRole(role);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeRole(OrganizationId id, ProjectId projectId, RoleId roleId) {
+        Optional<Organization> organization = model.getOrganization(id);
+        if (organization.isPresent()) {
+            Optional<Project> project = organization.get().getProject(projectId);
+            if (project.isPresent()) {
+                return project.get().removeRole(roleId);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Collection<Role> getRoles(OrganizationId id, ProjectId projectId) {
+        Optional<Organization> organization = model.getOrganization(id);
+        if (organization.isPresent()) {
+            Optional<Project> project = organization.get().getProject(projectId);
+            if (project.isPresent()) {
+                return project.get().getRoles();
+            }
+        }
+        return Collections.emptyList();
     }
 
 }

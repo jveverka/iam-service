@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.PKIData;
+import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenUtils;
@@ -117,12 +117,12 @@ public class TokenUtilsTest {
         String organizationId = "organization-001";
         String projectId = "project-001";
         String clientId = "client-001";
-        PKIData organizationPkiData = TokenUtils.createSelfSignedPKIData(organizationId, 10L, TimeUnit.DAYS);
-        PKIData projectPkiData = TokenUtils.createSignedPKIData(organizationId, projectId, 10L, TimeUnit.DAYS, organizationPkiData.getKeyPair().getPrivate());
-        PKIData clientPkiData = TokenUtils.createSignedPKIData(projectId, clientId, 10L, TimeUnit.DAYS, projectPkiData.getKeyPair().getPrivate());
-        TokenUtils.verifySelfSignedCertificate(organizationPkiData.getX509Certificate());
-        TokenUtils.verifySignedCertificate(organizationPkiData.getX509Certificate(), projectPkiData.getX509Certificate());
-        TokenUtils.verifySignedCertificate(projectPkiData.getX509Certificate(), clientPkiData.getX509Certificate());
+        KeyPairData organizationKeyPairData = TokenUtils.createSelfSignedPKIData(organizationId, 10L, TimeUnit.DAYS);
+        KeyPairData projectKeyPairData = TokenUtils.createSignedPKIData(organizationId, projectId, 10L, TimeUnit.DAYS, organizationKeyPairData.getPrivateKey());
+        KeyPairData clientKeyPairData = TokenUtils.createSignedPKIData(projectId, clientId, 10L, TimeUnit.DAYS, projectKeyPairData.getPrivateKey());
+        TokenUtils.verifySelfSignedCertificate(organizationKeyPairData.getX509Certificate());
+        TokenUtils.verifySignedCertificate(organizationKeyPairData.getX509Certificate(), projectKeyPairData.getX509Certificate());
+        TokenUtils.verifySignedCertificate(projectKeyPairData.getX509Certificate(), clientKeyPairData.getX509Certificate());
     }
 
 }

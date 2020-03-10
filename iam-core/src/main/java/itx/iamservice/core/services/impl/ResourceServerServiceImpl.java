@@ -41,7 +41,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             ClientId clientId = ClientId.from(defaultClaims.getSubject());
             Optional<Client> client = this.model.getClient(organizationId, projectId, clientId);
             if (client.isPresent()) {
-                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, client.get().getKeyPair().getPublic());
+                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, client.get().getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsJws.isPresent());
                 return claimsJws.isPresent();
             } else {

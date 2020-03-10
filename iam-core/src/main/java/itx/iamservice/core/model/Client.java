@@ -18,8 +18,7 @@ public class Client {
     private final String name;
     private final Map<Class<? extends CredentialsType>, Credentials> credentials;
     private final Set<RoleId> roles;
-    private final KeyPair keyPair;
-    private final X509Certificate certificate;
+    private final KeyPairData keyPairData;
     private final Long defaultTokenDuration;
 
     public Client(ClientId id, String name, ProjectId projectId, Long defaultTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
@@ -28,9 +27,7 @@ public class Client {
         this.credentials = new ConcurrentHashMap<>();
         this.roles = new CopyOnWriteArraySet<>();
         this.projectId = projectId;
-        PKIData pkiData = TokenUtils.createSignedPKIData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
-        this.keyPair = pkiData.getKeyPair();
-        this.certificate = pkiData.getX509Certificate();
+        this.keyPairData = TokenUtils.createSignedPKIData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
         this.defaultTokenDuration = defaultTokenDuration;
     }
 
@@ -58,12 +55,12 @@ public class Client {
         return Optional.ofNullable(credentials.get(type));
     }
 
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public PrivateKey getPrivateKey() {
+        return keyPairData.getPrivateKey();
     }
 
     public X509Certificate getCertificate() {
-        return certificate;
+        return keyPairData.getX509Certificate();
     }
 
     public Long getDefaultTokenDuration() {

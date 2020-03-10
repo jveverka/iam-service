@@ -1,6 +1,6 @@
 package itx.iamservice.core.model;
 
-import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Map;
@@ -14,16 +14,13 @@ public class Organization {
     private final OrganizationId id;
     private final String name;
     private final Map<ProjectId, Project> projects;
-    private final KeyPair keyPair;
-    private final X509Certificate certificate;
+    private final KeyPairData keyPairData;
 
     public Organization(OrganizationId id, String name) throws PKIException {
         this.id = id;
         this.name = name;
         this.projects = new ConcurrentHashMap<>();
-        PKIData pkiData = TokenUtils.createSelfSignedPKIData(id.getId(), 365L, TimeUnit.DAYS);
-        this.keyPair = pkiData.getKeyPair();
-        this.certificate = pkiData.getX509Certificate();
+        this.keyPairData = TokenUtils.createSelfSignedPKIData(id.getId(), 365L, TimeUnit.DAYS);
     }
 
     public OrganizationId getId() {
@@ -52,12 +49,12 @@ public class Organization {
         return Optional.ofNullable(projects.get(projectId));
     }
 
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public PrivateKey getPrivateKey() {
+        return keyPairData.getPrivateKey();
     }
 
     public X509Certificate getCertificate() {
-        return certificate;
+        return keyPairData.getX509Certificate();
     }
 
 }

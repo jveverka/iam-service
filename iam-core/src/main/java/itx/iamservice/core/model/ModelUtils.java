@@ -38,8 +38,8 @@ public final class ModelUtils {
     public static Model createDefaultModel(String iamAdminPassword) throws PKIException {
         ModelImpl model = new ModelImpl();
         Organization organization = new Organization(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
-        Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getKeyPair().getPrivate());
-        Client client = new Client(IAM_ADMIN_CLIENT, "iam-admin", project.getId(), 3600*1000L, project.getKeyPair().getPrivate());
+        Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
+        Client client = new Client(IAM_ADMIN_CLIENT, "iam-admin", project.getId(), 3600*1000L, project.getPrivateKey());
         UPCredentials upCredentials = new UPCredentials(client.getId(), iamAdminPassword);
         client.addCredentials(upCredentials);
         organization.add(project);

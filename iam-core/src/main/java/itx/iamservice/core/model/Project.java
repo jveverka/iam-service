@@ -17,8 +17,7 @@ public class Project {
     private final String name;
     private final Map<ClientId, Client> clients;
     private final Map<RoleId, Role> roles;
-    private final KeyPair keyPair;
-    private final X509Certificate certificate;
+    private final KeyPairData keyPairData;
 
     public Project(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
         this.id = id;
@@ -26,9 +25,7 @@ public class Project {
         this.clients = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
-        PKIData pkiData = TokenUtils.createSignedPKIData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
-        this.keyPair = pkiData.getKeyPair();
-        this.certificate = pkiData.getX509Certificate();
+        this.keyPairData = TokenUtils.createSignedPKIData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
     }
 
     public ProjectId getId() {
@@ -77,12 +74,12 @@ public class Project {
         return roles.remove(id) != null;
     }
 
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public PrivateKey getPrivateKey() {
+        return keyPairData.getPrivateKey();
     }
 
     public X509Certificate getCertificate() {
-        return certificate;
+        return keyPairData.getX509Certificate();
     }
 
 }

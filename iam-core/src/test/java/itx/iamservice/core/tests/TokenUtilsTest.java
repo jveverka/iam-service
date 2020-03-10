@@ -5,13 +5,19 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIData;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -35,20 +41,25 @@ public class TokenUtilsTest {
     private static final Long DURATION = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
+    @BeforeAll
+    private static void init() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     @Test
-    public void keyPairGenerateTest() throws NoSuchAlgorithmException {
+    public void keyPairGenerateTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void jwTokenValidityTest() throws NoSuchAlgorithmException {
+    public void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
         assertNotNull(jwt);
-        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair);
+        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isPresent());
         assertEquals(SUBJECT, claimsJws.get().getBody().getSubject());
         assertEquals(ISSUER, claimsJws.get().getBody().getIssuer());
@@ -62,28 +73,28 @@ public class TokenUtilsTest {
     }
 
     @Test
-    public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException {
+    public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, duration, TIME_UNIT, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, duration, TIME_UNIT, ROLES, keyPair.getPrivate());
         Thread.sleep(3*1000L);
-        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair);
+        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
     }
 
     @Test
-    public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException {
+    public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
         keyPair = TokenUtils.generateKeyPair();
-        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair);
+        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
     }
 
     @Test
-    public void extractTokenTest() throws NoSuchAlgorithmException {
+    public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());
@@ -91,14 +102,27 @@ public class TokenUtilsTest {
     }
 
     @Test
-    public void identicalTokenGenerationTest() throws NoSuchAlgorithmException {
+    public void identicalTokenGenerationTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + 3600*1000L);
-        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair);
-        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair);
+        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair.getPrivate());
+        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair.getPrivate());
         assertFalse(jwt1.equals(jwt2));
+    }
+
+    @Test
+    public void signedCertificateHierarchyTest() throws PKIException {
+        String organizationId = "organization-001";
+        String projectId = "project-001";
+        String clientId = "client-001";
+        PKIData organizationPkiData = TokenUtils.createSelfSignedPKIData(organizationId, 10L, TimeUnit.DAYS);
+        PKIData projectPkiData = TokenUtils.createSignedPKIData(organizationId, projectId, 10L, TimeUnit.DAYS, organizationPkiData.getKeyPair().getPrivate());
+        PKIData clientPkiData = TokenUtils.createSignedPKIData(projectId, clientId, 10L, TimeUnit.DAYS, projectPkiData.getKeyPair().getPrivate());
+        TokenUtils.verifySelfSignedCertificate(organizationPkiData.getX509Certificate());
+        TokenUtils.verifySignedCertificate(organizationPkiData.getX509Certificate(), projectPkiData.getX509Certificate());
+        TokenUtils.verifySignedCertificate(projectPkiData.getX509Certificate(), clientPkiData.getX509Certificate());
     }
 
 }

@@ -4,11 +4,13 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelUtils;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenCacheImpl;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -17,6 +19,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -39,11 +43,12 @@ public class TokenCacheTests {
     private static JWToken jwToken;
 
     @BeforeAll
-    private static void init() throws NoSuchAlgorithmException {
+    private static void init() throws NoSuchAlgorithmException, NoSuchProviderException, PKIException {
+        Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
         model = ModelUtils.createDefaultModel("top-secret");
         tokenCache = new TokenCacheImpl(model);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair);
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
     }
 
     @Test

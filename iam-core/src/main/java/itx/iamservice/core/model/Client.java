@@ -1,11 +1,14 @@
 package itx.iamservice.core.model;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Client {
@@ -16,15 +19,18 @@ public class Client {
     private final Map<Class<? extends CredentialsType>, Credentials> credentials;
     private final Set<RoleId> roles;
     private final KeyPair keyPair;
+    private final X509Certificate certificate;
     private final Long defaultTokenDuration;
 
-    public Client(ClientId id, String name, ProjectId projectId, KeyPair keyPair, Long defaultTokenDuration) {
+    public Client(ClientId id, String name, ProjectId projectId, Long defaultTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
         this.roles = new CopyOnWriteArraySet<>();
         this.projectId = projectId;
-        this.keyPair = keyPair;
+        PKIData pkiData = TokenUtils.createSignedPKIData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
+        this.keyPair = pkiData.getKeyPair();
+        this.certificate = pkiData.getX509Certificate();
         this.defaultTokenDuration = defaultTokenDuration;
     }
 
@@ -54,6 +60,10 @@ public class Client {
 
     public KeyPair getKeyPair() {
         return keyPair;
+    }
+
+    public X509Certificate getCertificate() {
+        return certificate;
     }
 
     public Long getDefaultTokenDuration() {

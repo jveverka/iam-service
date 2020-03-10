@@ -6,12 +6,16 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.ResourceServerService;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.services.dto.ProjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +41,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             ClientId clientId = ClientId.from(defaultClaims.getSubject());
             Optional<Client> client = this.model.getClient(organizationId, projectId, clientId);
             if (client.isPresent()) {
-                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, client.get().getKeyPair());
+                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, client.get().getKeyPair().getPublic());
                 LOG.info("JWT verified={}", claimsJws.isPresent());
                 return claimsJws.isPresent();
             } else {
@@ -47,6 +51,38 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             LOG.info("JWT is revoked: {}", token);
         }
         return false;
+    }
+
+    @Override
+    public Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) {
+        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
+        if (organizationOptional.isPresent()) {
+            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            if (projectOptional.isPresent()) {
+                Project project = projectOptional.get();
+                ProjectInfo projectInfo = new ProjectInfo(project.getId(), project.getOrganizationId(),
+                        project.getName(), organizationOptional.get().getCertificate(), project.getCertificate());
+                return Optional.of(projectInfo);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ClientInfo> getClientInfo(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
+        if (organizationOptional.isPresent()) {
+            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            if (projectOptional.isPresent()) {
+                Optional<Client> clientOptional = projectOptional.get().getClient(clientId);
+                if (clientOptional.isPresent()) {
+                    ClientInfo clientInfo = new ClientInfo(clientId, projectId, organizationId,
+                            clientOptional.get().getName(), clientOptional.get().getCertificate());
+                    return Optional.of(clientInfo);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
 }

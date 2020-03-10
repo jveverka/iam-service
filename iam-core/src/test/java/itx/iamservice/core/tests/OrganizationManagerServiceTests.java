@@ -4,15 +4,17 @@ import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -28,7 +30,8 @@ public class OrganizationManagerServiceTests {
     private static OrganizationId oid002 = OrganizationId.from("organization-002");
 
     @BeforeAll
-    private static void init() throws NoSuchAlgorithmException {
+    private static void init() {
+        Security.addProvider(new BouncyCastleProvider());
         model = new ModelImpl();
         organizationManagerService = new OrganizationManagerServiceImpl(model);
     }
@@ -42,7 +45,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(2)
-    public void createFirstOrganizationTest() {
+    public void createFirstOrganizationTest() throws PKIException {
         boolean result = organizationManagerService.create(oid001, "org-001");
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
@@ -55,7 +58,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(2)
-    public void createSecondOrganizationTest() {
+    public void createSecondOrganizationTest() throws PKIException {
         boolean result = organizationManagerService.create(oid002, "org-002");
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
@@ -68,7 +71,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(3)
-    public void createExistingOrganizationTest() {
+    public void createExistingOrganizationTest() throws PKIException {
         boolean result = organizationManagerService.create(oid001, "org-001");
         assertFalse(result);
         result = organizationManagerService.create(oid002, "org-002");

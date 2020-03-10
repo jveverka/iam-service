@@ -1,9 +1,13 @@
 package itx.iamservice.core.model;
 
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Project {
@@ -13,13 +17,18 @@ public class Project {
     private final String name;
     private final Map<ClientId, Client> clients;
     private final Map<RoleId, Role> roles;
+    private final KeyPair keyPair;
+    private final X509Certificate certificate;
 
-    public Project(ProjectId id, String name, OrganizationId organizationId) {
+    public Project(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
         this.id = id;
         this.name = name;
         this.clients = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
+        PKIData pkiData = TokenUtils.createSignedPKIData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
+        this.keyPair = pkiData.getKeyPair();
+        this.certificate = pkiData.getX509Certificate();
     }
 
     public ProjectId getId() {
@@ -66,6 +75,14 @@ public class Project {
 
     public boolean removeRole(RoleId id) {
         return roles.remove(id) != null;
+    }
+
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
+
+    public X509Certificate getCertificate() {
+        return certificate;
     }
 
 }

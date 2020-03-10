@@ -35,11 +35,11 @@ public final class ModelUtils {
         return RoleId.from(createId());
     }
 
-    public static Model createDefaultModel(String iamAdminPassword) throws NoSuchAlgorithmException {
+    public static Model createDefaultModel(String iamAdminPassword) throws PKIException {
         ModelImpl model = new ModelImpl();
         Organization organization = new Organization(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
-        Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId());
-        Client client = new Client(IAM_ADMIN_CLIENT, "iam-admin", project.getId(), TokenUtils.generateKeyPair(), 3600*1000L);
+        Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getKeyPair().getPrivate());
+        Client client = new Client(IAM_ADMIN_CLIENT, "iam-admin", project.getId(), 3600*1000L, project.getKeyPair().getPrivate());
         UPCredentials upCredentials = new UPCredentials(client.getId(), iamAdminPassword);
         client.addCredentials(upCredentials);
         organization.add(project);

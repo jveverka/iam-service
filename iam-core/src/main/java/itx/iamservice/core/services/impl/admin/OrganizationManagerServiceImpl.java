@@ -3,6 +3,7 @@ package itx.iamservice.core.services.impl.admin;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 
 import java.util.Collection;
@@ -17,7 +18,7 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
-    public boolean create(OrganizationId id, String name) {
+    public boolean create(OrganizationId id, String name) throws PKIException {
         if (model.getOrganization(id).isPresent()) {
             return false;
         } else {

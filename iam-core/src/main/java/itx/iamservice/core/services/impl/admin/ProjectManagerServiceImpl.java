@@ -3,6 +3,7 @@ package itx.iamservice.core.services.impl.admin;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
@@ -20,12 +21,12 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public boolean create(OrganizationId id, ProjectId projectId, String name) {
+    public boolean create(OrganizationId id, ProjectId projectId, String name) throws PKIException {
         Optional<Organization> organization = model.getOrganization(id);
         if (organization.isPresent()) {
             Optional<Project> project = organization.get().getProject(projectId);
             if (project.isEmpty()) {
-                organization.get().add(new Project(projectId, name, id));
+                organization.get().add(new Project(projectId, name, id, organization.get().getKeyPair().getPrivate()));
                 return true;
             }
         }

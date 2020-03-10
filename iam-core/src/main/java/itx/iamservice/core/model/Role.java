@@ -1,17 +1,21 @@
 package itx.iamservice.core.model;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class Role {
 
     private final RoleId id;
     private final String name;
-    private final Map<String, Permission> permissions;
+    private final Map<PermissionId, Permission> permissions;
 
-    public Role(RoleId id, String name, Map<String, Permission> permissions) {
+    public Role(RoleId id, String name) {
         this.id = id;
         this.name = name;
-        this.permissions = permissions;
+        this.permissions = new ConcurrentHashMap<>();
     }
 
     public RoleId getId() {
@@ -20,6 +24,22 @@ public class Role {
 
     public String getName() {
         return name;
+    }
+
+    public void addPermission(Permission permission) {
+        permissions.put(permission.getId(), permission);
+    }
+
+    public Optional<Permission> getPermission(PermissionId id) {
+        return Optional.ofNullable(permissions.get(id));
+    }
+
+    public Collection<Permission> getPermissions() {
+        return permissions.values().stream().collect(Collectors.toList());
+    }
+
+    public boolean removePermission(PermissionId id) {
+        return permissions.remove(id) != null;
     }
 
 }

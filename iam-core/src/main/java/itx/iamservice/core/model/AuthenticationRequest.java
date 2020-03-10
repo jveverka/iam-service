@@ -1,9 +1,9 @@
 package itx.iamservice.core.model;
 
-public interface AuthenticationRequest<CT extends CredentialsType> {
+public interface AuthenticationRequest<C extends CredentialsType> {
 
     ClientId getClientId();
 
-    CT getCredentialsType();
+    C getCredentialsType();
 
 }

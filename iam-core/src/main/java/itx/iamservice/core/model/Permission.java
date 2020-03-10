@@ -2,19 +2,19 @@ package itx.iamservice.core.model;
 
 public class Permission {
 
-    private final String id;
+    private final PermissionId id;
     private final String service;
     private final String resource;
     private final String action;
 
     public Permission(String service, String resource, String action) {
-        this.id = service + "." + resource + "." + action;
+        this.id = PermissionId.from(service + "." + resource + "." + action);
         this.service = service;
         this.resource = resource;
         this.action = action;
     }
 
-    public String getId() {
+    public PermissionId getId() {
         return id;
     }
 

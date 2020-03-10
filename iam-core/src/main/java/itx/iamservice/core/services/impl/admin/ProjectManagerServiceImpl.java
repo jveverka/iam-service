@@ -38,7 +38,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
         if (organization.isPresent()) {
             return organization.get().getProjects();
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

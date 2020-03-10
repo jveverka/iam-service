@@ -9,7 +9,6 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenUtils;

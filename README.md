@@ -6,6 +6,11 @@ Really simple Identity Access Management (IAM) service, authentication and autho
 
 This project is __WIP__ !
 
+## Related RFCs and Specifications
+* [RFC6749](https://tools.ietf.org/html/rfc6749) - The OAuth 2.0 Authorization Framework
+* [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
+* [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0
+
 ## Architecture
 ![architecture](docs/IAM-service-architecture.svg)
 

@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public final class TokenUtils {
 
@@ -44,6 +45,10 @@ public final class TokenUtils {
     public static final String ROLES_CLAIM = "roles";
 
     private TokenUtils() {
+    }
+
+    public static Set<RoleId> filterRoles(Set<RoleId> availableRoles, Set<RoleId> scope) {
+        return availableRoles.stream().filter(s -> scope.contains(s)).collect(Collectors.toSet());
     }
 
     public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey) {

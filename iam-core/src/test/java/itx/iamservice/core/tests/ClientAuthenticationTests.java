@@ -2,9 +2,11 @@ package itx.iamservice.core.tests;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelUtils;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenCacheImpl;
 import itx.iamservice.core.model.TokenUtils;
@@ -24,9 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.security.Security;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -51,10 +57,22 @@ public class ClientAuthenticationTests {
 
     @Test
     @Order(1)
+    @SuppressWarnings("unchecked")
     public void authenticateTest() {
-        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_CLIENT, adminPassword);
+        Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
+        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_CLIENT, adminPassword, scope);
         Optional<JWToken> tokenOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
         assertTrue(tokenOptional.isPresent());
+        DefaultClaims defaultClaims = TokenUtils.extractClaims(tokenOptional.get());
+        assertEquals(ModelUtils.IAM_ADMIN_CLIENT.getId(), defaultClaims.getSubject());
+        assertEquals(ModelUtils.IAM_ADMINS_ORG.getId(), defaultClaims.getIssuer());
+        assertEquals(ModelUtils.IAM_ADMINS_PROJECT.getId(), defaultClaims.getAudience());
+        List<String> roles = (List<String>)defaultClaims.get(TokenUtils.ROLES_CLAIM);
+        assertNotNull(roles);
+        assertTrue(roles.size() == 2);
+        assertTrue(roles.contains("manage-organizations"));
+        assertTrue(roles.contains("manage-projects"));
+        assertFalse(roles.contains("not-existing-role"));
         token = tokenOptional.get();
     }
 

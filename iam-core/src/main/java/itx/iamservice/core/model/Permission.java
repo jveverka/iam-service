@@ -1,5 +1,7 @@
 package itx.iamservice.core.model;
 
+import java.util.Objects;
+
 public class Permission {
 
     private final PermissionId id;
@@ -28,6 +30,19 @@ public class Permission {
 
     public String getAction() {
         return action;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Permission that = (Permission) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

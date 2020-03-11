@@ -10,6 +10,7 @@ import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.ClientService;
@@ -45,7 +46,8 @@ public class ClientServiceImpl implements ClientService {
             if (credentials.isPresent()) {
                 boolean valid = credentials.get().verify(authenticationRequest);
                 if (valid) {
-                    Set<String> roles = client.getRoles().stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
+                    Set<RoleId> filteredRoles = TokenUtils.filterRoles(client.getRoles(), authenticationRequest.getScope());
+                    Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
                     JWToken token = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
                             roles, client.getPrivateKey());

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class ClientServiceImpl implements ClientService {
 
@@ -44,9 +45,10 @@ public class ClientServiceImpl implements ClientService {
             if (credentials.isPresent()) {
                 boolean valid = credentials.get().verify(authenticationRequest);
                 if (valid) {
+                    Set<String> roles = client.getRoles().stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
                     JWToken token = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
-                            client.getRoles(), client.getPrivateKey());
+                            roles, client.getPrivateKey());
                     return Optional.of(token);
                 }
             }

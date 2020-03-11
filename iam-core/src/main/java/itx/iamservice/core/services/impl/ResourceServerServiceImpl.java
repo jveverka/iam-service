@@ -77,7 +77,8 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 Optional<Client> clientOptional = projectOptional.get().getClient(clientId);
                 if (clientOptional.isPresent()) {
                     ClientInfo clientInfo = new ClientInfo(clientId, projectId, organizationId,
-                            clientOptional.get().getName(), clientOptional.get().getCertificate());
+                            clientOptional.get().getName(), clientOptional.get().getCertificate(),
+                            clientOptional.get().getRoles());
                     return Optional.of(clientInfo);
                 }
             }

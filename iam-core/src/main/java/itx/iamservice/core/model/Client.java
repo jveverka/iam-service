@@ -1,6 +1,5 @@
 package itx.iamservice.core.model;
 
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;
@@ -67,8 +66,8 @@ public class Client {
         return defaultTokenDuration;
     }
 
-    public Set<String> getRoles() {
-        return this.roles.stream().map(role -> role.getId()).collect(Collectors.toSet());
+    public Set<RoleId> getRoles() {
+        return this.roles.stream().collect(Collectors.toSet());
     }
 
     public boolean removeRole(RoleId roleId) {

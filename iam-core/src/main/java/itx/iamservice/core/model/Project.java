@@ -1,6 +1,5 @@
 package itx.iamservice.core.model;
 
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;

@@ -8,6 +8,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -57,7 +58,7 @@ public class TokenUtilsTest {
     public void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         assertNotNull(jwt);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isPresent());
@@ -66,6 +67,8 @@ public class TokenUtilsTest {
         assertEquals(AUDIENCE, claimsJws.get().getBody().getAudience());
         List<String> claimedRoles = (List<String>) claimsJws.get().getBody().get(TokenUtils.ROLES_CLAIM);
         assertNotNull(claimedRoles);
+        String type = (String)claimsJws.get().getBody().get(TokenUtils.TYPE_CLAIM);
+        assertEquals(TokenType.BEARER.getType(), type);
         assertEquals(ROLES.size(), claimedRoles.size());
         for (String role : claimedRoles) {
             assertTrue(ROLES.contains(role));
@@ -76,7 +79,7 @@ public class TokenUtilsTest {
     public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, duration, TIME_UNIT, ROLES, keyPair.getPrivate());
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, duration, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         Thread.sleep(3*1000L);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -85,7 +88,7 @@ public class TokenUtilsTest {
     @Test
     public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         keyPair = TokenUtils.generateKeyPair();
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -94,7 +97,7 @@ public class TokenUtilsTest {
     @Test
     public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());
@@ -107,8 +110,8 @@ public class TokenUtilsTest {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + 3600*1000L);
-        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair.getPrivate());
-        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair.getPrivate());
+        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair.getPrivate(), TokenType.ID);
+        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, ROLES, keyPair.getPrivate(), TokenType.ID);
         assertFalse(jwt1.equals(jwt2));
     }
 

@@ -9,6 +9,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenCacheImpl;
+import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
@@ -73,6 +74,8 @@ public class ClientAuthenticationTests {
         assertTrue(roles.contains("manage-organizations"));
         assertTrue(roles.contains("manage-projects"));
         assertFalse(roles.contains("not-existing-role"));
+        String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);
+        assertEquals(TokenType.BEARER.getType(), type);
         token = tokenOptional.get();
     }
 

@@ -43,6 +43,7 @@ public final class TokenUtils {
     private static final String X509_TYPE = "X.509";
 
     public static final String ROLES_CLAIM = "roles";
+    public static final String TYPE_CLAIM = "typ";
 
     private TokenUtils() {
     }
@@ -51,14 +52,14 @@ public final class TokenUtils {
         return availableRoles.stream().filter(s -> scope.contains(s)).collect(Collectors.toSet());
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey) {
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(clientId.getId(), organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey);
+        return issueToken(clientId.getId(), organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey, type);
     }
 
-    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, PrivateKey privateKey) {
+    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, PrivateKey privateKey, TokenType type) {
         String jwToken = Jwts.builder()
                 .setSubject(subject)
                 .signWith(privateKey)
@@ -68,6 +69,7 @@ public final class TokenUtils {
                 .setNotBefore(notBefore)
                 .setAudience(audience)
                 .claim(ROLES_CLAIM, roles)
+                .claim(TYPE_CLAIM, type.getType())
                 .setId(UUID.randomUUID().toString())
                 .compact();
         return JWToken.from(jwToken);

@@ -8,6 +8,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenCacheImpl;
+import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -48,7 +49,7 @@ public class TokenCacheTests {
         keyPair = TokenUtils.generateKeyPair();
         model = ModelUtils.createDefaultModel("top-secret");
         tokenCache = new TokenCacheImpl(model);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate());
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

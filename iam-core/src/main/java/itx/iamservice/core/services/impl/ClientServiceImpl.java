@@ -12,6 +12,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenCache;
+import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.JWToken;
@@ -50,7 +51,7 @@ public class ClientServiceImpl implements ClientService {
                     Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
                     JWToken token = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
-                            roles, client.getPrivateKey());
+                            roles, client.getPrivateKey(), TokenType.BEARER);
                     return Optional.of(token);
                 }
             }
@@ -76,7 +77,7 @@ public class ClientServiceImpl implements ClientService {
                     List<String> roles = (List<String>) claims.get(TokenUtils.ROLES_CLAIM);
                     JWToken renewedToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
-                            Set.copyOf(roles), client.getPrivateKey());
+                            Set.copyOf(roles), client.getPrivateKey(), TokenType.BEARER);
                     tokenCache.addRevokedToken(token);
                     return Optional.of(renewedToken);
                 }

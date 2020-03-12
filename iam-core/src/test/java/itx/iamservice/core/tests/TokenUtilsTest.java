@@ -126,9 +126,9 @@ public class TokenUtilsTest {
         String organizationId = "organization-001";
         String projectId = "project-001";
         String clientId = "client-001";
-        KeyPairData organizationKeyPairData = TokenUtils.createSelfSignedPKIData(organizationId, 10L, TimeUnit.DAYS);
-        KeyPairData projectKeyPairData = TokenUtils.createSignedPKIData(organizationId, projectId, 10L, TimeUnit.DAYS, organizationKeyPairData.getPrivateKey());
-        KeyPairData clientKeyPairData = TokenUtils.createSignedPKIData(projectId, clientId, 10L, TimeUnit.DAYS, projectKeyPairData.getPrivateKey());
+        KeyPairData organizationKeyPairData = TokenUtils.createSelfSignedKeyPairData(organizationId, 10L, TimeUnit.DAYS);
+        KeyPairData projectKeyPairData = TokenUtils.createSignedKeyPairData(organizationId, projectId, 10L, TimeUnit.DAYS, organizationKeyPairData.getPrivateKey());
+        KeyPairData clientKeyPairData = TokenUtils.createSignedKeyPairData(projectId, clientId, 10L, TimeUnit.DAYS, projectKeyPairData.getPrivateKey());
         TokenUtils.verifySelfSignedCertificate(organizationKeyPairData.getX509Certificate());
         TokenUtils.verifySignedCertificate(organizationKeyPairData.getX509Certificate(), projectKeyPairData.getX509Certificate());
         TokenUtils.verifySignedCertificate(projectKeyPairData.getX509Certificate(), clientKeyPairData.getX509Certificate());

@@ -145,7 +145,7 @@ public final class TokenUtils {
         clientCertificate.verify(caCertificate.getPublicKey());
     }
 
-    public static KeyPairData createSelfSignedPKIData(String issuerAndSubject, Long duration, TimeUnit timeUnit) throws PKIException {
+    public static KeyPairData createSelfSignedKeyPairData(String issuerAndSubject, Long duration, TimeUnit timeUnit) throws PKIException {
         try {
             KeyPair keyPair = generateKeyPair();
             X509Certificate x509Certificate = createSelfSignedCertificate(issuerAndSubject, duration, timeUnit, keyPair);
@@ -155,7 +155,7 @@ public final class TokenUtils {
         }
     }
 
-    public static KeyPairData createSignedPKIData(String issuer, String subject, Long duration, TimeUnit timeUnit, PrivateKey privateKey) throws PKIException {
+    public static KeyPairData createSignedKeyPairData(String issuer, String subject, Long duration, TimeUnit timeUnit, PrivateKey privateKey) throws PKIException {
         try {
             KeyPair keyPair = generateKeyPair();
             X509Certificate x509Certificate = createSignedCertificate(issuer, subject, duration, timeUnit, keyPair.getPublic(), privateKey);

@@ -20,7 +20,7 @@ public class Organization {
         this.id = id;
         this.name = name;
         this.projects = new ConcurrentHashMap<>();
-        this.keyPairData = TokenUtils.createSelfSignedPKIData(id.getId(), 365L, TimeUnit.DAYS);
+        this.keyPairData = TokenUtils.createSelfSignedKeyPairData(id.getId(), 365L, TimeUnit.DAYS);
     }
 
     public OrganizationId getId() {

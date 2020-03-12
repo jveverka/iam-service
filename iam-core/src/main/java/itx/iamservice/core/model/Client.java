@@ -26,7 +26,7 @@ public class Client {
         this.credentials = new ConcurrentHashMap<>();
         this.roles = new CopyOnWriteArraySet<>();
         this.projectId = projectId;
-        this.keyPairData = TokenUtils.createSignedPKIData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
+        this.keyPairData = TokenUtils.createSignedKeyPairData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
         this.defaultTokenDuration = defaultTokenDuration;
     }
 

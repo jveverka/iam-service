@@ -24,7 +24,7 @@ public class Project {
         this.clients = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
-        this.keyPairData = TokenUtils.createSignedPKIData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
+        this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
     }
 
     public ProjectId getId() {

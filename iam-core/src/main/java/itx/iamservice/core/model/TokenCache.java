@@ -17,7 +17,7 @@ public interface TokenCache {
 
     /**
      * Remove expired tokens from this cache. Expired tokens may be removed from this cache,
-     * because such tokens are not valid anymore. 
+     * because such tokens are not valid anymore.
      * @return number of tokens removed.
      */
     int purgeRevokedTokens();

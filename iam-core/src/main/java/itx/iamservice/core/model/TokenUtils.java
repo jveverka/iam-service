@@ -48,8 +48,19 @@ public final class TokenUtils {
     private TokenUtils() {
     }
 
+    /**
+     * Filter roles by scope. If scope is empty, return all available roles. If scope contains some roles that
+     * are not present in availableRoles set, those are ignored.
+     * @param availableRoles all available roles.
+     * @param scope subset of available roles.
+     * @return role set filtered by scope.
+     */
     public static Set<RoleId> filterRoles(Set<RoleId> availableRoles, Set<RoleId> scope) {
-        return availableRoles.stream().filter(s -> scope.contains(s)).collect(Collectors.toSet());
+        if (scope.isEmpty()) {
+            return availableRoles;
+        } else {
+            return availableRoles.stream().filter(s -> scope.contains(s)).collect(Collectors.toSet());
+        }
     }
 
     public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {

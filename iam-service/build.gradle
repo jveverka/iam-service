@@ -18,6 +18,9 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+
+    implementation 'org.bouncycastle:bcpg-jdk15on:1.64'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.64'
 }
 
 test {

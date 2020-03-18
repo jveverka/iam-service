@@ -26,4 +26,10 @@ public interface AuthenticationRequest<C extends CredentialsType> {
      */
     Set<RoleId> getScope();
 
+    /**
+     * Get client's credentials.
+     * @return
+     */
+    Client getClient();
+
 }

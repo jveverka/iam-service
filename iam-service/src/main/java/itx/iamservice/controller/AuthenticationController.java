@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -21,14 +22,23 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(@Autowired AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
-                                                   @PathVariable("project-id") String projectId, TokenRequest tokenRequest) {
+                                                   @PathVariable("project-id") String projectId,
+                                                   @RequestParam("grant_type") String grantType,
+                                                   @RequestParam("username") String username,
+                                                   @RequestParam("password") String password,
+                                                   @RequestParam(name = "scope", required = false) String scope,
+                                                   @RequestParam("client_id") String clientId,
+                                                   @RequestParam("client_secret") String clientSecret) {
+        if (scope == null) {
+            scope = "";
+        }
+        TokenRequest tokenRequest = new TokenRequest(grantType, username, password, scope, clientId, clientSecret);
         Optional<TokenResponse> response = authenticationService.getTokens(OrganizationId.from(organizationId), ProjectId.from(projectId), tokenRequest);
         return ResponseEntity.of(response);
     }

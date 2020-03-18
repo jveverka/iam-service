@@ -12,6 +12,7 @@ public final class ModelUtils {
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
     public static final UserId IAM_ADMIN_USER = UserId.from("iam-admin-id");
+    public static final Client IAM_ADMIN_CLIENT_CREDENTIALS = new Client(ClientId.from("admin-client"), "top-secret");
 
     public static final String IAM_SERVICE = "iam-admin-service";
     public static final String READ_ACTION = "read";
@@ -45,6 +46,7 @@ public final class ModelUtils {
         Organization organization = new Organization(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
         Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
         createAdminRoles().forEach(r-> project.addRole(r));
+        project.addClient(IAM_ADMIN_CLIENT_CREDENTIALS);
 
         User user = new User(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, project.getPrivateKey());
         UPCredentials upCredentials = new UPCredentials(user.getId(), iamAdminPassword);

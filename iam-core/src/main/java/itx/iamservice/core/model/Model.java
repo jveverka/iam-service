@@ -15,4 +15,6 @@ public interface Model {
 
     Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
+    Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
+
 }

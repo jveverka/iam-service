@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.AuthenticationRequest;
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Credentials;
@@ -40,6 +42,18 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<JWToken> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest) {
+        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        if (projectOptional.isPresent()) {
+            Client client = authenticationRequest.getClient();
+            boolean validationResult = projectOptional.get().verifyClientCredentials(client);
+            if (!validationResult) {
+                LOG.info("Invalid client {} credentials !", client.getId());
+                return Optional.empty();
+            }
+        } else {
+            LOG.info("Organization/Project {}/{} not found", organizationId, projectId);
+            return Optional.empty();
+        }
         Optional<User> userOptional = model.getUser(organizationId, projectId, authenticationRequest.getUserId());
         if (userOptional.isPresent()) {
             User user = userOptional.get();

@@ -1,20 +1,20 @@
 package itx.iamservice.core.model.extensions.authentication.up;
 
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Credentials;
 
 public class UPCredentials implements Credentials<UPCredentialsType, UPAuthenticationRequest> {
 
-    private final ClientId clientId;
+    private final UserId userId;
     private final String password;
 
-    public UPCredentials(ClientId clientId, String password) {
-        this.clientId = clientId;
+    public UPCredentials(UserId userId, String password) {
+        this.userId = userId;
         this.password = password;
     }
 
     @Override
-    public ClientId getClientId() {
+    public UserId getUserId() {
         return null;
     }
 
@@ -25,7 +25,7 @@ public class UPCredentials implements Credentials<UPCredentialsType, UPAuthentic
 
     @Override
     public boolean verify(UPAuthenticationRequest authenticationRequest) {
-        return clientId.equals(authenticationRequest.getClientId()) && password.equals(authenticationRequest.getPassword());
+        return userId.equals(authenticationRequest.getUserId()) && password.equals(authenticationRequest.getPassword());
     }
 
 }

@@ -4,12 +4,12 @@ import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
-import itx.iamservice.core.services.admin.ClientManagerService;
+import itx.iamservice.core.services.admin.UserManagerService;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
-import itx.iamservice.core.services.impl.admin.ClientManagerServiceImpl;
+import itx.iamservice.core.services.impl.admin.UserManagerServiceImpl;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ProjectManagerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +55,8 @@ public class CoreServiceConfiguration {
 
     @Bean
     @Scope("singleton")
-    public ClientManagerService getClientManagerService() {
-        return new ClientManagerServiceImpl(model);
+    public UserManagerService getClientManagerService() {
+        return new UserManagerServiceImpl(model);
     }
 
 }

@@ -3,8 +3,8 @@ package itx.iamservice.core.services.impl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
-import itx.iamservice.core.model.Client;
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.User;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
@@ -13,7 +13,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.services.ResourceServerService;
-import itx.iamservice.core.services.dto.ClientInfo;
+import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import org.slf4j.Logger;
@@ -38,14 +38,14 @@ public class ResourceServerServiceImpl implements ResourceServerService {
         boolean isRevoked = this.tokenCache.isRevoked(token);
         if (!isRevoked) {
             DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
-            ClientId clientId = ClientId.from(defaultClaims.getSubject());
-            Optional<Client> client = this.model.getClient(organizationId, projectId, clientId);
-            if (client.isPresent()) {
-                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, client.get().getCertificate().getPublicKey());
+            UserId userId = UserId.from(defaultClaims.getSubject());
+            Optional<User> userOptional = this.model.getUser(organizationId, projectId, userId);
+            if (userOptional.isPresent()) {
+                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, userOptional.get().getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsJws.isPresent());
                 return claimsJws.isPresent();
             } else {
-                LOG.info("JWT subject {} not found", clientId);
+                LOG.info("JWT subject {} not found", userId);
             }
         } else {
             LOG.info("JWT is revoked: {}", token);
@@ -69,17 +69,17 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     }
 
     @Override
-    public Optional<ClientInfo> getClientInfo(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+    public Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         Optional<Organization> organizationOptional = model.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
             Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
             if (projectOptional.isPresent()) {
-                Optional<Client> clientOptional = projectOptional.get().getClient(clientId);
-                if (clientOptional.isPresent()) {
-                    ClientInfo clientInfo = new ClientInfo(clientId, projectId, organizationId,
-                            clientOptional.get().getName(), clientOptional.get().getCertificate(),
-                            clientOptional.get().getRoles());
-                    return Optional.of(clientInfo);
+                Optional<User> userOptional = projectOptional.get().getUser(userId);
+                if (userOptional.isPresent()) {
+                    UserInfo userInfo = new UserInfo(userId, projectId, organizationId,
+                            userOptional.get().getName(), userOptional.get().getCertificate(),
+                            userOptional.get().getRoles());
+                    return Optional.of(userInfo);
                 }
             }
         }

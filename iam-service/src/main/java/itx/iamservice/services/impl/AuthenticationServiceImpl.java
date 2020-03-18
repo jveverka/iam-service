@@ -1,7 +1,7 @@
 package itx.iamservice.services.impl;
 
 import itx.iamservice.core.model.AuthenticationRequest;
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
@@ -34,8 +34,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         for (String scope: rawScopes) {
             scopes.add(RoleId.from(scope));
         }
-        ClientId clientId = ClientId.from(tokenRequest.getUsername());
-        AuthenticationRequest authenticationRequest = new UPAuthenticationRequest(clientId, tokenRequest.getPassword(), scopes);
+        UserId userId = UserId.from(tokenRequest.getUsername());
+        AuthenticationRequest authenticationRequest = new UPAuthenticationRequest(userId, tokenRequest.getPassword(), scopes);
         Optional<JWToken> tokenOptional = clientService.authenticate(organizationId, projectId, authenticationRequest);
         if (tokenOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokenOptional.get().getToken(), 600L, 0L, "", "bearer");

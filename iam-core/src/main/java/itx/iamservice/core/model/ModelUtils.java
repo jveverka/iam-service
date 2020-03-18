@@ -11,7 +11,7 @@ public final class ModelUtils {
     private static final String IAM_ADMINS_NAME = "iam-admins";
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
-    public static final ClientId IAM_ADMIN_CLIENT = ClientId.from("iam-admin-id");
+    public static final UserId IAM_ADMIN_USER = UserId.from("iam-admin-id");
 
     public static final String IAM_SERVICE = "iam-admin-service";
     public static final String READ_ACTION = "read";
@@ -32,8 +32,8 @@ public final class ModelUtils {
         return ProjectId.from(createId());
     }
 
-    public static ClientId createClientId() {
-        return ClientId.from(createId());
+    public static UserId createUserId() {
+        return UserId.from(createId());
     }
 
     public static RoleId createRoleId() {
@@ -46,13 +46,13 @@ public final class ModelUtils {
         Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
         createAdminRoles().forEach(r-> project.addRole(r));
 
-        Client client = new Client(IAM_ADMIN_CLIENT, "iam-admin", project.getId(), 3600*1000L, project.getPrivateKey());
-        UPCredentials upCredentials = new UPCredentials(client.getId(), iamAdminPassword);
-        client.addCredentials(upCredentials);
-        createAdminRoles().forEach(r -> client.addRole(r.getId()));
+        User user = new User(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, project.getPrivateKey());
+        UPCredentials upCredentials = new UPCredentials(user.getId(), iamAdminPassword);
+        user.addCredentials(upCredentials);
+        createAdminRoles().forEach(r -> user.addRole(r.getId()));
 
         organization.add(project);
-        project.add(client);
+        project.add(user);
         model.add(organization);
         return model;
     }
@@ -66,22 +66,22 @@ public final class ModelUtils {
         manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "projects", READ_ACTION));
         manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "projects", MODIFY_ACTION));
 
-        Role manageClientsRole = new Role(RoleId.from("manage-clients"), "Can manage clients.");
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "clients", READ_ACTION));
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "clients", MODIFY_ACTION));
+        Role manageUsersRole = new Role(RoleId.from("manage-users"), "Can manage users.");
+        manageUsersRole.addPermission(new Permission(IAM_SERVICE, "users", READ_ACTION));
+        manageUsersRole.addPermission(new Permission(IAM_SERVICE, "users", MODIFY_ACTION));
 
         Role manageRolesRole = new Role(RoleId.from("manage-roles"), "Can manage roles.");
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "roles", READ_ACTION));
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "roles", MODIFY_ACTION));
+        manageRolesRole.addPermission(new Permission(IAM_SERVICE, "roles", READ_ACTION));
+        manageRolesRole.addPermission(new Permission(IAM_SERVICE, "roles", MODIFY_ACTION));
 
         Role managePermissionsRole = new Role(RoleId.from("manage-permissions"), "Can manage permissions.");
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "permissions", READ_ACTION));
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "permissions", MODIFY_ACTION));
+        managePermissionsRole.addPermission(new Permission(IAM_SERVICE, "permissions", READ_ACTION));
+        managePermissionsRole.addPermission(new Permission(IAM_SERVICE, "permissions", MODIFY_ACTION));
 
         Set<Role> roles = new HashSet<>();
         roles.add(manageOrganizationsRole);
         roles.add(manageProjectsRole);
-        roles.add(manageClientsRole);
+        roles.add(manageUsersRole);
         roles.add(manageRolesRole);
         roles.add(managePermissionsRole);
         return roles;

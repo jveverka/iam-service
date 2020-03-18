@@ -13,6 +13,6 @@ public interface Model {
 
     boolean remove(OrganizationId organizationId);
 
-    Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
+    Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
 }

@@ -2,7 +2,7 @@ package itx.iamservice.core.model;
 
 public interface Credentials<CT extends CredentialsType, AR extends AuthenticationRequest> {
 
-    ClientId getClientId();
+    UserId getUserId();
 
     CT getType();
 

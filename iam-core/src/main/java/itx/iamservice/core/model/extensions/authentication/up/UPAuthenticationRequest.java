@@ -1,19 +1,19 @@
 package itx.iamservice.core.model.extensions.authentication.up;
 
 import itx.iamservice.core.model.AuthenticationRequest;
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.RoleId;
 
 import java.util.Set;
 
 public class UPAuthenticationRequest implements AuthenticationRequest<UPCredentialsType> {
 
-    private final ClientId clientId;
+    private final UserId userId;
     private final String password;
     private final Set<RoleId> scope;
 
-    public UPAuthenticationRequest(ClientId clientId, String password, Set<RoleId> scope) {
-        this.clientId = clientId;
+    public UPAuthenticationRequest(UserId userId, String password, Set<RoleId> scope) {
+        this.userId = userId;
         this.password = password;
         this.scope = scope;
     }
@@ -23,8 +23,8 @@ public class UPAuthenticationRequest implements AuthenticationRequest<UPCredenti
     }
 
     @Override
-    public ClientId getClientId() {
-        return clientId;
+    public UserId getUserId() {
+        return userId;
     }
 
     @Override

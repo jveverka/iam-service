@@ -14,14 +14,14 @@ public class Project {
     private final ProjectId id;
     private final OrganizationId organizationId;
     private final String name;
-    private final Map<ClientId, Client> clients;
+    private final Map<UserId, User> users;
     private final Map<RoleId, Role> roles;
     private final KeyPairData keyPairData;
 
     public Project(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
         this.id = id;
         this.name = name;
-        this.clients = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
@@ -39,22 +39,22 @@ public class Project {
         return organizationId;
     }
 
-    public void add(Client client) {
-        clients.put(client.getId(), client);
+    public void add(User user) {
+        users.put(user.getId(), user);
     }
 
-    public Collection<Client> getAllClients() {
-        return clients.values().stream()
-                .filter(client -> client.getProjectId().equals(id))
+    public Collection<User> getAllUsers() {
+        return users.values().stream()
+                .filter(user -> user.getProjectId().equals(id))
                 .collect(Collectors.toList());
     }
 
-    public boolean remove(ClientId clientId) {
-        return clients.remove(clientId) != null;
+    public boolean remove(UserId userId) {
+        return users.remove(userId) != null;
     }
 
-    public Optional<Client> getClient(ClientId clientId) {
-        return Optional.ofNullable(clients.get(clientId));
+    public Optional<User> getUser(UserId userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     public void addRole(Role role) {

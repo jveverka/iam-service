@@ -3,7 +3,7 @@ package itx.iamservice.core.tests;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.PKIException;
@@ -42,7 +42,7 @@ public class TokenUtilsTest {
     private static final String SUBJECT = "subject";
     private static final OrganizationId ORGANIZATION_ID = OrganizationId.from(ISSUER);
     private static final ProjectId PROJECT_ID = ProjectId.from(AUDIENCE);
-    private static final ClientId CLIENT_ID = ClientId.from(SUBJECT);
+    private static final UserId USER_ID = UserId.from(SUBJECT);
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
     private static final Long DURATION = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
@@ -64,7 +64,7 @@ public class TokenUtilsTest {
     public void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         assertNotNull(jwt);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isPresent());
@@ -85,7 +85,7 @@ public class TokenUtilsTest {
     public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, duration, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, duration, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         Thread.sleep(3*1000L);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -94,7 +94,7 @@ public class TokenUtilsTest {
     @Test
     public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         keyPair = TokenUtils.generateKeyPair();
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -103,7 +103,7 @@ public class TokenUtilsTest {
     @Test
     public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, CLIENT_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());
@@ -125,13 +125,13 @@ public class TokenUtilsTest {
     public void signedCertificateHierarchyTest() throws PKIException {
         String organizationId = "organization-001";
         String projectId = "project-001";
-        String clientId = "client-001";
+        String userId = "user-001";
         KeyPairData organizationKeyPairData = TokenUtils.createSelfSignedKeyPairData(organizationId, 10L, TimeUnit.DAYS);
         KeyPairData projectKeyPairData = TokenUtils.createSignedKeyPairData(organizationId, projectId, 10L, TimeUnit.DAYS, organizationKeyPairData.getPrivateKey());
-        KeyPairData clientKeyPairData = TokenUtils.createSignedKeyPairData(projectId, clientId, 10L, TimeUnit.DAYS, projectKeyPairData.getPrivateKey());
+        KeyPairData userKeyPairData = TokenUtils.createSignedKeyPairData(projectId, userId, 10L, TimeUnit.DAYS, projectKeyPairData.getPrivateKey());
         TokenUtils.verifySelfSignedCertificate(organizationKeyPairData.getX509Certificate());
         TokenUtils.verifySignedCertificate(organizationKeyPairData.getX509Certificate(), projectKeyPairData.getX509Certificate());
-        TokenUtils.verifySignedCertificate(projectKeyPairData.getX509Certificate(), clientKeyPairData.getX509Certificate());
+        TokenUtils.verifySignedCertificate(projectKeyPairData.getX509Certificate(), userKeyPairData.getX509Certificate());
     }
 
     private static Stream<Arguments> createRoleFilterArguments() {

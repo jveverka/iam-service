@@ -14,7 +14,7 @@ import itx.iamservice.core.model.TokenUtils;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
-import itx.iamservice.core.services.dto.ClientInfo;
+import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
@@ -61,11 +61,11 @@ public class ClientAuthenticationTests {
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
         Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
-        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_CLIENT, adminPassword, scope);
+        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope);
         Optional<JWToken> tokenOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
         assertTrue(tokenOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokenOptional.get());
-        assertEquals(ModelUtils.IAM_ADMIN_CLIENT.getId(), defaultClaims.getSubject());
+        assertEquals(ModelUtils.IAM_ADMIN_USER.getId(), defaultClaims.getSubject());
         assertEquals(ModelUtils.IAM_ADMINS_ORG.getId(), defaultClaims.getIssuer());
         assertEquals(ModelUtils.IAM_ADMINS_PROJECT.getId(), defaultClaims.getAudience());
         List<String> roles = (List<String>)defaultClaims.get(TokenUtils.ROLES_CLAIM);
@@ -130,9 +130,9 @@ public class ClientAuthenticationTests {
     public void externalTokenVerificationTest() {
         Optional<ProjectInfo> projectInfo = resourceServerService.getProjectInfo(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
         assertTrue(projectInfo.isPresent());
-        Optional<ClientInfo> clientInfo = resourceServerService.getClientInfo(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT);
-        assertTrue(clientInfo.isPresent());
-        Optional<Jws<Claims>> claims = TokenUtils.verify(token, clientInfo.get().getClientCertificate().getPublicKey());
+        Optional<UserInfo> userInfo = resourceServerService.getUserInfo(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
+        assertTrue(userInfo.isPresent());
+        Optional<Jws<Claims>> claims = TokenUtils.verify(token, userInfo.get().getUserCertificate().getPublicKey());
         assertTrue(claims.isPresent());
         claims = TokenUtils.verify(token, projectInfo.get().getProjectCertificate().getPublicKey());
         assertTrue(claims.isEmpty());

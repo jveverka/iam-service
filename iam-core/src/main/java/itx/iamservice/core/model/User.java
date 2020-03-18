@@ -10,9 +10,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Client {
+public class User {
 
-    private final ClientId id;
+    private final UserId id;
     private final ProjectId projectId;
     private final String name;
     private final Map<Class<? extends CredentialsType>, Credentials> credentials;
@@ -20,7 +20,7 @@ public class Client {
     private final KeyPairData keyPairData;
     private final Long defaultTokenDuration;
 
-    public Client(ClientId id, String name, ProjectId projectId, Long defaultTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
+    public User(UserId id, String name, ProjectId projectId, Long defaultTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
@@ -30,7 +30,7 @@ public class Client {
         this.defaultTokenDuration = defaultTokenDuration;
     }
 
-    public ClientId getId() {
+    public UserId getId() {
         return id;
     }
 

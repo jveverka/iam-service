@@ -63,11 +63,11 @@ public final class TokenUtils {
         }
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(clientId.getId(), organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey, type);
+        return issueToken(userId.getId(), organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey, type);
     }
 
     public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, PrivateKey privateKey, TokenType type) {
@@ -139,10 +139,10 @@ public final class TokenUtils {
         return createSelfSignedCertificate(issuerAndSubject, notBefore, notAfter, keyPair);
     }
 
-    public static void verifyCertificate(X509Certificate caCertificate, X509Certificate clientCertificate) throws CertificateException, NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public static void verifyCertificate(X509Certificate caCertificate, X509Certificate userCertificate) throws CertificateException, NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         caCertificate.checkValidity();
-        clientCertificate.checkValidity();
-        clientCertificate.verify(caCertificate.getPublicKey());
+        userCertificate.checkValidity();
+        userCertificate.verify(caCertificate.getPublicKey());
     }
 
     public static KeyPairData createSelfSignedKeyPairData(String issuerAndSubject, Long duration, TimeUnit timeUnit) throws PKIException {

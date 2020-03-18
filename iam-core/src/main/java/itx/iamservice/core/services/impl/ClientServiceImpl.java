@@ -4,8 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.AuthenticationRequest;
-import itx.iamservice.core.model.Client;
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.User;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.OrganizationId;
@@ -40,23 +40,23 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<JWToken> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest) {
-        Optional<Client> clientOptional = model.getClient(organizationId, projectId, authenticationRequest.getClientId());
-        if (clientOptional.isPresent()) {
-            Client client = clientOptional.get();
-            Optional<Credentials> credentials = client.getCredentials(authenticationRequest.getCredentialsType().getClass());
+        Optional<User> userOptional = model.getUser(organizationId, projectId, authenticationRequest.getUserId());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Optional<Credentials> credentials = user.getCredentials(authenticationRequest.getCredentialsType().getClass());
             if (credentials.isPresent()) {
                 boolean valid = credentials.get().verify(authenticationRequest);
                 if (valid) {
-                    Set<RoleId> filteredRoles = TokenUtils.filterRoles(client.getRoles(), authenticationRequest.getScope());
+                    Set<RoleId> filteredRoles = TokenUtils.filterRoles(user.getRoles(), authenticationRequest.getScope());
                     Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
-                    JWToken token = TokenUtils.issueToken(organizationId, projectId, client.getId(),
-                            client.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
-                            roles, client.getPrivateKey(), TokenType.BEARER);
+                    JWToken token = TokenUtils.issueToken(organizationId, projectId, user.getId(),
+                            user.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
+                            roles, user.getPrivateKey(), TokenType.BEARER);
                     return Optional.of(token);
                 }
             }
         } else {
-            LOG.info("JWT subject {} not found", authenticationRequest.getClientId());
+            LOG.info("JWT subject {} not found", authenticationRequest.getUserId());
         }
         return Optional.empty();
     }
@@ -67,17 +67,17 @@ public class ClientServiceImpl implements ClientService {
         if (!tokenCache.isRevoked(token)) {
             DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
             String subject = defaultClaims.getSubject();
-            Optional<Client> clientOptional = model.getClient(organizationId, projectId, ClientId.from(subject));
-            if (clientOptional.isPresent()) {
-                Client client = clientOptional.get();
-                Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, client.getCertificate().getPublicKey());
+            Optional<User> userOptional = model.getUser(organizationId, projectId, UserId.from(subject));
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, user.getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsOptional.isPresent());
                 if (claimsOptional.isPresent()) {
                     Claims claims = claimsOptional.get().getBody();
                     List<String> roles = (List<String>) claims.get(TokenUtils.ROLES_CLAIM);
-                    JWToken renewedToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
-                            client.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
-                            Set.copyOf(roles), client.getPrivateKey(), TokenType.BEARER);
+                    JWToken renewedToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
+                            user.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
+                            Set.copyOf(roles), user.getPrivateKey(), TokenType.BEARER);
                     tokenCache.addRevokedToken(token);
                     return Optional.of(renewedToken);
                 }
@@ -94,9 +94,9 @@ public class ClientServiceImpl implements ClientService {
     public boolean logout(OrganizationId organizationId, ProjectId projectId, JWToken token) {
         DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
         String subject = defaultClaims.getSubject();
-        Optional<Client> client = model.getClient(organizationId, projectId, ClientId.from(subject));
-        if (client.isPresent()) {
-            Optional<Jws<Claims>> claims = TokenUtils.verify(token, client.get().getCertificate().getPublicKey());
+        Optional<User> userOptional = model.getUser(organizationId, projectId, UserId.from(subject));
+        if (userOptional.isPresent()) {
+            Optional<Jws<Claims>> claims = TokenUtils.verify(token, userOptional.get().getCertificate().getPublicKey());
             LOG.info("JWT verified={}", claims.isPresent());
             if (claims.isPresent()) {
                 tokenCache.addRevokedToken(token);

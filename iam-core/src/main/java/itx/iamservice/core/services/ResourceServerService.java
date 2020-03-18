@@ -1,11 +1,11 @@
 package itx.iamservice.core.services;
 
-import itx.iamservice.core.model.Client;
-import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.User;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.services.dto.ClientInfo;
+import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
 
@@ -36,12 +36,12 @@ public interface ResourceServerService {
     Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId);
 
     /**
-     * Get public {@link Client} related information. This information contains X509 of client.
+     * Get public {@link User} related information. This information contains X509 of user.
      * @param organizationId {@link OrganizationId} - unique id of the organization.
      * @param projectId {@link ProjectId} - unique id of the project.
-     * @param clientId {@link ClientId} - unique id of the client.
-     * @return Optional of {@link ClientInfo} instance if project, organization and client exists, empty otherwise.
+     * @param userId {@link UserId} - unique id of the user.
+     * @return Optional of {@link UserInfo} instance if project, organization and user exists, empty otherwise.
      */
-    Optional<ClientInfo> getClientInfo(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
+    Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
 }

@@ -18,7 +18,7 @@ public interface ClientService {
      * Authenticate client and provide valid {@link JWToken} in case authentication has been successful.
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
-     * @param authenticationRequest request containing client's credentials.
+     * @param authenticationRequest request containing user's credentials.
      * @return valid {@link JWToken} in case authentication has been successful, empty otherwise.
      */
     Optional<JWToken> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest);

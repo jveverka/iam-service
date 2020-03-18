@@ -35,12 +35,12 @@ public class ModelImpl implements Model {
     }
 
     @Override
-    public Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+    public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         Organization organization = organizations.get(organizationId);
         if (organization != null) {
             Optional<Project> project = organization.getProject(projectId);
             if (project.isPresent()) {
-                return project.get().getClient(clientId);
+                return project.get().getUser(userId);
             }
         }
         return Optional.empty();

@@ -36,9 +36,13 @@ Remaining registered [JWT claim names](https://tools.ietf.org/html/rfc7519#secti
 Non-registered mappings:
 * __roles__ - string array of roleId(s) for subject. 
 
+## Supported OAuth2 flows
+* __Password Credentials__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.3), [details](docs/oauth2/003_password-credentials-flow.md).
+
 ## Build and Run
 ```
 gradle clean build test
+java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar
 ```
 
 

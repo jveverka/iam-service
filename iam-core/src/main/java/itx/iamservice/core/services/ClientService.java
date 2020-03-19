@@ -3,6 +3,7 @@ package itx.iamservice.core.services;
 import itx.iamservice.core.model.AuthenticationRequest;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.services.dto.JWToken;
 
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface ClientService {
      * @param authenticationRequest request containing user's credentials.
      * @return valid {@link JWToken} in case authentication has been successful, empty otherwise.
      */
-    Optional<JWToken> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest);
+    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest);
 
     /**
      * Request new instance of JWToken before issued token expires.
@@ -30,7 +31,7 @@ public interface ClientService {
      * @param token previously issued and valid {@link JWToken}
      * @return new instance of {@link JWToken} or empty if provided {@link JWToken} was not valid.
      */
-    Optional<JWToken> renew(OrganizationId organizationId, ProjectId projectId, JWToken token);
+    Optional<JWToken> refresh(OrganizationId organizationId, ProjectId projectId, JWToken token);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

@@ -48,7 +48,7 @@ public final class ModelUtils {
         createAdminRoles().forEach(r-> project.addRole(r));
         project.addClient(IAM_ADMIN_CLIENT_CREDENTIALS);
 
-        User user = new User(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, project.getPrivateKey());
+        User user = new User(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
         UPCredentials upCredentials = new UPCredentials(user.getId(), iamAdminPassword);
         user.addCredentials(upCredentials);
         createAdminRoles().forEach(r -> user.addRole(r.getId()));

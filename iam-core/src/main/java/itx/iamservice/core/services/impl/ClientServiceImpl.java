@@ -6,6 +6,7 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.AuthenticationRequest;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.Project;
+import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Credentials;
@@ -41,7 +42,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<JWToken> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest) {
+    public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest) {
         Optional<Project> projectOptional = model.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Client client = authenticationRequest.getClient();
@@ -63,9 +64,14 @@ public class ClientServiceImpl implements ClientService {
                 if (valid) {
                     Set<RoleId> filteredRoles = TokenUtils.filterRoles(user.getRoles(), authenticationRequest.getScope());
                     Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
-                    JWToken token = TokenUtils.issueToken(organizationId, projectId, user.getId(),
-                            user.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
+                    JWToken accessToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
+                            user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
                             roles, user.getPrivateKey(), TokenType.BEARER);
+                    JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
+                            user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
+                            roles, user.getPrivateKey(), TokenType.REFRESH);
+                    Tokens token = new Tokens(accessToken, refreshToken, TokenType.BEARER,
+                            user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L);
                     return Optional.of(token);
                 }
             }
@@ -77,7 +83,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<JWToken> renew(OrganizationId organizationId, ProjectId projectId, JWToken token) {
+    public Optional<JWToken> refresh(OrganizationId organizationId, ProjectId projectId, JWToken token) {
         if (!tokenCache.isRevoked(token)) {
             DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
             String subject = defaultClaims.getSubject();
@@ -88,12 +94,16 @@ public class ClientServiceImpl implements ClientService {
                 LOG.info("JWT verified={}", claimsOptional.isPresent());
                 if (claimsOptional.isPresent()) {
                     Claims claims = claimsOptional.get().getBody();
-                    List<String> roles = (List<String>) claims.get(TokenUtils.ROLES_CLAIM);
-                    JWToken renewedToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
-                            user.getDefaultTokenDuration(), TimeUnit.MILLISECONDS,
-                            Set.copyOf(roles), user.getPrivateKey(), TokenType.BEARER);
-                    tokenCache.addRevokedToken(token);
-                    return Optional.of(renewedToken);
+                    String tokenType = (String)claims.get(TokenUtils.TYPE_CLAIM);
+                    if (TokenType.REFRESH.getType().equals(tokenType)) {
+                        List<String> roles = (List<String>) claims.get(TokenUtils.ROLES_CLAIM);
+                        JWToken renewedToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
+                                user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
+                                Set.copyOf(roles), user.getPrivateKey(), TokenType.BEARER);
+                        return Optional.of(renewedToken);
+                    } else {
+                        LOG.info("Invalid JWT type {}, expected type {}", tokenType, TokenType.BEARER.getType());
+                    }
                 }
             } else {
                 LOG.info("JWT subject {} not found", subject);

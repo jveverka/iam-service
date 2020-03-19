@@ -18,16 +18,18 @@ public class User {
     private final Map<Class<? extends CredentialsType>, Credentials> credentials;
     private final Set<RoleId> roles;
     private final KeyPairData keyPairData;
-    private final Long defaultTokenDuration;
+    private final Long defaultAccessTokenDuration;
+    private final Long defaultRefreshTokenDuration;
 
-    public User(UserId id, String name, ProjectId projectId, Long defaultTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
+    public User(UserId id, String name, ProjectId projectId, Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
         this.roles = new CopyOnWriteArraySet<>();
         this.projectId = projectId;
         this.keyPairData = TokenUtils.createSignedKeyPairData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
-        this.defaultTokenDuration = defaultTokenDuration;
+        this.defaultAccessTokenDuration = defaultAccessTokenDuration;
+        this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
     }
 
     public UserId getId() {
@@ -62,8 +64,12 @@ public class User {
         return keyPairData.getX509Certificate();
     }
 
-    public Long getDefaultTokenDuration() {
-        return defaultTokenDuration;
+    public Long getDefaultAccessTokenDuration() {
+        return defaultAccessTokenDuration;
+    }
+
+    public Long getDefaultRefreshTokenDuration() {
+        return defaultRefreshTokenDuration;
     }
 
     public Set<RoleId> getRoles() {

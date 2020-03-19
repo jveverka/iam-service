@@ -3,6 +3,7 @@ package itx.iamservice.services.impl;
 import itx.iamservice.core.model.AuthenticationRequest;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -41,9 +42,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserId userId = UserId.from(tokenRequest.getUsername());
         Client client = new Client(ClientId.from(tokenRequest.getClientId()), tokenRequest.getClientSecret());
         AuthenticationRequest authenticationRequest = new UPAuthenticationRequest(userId, tokenRequest.getPassword(), scopes, client);
-        Optional<JWToken> tokenOptional = clientService.authenticate(organizationId, projectId, authenticationRequest);
-        if (tokenOptional.isPresent()) {
-            TokenResponse tokenResponse = new TokenResponse(tokenOptional.get().getToken(), 600L, 0L, "", "bearer");
+        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, authenticationRequest);
+        if (tokensOptional.isPresent()) {
+            TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
+                    tokensOptional.get().getExpiresIn(),
+                    tokensOptional.get().getRefreshExpiresIn(),
+                    tokensOptional.get().getRefreshToken().getToken(),
+                    tokensOptional.get().getTokenType().getType());
             return Optional.of(tokenResponse);
         }
         return Optional.empty();

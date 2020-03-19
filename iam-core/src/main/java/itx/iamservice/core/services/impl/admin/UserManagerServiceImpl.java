@@ -32,7 +32,7 @@ public class UserManagerServiceImpl implements UserManagerService {
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = projectOptional.get().getUser(userId);
                 if (userOptional.isEmpty()) {
-                    projectOptional.get().add(new User(userId, name, projectOptional.get().getId(), 3600*1000L, projectOptional.get().getPrivateKey()));
+                    projectOptional.get().add(new User(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey()));
                     return true;
                 }
             }

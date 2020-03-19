@@ -11,6 +11,7 @@ import itx.iamservice.core.model.TokenCache;
 import itx.iamservice.core.model.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.TokenUtils;
+import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
@@ -45,7 +46,8 @@ public class ClientAuthenticationTests {
     private static ClientService clientService;
     private static ResourceServerService resourceServerService;
     private static TokenCache tokenCache;
-    private static JWToken token;
+    private static JWToken accessToken;
+    private static JWToken refreshToken;
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -62,9 +64,9 @@ public class ClientAuthenticationTests {
     public void authenticateTest() {
         Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS);
-        Optional<JWToken> tokenOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
-        assertTrue(tokenOptional.isPresent());
-        DefaultClaims defaultClaims = TokenUtils.extractClaims(tokenOptional.get());
+        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
+        assertTrue(tokensOptional.isPresent());
+        DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
         assertEquals(ModelUtils.IAM_ADMIN_USER.getId(), defaultClaims.getSubject());
         assertEquals(ModelUtils.IAM_ADMINS_ORG.getId(), defaultClaims.getIssuer());
         assertEquals(ModelUtils.IAM_ADMINS_PROJECT.getId(), defaultClaims.getAudience());
@@ -76,52 +78,53 @@ public class ClientAuthenticationTests {
         assertFalse(roles.contains("not-existing-role"));
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);
         assertEquals(TokenType.BEARER.getType(), type);
-        token = tokenOptional.get();
+        accessToken = tokensOptional.get().getAccessToken();
+        refreshToken = tokensOptional.get().getRefreshToken();
     }
 
     @Test
     @Order(2)
-    public void verifyValidTokenTest() {
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+    public void verifyValidTokensTest() {
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
+        assertTrue(result);
+        result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken);
         assertTrue(result);
     }
 
     @Test
     @Order(3)
-    public void renewTokenTest() {
-        Optional<JWToken> tokenOptional = clientService.renew(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
-        assertFalse(result);
+    public void refreshTokenTest() {
+        Optional<JWToken> tokenOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken);
         assertTrue(tokenOptional.isPresent());
-        assertFalse(token.equals(tokenOptional.get()));
-        token = tokenOptional.get();
+        assertFalse(accessToken.equals(tokenOptional.get()));
+        accessToken = tokenOptional.get();
     }
 
     @Test
     @Order(4)
-    public void verifyValidRenewedTokenTest() {
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+    public void verifyValidRefreshedTokenTest() {
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
         assertTrue(result);
     }
 
     @Test
     @Order(5)
     public void logoutTest() {
-        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
         assertTrue(result);
     }
 
     @Test
     @Order(6)
     public void verifyInvalidTokenTest() {
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
         assertFalse(result);
     }
 
     @Test
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
-        Optional<JWToken> tokenOptional = clientService.renew(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+        Optional<JWToken> tokenOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
         assertTrue(tokenOptional.isEmpty());
     }
 
@@ -132,11 +135,11 @@ public class ClientAuthenticationTests {
         assertTrue(projectInfo.isPresent());
         Optional<UserInfo> userInfo = resourceServerService.getUserInfo(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
         assertTrue(userInfo.isPresent());
-        Optional<Jws<Claims>> claims = TokenUtils.verify(token, userInfo.get().getUserCertificate().getPublicKey());
+        Optional<Jws<Claims>> claims = TokenUtils.verify(accessToken, userInfo.get().getUserCertificate().getPublicKey());
         assertTrue(claims.isPresent());
-        claims = TokenUtils.verify(token, projectInfo.get().getProjectCertificate().getPublicKey());
+        claims = TokenUtils.verify(accessToken, projectInfo.get().getProjectCertificate().getPublicKey());
         assertTrue(claims.isEmpty());
-        claims = TokenUtils.verify(token, projectInfo.get().getOrganizationCertificate().getPublicKey());
+        claims = TokenUtils.verify(accessToken, projectInfo.get().getOrganizationCertificate().getPublicKey());
         assertTrue(claims.isEmpty());
     }
 

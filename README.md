@@ -38,6 +38,7 @@ Non-registered mappings:
 
 ## Supported OAuth2 flows
 * __Password Credentials__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.3), [details](docs/oauth2/003_password-credentials-flow.md).
+* __Client Credentials__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.4), [details](docs/oauth2/004_client-credentials-flow.md).
 
 ## Build and Run
 ```

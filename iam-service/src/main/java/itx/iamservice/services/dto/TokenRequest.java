@@ -3,6 +3,10 @@ package itx.iamservice.services.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import itx.iamservice.core.model.RoleId;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class TokenRequest {
 
@@ -12,6 +16,9 @@ public class TokenRequest {
     private final String username;
     private final String password;
     private final String scope;
+
+    @JsonIgnore
+    private final Set<RoleId> scopes;
 
     @JsonProperty("client_id")
     private final String clientId;
@@ -32,6 +39,13 @@ public class TokenRequest {
         this.scope = scope;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.scopes = new HashSet<>();
+        String[] rawScopes = scope.trim().split(" ");
+        for (String s: rawScopes) {
+            if (!s.isEmpty()) {
+                scopes.add(RoleId.from(s));
+            }
+        }
     }
 
     @JsonProperty("grant_type")
@@ -64,6 +78,11 @@ public class TokenRequest {
     @JsonIgnore
     public GrantType getGrantTypeEnum() {
         return grantType;
+    }
+
+    @JsonIgnore
+    public Set<RoleId> getScopes() {
+        return scopes;
     }
 
 }

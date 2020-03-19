@@ -41,6 +41,18 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, Client clientCredentials, Set<RoleId> scope) {
+        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        if (projectOptional.isPresent()) {
+            //TODO: implement client authentication.
+            return Optional.empty();
+        } else {
+            LOG.info("Organization/Project {}/{} not found", organizationId, projectId);
+            return Optional.empty();
+        }
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest) {
         Optional<Project> projectOptional = model.getProject(organizationId, projectId);

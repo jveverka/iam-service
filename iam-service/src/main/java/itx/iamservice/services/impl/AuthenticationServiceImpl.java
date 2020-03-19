@@ -7,19 +7,15 @@ import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
-import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.services.AuthenticationService;
 import itx.iamservice.services.dto.TokenRequest;
 import itx.iamservice.services.dto.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -32,16 +28,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Optional<TokenResponse> getTokens(OrganizationId organizationId, ProjectId projectId, TokenRequest tokenRequest) {
-        Set<RoleId> scopes = new HashSet<>();
-        String[] rawScopes = tokenRequest.getScope().trim().split(" ");
-        for (String scope: rawScopes) {
-            if (!scope.isEmpty()) {
-                scopes.add(RoleId.from(scope));
-            }
-        }
         UserId userId = UserId.from(tokenRequest.getUsername());
         Client client = new Client(ClientId.from(tokenRequest.getClientId()), tokenRequest.getClientSecret());
-        AuthenticationRequest authenticationRequest = new UPAuthenticationRequest(userId, tokenRequest.getPassword(), scopes, client);
+        AuthenticationRequest authenticationRequest = new UPAuthenticationRequest(userId, tokenRequest.getPassword(), tokenRequest.getScopes(), client);
         Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, authenticationRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),

@@ -43,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             tokensOptional.get().getTokenType().getType());
                     return Optional.of(tokenResponse);
                 }
+                break;
             }
             case CLIENT_CREDENTIALS: {
                 ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(tokenRequest.getClientId()), tokenRequest.getClientSecret());
@@ -55,10 +56,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             tokensOptional.get().getTokenType().getType());
                     return Optional.of(tokenResponse);
                 }
+                break;
             }
-            default:
-                return Optional.empty();
         }
+        return Optional.empty();
     }
 
 }

@@ -40,6 +40,6 @@ public interface ClientService {
      * @param token issued and valid {@link JWToken}
      * @return true in case provided {@link JWToken} is valid, false otherwise.
      */
-    boolean logout(OrganizationId organizationId, ProjectId projectId, JWToken token);
+    boolean revoke(OrganizationId organizationId, ProjectId projectId, JWToken token);
 
 }

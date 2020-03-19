@@ -107,7 +107,7 @@ public class ClientAuthenticationTests {
     @Test
     @Order(5)
     public void logoutTest() {
-        boolean result = clientService.logout(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
+        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, token);
         assertTrue(result);
     }
 

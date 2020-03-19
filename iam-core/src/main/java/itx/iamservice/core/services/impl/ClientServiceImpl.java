@@ -105,7 +105,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean logout(OrganizationId organizationId, ProjectId projectId, JWToken token) {
+    public boolean revoke(OrganizationId organizationId, ProjectId projectId, JWToken token) {
         DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
         String subject = defaultClaims.getSubject();
         Optional<User> userOptional = model.getUser(organizationId, projectId, UserId.from(subject));

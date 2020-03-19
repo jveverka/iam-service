@@ -3,6 +3,8 @@ package itx.iamservice.core.services.impl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Model;
@@ -45,6 +47,14 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 LOG.info("JWT verified={}", claimsJws.isPresent());
                 return claimsJws.isPresent();
             } else {
+                ClientId clientId = ClientId.from(defaultClaims.getSubject());
+                Optional<Client> clientOptional = this.model.getClient(organizationId, projectId, clientId);
+                Optional<Project> projectOptional = this.model.getProject(organizationId, projectId);
+                if (projectOptional.isPresent() && clientOptional.isPresent()) {
+                    Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, projectOptional.get().getCertificate().getPublicKey());
+                    LOG.info("JWT verified={}", claimsJws.isPresent());
+                    return claimsJws.isPresent();
+                }
                 LOG.info("JWT subject {} not found", userId);
             }
         } else {

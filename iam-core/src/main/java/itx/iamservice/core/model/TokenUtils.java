@@ -63,11 +63,19 @@ public final class TokenUtils {
         }
     }
 
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, projectId, clientId.getId(), duration, timeUnit, roles, privateKey, type);
+    }
+
     public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, projectId, userId.getId(), duration, timeUnit, roles, privateKey, type);
+    }
+
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Long duration, TimeUnit timeUnit, Set<String> roles, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(userId.getId(), organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey, type);
+        return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey, type);
     }
 
     public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, PrivateKey privateKey, TokenType type) {

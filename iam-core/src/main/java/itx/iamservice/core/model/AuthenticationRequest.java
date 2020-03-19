@@ -30,6 +30,6 @@ public interface AuthenticationRequest<C extends CredentialsType> {
      * Get client's credentials.
      * @return
      */
-    Client getClient();
+    ClientCredentials getClientCredentials();
 
 }

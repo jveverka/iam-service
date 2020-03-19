@@ -1,6 +1,7 @@
 package itx.iamservice.core.services.dto;
 
 import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 
@@ -14,15 +15,15 @@ public class ProjectInfo {
     private final String name;
     private final X509Certificate organizationCertificate;
     private final X509Certificate projectCertificate;
-    private final Collection<Client> clientCredentials;
+    private final Collection<Client> clients;
 
-    public ProjectInfo(ProjectId id, OrganizationId organizationId, String name, X509Certificate organizationCertificate, X509Certificate projectCertificate, Collection<Client> clientCredentials) {
+    public ProjectInfo(ProjectId id, OrganizationId organizationId, String name, X509Certificate organizationCertificate, X509Certificate projectCertificate, Collection<Client> clients) {
         this.id = id;
         this.organizationId = organizationId;
         this.name = name;
         this.organizationCertificate = organizationCertificate;
         this.projectCertificate = projectCertificate;
-        this.clientCredentials = clientCredentials;
+        this.clients = clients;
     }
 
     public ProjectId getId() {
@@ -45,7 +46,8 @@ public class ProjectInfo {
         return projectCertificate;
     }
 
-    public Collection<Client> getClientCredentials() {
-        return clientCredentials;
+    public Collection<Client> getClients() {
+        return clients;
     }
+
 }

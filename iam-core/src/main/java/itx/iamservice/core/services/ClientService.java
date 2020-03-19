@@ -1,7 +1,7 @@
 package itx.iamservice.core.services;
 
 import itx.iamservice.core.model.AuthenticationRequest;
-import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
@@ -26,7 +26,7 @@ public interface ClientService {
      * @param scope requested client scope.
      * @return valid {@link JWToken} in case authentication has been successful, empty otherwise.
      */
-    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, Client clientCredentials, Set<RoleId> scope);
+    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scope);
 
     /**
      * Authenticate user and provide valid {@link JWToken} in case authentication has been successful.

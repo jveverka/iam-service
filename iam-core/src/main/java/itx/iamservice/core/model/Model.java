@@ -17,4 +17,6 @@ public interface Model {
 
     Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
 
+    Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
+
 }

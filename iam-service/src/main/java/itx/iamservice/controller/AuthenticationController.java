@@ -30,8 +30,8 @@ public class AuthenticationController {
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
                                                    @RequestParam("grant_type") String grantType,
-                                                   @RequestParam("username") String username,
-                                                   @RequestParam("password") String password,
+                                                   @RequestParam(name = "username", required = false) String username,
+                                                   @RequestParam(name = "password", required = false) String password,
                                                    @RequestParam(name = "scope", required = false) String scope,
                                                    @RequestParam("client_id") String clientId,
                                                    @RequestParam("client_secret") String clientSecret) {

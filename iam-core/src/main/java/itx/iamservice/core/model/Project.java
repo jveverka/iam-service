@@ -26,7 +26,7 @@ public class Project {
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
         this.clients = new ConcurrentHashMap<>();
-        this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 365L, TimeUnit.DAYS, organizationPrivateKey);
+        this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
     }
 
     public ProjectId getId() {
@@ -87,6 +87,10 @@ public class Project {
         clients.put(client.getId(), client);
     }
 
+    public Optional<Client> getClient(ClientId id) {
+        return Optional.ofNullable(clients.get(id));
+    }
+
     public boolean removeClient(ClientId id) {
         return clients.remove(id) != null;
     }
@@ -95,8 +99,8 @@ public class Project {
         return clients.values().stream().collect(Collectors.toList());
     }
 
-    public boolean verifyClientCredentials(Client client) {
-        return client.equals(clients.get(client.getId()));
+    public boolean verifyClientCredentials(ClientCredentials clientCredentials) {
+        return clientCredentials.equals(clients.get(clientCredentials.getId()).getCredentials());
     }
 
 }

@@ -1,7 +1,7 @@
 package itx.iamservice.core.model.extensions.authentication.up;
 
 import itx.iamservice.core.model.AuthenticationRequest;
-import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.RoleId;
 
@@ -12,13 +12,13 @@ public class UPAuthenticationRequest implements AuthenticationRequest<UPCredenti
     private final UserId userId;
     private final String password;
     private final Set<RoleId> scope;
-    private final Client client;
+    private final ClientCredentials clientCredentials;
 
-    public UPAuthenticationRequest(UserId userId, String password, Set<RoleId> scope, Client client) {
+    public UPAuthenticationRequest(UserId userId, String password, Set<RoleId> scope, ClientCredentials clientCredentials) {
         this.userId = userId;
         this.password = password;
         this.scope = scope;
-        this.client = client;
+        this.clientCredentials = clientCredentials;
     }
 
     public String getPassword() {
@@ -41,8 +41,8 @@ public class UPAuthenticationRequest implements AuthenticationRequest<UPCredenti
     }
 
     @Override
-    public Client getClient() {
-        return client;
+    public ClientCredentials getClientCredentials() {
+        return clientCredentials;
     }
 
 }

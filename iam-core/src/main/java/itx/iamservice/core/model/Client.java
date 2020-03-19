@@ -1,42 +1,48 @@
 package itx.iamservice.core.model;
 
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
-public final class Client {
+public class Client {
 
-    private final ClientId id;
-    private final String secret;
+    private final ClientCredentials credentials;
+    private final Set<RoleId> roles;
+    private final Long defaultAccessTokenDuration;
+    private final Long defaultRefreshTokenDuration;
 
-    public Client(ClientId id, String secret) {
-        this.id = id;
-        this.secret = secret;
+    public Client(ClientCredentials credentials, Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration) {
+        this.credentials = credentials;
+        this.roles = new HashSet<>();
+        this.defaultAccessTokenDuration = defaultAccessTokenDuration;
+        this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
     }
 
     public ClientId getId() {
-        return id;
+        return credentials.getId();
     }
 
-    public String getSecret() {
-        return secret;
+    public ClientCredentials getCredentials() {
+        return credentials;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o;
-        return Objects.equals(id, client.id) &&
-                Objects.equals(secret, client.secret);
+    public Set<RoleId> getRoles() {
+        return roles;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, secret);
+    public boolean addRole(RoleId roleId) {
+        return roles.add(roleId);
     }
 
-    @Override
-    public String toString() {
-        return id.getId();
+    public boolean removeRole(RoleId roleId) {
+        return roles.remove(roleId);
+    }
+
+    public Long getDefaultAccessTokenDuration() {
+        return defaultAccessTokenDuration;
+    }
+
+    public Long getDefaultRefreshTokenDuration() {
+        return defaultRefreshTokenDuration;
     }
 
 }

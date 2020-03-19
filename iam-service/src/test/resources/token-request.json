@@ -1,5 +1,5 @@
 {
-  "grant_type": "gt",
+  "grant_type": "password",
   "username": "user",
   "password": "pwd",
   "scope": "a b c",

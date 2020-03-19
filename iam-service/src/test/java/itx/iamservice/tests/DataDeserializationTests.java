@@ -18,7 +18,7 @@ public class DataDeserializationTests {
         InputStream inputStream = DataDeserializationTests.class.getResourceAsStream("/token-request.json");
         TokenRequest tokenRequest = objectMapper.readValue(inputStream, TokenRequest.class);
         assertNotNull(tokenRequest);
-        assertEquals("gt", tokenRequest.getGrantType());
+        assertEquals("password", tokenRequest.getGrantType());
         assertEquals("user", tokenRequest.getUsername());
         assertEquals("pwd", tokenRequest.getPassword());
         assertEquals("a b c", tokenRequest.getScope());

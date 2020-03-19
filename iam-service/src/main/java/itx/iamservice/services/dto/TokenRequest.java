@@ -1,12 +1,13 @@
 package itx.iamservice.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TokenRequest {
 
     @JsonProperty("grant_type")
-    private final String grantType;
+    private final GrantType grantType;
 
     private final String username;
     private final String password;
@@ -25,7 +26,7 @@ public class TokenRequest {
                         @JsonProperty("scope") String scope,
                         @JsonProperty("client_id") String clientId,
                         @JsonProperty("client_secret") String clientSecret) {
-        this.grantType = grantType;
+        this.grantType = GrantType.getGrantType(grantType);
         this.username = username;
         this.password = password;
         this.scope = scope;
@@ -35,7 +36,7 @@ public class TokenRequest {
 
     @JsonProperty("grant_type")
     public String getGrantType() {
-        return grantType;
+        return grantType.getTypeName();
     }
 
     public String getUsername() {
@@ -58,6 +59,11 @@ public class TokenRequest {
     @JsonProperty("client_secret")
     public String getClientSecret() {
         return clientSecret;
+    }
+
+    @JsonIgnore
+    public GrantType getGrantTypeEnum() {
+        return grantType;
     }
 
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.RoleId;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,14 +37,19 @@ public class TokenRequest {
         this.grantType = GrantType.getGrantType(grantType);
         this.username = username;
         this.password = password;
-        this.scope = scope;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.scopes = new HashSet<>();
-        String[] rawScopes = scope.trim().split(" ");
-        for (String s: rawScopes) {
-            if (!s.isEmpty()) {
-                scopes.add(RoleId.from(s));
+        if (scope == null) {
+            this.scope = "";
+            this.scopes = Collections.emptySet();
+        } else {
+            this.scope = scope;
+            this.scopes = new HashSet<>();
+            String[] rawScopes = scope.trim().split(" ");
+            for (String s: rawScopes) {
+                if (!s.isEmpty()) {
+                    scopes.add(RoleId.from(s));
+                }
             }
         }
     }

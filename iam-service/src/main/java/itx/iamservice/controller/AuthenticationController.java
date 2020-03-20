@@ -35,9 +35,6 @@ public class AuthenticationController {
                                                    @RequestParam(name = "scope", required = false) String scope,
                                                    @RequestParam("client_id") String clientId,
                                                    @RequestParam("client_secret") String clientSecret) {
-        if (scope == null) {
-            scope = "";
-        }
         TokenRequest tokenRequest = new TokenRequest(grantType, username, password, scope, clientId, clientSecret);
         Optional<TokenResponse> response = authenticationService.getTokens(OrganizationId.from(organizationId), ProjectId.from(projectId), tokenRequest);
         return ResponseEntity.of(response);

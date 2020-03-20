@@ -2,9 +2,9 @@
 [![Build Status](https://travis-ci.org/jveverka/iam-service.svg?branch=master)](https://travis-ci.org/jveverka/iam-service)
 
 # IAM service
-Really simple Identity Access Management (IAM) service, authentication and authorization server.
+Really simple standalone Identity Access Management (IAM) service, authentication and authorization server. Project is compliant with subset of OAuth2 and OpenID-connect specifications. Issued tokens comply with JWT.
 
-This project is __WIP__ !
+This project is __WIP__, stay tuned !
 
 ## Related RFCs and Specifications
 * [RFC6749](https://tools.ietf.org/html/rfc6749) - The OAuth 2.0 Authorization Framework

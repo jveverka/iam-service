@@ -22,9 +22,9 @@ public interface ClientService {
      * Authenticate client and provide valid {@link JWToken} in case authentication has been successful.
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
-     * @param clientCredentials client's credentials.
+     * @param clientCredentials issued client's credentials.
      * @param scope requested client scope.
-     * @return valid {@link JWToken} in case authentication has been successful, empty otherwise.
+     * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
     Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scope);
 
@@ -33,7 +33,7 @@ public interface ClientService {
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
      * @param authenticationRequest request containing user's credentials.
-     * @return valid {@link JWToken} in case authentication has been successful, empty otherwise.
+     * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
     Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest);
 
@@ -41,10 +41,11 @@ public interface ClientService {
      * Request new instance of JWToken before issued token expires.
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
+     * @param clientCredentials issued client's credentials.
      * @param token previously issued and valid {@link JWToken}
-     * @return new instance of {@link JWToken} or empty if provided {@link JWToken} was not valid.
+     * @return new instance of {@link Tokens} or empty if provided {@link Tokens} was not valid.
      */
-    Optional<JWToken> refresh(OrganizationId organizationId, ProjectId projectId, JWToken token);
+    Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

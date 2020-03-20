@@ -4,7 +4,7 @@
   ``grant_type=client_credentials&scope=<scopes>&client_id=<id>&client_secret=<secret>``
 
 ### Test in Postman
-![postman](004_flow-postman.png)
+![postman](134_flow-postman.png)
 
 ### Test in Insomnia
-![insomnia](004_flow-insomnia.png)
+![insomnia](134_flow-insomnia.png)

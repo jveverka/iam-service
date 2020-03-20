@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClientUPAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
+    private static final Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
 
     private static Model model;
     private static ClientService clientService;
@@ -62,7 +63,6 @@ public class ClientUPAuthenticationTests {
     @Order(1)
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
-        Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS);
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
         assertTrue(tokensOptional.isPresent());
@@ -94,10 +94,10 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(3)
     public void refreshTokenTest() {
-        Optional<JWToken> tokenOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken);
-        assertTrue(tokenOptional.isPresent());
-        assertFalse(accessToken.equals(tokenOptional.get()));
-        accessToken = tokenOptional.get();
+        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, refreshToken, scope);
+        assertTrue(tokensOptional.isPresent());
+        assertFalse(accessToken.equals(tokensOptional.get().getAccessToken()));
+        accessToken = tokensOptional.get().getAccessToken();
     }
 
     @Test
@@ -124,8 +124,8 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
-        Optional<JWToken> tokenOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
-        assertTrue(tokenOptional.isEmpty());
+        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, accessToken, scope);
+        assertTrue(tokensOptional.isEmpty());
     }
 
     @Test

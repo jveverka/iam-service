@@ -4,7 +4,7 @@
   ``grant_type=password&username=<username>&password=<password>&scope=<scopes>&client_id=<id>&client_secret=<secret>``
 
 ### Test in Postman
-![postman](003_flow-postman.png)
+![postman](133_flow-postman.png)
 
 ### Test in Insomnia
-![insomnia](003_flow-insomnia.png)
+![insomnia](133_flow-insomnia.png)

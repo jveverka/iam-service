@@ -27,18 +27,23 @@ public class TokenRequest {
     @JsonProperty("client_secret")
     private final String clientSecret;
 
+    @JsonProperty("refresh_token")
+    private final String refreshToken;
+
     @JsonCreator
     public TokenRequest(@JsonProperty("grant_type") String grantType,
                         @JsonProperty("username") String username,
                         @JsonProperty("password") String password,
                         @JsonProperty("scope") String scope,
                         @JsonProperty("client_id") String clientId,
-                        @JsonProperty("client_secret") String clientSecret) {
+                        @JsonProperty("client_secret") String clientSecret,
+                        @JsonProperty("refresh_token") String refreshToken) {
         this.grantType = GrantType.getGrantType(grantType);
         this.username = username;
         this.password = password;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.refreshToken = refreshToken;
         if (scope == null) {
             this.scope = "";
             this.scopes = Collections.emptySet();
@@ -89,6 +94,11 @@ public class TokenRequest {
     @JsonIgnore
     public Set<RoleId> getScopes() {
         return scopes;
+    }
+
+    @JsonProperty("refresh_token")
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
 }

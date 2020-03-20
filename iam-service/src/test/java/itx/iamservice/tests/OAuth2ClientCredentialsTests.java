@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OAuth2ClientCredentialsTests {
 
+    private static TokenResponse tokenResponse;
+
     @LocalServerPort
     private int port;
 
@@ -41,7 +43,30 @@ public class OAuth2ClientCredentialsTests {
                 "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token?grant_type={grant_type}&scope={scope}&client_id={client_id}&client_secret={client_secret}",
                 null, TokenResponse.class, urlVariables);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        TokenResponse tokenResponse = response.getBody();
+        tokenResponse = response.getBody();
+        assertNotNull(tokenResponse);
+        assertNotNull(tokenResponse.getAccessToken());
+        assertNotNull(tokenResponse.getRefreshToken());
+        assertNotNull(tokenResponse.getExpiresIn());
+        assertNotNull(tokenResponse.getRefreshExpiresIn());
+        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+    }
+
+    @Test
+    @Order(2)
+    public void getRefreshTokens() {
+        Map<String, String> urlVariables = new HashMap<>();
+        urlVariables.put("grant_type", "refresh_token");
+        urlVariables.put("refresh_token", tokenResponse.getRefreshToken());
+        urlVariables.put("scope", "");
+        urlVariables.put("client_id", "admin-client");
+        urlVariables.put("client_secret", "top-secret");
+        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token" +
+                        "?grant_type={grant_type}&refresh_token={refresh_token}&scope={scope}&client_id={client_id}&client_secret={client_secret}",
+                null, TokenResponse.class, urlVariables);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        tokenResponse = response.getBody();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

@@ -9,8 +9,8 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
+import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.services.AuthenticationService;
-import itx.iamservice.services.dto.GrantType;
 import itx.iamservice.services.dto.TokenRequest;
 import itx.iamservice.services.dto.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +48,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             case CLIENT_CREDENTIALS: {
                 ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(tokenRequest.getClientId()), tokenRequest.getClientSecret());
                 Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, clientCredentials, tokenRequest.getScopes());
+                if (tokensOptional.isPresent()) {
+                    TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
+                            tokensOptional.get().getExpiresIn(),
+                            tokensOptional.get().getRefreshExpiresIn(),
+                            tokensOptional.get().getRefreshToken().getToken(),
+                            tokensOptional.get().getTokenType().getType());
+                    return Optional.of(tokenResponse);
+                }
+                break;
+            }
+            case REFRESH_TOKEN: {
+                ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(tokenRequest.getClientId()), tokenRequest.getClientSecret());
+                JWToken refreshToken = JWToken.from(tokenRequest.getRefreshToken());
+                Optional<Tokens> tokensOptional = clientService.refresh(organizationId, projectId, clientCredentials, refreshToken, tokenRequest.getScopes());
                 if (tokensOptional.isPresent()) {
                     TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                             tokensOptional.get().getExpiresIn(),

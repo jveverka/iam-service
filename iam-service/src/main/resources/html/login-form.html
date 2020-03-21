@@ -8,13 +8,14 @@
   </head>
   <body>
     <form action="/services/authentication/login">
-      <input type="hidden" id="organization-id" name="organization-id" value="<organization-id>">
-      <input type="hidden" id="project-id" name="project-id" value="<project-id>">
-      <input type="hidden" id="response-type" name="response-type" value="<response-type>">
-      <input type="hidden" id="client_id" name="client_id" value="<client_id>">
-      <input type="hidden" id="redirect_uri" name="redirect_uri" value="<redirect_uri>">
-      <input type="hidden" id="state" name="state" value="<state>">
-      <input type="hidden" id="scope" name="scope" value="<scope>">
+      <input type="hidden" autocomplete="off" id="organization-id" name="organization-id" value="__organization-id__">
+      <input type="hidden" autocomplete="off" id="project-id" name="project-id" value="__project-id__">
+      <input type="hidden" autocomplete="off" id="response-type" name="response-type" value="__response-type__">
+      <input type="hidden" autocomplete="off" id="client_id" name="client_id" value="__client_id__">
+      <input type="hidden" autocomplete="off" id="redirect_uri" name="redirect_uri" value="__redirect_uri__">
+      <input type="hidden" autocomplete="off" id="state" name="state" value="__state__">
+      <input type="hidden" autocomplete="off" id="random" name="random" value="__random__">
+      <input type="hidden" id="scope" name="scope" value="__scope__">
       <input type="text" id="username" name="username"></br>
       <input type="password" id="password" name="password"></br>
       <input type="submit" value="Submit">

@@ -37,6 +37,7 @@ Non-registered mappings:
 * __roles__ - string array of roleId(s) for subject. 
 
 ## Supported OAuth2 flows
+* __Authorization Code__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.1), [details](docs/oauth2/131_autthorization-code-flow.md).
 * __Password Credentials__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.3), [details](docs/oauth2/133_password-credentials-flow.md).
 * __Client Credentials__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.4), [details](docs/oauth2/134_client-credentials-flow.md).
 * __Refresh Token__ - [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.5)[detail](docs/oauth2/15_refresh-token.md).

@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -78,13 +79,14 @@ public class AuthenticationController {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");
         String result = new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
-        result = result.replaceAll("<organization-id>", organizationId);
-        result = result.replaceAll("<project-id>", projectId);
-        result = result.replaceAll("<response-type>", responseType);
-        result = result.replaceAll("<client_id>", clientId);
-        result = result.replaceAll("<redirect_uri>", redirectUri);
-        result = result.replaceAll("<state>", state);
-        result = result.replaceAll("<scope>", scope);
+        result = result.replaceAll("__organization-id__", organizationId);
+        result = result.replaceAll("__project-id__", projectId);
+        result = result.replaceAll("__response-type__", responseType);
+        result = result.replaceAll("__client_id__", clientId);
+        result = result.replaceAll("__redirect_uri__", redirectUri);
+        result = result.replaceAll("__state__", state);
+        result = result.replaceAll("__scope__", scope);
+        result = result.replaceAll("__random__", UUID.randomUUID().toString()); //to prevent form caching
         return ResponseEntity.ok(result);
     }
 

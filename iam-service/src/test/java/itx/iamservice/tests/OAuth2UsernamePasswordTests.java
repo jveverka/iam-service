@@ -3,6 +3,7 @@ package itx.iamservice.tests;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.services.dto.TokenResponse;
+import itx.iamservice.services.dto.TokenRevokeResponse;
 import itx.iamservice.services.dto.TokenVerificationResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -84,21 +86,34 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(3)
     public void verifyTokens() {
-        Map<String, String> urlVariables = new HashMap<>();
-        urlVariables.put("token", tokenResponse.getRefreshToken());
-        ResponseEntity<TokenVerificationResponse> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/tokens/iam-admins/iam-admins/verify?token={token}",
-                null, TokenVerificationResponse.class, urlVariables);
+        ResponseEntity<TokenVerificationResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        TokenVerificationResponse verificationResponse = response.getBody();
-        assertTrue(verificationResponse.isValid());
-        urlVariables.put("token", tokenResponse.getAccessToken());
-        response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/tokens/iam-admins/iam-admins/verify?token={token}",
-                null, TokenVerificationResponse.class, urlVariables);
+        assertTrue(response.getBody().isValid());
+        response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verificationResponse = response.getBody();
-        assertTrue(verificationResponse.isValid());
+        assertTrue(response.getBody().isValid());
+    }
+
+    @Test
+    @Order(4)
+    public void revokeTokens() {
+        ResponseEntity<TokenRevokeResponse> response = TestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isValid());
+        response = TestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getAccessToken());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isValid());
+    }
+
+    @Test
+    @Order(5)
+    public void verifyRevokedTokens() {
+        ResponseEntity<TokenVerificationResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(response.getBody().isValid());
+        response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(response.getBody().isValid());
     }
 
 }

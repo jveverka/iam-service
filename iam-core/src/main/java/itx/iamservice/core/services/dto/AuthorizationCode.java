@@ -4,15 +4,15 @@ import java.util.Objects;
 
 public final class AuthorizationCode {
 
-    private final String code;
+    private final Code code;
     private final String state;
 
-    public AuthorizationCode(String code, String state) {
+    public AuthorizationCode(Code code, String state) {
         this.code = code;
         this.state = state;
     }
 
-    public String getCode() {
+    public Code getCode() {
         return code;
     }
 

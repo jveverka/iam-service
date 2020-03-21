@@ -9,6 +9,7 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.JWToken;
 
 import java.util.Optional;
@@ -50,15 +51,25 @@ public interface ClientService {
      */
     Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope);
 
-
+    /**
+     * Login user using userId / password and clientId.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId projectId {@link ProjectId} unique project ID.
+     * @param userId user's unique identifier.
+     * @param clientId client's unique identifier.
+     * @param password user's password.
+     * @param scope requested client scope.
+     * @param state client's state.
+     * @return {@link AuthorizationCode} single use authorization code token.
+     */
     Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Set<RoleId> scope, String state);
 
     /**
-     *
-     * @param code
-     * @return
+     * Authenticate user based on provided {@link Code}
+     * @param code authorization code.
+     * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
-    Optional<Tokens> authenticate(String code);
+    Optional<Tokens> authenticate(Code code);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

@@ -25,6 +25,7 @@ import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
+import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.JWToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,7 +229,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Optional<Tokens> authenticate(String code) {
+    public Optional<Tokens> authenticate(Code code) {
         Optional<AuthorizationCodeContext> contextOptional = codeCache.verifyAndRemove(code);
         if (contextOptional.isPresent()) {
             AuthorizationCodeContext context = contextOptional.get();

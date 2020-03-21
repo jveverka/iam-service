@@ -5,6 +5,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.services.dto.TokenRequest;
 import itx.iamservice.services.dto.TokenResponse;
 
@@ -14,7 +15,7 @@ public interface AuthenticationService {
 
     Optional<TokenResponse> getTokens(OrganizationId organizationId, ProjectId projectId, TokenRequest tokenRequest);
 
-    Optional<TokenResponse> authenticate(String code);
+    Optional<TokenResponse> authenticate(Code code);
 
     Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, String scope, String state);
 

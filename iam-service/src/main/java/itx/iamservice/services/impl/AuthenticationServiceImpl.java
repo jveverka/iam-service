@@ -11,6 +11,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.services.AuthenticationService;
 import itx.iamservice.services.Utils;
@@ -81,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<TokenResponse> authenticate(String code) {
+    public Optional<TokenResponse> authenticate(Code code) {
         Optional<Tokens> tokensOptional = clientService.authenticate(code);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),

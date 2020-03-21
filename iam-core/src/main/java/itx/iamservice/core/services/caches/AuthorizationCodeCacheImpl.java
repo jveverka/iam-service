@@ -6,6 +6,7 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
+import itx.iamservice.core.services.dto.Code;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
 
     private final Long maxDuration;
     private final TimeUnit timeUnit;
-    private Map<String, AuthorizationCodeContext> codes;
+    private Map<Code, AuthorizationCodeContext> codes;
 
     public AuthorizationCodeCacheImpl(Long maxDuration, TimeUnit timeUnit) {
         this.maxDuration = maxDuration;
@@ -30,7 +31,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
 
     @Override
     public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, UserId userId, String state, Set<RoleId> scope) {
-        String code = UUID.randomUUID().toString();
+        Code code = Code.from(UUID.randomUUID().toString());
         AuthorizationCode authorizationCode = new AuthorizationCode(code, state);
         codes.put(code, new AuthorizationCodeContext(organizationId, projectId, userId, state, new Date(), scope));
         return authorizationCode;
@@ -38,7 +39,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
 
     @Override
     public int purgeCodes() {
-        Map<String, AuthorizationCodeContext> purgedCodes = new HashMap<>();
+        Map<Code, AuthorizationCodeContext> purgedCodes = new HashMap<>();
         codes.forEach((code, date) -> {
             Optional<AuthorizationCodeContext> verifiedCode = verifyAndRemove(code);
             if (verifiedCode.isPresent()) {
@@ -51,7 +52,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public Optional<AuthorizationCodeContext> verifyAndRemove(String code) {
+    public Optional<AuthorizationCodeContext> verifyAndRemove(Code code) {
         AuthorizationCodeContext context = codes.remove(code);
         if (context != null) {
             return verify(context);

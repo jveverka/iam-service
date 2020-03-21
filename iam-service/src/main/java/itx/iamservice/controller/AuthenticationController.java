@@ -5,6 +5,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.services.AuthenticationService;
 import itx.iamservice.services.dto.GrantType;
 import itx.iamservice.services.dto.TokenRequest;
@@ -57,7 +58,7 @@ public class AuthenticationController {
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
         if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
             LOG.info("processRedirect: code={} grantType={}", code, grantType);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(code);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code));
             return ResponseEntity.of(tokensOptional);
         } else {
             TokenRequest tokenRequest = new TokenRequest(grantType, username, password, scope, clientId, clientSecret, refreshToken);

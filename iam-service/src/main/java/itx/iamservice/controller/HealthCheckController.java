@@ -15,12 +15,11 @@ public class HealthCheckController {
 
     private final HealthCheckService healthCheckService;
 
-    @Autowired
-    public HealthCheckController(HealthCheckService healthCheckService) {
+    public HealthCheckController(@Autowired HealthCheckService healthCheckService) {
         this.healthCheckService = healthCheckService;
     }
 
-    @GetMapping(path = "/status", produces = MediaType.APPLICATION_JSON_VALUE )
+    @GetMapping(path = "/status", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HealthCheckResponse> getStatus() {
         HealthCheckResponse healthCheckResponse = healthCheckService.getStatus();
         return ResponseEntity.ok(healthCheckResponse);

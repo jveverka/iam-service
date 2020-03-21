@@ -2,6 +2,7 @@ package itx.iamservice.tests;
 
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.services.dto.TokenResponse;
+import itx.iamservice.services.dto.TokenVerificationResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -73,6 +75,26 @@ public class OAuth2ClientCredentialsTests {
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
         assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+    }
+
+    @Test
+    @Order(3)
+    public void verifyTokens() {
+        Map<String, String> urlVariables = new HashMap<>();
+        urlVariables.put("token", tokenResponse.getRefreshToken());
+        ResponseEntity<TokenVerificationResponse> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/tokens/iam-admins/iam-admins/verify?token={token}",
+                null, TokenVerificationResponse.class, urlVariables);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        TokenVerificationResponse verificationResponse = response.getBody();
+        assertTrue(verificationResponse.isValid());
+        urlVariables.put("token", tokenResponse.getAccessToken());
+        response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/tokens/iam-admins/iam-admins/verify?token={token}",
+                null, TokenVerificationResponse.class, urlVariables);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verificationResponse = response.getBody();
+        assertTrue(verificationResponse.isValid());
     }
 
 }

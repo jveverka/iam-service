@@ -43,7 +43,7 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
                                                    @RequestParam("grant_type") String grantType,
@@ -66,7 +66,7 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping(path = "/{organization-id}/{project-id}/auth", produces = MediaType.TEXT_HTML_VALUE )
+    @GetMapping(path = "/{organization-id}/{project-id}/auth", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> getAuth(@PathVariable("organization-id") String organizationId,
                                           @PathVariable("project-id") String projectId,
                                           @RequestParam("response_type") String responseType,
@@ -90,7 +90,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE )
+    @GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getLogin(@RequestParam("organization-id") String organizationId,
                                            @RequestParam("project-id") String projectId,
                                            @RequestParam("username") String username,

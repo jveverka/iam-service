@@ -1,5 +1,20 @@
-package itx.iamservice.core.model;
+package itx.iamservice.core.model.utils;
 
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
+import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.ModelImpl;
+import itx.iamservice.core.model.Organization;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Permission;
+import itx.iamservice.core.model.Project;
+import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 
 import java.util.HashSet;
@@ -11,7 +26,7 @@ public final class ModelUtils {
     private static final String IAM_ADMINS_NAME = "iam-admins";
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
-    public static final UserId IAM_ADMIN_USER = UserId.from("iam-admin-id");
+    public static final UserId IAM_ADMIN_USER = UserId.from("admin");
     public static final ClientId IAM_ADMIN_CLIENT_ID = ClientId.from("admin-client");
     public static final ClientCredentials IAM_ADMIN_CLIENT_CREDENTIALS = new ClientCredentials(IAM_ADMIN_CLIENT_ID, "top-secret");
 

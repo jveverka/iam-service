@@ -2,10 +2,13 @@ package itx.iamservice.core.services;
 
 import itx.iamservice.core.model.AuthenticationRequest;
 import itx.iamservice.core.model.ClientCredentials;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.Tokens;
+import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.JWToken;
 
 import java.util.Optional;
@@ -46,6 +49,16 @@ public interface ClientService {
      * @return new instance of {@link Tokens} or empty if provided {@link Tokens} was not valid.
      */
     Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope);
+
+
+    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Set<RoleId> scope, String state);
+
+    /**
+     *
+     * @param code
+     * @return
+     */
+    Optional<Tokens> authenticate(String code);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

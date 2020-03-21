@@ -1,7 +1,7 @@
 package itx.iamservice.config;
 
 import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.ModelUtils;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ public class ModelConfiguration {
     @Bean
     @Scope("singleton")
     public Model getModel() throws PKIException {
-        return ModelUtils.createDefaultModel("s3cr3t");
+        return ModelUtils.createDefaultModel("secret");
     }
 
 }

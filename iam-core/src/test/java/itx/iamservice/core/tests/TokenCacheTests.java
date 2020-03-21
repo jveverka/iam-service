@@ -2,14 +2,14 @@ package itx.iamservice.core.tests;
 
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.ModelUtils;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.TokenCache;
-import itx.iamservice.core.model.TokenCacheImpl;
+import itx.iamservice.core.services.caches.TokenCache;
+import itx.iamservice.core.services.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.model.TokenUtils;
+import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;

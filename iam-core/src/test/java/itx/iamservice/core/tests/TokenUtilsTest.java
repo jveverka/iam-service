@@ -10,7 +10,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.model.TokenUtils;
+import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;

@@ -16,10 +16,15 @@ import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
-import itx.iamservice.core.model.TokenCache;
+import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
+import itx.iamservice.core.model.extensions.authentication.up.UPCredentialsType;
+import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.model.TokenUtils;
+import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ClientService;
+import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.JWToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +40,12 @@ public class ClientServiceImpl implements ClientService {
 
     private final Model model;
     private final TokenCache tokenCache;
+    private final AuthorizationCodeCache codeCache;
 
-    public ClientServiceImpl(Model model, TokenCache tokenCache) {
+    public ClientServiceImpl(Model model, TokenCache tokenCache, AuthorizationCodeCache codeCache) {
         this.model = model;
         this.tokenCache = tokenCache;
+        this.codeCache = codeCache;
     }
 
     @Override
@@ -184,6 +191,63 @@ public class ClientServiceImpl implements ClientService {
             }
         } else {
             LOG.info("JWT is revoked {}", token);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Set<RoleId> scope, String state) {
+        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        if (projectOptional.isPresent()) {
+            Optional<Client> optionalClient = projectOptional.get().getClient(clientId);
+            if (!optionalClient.isPresent()) {
+                LOG.info("Invalid clientId {} !", clientId);
+                return Optional.empty();
+            }
+        } else {
+            LOG.info("Organization/Project {}/{} not found", organizationId, projectId);
+            return Optional.empty();
+        }
+        Optional<User> userOptional = model.getUser(organizationId, projectId, userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Optional<Credentials> credentials = user.getCredentials(UPCredentialsType.class);
+            if (credentials.isPresent()) {
+                UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(userId, password, scope, null);
+                boolean valid = credentials.get().verify(authenticationRequest);
+                if (valid) {
+                    Set<RoleId> filteredRoles = TokenUtils.filterRoles(user.getRoles(), scope);
+                    AuthorizationCode authorizationCode = codeCache.issue(organizationId, projectId, userId, state, filteredRoles);
+                    return Optional.of(authorizationCode);
+                }
+            }
+        } else {
+            LOG.info("JWT subject {} not found", userId);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Tokens> authenticate(String code) {
+        Optional<AuthorizationCodeContext> contextOptional = codeCache.verifyAndRemove(code);
+        if (contextOptional.isPresent()) {
+            AuthorizationCodeContext context = contextOptional.get();
+            Optional<User> optionalUser = model.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                Set<String> roles = context.getRoles().stream().map(r -> r.getId()).collect(Collectors.toSet());
+                JWToken accessToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), user.getId(),
+                        user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
+                        roles, user.getPrivateKey(), TokenType.BEARER);
+                JWToken refreshToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), user.getId(),
+                        user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
+                        roles, user.getPrivateKey(), TokenType.REFRESH);
+                Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
+                        user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L);
+                return Optional.of(tokens);
+            } else {
+                LOG.info("User {} not found", context.getUserId());
+            }
         }
         return Optional.empty();
     }

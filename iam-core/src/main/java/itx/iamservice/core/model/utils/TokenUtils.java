@@ -1,10 +1,18 @@
-package itx.iamservice.core.model;
+package itx.iamservice.core.model.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.DefaultClaims;
+import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.KeyPairData;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.TokenType;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;

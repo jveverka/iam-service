@@ -1,4 +1,4 @@
-package itx.iamservice.core.model;
+package itx.iamservice.core.services.caches;
 
 import itx.iamservice.core.services.dto.JWToken;
 

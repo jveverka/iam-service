@@ -1,6 +1,7 @@
 package itx.iamservice.tests;
 
 import itx.iamservice.core.model.TokenType;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.services.dto.TokenResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -36,8 +37,8 @@ public class OAuth2UsernamePasswordTests {
     public void getTokens() {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "password");
-        urlVariables.put("username", "iam-admin-id");
-        urlVariables.put("password", "s3cr3t");
+        urlVariables.put("username", ModelUtils.IAM_ADMIN_USER.getId());
+        urlVariables.put("password", "secret");
         urlVariables.put("scope", "");
         urlVariables.put("client_id", "admin-client");
         urlVariables.put("client_secret", "top-secret");

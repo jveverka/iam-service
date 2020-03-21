@@ -1,7 +1,8 @@
 package itx.iamservice.config;
 
 import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.TokenCache;
+import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.admin.UserManagerService;
@@ -22,17 +23,20 @@ public class CoreServiceConfiguration {
 
     private final Model model;
     private final TokenCache tokenCache;
+    private final AuthorizationCodeCache authorizationCodeCache;
 
     public CoreServiceConfiguration(@Autowired Model model,
-                                    @Autowired TokenCache tokenCache) {
+                                    @Autowired TokenCache tokenCache,
+                                    @Autowired AuthorizationCodeCache authorizationCodeCache) {
         this.model = model;
         this.tokenCache = tokenCache;
+        this.authorizationCodeCache = authorizationCodeCache;
     }
 
     @Bean
     @Scope("singleton")
     public ClientService getClientService() {
-        return new ClientServiceImpl(model, tokenCache);
+        return new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
     }
 
     @Bean

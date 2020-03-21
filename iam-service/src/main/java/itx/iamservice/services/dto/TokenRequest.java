@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.services.Utils;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated
 public class TokenRequest {
 
     @JsonProperty("grant_type")
@@ -44,19 +44,8 @@ public class TokenRequest {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.refreshToken = refreshToken;
-        if (scope == null) {
-            this.scope = "";
-            this.scopes = Collections.emptySet();
-        } else {
-            this.scope = scope;
-            this.scopes = new HashSet<>();
-            String[] rawScopes = scope.trim().split(" ");
-            for (String s: rawScopes) {
-                if (!s.isEmpty()) {
-                    scopes.add(RoleId.from(s));
-                }
-            }
-        }
+        this.scope = scope;
+        this.scopes = Utils.getScopes(scope);
     }
 
     @JsonProperty("grant_type")

@@ -3,13 +3,15 @@ package itx.iamservice.core.tests;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.ModelUtils;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
-import itx.iamservice.core.model.TokenCache;
-import itx.iamservice.core.model.TokenCacheImpl;
+import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.caches.AuthorizationCodeCacheImpl;
+import itx.iamservice.core.services.caches.TokenCache;
+import itx.iamservice.core.services.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.model.TokenUtils;
+import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
@@ -27,6 +29,7 @@ import java.security.Security;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,15 +45,17 @@ public class ClientCCAuthenticationTests {
     private static ClientService clientService;
     private static ResourceServerService resourceServerService;
     private static TokenCache tokenCache;
+    private static AuthorizationCodeCache authorizationCodeCache;
     private static JWToken accessToken;
     private static JWToken refreshToken;
 
     @BeforeAll
     private static void init() throws PKIException {
         Security.addProvider(new BouncyCastleProvider());
+        authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
         model = ModelUtils.createDefaultModel(adminPassword);
         tokenCache = new TokenCacheImpl(model);
-        clientService = new ClientServiceImpl(model, tokenCache);
+        clientService = new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
     }
 

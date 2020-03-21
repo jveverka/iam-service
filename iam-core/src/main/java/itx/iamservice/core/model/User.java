@@ -1,5 +1,7 @@
 package itx.iamservice.core.model;
 
+import itx.iamservice.core.model.utils.TokenUtils;
+
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;

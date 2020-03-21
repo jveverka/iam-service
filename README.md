@@ -47,5 +47,6 @@ Non-registered mappings:
 gradle clean build test
 java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar
 ```
-
-
+## OpenAPI and Swagger2 
+* ```http://localhost:8080/v2/api-docs```
+* ```http://localhost:8080/swagger-ui.html```

@@ -1,3 +1,4 @@
 
 include "iam-core"
 include "iam-service"
+include "iam-persistence"

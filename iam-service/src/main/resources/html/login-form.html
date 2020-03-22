@@ -5,6 +5,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <style>
+      table {
+        border-collapse: collapse; border: none;
+      }
+    </style>
   </head>
   <body>
     <form action="/services/authentication/login">
@@ -15,9 +20,11 @@
       <input type="hidden" autocomplete="off" id="redirect_uri" name="redirect_uri" value="__redirect_uri__">
       <input type="hidden" autocomplete="off" id="state" name="state" value="__state__">
       <input type="hidden" autocomplete="off" id="random" name="random" value="__random__">
-      <input type="hidden" id="scope" name="scope" value="__scope__">
-      <input type="text" id="username" name="username"></br>
-      <input type="password" id="password" name="password"></br>
+      <table>
+        <tr><td>username</td><td><input type="text" id="username" name="username"></td></tr>
+        <tr><td>password</td><td><input type="password" id="password" name="password"></td></tr>
+        <tr><td>scope</td><td><input type="text" id="scope" name="scope" value="__scope__"></td></tr>
+      </table>
       <input type="submit" value="Submit">
     </form>
   </body>

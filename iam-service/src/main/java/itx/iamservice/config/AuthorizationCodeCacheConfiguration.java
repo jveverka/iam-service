@@ -2,19 +2,57 @@ package itx.iamservice.config;
 
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.AuthorizationCodeCacheImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@ConfigurationProperties(prefix="iam-service.authorization-code-cache")
 public class AuthorizationCodeCacheConfiguration {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationCodeCacheConfiguration.class);
+
+    private long duration = 5;
+    private String timeunit = "MINUTES";
+
+    @PostConstruct
+    public void init() {
+        LOG.info("#CONFIG iam-service.authorization-code-cache.duration: {}", duration);
+        LOG.info("#CONFIG iam-service.authorization-code-cache.timeunit: {}", timeunit);
+    }
 
     @Bean
     @Scope("singleton")
     public AuthorizationCodeCache getCodeCache() {
-        return new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
+        return new AuthorizationCodeCacheImpl(getDuration(), getTimeUnit());
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public String getTimeunit() {
+        return timeunit;
+    }
+
+    public void setTimeunit(String timeunit) {
+        this.timeunit = timeunit;
+    }
+
+    public TimeUnit getTimeUnit() {
+        return TimeUnit.valueOf(timeunit);
     }
 
 }

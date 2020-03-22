@@ -1,2 +1,12 @@
 server:
   port: 8080
+iam-service:
+  authorization-code-cache:
+    duration: 10
+    timeunit: MINUTES
+  cache-cleanup-interval:
+    duration: 1
+    timeunit: MINUTES
+  admin-credentials:
+    password: secret
+

@@ -30,7 +30,12 @@ System requirements:
 [Gradle 6.2](https://gradle.org/install/) or higher.
 ```
 gradle clean build test
+
+# run using default configuration
 java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar
+
+# run using customized configutation
+java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar --spring.config.location=file:/path/to/application.yml
 ```
 ## REST endpoints 
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.

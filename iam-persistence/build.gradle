@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group = 'itx.iamservice'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.slf4j:slf4j-api:1.7.30')
+    testImplementation('org.slf4j:slf4j-simple:1.7.30')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.5.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.5.2')
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

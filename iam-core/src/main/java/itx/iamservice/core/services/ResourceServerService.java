@@ -1,5 +1,6 @@
 package itx.iamservice.core.services;
 
+import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
@@ -43,5 +44,11 @@ public interface ResourceServerService {
      * @return Optional of {@link UserInfo} instance if project, organization and user exists, empty otherwise.
      */
     Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId);
+
+    Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
+
+    Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
+
+    Optional<Organization> getOrganization(OrganizationId organizationId);
 
 }

@@ -4,6 +4,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.Organization;
+import itx.iamservice.core.model.Project;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
@@ -136,15 +139,17 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(8)
     public void externalTokenVerificationTest() {
-        Optional<ProjectInfo> projectInfo = resourceServerService.getProjectInfo(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
+        Optional<Organization> organizationOptional = resourceServerService.getOrganization(ModelUtils.IAM_ADMINS_ORG);
+        assertTrue(organizationOptional.isPresent());
+        Optional<Project> projectInfo = resourceServerService.getProject(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
         assertTrue(projectInfo.isPresent());
-        Optional<UserInfo> userInfo = resourceServerService.getUserInfo(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
+        Optional<User> userInfo = resourceServerService.getUser(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
         assertTrue(userInfo.isPresent());
-        Optional<Jws<Claims>> claims = TokenUtils.verify(accessToken, userInfo.get().getUserCertificate().getPublicKey());
+        Optional<Jws<Claims>> claims = TokenUtils.verify(accessToken, userInfo.get().getCertificate().getPublicKey());
         assertTrue(claims.isPresent());
-        claims = TokenUtils.verify(accessToken, projectInfo.get().getProjectCertificate().getPublicKey());
+        claims = TokenUtils.verify(accessToken, projectInfo.get().getCertificate().getPublicKey());
         assertTrue(claims.isEmpty());
-        claims = TokenUtils.verify(accessToken, projectInfo.get().getOrganizationCertificate().getPublicKey());
+        claims = TokenUtils.verify(accessToken, organizationOptional.get().getCertificate().getPublicKey());
         assertTrue(claims.isEmpty());
     }
 

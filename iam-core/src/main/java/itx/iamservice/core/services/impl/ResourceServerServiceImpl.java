@@ -100,4 +100,30 @@ public class ResourceServerServiceImpl implements ResourceServerService {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
+        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
+        if (organizationOptional.isPresent()) {
+            return organizationOptional.get().getProject(projectId);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
+        if (organizationOptional.isPresent()) {
+            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            if (projectOptional.isPresent()) {
+                return projectOptional.get().getUser(userId);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Organization> getOrganization(OrganizationId organizationId) {
+        return model.getOrganization(organizationId);
+    }
+
 }

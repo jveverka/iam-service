@@ -16,12 +16,14 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
+import itx.iamservice.core.services.dto.OrganizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class ModelUtils {
 
@@ -123,6 +125,11 @@ public final class ModelUtils {
         roles.add(manageRolesRole);
         roles.add(managePermissionsRole);
         return roles;
+    }
+
+    public static OrganizationInfo createOrganizationInfo(Organization organization) {
+        Set<ProjectId> projects = organization.getProjects().stream().map(project -> project.getId()).collect(Collectors.toSet());
+        return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getCertificate());
     }
 
 }

@@ -4,10 +4,13 @@ import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
+import itx.iamservice.core.services.dto.OrganizationInfo;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class OrganizationManagerServiceImpl implements OrganizationManagerService {
 
@@ -30,6 +33,11 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     @Override
     public Collection<Organization> getAll() {
         return model.getOrganizations();
+    }
+
+    @Override
+    public Collection<OrganizationInfo> getAllInfo() {
+        return getAll().stream().map(o -> ModelUtils.createOrganizationInfo(o)).collect(Collectors.toList());
     }
 
     @Override

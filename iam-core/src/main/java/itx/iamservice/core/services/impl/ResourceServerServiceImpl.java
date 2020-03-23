@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ResourceServerServiceImpl implements ResourceServerService {
 
@@ -70,8 +72,9 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
             if (projectOptional.isPresent()) {
                 Project project = projectOptional.get();
+                Set<UserId> userIds = projectOptional.get().getAllUsers().stream().map(user -> user.getId()).collect(Collectors.toSet());
                 ProjectInfo projectInfo = new ProjectInfo(project.getId(), project.getOrganizationId(),
-                        project.getName(), organizationOptional.get().getCertificate(), project.getCertificate(), project.getClients());
+                        project.getName(), organizationOptional.get().getCertificate(), project.getCertificate(), project.getClients(), userIds);
                 return Optional.of(projectInfo);
             }
         }
@@ -87,7 +90,8 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 Optional<User> userOptional = projectOptional.get().getUser(userId);
                 if (userOptional.isPresent()) {
                     UserInfo userInfo = new UserInfo(userId, projectId, organizationId,
-                            userOptional.get().getName(), userOptional.get().getCertificate(),
+                            userOptional.get().getName(), organizationOptional.get().getCertificate(),
+                            projectOptional.get().getCertificate(), userOptional.get().getCertificate(),
                             userOptional.get().getRoles());
                     return Optional.of(userInfo);
                 }

@@ -13,6 +13,7 @@ import itx.iamservice.core.services.admin.ProjectManagerService;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ProjectManagerServiceImpl implements ProjectManagerService {
 
@@ -20,6 +21,16 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     public ProjectManagerServiceImpl(Model model) {
         this.model = model;
+    }
+
+    @Override
+    public Optional<ProjectId> create(OrganizationId id, String name) throws PKIException {
+        ProjectId projectId = ProjectId.from(UUID.randomUUID().toString());
+        if (create(id, projectId, name)) {
+            return Optional.of(projectId);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

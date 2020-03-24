@@ -34,7 +34,7 @@ public class OrganizationManagementController {
     }
 
     @DeleteMapping(path = "/organizations/{organization-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteOrganization(@PathVariable("organization-id") String organizationId) throws PKIException {
+    public ResponseEntity<Void> deleteOrganization(@PathVariable("organization-id") String organizationId) {
         organizationManagerService.remove(OrganizationId.from(organizationId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

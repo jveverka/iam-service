@@ -1,6 +1,7 @@
 package itx.iamservice.core.tests;
 
 import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
@@ -39,7 +40,7 @@ public class ProjectManagerServiceTests {
     @BeforeAll
     private static void init() {
         Security.addProvider(new BouncyCastleProvider());
-        model = new ModelImpl();
+        model = new ModelImpl(ModelId.from("model-01"), "test-model");
         organizationManagerService = new OrganizationManagerServiceImpl(model);
         projectManagerService = new ProjectManagerServiceImpl(model);
     }

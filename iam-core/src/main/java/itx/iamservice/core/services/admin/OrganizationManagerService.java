@@ -12,6 +12,8 @@ public interface OrganizationManagerService {
 
     boolean create(OrganizationId id, String name) throws PKIException;
 
+    Optional<OrganizationId> create(String name) throws PKIException;
+
     Collection<Organization> getAll();
 
     Collection<OrganizationInfo> getAllInfo();

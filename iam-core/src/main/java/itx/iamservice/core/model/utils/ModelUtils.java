@@ -4,6 +4,7 @@ import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
@@ -64,11 +65,13 @@ public final class ModelUtils {
     }
 
     public static Model createDefaultModel(String iamAdminPassword) throws PKIException {
-        LOG.info("#MODEL: Initializing default model ...");
+        String name = "default-model";
+        ModelId id = ModelId.from(UUID.randomUUID().toString());
+        LOG.info("#MODEL: Initializing default model id={} name={} ...", id, name);
         LOG.info("#MODEL: Default organizationId={}, projectId={}", IAM_ADMINS_ORG.getId(), IAM_ADMINS_PROJECT.getId());
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_CREDENTIALS.getId(), IAM_ADMIN_CLIENT_CREDENTIALS.getSecret());
-        ModelImpl model = new ModelImpl();
+        ModelImpl model = new ModelImpl(id, name);
         Organization organization = new Organization(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
         Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
         createAdminRoles().forEach(r-> project.addRole(r));

@@ -8,10 +8,24 @@ import java.util.stream.Collectors;
 
 public class ModelImpl implements Model {
 
+    private final ModelId id;
+    private final String name;
     private final Map<OrganizationId, Organization> organizations;
 
-    public ModelImpl() {
+    public ModelImpl(ModelId id, String name) {
+        this.id = id;
+        this.name = name;
         this.organizations = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public ModelId getId() {
+        return id;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

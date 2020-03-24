@@ -10,6 +10,7 @@ import itx.iamservice.core.services.dto.OrganizationInfo;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class OrganizationManagerServiceImpl implements OrganizationManagerService {
@@ -27,6 +28,16 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
         } else {
             model.add(new Organization(id, name));
             return true;
+        }
+    }
+
+    @Override
+    public Optional<OrganizationId> create(String name) throws PKIException {
+        OrganizationId id = OrganizationId.from(UUID.randomUUID().toString());
+        if(create(id, name)) {
+            return Optional.of(id);
+        } else {
+            return Optional.empty();
         }
     }
 

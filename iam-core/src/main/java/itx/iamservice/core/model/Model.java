@@ -5,6 +5,10 @@ import java.util.Optional;
 
 public interface Model {
 
+    ModelId getId();
+
+    String getName();
+
     void add(Organization organization);
 
     Collection<Organization> getOrganizations();

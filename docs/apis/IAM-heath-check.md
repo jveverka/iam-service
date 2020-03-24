@@ -1,3 +1,4 @@
 ## Health Check REST APIs
 
-* GET http://localhost:8080/services/health/status
+* Get health check and status of this instance of IAM-service.  
+  __GET__ ``http://localhost:8080/services/health/status``

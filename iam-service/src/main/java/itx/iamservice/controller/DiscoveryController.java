@@ -42,7 +42,7 @@ public class DiscoveryController {
 
     @GetMapping(path = "/{organization-id}/{project-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectInfo> getProjects(@PathVariable("organization-id") String organizationId,
-                                                                    @PathVariable("project-id") String projectId) {
+                                                   @PathVariable("project-id") String projectId) {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<ProjectInfo> projectInfo = resourceServerService.getProjectInfo(OrganizationId.from(organizationId), ProjectId.from(projectId));

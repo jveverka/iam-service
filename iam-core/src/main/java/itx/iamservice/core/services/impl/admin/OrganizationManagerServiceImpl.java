@@ -3,6 +3,7 @@ package itx.iamservice.core.services.impl.admin;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
@@ -29,7 +30,7 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
         if (model.getOrganization(id).isPresent()) {
             return false;
         } else {
-            model.add(new Organization(id, name));
+            model.add(new OrganizationImpl(id, name));
             return true;
         }
     }

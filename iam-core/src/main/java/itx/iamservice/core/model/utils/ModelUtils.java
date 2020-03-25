@@ -8,6 +8,7 @@ import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.Project;
@@ -73,7 +74,7 @@ public final class ModelUtils {
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_CREDENTIALS.getId(), IAM_ADMIN_CLIENT_CREDENTIALS.getSecret());
         ModelImpl model = new ModelImpl(id, name);
-        Organization organization = new Organization(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
+        Organization organization = new OrganizationImpl(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
         Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
         createAdminRoles().forEach(r-> project.addRole(r));
         createClientRoles().forEach(r-> project.addRole(r));

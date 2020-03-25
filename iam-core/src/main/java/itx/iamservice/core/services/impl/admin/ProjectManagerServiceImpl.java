@@ -6,6 +6,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
@@ -39,7 +40,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
         if (organization.isPresent()) {
             Optional<Project> project = organization.get().getProject(projectId);
             if (project.isEmpty()) {
-                organization.get().add(new Project(projectId, name, id, organization.get().getPrivateKey()));
+                organization.get().add(new ProjectImpl(projectId, name, id, organization.get().getPrivateKey()));
                 return true;
             }
         }

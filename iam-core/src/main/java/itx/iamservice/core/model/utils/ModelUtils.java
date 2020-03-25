@@ -13,10 +13,12 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import org.slf4j.Logger;
@@ -75,7 +77,7 @@ public final class ModelUtils {
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_CREDENTIALS.getId(), IAM_ADMIN_CLIENT_CREDENTIALS.getSecret());
         ModelImpl model = new ModelImpl(id, name);
         Organization organization = new OrganizationImpl(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
-        Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
+        Project project = new ProjectImpl(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
         createAdminRoles().forEach(r-> project.addRole(r));
         createClientRoles().forEach(r-> project.addRole(r));
         assignProjectPermissionsToRoles(project);
@@ -84,7 +86,7 @@ public final class ModelUtils {
         createClientRoles().forEach(r-> client.addRole(r.getId()));
         project.addClient(client);
 
-        User user = new User(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
+        User user = new UserImpl(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
         UPCredentials upCredentials = new UPCredentials(user.getId(), iamAdminPassword);
         user.addCredentials(upCredentials);
         createAdminRoles().forEach(r -> user.addRole(r.getId()));

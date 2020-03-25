@@ -9,6 +9,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.services.admin.UserManagerService;
 
 import java.util.Collection;
@@ -32,7 +33,7 @@ public class UserManagerServiceImpl implements UserManagerService {
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = projectOptional.get().getUser(userId);
                 if (userOptional.isEmpty()) {
-                    projectOptional.get().add(new User(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey()));
+                    projectOptional.get().add(new UserImpl(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey()));
                     return true;
                 }
             }

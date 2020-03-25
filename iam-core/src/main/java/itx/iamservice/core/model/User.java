@@ -1,85 +1,34 @@
 package itx.iamservice.core.model;
 
-import itx.iamservice.core.model.utils.TokenUtils;
-
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-public class User {
+public interface User {
 
-    private final UserId id;
-    private final ProjectId projectId;
-    private final String name;
-    private final Map<Class<? extends CredentialsType>, Credentials> credentials;
-    private final Set<RoleId> roles;
-    private final KeyPairData keyPairData;
-    private final Long defaultAccessTokenDuration;
-    private final Long defaultRefreshTokenDuration;
+    UserId getId();
 
-    public User(UserId id, String name, ProjectId projectId, Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
-        this.id = id;
-        this.name = name;
-        this.credentials = new ConcurrentHashMap<>();
-        this.roles = new CopyOnWriteArraySet<>();
-        this.projectId = projectId;
-        this.keyPairData = TokenUtils.createSignedKeyPairData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
-        this.defaultAccessTokenDuration = defaultAccessTokenDuration;
-        this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
-    }
+    String getName();
 
-    public UserId getId() {
-        return id;
-    }
+    ProjectId getProjectId();
 
-    public String getName() {
-        return name;
-    }
+    void addRole(RoleId roleId);
 
-    public ProjectId getProjectId() {
-        return projectId;
-    }
+    void addCredentials(Credentials credentials);
 
-    public void addRole(RoleId roleId) {
-        this.roles.add(roleId);
-    }
+    Optional<Credentials> getCredentials(Class<? extends CredentialsType> type);
 
-    public void addCredentials(Credentials credentials) {
-        this.credentials.put(credentials.getType().getClass(), credentials);
-    }
+    PrivateKey getPrivateKey();
 
-    public Optional<Credentials> getCredentials(Class<? extends CredentialsType> type) {
-        return Optional.ofNullable(credentials.get(type));
-    }
+    X509Certificate getCertificate();
 
-    public PrivateKey getPrivateKey() {
-        return keyPairData.getPrivateKey();
-    }
+    Long getDefaultAccessTokenDuration();
 
-    public X509Certificate getCertificate() {
-        return keyPairData.getX509Certificate();
-    }
+    Long getDefaultRefreshTokenDuration();
 
-    public Long getDefaultAccessTokenDuration() {
-        return defaultAccessTokenDuration;
-    }
+    Set<RoleId> getRoles();
 
-    public Long getDefaultRefreshTokenDuration() {
-        return defaultRefreshTokenDuration;
-    }
-
-    public Set<RoleId> getRoles() {
-        return this.roles.stream().collect(Collectors.toSet());
-    }
-
-    public boolean removeRole(RoleId roleId) {
-        return roles.remove(roleId);
-    }
+    boolean removeRole(RoleId roleId);
 
 }

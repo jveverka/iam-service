@@ -77,6 +77,8 @@ public final class ModelUtils {
         Project project = new Project(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
         createAdminRoles().forEach(r-> project.addRole(r));
         createClientRoles().forEach(r-> project.addRole(r));
+        assignProjectPermissionsToRoles(project);
+
         Client client = new Client(IAM_ADMIN_CLIENT_CREDENTIALS, 3600*1000L, 24*3600*1000L);
         createClientRoles().forEach(r-> client.addRole(r.getId()));
         project.addClient(client);
@@ -94,34 +96,56 @@ public final class ModelUtils {
 
     private static Set<Role> createClientRoles() {
         Role clientReaderRole = new Role(RoleId.from("read-organizations"), "Can read organizations.");
-        clientReaderRole.addPermission(new Permission(IAM_SERVICE, "organizations", READ_ACTION));
-
         Set<Role> roles = new HashSet<>();
         roles.add(clientReaderRole);
         return roles;
     }
 
+    private static void assignProjectPermissionsToRoles(Project project) {
+        //1. create new permission instances
+        Permission readOrganizationsPermission = new Permission(IAM_SERVICE, "organizations", READ_ACTION);
+        Permission modifyOrganizationPermission = new Permission(IAM_SERVICE, "organizations", MODIFY_ACTION);
+        Permission readProjectsPermission = new Permission(IAM_SERVICE, "projects", READ_ACTION);
+        Permission modifyProjectsPermission = new Permission(IAM_SERVICE, "projects", MODIFY_ACTION);
+        Permission readUsersRole = new Permission(IAM_SERVICE, "users", READ_ACTION);
+        Permission modifyUsersRole =  new Permission(IAM_SERVICE, "users", MODIFY_ACTION);
+        Permission readRolePermission = new Permission(IAM_SERVICE, "roles", READ_ACTION);
+        Permission modifyRolePermission = new Permission(IAM_SERVICE, "roles", MODIFY_ACTION);
+        Permission readPermissionPermission = new Permission(IAM_SERVICE, "permissions", READ_ACTION);
+        Permission modifyPermissionPermission = new Permission(IAM_SERVICE, "permissions", MODIFY_ACTION);
+
+        //2. add permissions to project
+        project.addPermission(readOrganizationsPermission);
+        project.addPermission(modifyOrganizationPermission);
+        project.addPermission(readProjectsPermission);
+        project.addPermission(modifyProjectsPermission);
+        project.addPermission(readUsersRole);
+        project.addPermission(modifyUsersRole);
+        project.addPermission(readRolePermission);
+        project.addPermission(modifyRolePermission);
+        project.addPermission(readPermissionPermission);
+        project.addPermission(modifyPermissionPermission);
+
+        //3. link roles to permissions
+        project.addPermissionToRole(RoleId.from("manage-organizations"), readOrganizationsPermission.getId());
+        project.addPermissionToRole(RoleId.from("read-organizations"), readOrganizationsPermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-organizations"), modifyOrganizationPermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-projects"), readProjectsPermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-projects"), modifyProjectsPermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-users"), readUsersRole.getId());
+        project.addPermissionToRole(RoleId.from("manage-users"), modifyUsersRole.getId());
+        project.addPermissionToRole(RoleId.from("manage-roles"), readRolePermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-roles"), modifyRolePermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-permissions"), readPermissionPermission.getId());
+        project.addPermissionToRole(RoleId.from("manage-permissions"), modifyPermissionPermission.getId());
+    }
+
     private static Set<Role> createAdminRoles() {
         Role manageOrganizationsRole = new Role(RoleId.from("manage-organizations"), "Can manage organizations.");
-        manageOrganizationsRole.addPermission(new Permission(IAM_SERVICE, "organizations", READ_ACTION));
-        manageOrganizationsRole.addPermission(new Permission(IAM_SERVICE, "organizations", MODIFY_ACTION));
-
         Role manageProjectsRole = new Role(RoleId.from("manage-projects"), "Can manage projects.");
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "projects", READ_ACTION));
-        manageProjectsRole.addPermission(new Permission(IAM_SERVICE, "projects", MODIFY_ACTION));
-
         Role manageUsersRole = new Role(RoleId.from("manage-users"), "Can manage users.");
-        manageUsersRole.addPermission(new Permission(IAM_SERVICE, "users", READ_ACTION));
-        manageUsersRole.addPermission(new Permission(IAM_SERVICE, "users", MODIFY_ACTION));
-
         Role manageRolesRole = new Role(RoleId.from("manage-roles"), "Can manage roles.");
-        manageRolesRole.addPermission(new Permission(IAM_SERVICE, "roles", READ_ACTION));
-        manageRolesRole.addPermission(new Permission(IAM_SERVICE, "roles", MODIFY_ACTION));
-
         Role managePermissionsRole = new Role(RoleId.from("manage-permissions"), "Can manage permissions.");
-        managePermissionsRole.addPermission(new Permission(IAM_SERVICE, "permissions", READ_ACTION));
-        managePermissionsRole.addPermission(new Permission(IAM_SERVICE, "permissions", MODIFY_ACTION));
-
         Set<Role> roles = new HashSet<>();
         roles.add(manageOrganizationsRole);
         roles.add(manageProjectsRole);

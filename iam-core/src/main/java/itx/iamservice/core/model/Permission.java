@@ -1,5 +1,9 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class Permission {
@@ -9,13 +13,17 @@ public class Permission {
     private final String resource;
     private final String action;
 
-    public Permission(String service, String resource, String action) {
+    @JsonCreator
+    public Permission(@JsonProperty("service") String service,
+                      @JsonProperty("resource") String resource,
+                      @JsonProperty("action") String action) {
         this.id = PermissionId.from(service + "." + resource + "." + action);
         this.service = service;
         this.resource = resource;
         this.action = action;
     }
 
+    @JsonIgnore
     public PermissionId getId() {
         return id;
     }

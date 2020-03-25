@@ -20,6 +20,7 @@ public class Project {
     private final Map<RoleId, Role> roles;
     private final KeyPairData keyPairData;
     private final Map<ClientId, Client> clients;
+    private final Map<PermissionId, Permission> permissions;
 
     public Project(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
         this.id = id;
@@ -28,6 +29,7 @@ public class Project {
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
         this.clients = new ConcurrentHashMap<>();
+        this.permissions = new ConcurrentHashMap<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
     }
 
@@ -103,6 +105,37 @@ public class Project {
 
     public boolean verifyClientCredentials(ClientCredentials clientCredentials) {
         return clientCredentials.equals(clients.get(clientCredentials.getId()).getCredentials());
+    }
+
+    public void addPermission(Permission permission) {
+        this.permissions.put(permission.getId(), permission);
+    }
+
+    public Collection<Permission> getPermissions() {
+        return this.permissions.values().stream().collect(Collectors.toList());
+    }
+
+    public boolean removePermission(PermissionId id) {
+        return this.permissions.remove(id) != null;
+    }
+
+    public boolean addPermissionToRole(RoleId roleId, PermissionId permissionId) {
+        Role role = roles.get(roleId);
+        Permission permission = permissions.get(permissionId);
+        if (role != null && permission != null) {
+            role.addPermission(permission);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removePermissionFromRole(RoleId roleId, PermissionId permissionId) {
+        Role role = roles.get(roleId);
+        Permission permission = permissions.get(permissionId);
+        if (role != null && permission != null) {
+            return role.removePermission(permission.getId());
+        }
+        return false;
     }
 
 }

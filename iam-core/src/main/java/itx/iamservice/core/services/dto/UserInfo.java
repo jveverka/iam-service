@@ -1,5 +1,7 @@
 package itx.iamservice.core.services.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -16,14 +18,33 @@ public class UserInfo {
     private final ProjectId projectId;
     private final OrganizationId organizationId;
     private final String name;
-    private final X509Certificate organizationCertificate;
-    private final X509Certificate projectCertificate;
-    private final X509Certificate userCertificate;
+    private final String organizationCertificate;
+    private final String projectCertificate;
+    private final String userCertificate;
     private final Set<RoleId> roles;
 
     public UserInfo(UserId id, ProjectId projectId, OrganizationId organizationId, String name,
                     X509Certificate organizationCertificate, X509Certificate projectCertificate, X509Certificate userCertificate,
-                    Set<RoleId> roles) {
+                    Set<RoleId> roles) throws CertificateEncodingException {
+        this.id = id;
+        this.projectId = projectId;
+        this.organizationId = organizationId;
+        this.name = name;
+        this.organizationCertificate = Base64.getEncoder().encodeToString(organizationCertificate.getEncoded());
+        this.projectCertificate = Base64.getEncoder().encodeToString(projectCertificate.getEncoded());
+        this.userCertificate = Base64.getEncoder().encodeToString(userCertificate.getEncoded());
+        this.roles = roles;
+    }
+
+    @JsonCreator
+    public UserInfo(@JsonProperty("id") UserId id,
+                    @JsonProperty("projectId") ProjectId projectId,
+                    @JsonProperty("organizationId") OrganizationId organizationId,
+                    @JsonProperty("name") String name,
+                    @JsonProperty("organizationCertificate") String organizationCertificate,
+                    @JsonProperty("projectCertificate") String projectCertificate,
+                    @JsonProperty("userCertificate") String userCertificate,
+                    @JsonProperty("roles") Set<RoleId> roles) {
         this.id = id;
         this.projectId = projectId;
         this.organizationId = organizationId;
@@ -50,16 +71,16 @@ public class UserInfo {
         return name;
     }
 
-    public String getUserCertificate() throws CertificateEncodingException {
-        return Base64.getEncoder().encodeToString(userCertificate.getEncoded());
+    public String getUserCertificate() {
+        return userCertificate;
     }
 
-    public String getOrganizationCertificate() throws CertificateEncodingException {
-        return Base64.getEncoder().encodeToString(organizationCertificate.getEncoded());
+    public String getOrganizationCertificate() {
+        return organizationCertificate;
     }
 
-    public String getProjectCertificate() throws CertificateEncodingException {
-        return Base64.getEncoder().encodeToString(projectCertificate.getEncoded());
+    public String getProjectCertificate() {
+        return projectCertificate;
     }
 
     public Set<RoleId> getRoles() {

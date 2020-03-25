@@ -10,6 +10,7 @@ import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
 
+import java.security.cert.CertificateEncodingException;
 import java.util.Optional;
 
 /**
@@ -34,7 +35,7 @@ public interface ResourceServerService {
      * @param projectId {@link ProjectId} - unique id of the project.
      * @return Optional of {@link ProjectInfo} instance if project and organization exists, empty otherwise.
      */
-    Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId);
+    Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) throws CertificateEncodingException;
 
     /**
      * Get public {@link User} related information. This information contains X509 of user.
@@ -43,7 +44,7 @@ public interface ResourceServerService {
      * @param userId {@link UserId} - unique id of the user.
      * @return Optional of {@link UserInfo} instance if project, organization and user exists, empty otherwise.
      */
-    Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId);
+    Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) throws CertificateEncodingException;
 
     Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
 

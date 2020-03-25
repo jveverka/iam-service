@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.cert.CertificateEncodingException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -35,14 +36,14 @@ public class DiscoveryController {
     }
 
     @GetMapping(path = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<OrganizationInfo>> getOrganizationInfo() {
+    public ResponseEntity<Collection<OrganizationInfo>> getOrganizationInfo() throws CertificateEncodingException {
         Collection<OrganizationInfo> info = organizationManagerService.getAllInfo();
         return ResponseEntity.ok(info);
     }
 
     @GetMapping(path = "/{organization-id}/{project-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectInfo> getProjects(@PathVariable("organization-id") String organizationId,
-                                                   @PathVariable("project-id") String projectId) {
+                                                   @PathVariable("project-id") String projectId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<ProjectInfo> projectInfo = resourceServerService.getProjectInfo(OrganizationId.from(organizationId), ProjectId.from(projectId));
@@ -54,7 +55,7 @@ public class DiscoveryController {
     @GetMapping(path = "/{organization-id}/{project-id}/{user-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserInfo> getUser(@PathVariable("organization-id") String organizationId,
                                             @PathVariable("project-id") String projectId,
-                                            @PathVariable("user-id") String userId) {
+                                            @PathVariable("user-id") String userId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<UserInfo> userInfo = resourceServerService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId));

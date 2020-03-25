@@ -21,6 +21,7 @@ import itx.iamservice.core.services.dto.OrganizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.cert.CertificateEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -130,7 +131,7 @@ public final class ModelUtils {
         return roles;
     }
 
-    public static OrganizationInfo createOrganizationInfo(Organization organization) {
+    public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
         Set<ProjectId> projects = organization.getProjects().stream().map(project -> project.getId()).collect(Collectors.toSet());
         return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getCertificate());
     }

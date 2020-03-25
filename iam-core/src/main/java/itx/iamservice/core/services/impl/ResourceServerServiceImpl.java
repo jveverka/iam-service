@@ -21,6 +21,7 @@ import itx.iamservice.core.services.dto.ProjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.cert.CertificateEncodingException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     }
 
     @Override
-    public Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) {
+    public Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = model.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
             Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
@@ -82,7 +83,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     }
 
     @Override
-    public Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+    public Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = model.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
             Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);

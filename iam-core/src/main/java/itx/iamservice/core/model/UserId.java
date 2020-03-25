@@ -1,8 +1,12 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public final class UserId extends Id {
 
-    public UserId(String id) {
+    @JsonCreator
+    public UserId(@JsonProperty("id") String id) {
         super(id);
     }
 

@@ -5,6 +5,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 
+import java.security.cert.CertificateEncodingException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -16,7 +17,7 @@ public interface OrganizationManagerService {
 
     Collection<Organization> getAll();
 
-    Collection<OrganizationInfo> getAllInfo();
+    Collection<OrganizationInfo> getAllInfo() throws CertificateEncodingException;
 
     Optional<Organization> get(OrganizationId id);
 

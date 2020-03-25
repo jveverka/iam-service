@@ -8,7 +8,10 @@ import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 
+import java.security.cert.CertificateEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,8 +50,12 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
-    public Collection<OrganizationInfo> getAllInfo() {
-        return getAll().stream().map(o -> ModelUtils.createOrganizationInfo(o)).collect(Collectors.toList());
+    public Collection<OrganizationInfo> getAllInfo() throws CertificateEncodingException  {
+        List<OrganizationInfo> organizationInfoList = new ArrayList<>();
+        for (Organization organization: getAll()) {
+            organizationInfoList.add(ModelUtils.createOrganizationInfo(organization));
+        }
+        return organizationInfoList;
     }
 
     @Override

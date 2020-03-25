@@ -1,5 +1,8 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public final class ClientCredentials {
@@ -7,7 +10,9 @@ public final class ClientCredentials {
     private final ClientId id;
     private final String secret;
 
-    public ClientCredentials(ClientId id, String secret) {
+    @JsonCreator
+    public ClientCredentials(@JsonProperty("id") ClientId id,
+                             @JsonProperty("secret") String secret) {
         this.id = id;
         this.secret = secret;
     }

@@ -1,9 +1,10 @@
-package itx.iamservice.core.services.caches;
+package itx.iamservice.core.services.impl.caches;
 
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;

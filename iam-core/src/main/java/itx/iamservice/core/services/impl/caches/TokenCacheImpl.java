@@ -1,4 +1,4 @@
-package itx.iamservice.core.services.caches;
+package itx.iamservice.core.services.impl.caches;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -9,6 +9,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.TokenUtils;
+import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.dto.JWToken;
 
 import java.util.HashSet;

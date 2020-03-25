@@ -7,7 +7,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.caches.TokenCache;
-import itx.iamservice.core.services.caches.TokenCacheImpl;
+import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;

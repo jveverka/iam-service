@@ -5,7 +5,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
-import itx.iamservice.core.services.caches.AuthorizationCodeCacheImpl;
+import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import org.junit.jupiter.api.BeforeAll;

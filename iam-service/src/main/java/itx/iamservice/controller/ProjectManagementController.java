@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +28,7 @@ public class ProjectManagementController {
         this.projectManagerService = projectManagerService;
     }
 
-    @PutMapping(path = "/{organization-id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{organization-id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectId> createProject(@PathVariable("organization-id") String organizationId,
                                                    @RequestBody CreateOrganizationRequest request) throws PKIException {
         OrganizationId id = OrganizationId.from(organizationId);

@@ -36,14 +36,20 @@ public class DiscoveryController {
     }
 
     @GetMapping(path = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<OrganizationInfo>> getOrganizationInfo() throws CertificateEncodingException {
+    public ResponseEntity<Collection<OrganizationInfo>> getOrganizationsInfo() throws CertificateEncodingException {
         Collection<OrganizationInfo> info = organizationManagerService.getAllInfo();
         return ResponseEntity.ok(info);
     }
 
+    @GetMapping(path = "/organizations/{organization-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OrganizationInfo> getOrganizationInfo(@PathVariable("organization-id") String organizationId) throws CertificateEncodingException {
+        Optional<OrganizationInfo> info = organizationManagerService.getInfo(OrganizationId.from(organizationId));
+        return ResponseEntity.of(info);
+    }
+
     @GetMapping(path = "/{organization-id}/{project-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectInfo> getProjects(@PathVariable("organization-id") String organizationId,
-                                                   @PathVariable("project-id") String projectId) throws CertificateEncodingException {
+    public ResponseEntity<ProjectInfo> getProject(@PathVariable("organization-id") String organizationId,
+                                                  @PathVariable("project-id") String projectId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<ProjectInfo> projectInfo = resourceServerService.getProjectInfo(OrganizationId.from(organizationId), ProjectId.from(projectId));

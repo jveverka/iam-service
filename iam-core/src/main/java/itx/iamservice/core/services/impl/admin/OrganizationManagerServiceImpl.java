@@ -64,6 +64,15 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
+    public Optional<OrganizationInfo> getInfo(OrganizationId id) throws CertificateEncodingException {
+        Optional<Organization> organization = model.getOrganization(id);
+        if (organization.isPresent()) {
+            return Optional.of(ModelUtils.createOrganizationInfo(organization.get()));
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public boolean remove(OrganizationId id) {
         return model.remove(id);
     }

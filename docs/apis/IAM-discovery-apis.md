@@ -3,6 +3,9 @@
 * Get all organizations managed by this instance of IAM-service.  
   __GET__ ``http://localhost:8080/services/discovery/organizations``
 
+* Get organization by ID managed by this instance of IAM-service.  
+  __GET__ ``http://localhost:8080/services/discovery/organizations/{organization-id}``
+
 * Get all project within organization.  
   __GET__ ``http://localhost:8080/services/discovery/{organization-id}/{project-id}``
 

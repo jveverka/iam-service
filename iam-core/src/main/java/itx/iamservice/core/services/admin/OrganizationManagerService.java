@@ -21,6 +21,8 @@ public interface OrganizationManagerService {
 
     Optional<Organization> get(OrganizationId id);
 
+    Optional<OrganizationInfo> getInfo(OrganizationId id) throws CertificateEncodingException;
+
     boolean remove(OrganizationId id);
 
 }

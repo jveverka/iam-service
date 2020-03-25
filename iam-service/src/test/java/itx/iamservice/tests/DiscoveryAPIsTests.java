@@ -47,6 +47,20 @@ public class DiscoveryAPIsTests {
 
     @Test
     @Order(2)
+    public void getOrganizationInfoTest() {
+        ResponseEntity<OrganizationInfo> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/discovery/organizations/" + ModelUtils.IAM_ADMINS_ORG.getId(), OrganizationInfo.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        OrganizationInfo organizationInfo = response.getBody();
+        assertNotNull(organizationInfo);
+        assertNotNull(organizationInfo.getName());
+        assertNotNull(organizationInfo.getOrganizationId());
+        assertNotNull(organizationInfo.getProjects());
+        assertNotNull(organizationInfo.getX509Certificate());
+    }
+
+    @Test
+    @Order(3)
     public void getProjectInfoTest() {
         String organizationId = ModelUtils.IAM_ADMINS_ORG.getId();
         String projectId = ModelUtils.IAM_ADMINS_PROJECT.getId();
@@ -65,7 +79,7 @@ public class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void getUserInfoTest() {
         String userId = ModelUtils.IAM_ADMIN_USER.getId();
         String organizationId = ModelUtils.IAM_ADMINS_ORG.getId();

@@ -1,8 +1,8 @@
 package itx.iamservice.tests;
 
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.OrganizationInfo;
-import itx.iamservice.services.dto.CreateOrganizationRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

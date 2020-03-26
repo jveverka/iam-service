@@ -1,4 +1,4 @@
-package itx.iamservice.services.dto;
+package itx.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +14,10 @@ public class CreateRoleRequest {
 
     public String getName() {
         return name;
+    }
+
+    public static CreateRoleRequest from(String name) {
+        return new CreateRoleRequest(name);
     }
 
 }

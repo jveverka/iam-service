@@ -7,6 +7,7 @@ import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 
 import java.security.cert.CertificateEncodingException;
@@ -26,19 +27,19 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
-    public boolean create(OrganizationId id, String name) throws PKIException {
+    public boolean create(OrganizationId id, CreateOrganizationRequest createOrganizationRequest) throws PKIException {
         if (model.getOrganization(id).isPresent()) {
             return false;
         } else {
-            model.add(new OrganizationImpl(id, name));
+            model.add(new OrganizationImpl(id, createOrganizationRequest.getName()));
             return true;
         }
     }
 
     @Override
-    public Optional<OrganizationId> create(String name) throws PKIException {
+    public Optional<OrganizationId> create(CreateOrganizationRequest createOrganizationRequest) throws PKIException {
         OrganizationId id = OrganizationId.from(UUID.randomUUID().toString());
-        if(create(id, name)) {
+        if(create(id, createOrganizationRequest)) {
             return Optional.of(id);
         } else {
             return Optional.empty();

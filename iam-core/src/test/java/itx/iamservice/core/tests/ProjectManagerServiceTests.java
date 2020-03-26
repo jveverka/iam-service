@@ -12,6 +12,8 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
+import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ProjectManagerServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -59,9 +61,9 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(2)
     public void createOrganizationsTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, "org-001");
+        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001"));
         assertTrue(result);
-        result = organizationManagerService.create(oid002, "org-002");
+        result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
         assertTrue(all.size() == 2);
@@ -70,7 +72,7 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(3)
     public void createFirstProjectTest() throws PKIException {
-        boolean result = projectManagerService.create(oid001, pId001, "p001");
+        boolean result = projectManagerService.create(oid001, pId001, CreateProjectRequest.from("p001"));
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
         assertTrue(all.size() == 1);
@@ -81,7 +83,7 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(4)
     public void createSecondProjectTest() throws PKIException {
-        boolean result = projectManagerService.create(oid002, pId001, "p001");
+        boolean result = projectManagerService.create(oid002, pId001, CreateProjectRequest.from("p001"));
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
         assertTrue(all.size() == 1);

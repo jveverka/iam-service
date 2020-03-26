@@ -7,6 +7,7 @@ import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,7 +48,7 @@ public class OrganizationManagerServiceTests {
     @Test
     @Order(2)
     public void createFirstOrganizationTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, "org-001");
+        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
         assertTrue(all.size() == 1);
@@ -60,7 +61,7 @@ public class OrganizationManagerServiceTests {
     @Test
     @Order(2)
     public void createSecondOrganizationTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid002, "org-002");
+        boolean result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
         assertTrue(all.size() == 2);
@@ -73,9 +74,9 @@ public class OrganizationManagerServiceTests {
     @Test
     @Order(3)
     public void createExistingOrganizationTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, "org-001");
+        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001"));
         assertFalse(result);
-        result = organizationManagerService.create(oid002, "org-002");
+        result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
         assertFalse(result);
         Collection<Organization> all = organizationManagerService.getAll();
         assertTrue(all.size() == 2);

@@ -6,15 +6,17 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.services.dto.CreateProjectRequest;
+import itx.iamservice.core.services.dto.CreateRoleRequest;
 
 import java.util.Collection;
 import java.util.Optional;
 
 public interface ProjectManagerService {
 
-    Optional<ProjectId> create(OrganizationId id, String name) throws PKIException;
+    boolean create(OrganizationId id, ProjectId projectId, CreateProjectRequest createProjectRequest) throws PKIException;
 
-    boolean create(OrganizationId id, ProjectId projectId, String name) throws PKIException;
+    Optional<ProjectId> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException;
 
     Collection<Project> getAll(OrganizationId id);
 
@@ -24,7 +26,7 @@ public interface ProjectManagerService {
 
     boolean addRole(OrganizationId id, ProjectId projectId, Role role);
 
-    Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, String name);
+    Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest createRoleRequest);
 
     boolean removeRole(OrganizationId id, ProjectId projectId, RoleId roleId);
 

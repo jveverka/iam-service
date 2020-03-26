@@ -10,6 +10,8 @@ import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
+import itx.iamservice.core.services.dto.CreateProjectRequest;
+import itx.iamservice.core.services.dto.CreateRoleRequest;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,9 +27,9 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public Optional<ProjectId> create(OrganizationId id, String name) throws PKIException {
+    public Optional<ProjectId> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException {
         ProjectId projectId = ProjectId.from(UUID.randomUUID().toString());
-        if (create(id, projectId, name)) {
+        if (create(id, projectId, createProjectRequest)) {
             return Optional.of(projectId);
         } else {
             return Optional.empty();
@@ -35,12 +37,12 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public boolean create(OrganizationId id, ProjectId projectId, String name) throws PKIException {
+    public boolean create(OrganizationId id, ProjectId projectId, CreateProjectRequest createProjectRequest) throws PKIException {
         Optional<Organization> organization = model.getOrganization(id);
         if (organization.isPresent()) {
             Optional<Project> project = organization.get().getProject(projectId);
             if (project.isEmpty()) {
-                organization.get().add(new ProjectImpl(projectId, name, id, organization.get().getPrivateKey()));
+                organization.get().add(new ProjectImpl(projectId, createProjectRequest.getName(), id, organization.get().getPrivateKey()));
                 return true;
             }
         }
@@ -88,13 +90,13 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, String name) {
+    public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest createRoleRequest) {
         Optional<Organization> organization = model.getOrganization(id);
         if (organization.isPresent()) {
             Optional<Project> project = organization.get().getProject(projectId);
             if (project.isPresent()) {
                 RoleId roleId = RoleId.from(UUID.randomUUID().toString());
-                Role role = new Role(roleId, name);
+                Role role = new Role(roleId, createRoleRequest.getName());
                 project.get().addRole(role);
                 return Optional.of(roleId);
             }

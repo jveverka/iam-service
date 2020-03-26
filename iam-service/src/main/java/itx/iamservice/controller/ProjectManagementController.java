@@ -8,8 +8,8 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
-import itx.iamservice.services.dto.CreateOrganizationRequest;
-import itx.iamservice.services.dto.CreateRoleRequest;
+import itx.iamservice.core.services.dto.CreateProjectRequest;
+import itx.iamservice.core.services.dto.CreateRoleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,9 +38,9 @@ public class ProjectManagementController {
 
     @PostMapping(path = "/{organization-id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectId> createProject(@PathVariable("organization-id") String organizationId,
-                                                   @RequestBody CreateOrganizationRequest request) throws PKIException {
+                                                   @RequestBody CreateProjectRequest request) throws PKIException {
         OrganizationId id = OrganizationId.from(organizationId);
-        Optional<ProjectId> projectId = projectManagerService.create(id, request.getName());
+        Optional<ProjectId> projectId = projectManagerService.create(id, request);
         return ResponseEntity.of(projectId);
     }
 
@@ -59,7 +59,7 @@ public class ProjectManagementController {
     public ResponseEntity<RoleId> createRole(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
                                              @RequestBody CreateRoleRequest request) {
-        Optional<RoleId> roleId = projectManagerService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), request.getName());
+        Optional<RoleId> roleId = projectManagerService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         return ResponseEntity.of(roleId);
     }
 

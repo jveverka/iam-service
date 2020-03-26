@@ -36,5 +36,6 @@
 * Delete role from project.  
   __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions/{role-id}``
 
+#### Project Permission Management
 
 __WIP__

@@ -3,7 +3,7 @@ package itx.iamservice.controller;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
-import itx.iamservice.services.dto.CreateOrganizationRequest;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +29,7 @@ public class OrganizationManagementController {
 
     @PostMapping(path = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrganizationId> createOrganization(@RequestBody CreateOrganizationRequest request) throws PKIException {
-        Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(request.getName());
+        Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(request);
         return ResponseEntity.of(organizationIdOptional);
     }
 

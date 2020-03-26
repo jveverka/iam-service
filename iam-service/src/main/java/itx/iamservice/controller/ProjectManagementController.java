@@ -8,6 +8,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
+import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,23 +85,25 @@ public class ProjectManagementController {
 
     @PostMapping(path = "/{organization-id}/projects/{project-id}/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PermissionId> createPermission(@PathVariable("organization-id") String organizationId,
-                                                         @PathVariable("project-id") String projectId) {
-        //TODO
-        return ResponseEntity.ok().build();
+                                                         @PathVariable("project-id") String projectId,
+                                                         @RequestBody CreatePermissionRequest request) {
+        Permission permission = new Permission(request.getService(), request.getResource(), request.getAction());
+        projectManagerService.addPermission(OrganizationId.from(organizationId), ProjectId.from(projectId), permission);
+        return ResponseEntity.ok(permission.getId());
     }
 
     @GetMapping(path = "/{organization-id}/projects/{project-id}/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<Permission>> getPermissions(@PathVariable("organization-id") String organizationId,
                                                                  @PathVariable("project-id") String projectId) {
-        //TODO
-        return ResponseEntity.ok().build();
+        Collection<Permission> permissions = projectManagerService.getPermissions(OrganizationId.from(organizationId), ProjectId.from(projectId));
+        return ResponseEntity.ok(permissions);
     }
 
     @DeleteMapping(path = "/{organization-id}/projects/{project-id}/permissions/{permission-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deletePermission(@PathVariable("organization-id") String organizationId,
                                                  @PathVariable("project-id") String projectId,
                                                  @PathVariable("permission-id") String permissionId) {
-        //TODO
+        projectManagerService.removePermission(OrganizationId.from(organizationId), ProjectId.from(projectId), PermissionId.from(permissionId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -113,7 +116,7 @@ public class ProjectManagementController {
                                                     @PathVariable("project-id") String projectId,
                                                     @PathVariable("role-id") String roleId,
                                                     @PathVariable("permission-id") String permissionId) {
-        //TODO
+        projectManagerService.addPermissionToRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId), PermissionId.from(permissionId));
         return ResponseEntity.ok().build();
     }
 
@@ -122,7 +125,7 @@ public class ProjectManagementController {
                                                          @PathVariable("project-id") String projectId,
                                                          @PathVariable("role-id") String roleId,
                                                          @PathVariable("permission-id") String permissionId) {
-        //TODO
+        projectManagerService.removePermissionFromRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId), PermissionId.from(permissionId));
         return ResponseEntity.ok().build();
     }
 

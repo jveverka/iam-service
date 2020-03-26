@@ -2,6 +2,8 @@ package itx.iamservice.core.services.admin;
 
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Permission;
+import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
@@ -31,5 +33,15 @@ public interface ProjectManagerService {
     boolean removeRole(OrganizationId id, ProjectId projectId, RoleId roleId);
 
     Collection<Role> getRoles(OrganizationId id, ProjectId projectId);
+
+    void addPermission(OrganizationId id, ProjectId projectId, Permission permission);
+
+    Collection<Permission> getPermissions(OrganizationId id, ProjectId projectId);
+
+    boolean removePermission(OrganizationId id, ProjectId projectId, PermissionId permissionId);
+
+    boolean addPermissionToRole(OrganizationId id, ProjectId projectId, RoleId roleId, PermissionId permissionId);
+
+    boolean removePermissionFromRole(OrganizationId id, ProjectId projectId, RoleId roleId, PermissionId permissionId);
 
 }

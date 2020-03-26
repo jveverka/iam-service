@@ -38,4 +38,23 @@
 
 #### Project Permission Management
 
+* Create permission om project and return unique __permission-id__.  
+  __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``
+  ```
+  { 
+    "service": "service-value" 
+    "resource": "resource-value" 
+    "action": "action-value" 
+  }
+  ```
+
+
+* Get permissions on project.  
+  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``  
+
+* Delete permission from project.  
+  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions/{permission-id}``
+
+#### Project Role-Permission Assignment
+
 __WIP__

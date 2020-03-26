@@ -1,10 +1,13 @@
 package itx.iamservice.tests;
 
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.Permission;
+import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
+import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 import itx.iamservice.core.services.dto.ProjectInfo;
@@ -19,8 +22,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Collection;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -31,6 +32,7 @@ public class ProjectManagementTests {
     private static OrganizationId organizationId;
     private static ProjectId projectId;
     private static RoleId roleId;
+    private static PermissionId permissionId;
 
     @LocalServerPort
     private int port;
@@ -101,6 +103,55 @@ public class ProjectManagementTests {
 
     @Test
     @Order(6)
+    public void createPermissionTest() {
+        CreatePermissionRequest createPermissionRequest = new CreatePermissionRequest("service", "resource", "action");
+        ResponseEntity<PermissionId> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
+                createPermissionRequest, PermissionId.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        permissionId = response.getBody();
+        assertNotNull(permissionId);
+        assertNotNull(permissionId.getId());
+    }
+
+    @Test
+    @Order(7)
+    public void getPermissionsTest() {
+        ResponseEntity<Permission[]> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
+                Permission[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Permission[] permissions = response.getBody();
+        assertNotNull(permissions);
+        assertNotNull(permissions[0]);
+        assertEquals(permissionId, permissions[0].getId());
+    }
+
+    @Test
+    @Order(9)
+    public void addPermissionToRoleTest() {
+        restTemplate.put(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(), null);
+    }
+
+    @Test
+    @Order(10)
+    public void removePermissionFromRole() {
+        restTemplate.delete(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId());
+
+    }
+
+
+    @Test
+    @Order(11)
+    public void deletePermissionsTest() {
+        restTemplate.delete(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId());
+    }
+
+    @Test
+    @Order(12)
     public void deleteRoleTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId());
@@ -108,14 +159,14 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(7)
+    @Order(13)
     public void removeProjectTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId());
     }
 
     @Test
-    @Order(8)
+    @Order(14)
     public void checkRemovedProjectTest() {
         ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
@@ -123,7 +174,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(9)
+    @Order(15)
     public void shutdownTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/organizations/" + organizationId.getId());

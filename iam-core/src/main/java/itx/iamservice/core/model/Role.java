@@ -1,5 +1,8 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +20,18 @@ public class Role {
         this.id = id;
         this.name = name;
         this.permissions = new ConcurrentHashMap<>();
+    }
+
+    @JsonCreator
+    public Role(@JsonProperty("id") RoleId id,
+                @JsonProperty("name") String name,
+                @JsonProperty("permissions") Collection<Permission> permissions) {
+        this.id = id;
+        this.name = name;
+        this.permissions = new ConcurrentHashMap<>();
+        permissions.forEach(permission -> {
+            this.permissions.put(permission.getId(), permission);
+        });
     }
 
     public RoleId getId() {

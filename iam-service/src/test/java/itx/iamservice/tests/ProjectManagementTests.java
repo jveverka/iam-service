@@ -2,9 +2,12 @@ package itx.iamservice.tests;
 
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.services.dto.CreateOrganizationRequest;
 import itx.iamservice.services.dto.CreateProjectRequest;
+import itx.iamservice.services.dto.CreateRoleRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,6 +30,7 @@ public class ProjectManagementTests {
 
     private static OrganizationId organizationId;
     private static ProjectId projectId;
+    private static RoleId roleId;
 
     @LocalServerPort
     private int port;
@@ -70,13 +76,46 @@ public class ProjectManagementTests {
 
     @Test
     @Order(4)
+    public void createRoleTest() {
+        CreateRoleRequest createRoleRequest = new CreateRoleRequest("role-001");
+        ResponseEntity<RoleId> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
+                createRoleRequest, RoleId.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        roleId = response.getBody();
+        assertNotNull(roleId);
+    }
+
+    @Test
+    @Order(5)
+    public void getRolesTest() {
+        ResponseEntity<Role[]> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
+                Role[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Role[] roles = response.getBody();
+        assertNotNull(roles);
+        assertNotNull(roles[0]);
+        assertEquals(roleId, roles[0].getId());
+    }
+
+    @Test
+    @Order(6)
+    public void deleteRoleTest() {
+        restTemplate.delete(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId());
+    }
+
+
+    @Test
+    @Order(7)
     public void removeProjectTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId());
     }
 
     @Test
-    @Order(5)
+    @Order(8)
     public void checkRemovedProjectTest() {
         ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);

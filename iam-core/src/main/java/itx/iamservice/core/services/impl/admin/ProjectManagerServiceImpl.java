@@ -88,6 +88,21 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
+    public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, String name) {
+        Optional<Organization> organization = model.getOrganization(id);
+        if (organization.isPresent()) {
+            Optional<Project> project = organization.get().getProject(projectId);
+            if (project.isPresent()) {
+                RoleId roleId = RoleId.from(UUID.randomUUID().toString());
+                Role role = new Role(roleId, name);
+                project.get().addRole(role);
+                return Optional.of(roleId);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public boolean removeRole(OrganizationId id, ProjectId projectId, RoleId roleId) {
         Optional<Organization> organization = model.getOrganization(id);
         if (organization.isPresent()) {

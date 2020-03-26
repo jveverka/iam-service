@@ -34,6 +34,7 @@ public interface ResourceServerService {
      * @param organizationId {@link OrganizationId} - unique id of the organization.
      * @param projectId {@link ProjectId} - unique id of the project.
      * @return Optional of {@link ProjectInfo} instance if project and organization exists, empty otherwise.
+     * @throws CertificateEncodingException in case certificate serialization to base64 string fails.
      */
     Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) throws CertificateEncodingException;
 
@@ -43,13 +44,32 @@ public interface ResourceServerService {
      * @param projectId {@link ProjectId} - unique id of the project.
      * @param userId {@link UserId} - unique id of the user.
      * @return Optional of {@link UserInfo} instance if project, organization and user exists, empty otherwise.
+     * @throws CertificateEncodingException in case certificate serialization to base64 string fails.
      */
     Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) throws CertificateEncodingException;
 
+    /**
+     * Get {@link Project} by {@link OrganizationId} and {@link ProjectId}.
+     * @param organizationId - unique id of the organization.
+     * @param projectId - unique id of the project.
+     * @return Optional of {@link Project} instance if project and organization exists, empty otherwise.
+     */
     Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
 
+    /**
+     * Get {@link User} by {@link OrganizationId}, {@link ProjectId} and {@link UserId}.
+     * @param organizationId - unique id of the organization.
+     * @param projectId - unique id of the project.
+     * @param userId - unique id of the user.
+     * @return Optional of {@link User} instance if project, organization and user exists, empty otherwise.
+     */
     Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
+    /**
+     * Get {@link Organization} by {@link OrganizationId}.
+     * @param organizationId - unique id of the organization.
+     * @return Optional of {@link Organization} instance if organization exists, empty otherwise.
+     */
     Optional<Organization> getOrganization(OrganizationId organizationId);
 
 }

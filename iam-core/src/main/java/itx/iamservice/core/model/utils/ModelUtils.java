@@ -3,6 +3,8 @@ package itx.iamservice.core.model.utils;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.KeyPairData;
+import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.ModelImpl;
@@ -24,7 +26,9 @@ import itx.iamservice.core.services.dto.OrganizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -161,6 +165,18 @@ public final class ModelUtils {
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
         Set<ProjectId> projects = organization.getProjects().stream().map(project -> project.getId()).collect(Collectors.toSet());
         return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getCertificate());
+    }
+
+    public static KeyPairSerialized serializeKeyPair(KeyPairData keyPairData) throws PKIException {
+        String privateKey = TokenUtils.serializePrivateKey(keyPairData.getPrivateKey());
+        String certificate = TokenUtils.serializeX509Certificate(keyPairData.getX509Certificate());
+        return new KeyPairSerialized(privateKey, certificate);
+    }
+
+    public static KeyPairData deserializeKeyPair(KeyPairSerialized keyPairData) throws PKIException {
+        PrivateKey privateKey = TokenUtils.deserializePrivateKey(keyPairData.getPrivateKey());
+        X509Certificate certificate = TokenUtils.deserializeX509Certificate(keyPairData.getX509Certificate());
+        return new KeyPairData(privateKey, certificate);
     }
 
 }

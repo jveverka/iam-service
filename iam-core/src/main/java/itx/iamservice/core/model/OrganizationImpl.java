@@ -1,5 +1,9 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 
 import java.security.PrivateKey;
@@ -17,12 +21,27 @@ public class OrganizationImpl implements Organization {
     private final String name;
     private final Map<ProjectId, Project> projects;
     private final KeyPairData keyPairData;
+    private final KeyPairSerialized keyPairSerialized;
 
     public OrganizationImpl(OrganizationId id, String name) throws PKIException {
         this.id = id;
         this.name = name;
         this.projects = new ConcurrentHashMap<>();
         this.keyPairData = TokenUtils.createSelfSignedKeyPairData(id.getId(), 365L, TimeUnit.DAYS);
+        this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
+    }
+
+    @JsonCreator
+    public OrganizationImpl(@JsonProperty("id") OrganizationId id,
+                            @JsonProperty("name") String name,
+                            @JsonProperty("projects") Collection<Project> projects,
+                            @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized) throws PKIException {
+        this.id = id;
+        this.name = name;
+        this.projects = new ConcurrentHashMap<>();
+        projects.forEach(project -> this.projects.put(project.getId(), project));
+        this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
+        this.keyPairSerialized = keyPairSerialized;
     }
 
     @Override
@@ -36,11 +55,6 @@ public class OrganizationImpl implements Organization {
     }
 
     @Override
-    public void add(Project project) {
-        projects.put(project.getId(), project);
-    }
-
-    @Override
     public Collection<Project> getProjects() {
         return projects.values().stream()
                 .filter(project -> project.getOrganizationId().equals(id))
@@ -48,23 +62,38 @@ public class OrganizationImpl implements Organization {
     }
 
     @Override
+    @JsonIgnore
+    public void add(Project project) {
+        projects.put(project.getId(), project);
+    }
+
+    @Override
+    @JsonIgnore
     public boolean remove(ProjectId projectId) {
         return projects.remove(projectId) != null;
     }
 
     @Override
+    @JsonIgnore
     public Optional<Project> getProject(ProjectId projectId) {
         return Optional.ofNullable(projects.get(projectId));
     }
 
     @Override
+    @JsonIgnore
     public PrivateKey getPrivateKey() {
         return keyPairData.getPrivateKey();
     }
 
     @Override
+    @JsonIgnore
     public X509Certificate getCertificate() {
         return keyPairData.getX509Certificate();
+    }
+
+    @Override
+    public KeyPairSerialized getKeyPairSerialized() {
+        return keyPairSerialized;
     }
 
 }

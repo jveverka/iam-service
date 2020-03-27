@@ -13,9 +13,9 @@ public interface PersistenceService {
     /**
      * Submit {@link Model} for persistence. Persistence task will be done on different thread.
      * @param model model to persist.
-     * @return persistence result.
+     * @return future persistence result.
      */
-    Future<Void> saveModel(Model model);
+    Future<PersistenceResult> saveModel(Model model);
 
     /**
      * Load model from persistent storage bu model ID.

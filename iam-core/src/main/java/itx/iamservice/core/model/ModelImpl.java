@@ -1,5 +1,8 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +19,16 @@ public class ModelImpl implements Model {
         this.id = id;
         this.name = name;
         this.organizations = new ConcurrentHashMap<>();
+    }
+
+    @JsonCreator
+    public ModelImpl(@JsonProperty("id") ModelId id,
+                     @JsonProperty("name") String name,
+                     @JsonProperty("organizations") Collection<Organization> organizations) {
+        this.id = id;
+        this.name = name;
+        this.organizations = new ConcurrentHashMap<>();
+        organizations.forEach(organization -> this.organizations.put(organization.getId(), organization));
     }
 
     @Override

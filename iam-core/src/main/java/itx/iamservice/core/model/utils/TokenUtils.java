@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -36,6 +37,8 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -52,6 +55,7 @@ public final class TokenUtils {
 
     public static final String ROLES_CLAIM = "roles";
     public static final String TYPE_CLAIM = "typ";
+    private static final String ALGORITHM = "RSA";
 
     private TokenUtils() {
     }
@@ -112,7 +116,7 @@ public final class TokenUtils {
     }
 
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA", BC_PROVIDER);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM, BC_PROVIDER);
         SecureRandom secureRandom = SecureRandom.getInstance("NativePRNG");
         keyPairGenerator.initialize(2048, secureRandom);
         return keyPairGenerator.generateKeyPair();
@@ -193,6 +197,39 @@ public final class TokenUtils {
         try {
             verifyCertificate(selfSignedCertificate, selfSignedCertificate);
         } catch (Exception e) {
+            throw new PKIException(e);
+        }
+    }
+
+    public static String serializeX509Certificate(X509Certificate certificate) throws PKIException {
+        try {
+            return Base64.getEncoder().encodeToString(certificate.getEncoded());
+        } catch(Exception e) {
+            throw new PKIException(e);
+        }
+    }
+
+    public static X509Certificate deserializeX509Certificate(String base64EncodedCertificate) throws PKIException {
+        try {
+            byte[] data = Base64.getDecoder().decode(base64EncodedCertificate);
+            CertificateFactory certificateFactory = CertificateFactory.getInstance(X509_TYPE, BC_PROVIDER);
+            return (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(data));
+        } catch(Exception e) {
+            throw new PKIException(e);
+        }
+    }
+
+    public static String serializePrivateKey(PrivateKey privateKey) {
+        return Base64.getEncoder().encodeToString(privateKey.getEncoded());
+    }
+
+    public static PrivateKey deserializePrivateKey(String base64EncodedCertificate) throws PKIException {
+        try {
+            byte[] data = Base64.getDecoder().decode(base64EncodedCertificate);
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, BC_PROVIDER);
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(data);
+            return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+        } catch(Exception e) {
             throw new PKIException(e);
         }
     }

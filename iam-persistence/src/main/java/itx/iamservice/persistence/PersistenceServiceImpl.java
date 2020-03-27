@@ -1,17 +1,20 @@
 package itx.iamservice.persistence;
 
-import itx.iamservice.core.model.ModelImpl;
-import itx.iamservice.core.services.admin.PersistenceService;
+import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.ModelId;
+import itx.iamservice.core.services.persistence.PersistenceService;
+
+import java.util.concurrent.Future;
 
 public class PersistenceServiceImpl implements PersistenceService {
 
     @Override
-    public void saveModel(ModelImpl model) {
-
+    public Future<Void> saveModel(Model model) {
+        return null;
     }
 
     @Override
-    public ModelImpl loadModel() {
+    public Future<Model> loadModel(ModelId id) {
         return null;
     }
 

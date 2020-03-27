@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.impl.admin;
 
+import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Model;
@@ -11,11 +12,13 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.services.admin.UserManagerService;
+import itx.iamservice.core.services.dto.CreateUserRequest;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public class UserManagerServiceImpl implements UserManagerService {
 
@@ -39,6 +42,21 @@ public class UserManagerServiceImpl implements UserManagerService {
             }
         }
         return false;
+    }
+
+    @Override
+    public Optional<UserId> create(OrganizationId id, ProjectId projectId, CreateUserRequest request) throws PKIException {
+        Optional<Organization> organizationOptional = model.getOrganization(id);
+        if (organizationOptional.isPresent()) {
+            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            if (projectOptional.isPresent()) {
+                UserId userId = UserId.from(UUID.randomUUID().toString());
+                projectOptional.get().add(new UserImpl(userId, request.getName(), projectOptional.get().getId(),
+                      request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), projectOptional.get().getPrivateKey()));
+                return Optional.of(userId);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -122,6 +140,22 @@ public class UserManagerServiceImpl implements UserManagerService {
             }
         }
         return Collections.emptySet();
+    }
+
+    @Override
+    public boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
+        Optional<Organization> organizationOptional = model.getOrganization(id);
+        if (organizationOptional.isPresent()) {
+            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            if (projectOptional.isPresent()) {
+                Optional<User> userOptional = projectOptional.get().getUser(userId);
+                if (userOptional.isPresent()) {
+                    userOptional.get().addCredentials(credentials);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

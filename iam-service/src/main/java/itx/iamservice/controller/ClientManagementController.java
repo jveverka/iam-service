@@ -35,16 +35,16 @@ public class ClientManagementController {
 
     @PostMapping(path = "/{organization-id}/projects/{project-id}/clients", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientId> createClient(@PathVariable("organization-id") String organizationId,
-                                               @PathVariable("project-id") String projectId,
-                                               @RequestBody CreateClientRequest createClientRequest) {
+                                                 @PathVariable("project-id") String projectId,
+                                                 @RequestBody CreateClientRequest createClientRequest) {
         Optional<ClientId> client = clientManagementService.createClient(OrganizationId.from(organizationId), ProjectId.from(projectId), createClientRequest);
         return ResponseEntity.of(client);
     }
 
     @GetMapping(path = "/{organization-id}/projects/{project-id}/clients/{client-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Client> getClient(@PathVariable("organization-id") String organizationId,
-                                                        @PathVariable("project-id") String projectId,
-                                                        @PathVariable("client-id") String clientId) {
+                                            @PathVariable("project-id") String projectId,
+                                            @PathVariable("client-id") String clientId) {
         Optional<Client> client = clientManagementService.getClient(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId));
         return ResponseEntity.of(client);
     }

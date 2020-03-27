@@ -9,15 +9,18 @@ import java.util.Set;
 public class Client {
 
     private final ClientCredentials credentials;
-    private final Set<RoleId> roles;
+    private final String name;
     private final Long defaultAccessTokenDuration;
     private final Long defaultRefreshTokenDuration;
+    private final Set<RoleId> roles;
 
     @JsonCreator
     public Client(@JsonProperty("credentials") ClientCredentials credentials,
+                  @JsonProperty("name") String name,
                   @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
                   @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration) {
         this.credentials = credentials;
+        this.name = name;
         this.roles = new HashSet<>();
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
@@ -25,6 +28,10 @@ public class Client {
 
     public ClientId getId() {
         return credentials.getId();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public ClientCredentials getCredentials() {

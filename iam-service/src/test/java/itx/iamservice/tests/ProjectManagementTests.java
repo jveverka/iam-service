@@ -1,11 +1,14 @@
 package itx.iamservice.tests;
 
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
@@ -33,6 +36,7 @@ public class ProjectManagementTests {
     private static ProjectId projectId;
     private static RoleId roleId;
     private static PermissionId permissionId;
+    private static ClientId clientId;
 
     @LocalServerPort
     private int port;
@@ -76,6 +80,10 @@ public class ProjectManagementTests {
         assertEquals(projectId, projectInfo.getId());
     }
 
+    /**
+     * Role related tests
+     */
+
     @Test
     @Order(4)
     public void createRoleTest() {
@@ -100,6 +108,10 @@ public class ProjectManagementTests {
         assertNotNull(roles[0]);
         assertEquals(roleId, roles[0].getId());
     }
+
+    /**
+     * Permission Related Tests
+     */
 
     @Test
     @Order(6)
@@ -134,8 +146,75 @@ public class ProjectManagementTests {
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(), null);
     }
 
+    /**
+     * Client related tests
+     */
+
     @Test
     @Order(10)
+    public void createClientTest() {
+        CreateClientRequest createClientRequest = new CreateClientRequest("client-name", 3600L, 7200L);
+        ResponseEntity<ClientId> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                createClientRequest, ClientId.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        clientId = response.getBody();
+        assertNotNull(clientId);
+    }
+
+
+    @Test
+    @Order(11)
+    public void getClientTest() {
+        ResponseEntity<Client> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                Client.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Client clients = response.getBody();
+        assertNotNull(clients);
+        assertEquals(clientId, clients.getId());
+    }
+
+    @Test
+    @Order(12)
+    public void getClientsTest() {
+        ResponseEntity<Client[]> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                Client[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Client[] clients = response.getBody();
+        assertNotNull(clients);
+        assertNotNull(clients[0]);
+        assertEquals(clientId, clients[0].getId());
+    }
+
+    @Test
+    @Order(13)
+    public void addRoleToClientTest() {
+        restTemplate.put(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(), null);
+    }
+
+    @Test
+    @Order(14)
+    public void removeRoleFromClientTest() {
+        restTemplate.delete(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId());
+    }
+
+    @Test
+    @Order(15)
+    public void removeClientTest() {
+        restTemplate.delete(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId());
+    }
+
+    /**
+     * Cleanup after testing, delete operations
+     */
+
+    @Test
+    @Order(16)
     public void removePermissionFromRole() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId());
@@ -144,14 +223,14 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(11)
+    @Order(17)
     public void deletePermissionsTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId());
     }
 
     @Test
-    @Order(12)
+    @Order(18)
     public void deleteRoleTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId());
@@ -159,14 +238,14 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(13)
+    @Order(19)
     public void removeProjectTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId());
     }
 
     @Test
-    @Order(14)
+    @Order(20)
     public void checkRemovedProjectTest() {
         ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
@@ -174,7 +253,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(15)
+    @Order(21)
     public void shutdownTest() {
         restTemplate.delete(
                 "http://localhost:" + port + "/services/management/organizations/" + organizationId.getId());

@@ -82,7 +82,7 @@ public final class ModelUtils {
         createClientRoles().forEach(r-> project.addRole(r));
         assignProjectPermissionsToRoles(project);
 
-        Client client = new Client(IAM_ADMIN_CLIENT_CREDENTIALS, 3600*1000L, 24*3600*1000L);
+        Client client = new Client(IAM_ADMIN_CLIENT_CREDENTIALS, "client-1",3600*1000L, 24*3600*1000L);
         createClientRoles().forEach(r-> client.addRole(r.getId()));
         project.addClient(client);
 

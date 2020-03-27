@@ -2,6 +2,8 @@ package itx.iamservice.controller;
 
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.admin.UserManagerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,12 @@ import java.util.Collection;
 @RestController
 @RequestMapping(path = "/services/management")
 public class UserManagementController {
+
+    private final UserManagerService userManagerService;
+
+    public UserManagementController(@Autowired UserManagerService userManagerService) {
+        this.userManagerService = userManagerService;
+    }
 
     @PostMapping(path = "/{organization-id}/projects/{project-id}/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserId> createUser(@PathVariable("organization-id") String organizationId,

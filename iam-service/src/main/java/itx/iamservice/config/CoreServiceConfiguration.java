@@ -1,6 +1,7 @@
 package itx.iamservice.config;
 
 import itx.iamservice.core.model.Model;
+import itx.iamservice.core.services.admin.ClientManagementService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.ClientService;
@@ -10,6 +11,7 @@ import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
+import itx.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import itx.iamservice.core.services.impl.admin.UserManagerServiceImpl;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ProjectManagerServiceImpl;
@@ -61,6 +63,12 @@ public class CoreServiceConfiguration {
     @Scope("singleton")
     public UserManagerService getClientManagerService() {
         return new UserManagerServiceImpl(model);
+    }
+
+    @Bean
+    @Scope("singleton")
+    public ClientManagementService getClientManagementService() {
+        return new ClientManagementServiceImpl(model);
     }
 
 }

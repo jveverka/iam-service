@@ -42,8 +42,8 @@
   __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``
   ```
   { 
-    "service": "service-value" 
-    "resource": "resource-value" 
+    "service": "service-value", 
+    "resource": "resource-value", 
     "action": "action-value" 
   }
   ```
@@ -57,4 +57,46 @@
 
 #### Project Role-Permission Assignment
 
+* Add permission to role on project.   
+  __PUT__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/roles-permissions/{role-id}/{permission-id}``
+
+* Remove permission from role on project.  
+  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/roles-permissions/{role-id}/{permission-id}``
+
+
+#### Project Clients Management 
+
+* Create client and return unique __client-id__.   
+  __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients``
+  ```
+  { 
+    "name": "client-name", 
+    "defaultAccessTokenDuration": 3600, 
+    "defaultRefreshTokenDuration": 14400 
+  }  
+  ```
+
+* Get client by it's unique ID.  
+  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}``
+
+* Get  all clients for this project.  
+  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients``
+
+* Delete client by ID.  
+  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}``
+
+#### Client Role Management
+
+* Assign role to client.  
+  __PUT__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}/roles/{role-id}``
+
+* Remove role from client.  
+  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}/roles/{role-id}``
+
+
+### User Management
 __WIP__
+
+#### User Role Management
+__WIP__
+

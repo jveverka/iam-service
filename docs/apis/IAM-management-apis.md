@@ -95,8 +95,23 @@
 
 
 ### User Management
-__WIP__
+
+* Create user on project.   
+  __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/users``
+  
+* Delete user on project by __user-id__.  
+  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/users/{user-id}``
+
+* Set  username-password credentials for user.  
+  __PUT__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/users/{user-id}/credentials-username-password``
 
 #### User Role Management
-__WIP__
-
+* Assign role to user.  
+  __PUT__ ``http://localhost:8080/services/{organization-id}/projects/{project-id}/users/{user-id}/roles/{role-id}``
+  
+* Get user's roles.  
+  __GET__ ``http://localhost:8080/services/{organization-id}/projects/{project-id}/users/{user-id}/roles``
+  
+* Remove role from user.  
+  __DELETE__ ``http://localhost:8080/services/{organization-id}/projects/{project-id}/users/{user-id}/roles/{role-id}``
+  

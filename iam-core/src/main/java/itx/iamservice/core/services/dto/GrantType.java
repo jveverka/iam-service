@@ -1,4 +1,4 @@
-package itx.iamservice.services.dto;
+package itx.iamservice.core.services.dto;
 
 public enum GrantType {
 

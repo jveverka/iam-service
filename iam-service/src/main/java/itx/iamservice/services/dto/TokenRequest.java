@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.services.dto.GrantType;
 import itx.iamservice.services.Utils;
 
 import java.util.Set;

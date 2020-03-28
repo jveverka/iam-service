@@ -16,7 +16,7 @@ import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.services.AuthenticationService;
 import itx.iamservice.services.Utils;
 import itx.iamservice.services.dto.TokenRequest;
-import itx.iamservice.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

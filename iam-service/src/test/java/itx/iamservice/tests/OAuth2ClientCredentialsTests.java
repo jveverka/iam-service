@@ -1,7 +1,7 @@
 package itx.iamservice.tests;
 
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.services.dto.TokenRevokeResponse;
 import itx.iamservice.services.dto.TokenVerificationResponse;
 import org.junit.jupiter.api.MethodOrderer;

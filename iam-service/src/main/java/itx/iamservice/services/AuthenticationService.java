@@ -7,7 +7,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.services.dto.TokenRequest;
-import itx.iamservice.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.TokenResponse;
 
 import java.util.Optional;
 

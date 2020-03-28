@@ -3,6 +3,7 @@ package itx.iamservice.core;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.admin.ClientManagementService;
@@ -12,6 +13,7 @@ import itx.iamservice.core.services.admin.UserManagerService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.CacheCleanupScheduler;
 import itx.iamservice.core.services.caches.TokenCache;
+import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
@@ -35,6 +37,7 @@ public class IAMCoreBuilder {
     private CacheCleanupScheduler cacheCleanupScheduler;
     private AuthorizationCodeCache authorizationCodeCache;
     private TokenCache tokenCache;
+    private AuthenticationService authenticationService;
     private ClientService clientService;
     private ResourceServerService resourceServerService;
     private ClientManagementService clientManagementService;
@@ -103,6 +106,7 @@ public class IAMCoreBuilder {
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();
         clientService = new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
+        authenticationService = new AuthenticationServiceImpl(clientService);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
         clientManagementService = new ClientManagementServiceImpl(model);
         organizationManagerService = new OrganizationManagerServiceImpl(model);
@@ -126,6 +130,10 @@ public class IAMCoreBuilder {
 
         public PersistenceService getPersistenceService() {
             return persistenceService;
+        }
+
+        public AuthenticationService getAuthenticationService() {
+            return authenticationService;
         }
 
         public ClientService getClientService() {

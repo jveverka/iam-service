@@ -12,6 +12,7 @@ Important core components and interfaces:
   * __Permission__  
   * __Credentials__
 * __Services__ - APIs to manipulate data model (queries and actions).
+  * __AuthenticationService__
   * __ClientService__
   * __ResourceServerService__ 
   * __ClientManagementService__

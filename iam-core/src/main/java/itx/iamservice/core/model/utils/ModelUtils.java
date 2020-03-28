@@ -33,6 +33,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -187,6 +188,27 @@ public final class ModelUtils {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         byte[] hash = md.digest(data.getBytes(Charset.forName("UTF-8")));
         return Base64.toBase64String(hash);
+    }
+
+    /**
+     * Parse set of scopes from {@ling String} containing space delimited, case sensitive scopes.
+     * @param scope {@ling String} containing scopes.
+     * @return parsed {@link Set} of scopes.
+     */
+    public static Set<RoleId> getScopes(String scope) {
+        Set<RoleId> scopes = new HashSet<>();
+        if (scope == null) {
+            scopes = Collections.emptySet();
+        } else {
+            scopes = new HashSet<>();
+            String[] rawScopes = scope.trim().split(" ");
+            for (String s: rawScopes) {
+                if (!s.isEmpty()) {
+                    scopes.add(RoleId.from(s));
+                }
+            }
+        }
+        return scopes;
     }
 
 }

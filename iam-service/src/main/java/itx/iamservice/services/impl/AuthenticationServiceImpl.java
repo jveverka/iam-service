@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.Set;
 
+@Deprecated
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 

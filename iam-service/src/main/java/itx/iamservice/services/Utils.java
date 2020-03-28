@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated
 public final class Utils {
 
     private Utils() {
     }
 
+    @Deprecated
     public static Set<RoleId> getScopes(String scope) {
         Set<RoleId> scopes = new HashSet<>();
         if (scope == null) {

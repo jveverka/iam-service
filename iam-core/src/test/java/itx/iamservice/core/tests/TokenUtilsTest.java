@@ -10,6 +10,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenType;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -152,6 +153,26 @@ public class TokenUtilsTest {
         filterRoles.forEach(
                 r -> assertTrue(expectedResult.contains(r))
         );
+    }
+
+    private static Stream<Arguments> createScopeArguments() {
+        return Stream.of(
+                Arguments.of(null, Set.of()),
+                Arguments.of("", Set.of()),
+                Arguments.of(" ", Set.of()),
+                Arguments.of("   ", Set.of()),
+                Arguments.of("role1", Set.of(RoleId.from("role1"))),
+                Arguments.of(" roleX ", Set.of(RoleId.from("roleX"))),
+                Arguments.of("role1 roleX", Set.of(RoleId.from("role1"), RoleId.from("roleX")))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createScopeArguments")
+    public void scopeParsingTest(String scopes, Set<RoleId> expectedResult) {
+        Set<RoleId> result = ModelUtils.getScopes(scopes);
+        assertNotNull(result);
+        assertEquals(result, expectedResult);
     }
 
 }

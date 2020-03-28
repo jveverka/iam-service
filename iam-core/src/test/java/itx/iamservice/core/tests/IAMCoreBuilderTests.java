@@ -25,6 +25,7 @@ public class IAMCoreBuilderTests {
         assertNotNull(iamCore.getProjectManagerService());
         assertNotNull(iamCore.getResourceServerService());
         assertNotNull(iamCore.getUserManagerService());
+        assertNotNull(iamCore.getAuthenticationService());
         iamCore.close();
     }
 
@@ -44,6 +45,7 @@ public class IAMCoreBuilderTests {
         assertNotNull(iamCore.getProjectManagerService());
         assertNotNull(iamCore.getResourceServerService());
         assertNotNull(iamCore.getUserManagerService());
+        assertNotNull(iamCore.getAuthenticationService());
         iamCore.close();
     }
 

@@ -11,6 +11,7 @@ import itx.iamservice.core.services.dto.TokenResponse;
 
 import java.util.Optional;
 
+@Deprecated
 public interface AuthenticationService {
 
     Optional<TokenResponse> getTokens(OrganizationId organizationId, ProjectId projectId, TokenRequest tokenRequest);

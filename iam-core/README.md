@@ -1,6 +1,7 @@
 # IAM-core
 
-Notable model components:
+Important core components and interfaces:
+* __IAMCoreBuilder__ - initialization process of IAM-core services.
 * __Model__ - in-memory data model containing full scope of IAM.
   * __Model__ - top-level object.
   * __Organization__ - grouping projects of one organization

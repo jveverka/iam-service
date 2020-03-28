@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @ConfigurationProperties(prefix="iam-service.cache-cleanup-interval")
-public class CacheScheduler {
+public class CacheSchedulerConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CacheScheduler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CacheSchedulerConfig.class);
 
     private final AuthorizationCodeCache authorizationCodeCache;
     private final TokenCache tokenCache;
@@ -27,8 +27,8 @@ public class CacheScheduler {
     private String timeunit = "MINUTES";
     private CacheCleanupScheduler cacheCleanupScheduler;
 
-    public CacheScheduler(@Autowired AuthorizationCodeCache authorizationCodeCache,
-                          @Autowired TokenCache tokenCache) {
+    public CacheSchedulerConfig(@Autowired AuthorizationCodeCache authorizationCodeCache,
+                                @Autowired TokenCache tokenCache) {
         this.authorizationCodeCache = authorizationCodeCache;
         this.tokenCache = tokenCache;
     }

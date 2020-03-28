@@ -21,15 +21,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class CoreServiceConfiguration {
+public class CoreServiceConfig {
 
     private final Model model;
     private final TokenCache tokenCache;
     private final AuthorizationCodeCache authorizationCodeCache;
 
-    public CoreServiceConfiguration(@Autowired Model model,
-                                    @Autowired TokenCache tokenCache,
-                                    @Autowired AuthorizationCodeCache authorizationCodeCache) {
+    public CoreServiceConfig(@Autowired Model model,
+                             @Autowired TokenCache tokenCache,
+                             @Autowired AuthorizationCodeCache authorizationCodeCache) {
         this.model = model;
         this.tokenCache = tokenCache;
         this.authorizationCodeCache = authorizationCodeCache;

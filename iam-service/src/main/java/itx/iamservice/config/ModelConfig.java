@@ -16,9 +16,9 @@ import java.security.Security;
 
 @Configuration
 @ConfigurationProperties(prefix="iam-service.admin-credentials")
-public class ModelConfiguration {
+public class ModelConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModelConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModelConfig.class);
 
     private String password;
 

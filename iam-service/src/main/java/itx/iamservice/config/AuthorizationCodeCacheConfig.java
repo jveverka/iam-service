@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ConfigurationProperties(prefix="iam-service.authorization-code-cache")
-public class AuthorizationCodeCacheConfiguration {
+public class AuthorizationCodeCacheConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationCodeCacheConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationCodeCacheConfig.class);
 
     private long duration = 5;
     private String timeunit = "MINUTES";

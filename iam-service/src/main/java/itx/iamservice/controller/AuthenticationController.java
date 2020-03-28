@@ -1,14 +1,18 @@
 package itx.iamservice.controller;
 
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
+import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
-import itx.iamservice.services.AuthenticationService;
 import itx.iamservice.core.services.dto.GrantType;
-import itx.iamservice.services.dto.TokenRequest;
+import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -56,14 +61,31 @@ public class AuthenticationController {
                                                    @RequestParam(name = "refresh_token", required = false) String refreshToken,
                                                    @RequestParam(name = "code", required = false) String code) {
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
+        OrganizationId orgId = OrganizationId.from(organizationId);
+        ProjectId projId = ProjectId.from(projectId);
         if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
             LOG.info("processRedirect: code={} grantType={}", code, grantType);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code));
             return ResponseEntity.of(tokensOptional);
-        } else {
-            TokenRequest tokenRequest = new TokenRequest(grantType, username, password, scope, clientId, clientSecret, refreshToken);
-            Optional<TokenResponse> tokensOptional = authenticationService.getTokens(OrganizationId.from(organizationId), ProjectId.from(projectId), tokenRequest);
+        } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
+            ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
+            Set<RoleId> scopes = ModelUtils.getScopes(scope);
+            UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, upAuthenticationRequest, scopes);
             return ResponseEntity.of(tokensOptional);
+        } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
+            ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
+            Set<RoleId> scopes = ModelUtils.getScopes(scope);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes);
+            return ResponseEntity.of(tokensOptional);
+        } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
+            JWToken jwToken = new JWToken(refreshToken);
+            ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
+            Set<RoleId> scopes = ModelUtils.getScopes(scope);
+            Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(orgId, projId, jwToken, clientCredentials, scopes);
+            return ResponseEntity.of(tokensOptional);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

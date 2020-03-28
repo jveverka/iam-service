@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class TokenCacheConfiguration {
+public class TokenCacheConfig {
 
     private final Model model;
 
-    public TokenCacheConfiguration(@Autowired Model model) {
+    public TokenCacheConfig(@Autowired Model model) {
         this.model = model;
     }
 

@@ -23,9 +23,13 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.dto.OrganizationInfo;
+import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -177,6 +181,12 @@ public final class ModelUtils {
         PrivateKey privateKey = TokenUtils.deserializePrivateKey(keyPairData.getPrivateKey());
         X509Certificate certificate = TokenUtils.deserializeX509Certificate(keyPairData.getX509Certificate());
         return new KeyPairData(privateKey, certificate);
+    }
+
+    public static String getSha512HashBase64(String data) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        byte[] hash = md.digest(data.getBytes(Charset.forName("UTF-8")));
+        return Base64.toBase64String(hash);
     }
 
 }

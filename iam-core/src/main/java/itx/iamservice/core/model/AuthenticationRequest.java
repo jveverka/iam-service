@@ -6,7 +6,7 @@ import java.util.Set;
  * Authentication Request from user (subject).
  * @param <C>
  */
-public interface AuthenticationRequest<C extends CredentialsType> {
+public interface AuthenticationRequest<C extends Credentials> {
 
     /**
      * Get unique ID of the user (subject).
@@ -18,7 +18,7 @@ public interface AuthenticationRequest<C extends CredentialsType> {
      * Get type of credentials used to verify this {@link Credentials}.
      * @return Credential type.
      */
-    C getCredentialsType();
+    Class<C> getCredentialsType();
 
     /**
      * Scope requested by user (subject).

@@ -94,7 +94,7 @@ public class UserManagementController {
     public ResponseEntity<Void> setUsernamePasswordCredentials(@PathVariable("organization-id") String organizationId,
                                                   @PathVariable("project-id") String projectId,
                                                   @PathVariable("user-id") String userId,
-                                                  @RequestBody SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest) {
+                                                  @RequestBody SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest) throws PKIException {
         UserId id = UserId.from(setUserNamePasswordCredentialsRequest.getUserName());
         UPCredentials credentials = new UPCredentials(id, setUserNamePasswordCredentialsRequest.getPassword());
         boolean result = userManagerService.setCredentials(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId), credentials);

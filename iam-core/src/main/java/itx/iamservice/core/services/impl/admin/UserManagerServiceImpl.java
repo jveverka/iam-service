@@ -65,7 +65,7 @@ public class UserManagerServiceImpl implements UserManagerService {
         if (organizationOptional.isPresent()) {
             Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
             if (projectOptional.isPresent()) {
-                return projectOptional.get().getAllUsers();
+                return projectOptional.get().getUsers();
             }
         }
         return Collections.emptyList();

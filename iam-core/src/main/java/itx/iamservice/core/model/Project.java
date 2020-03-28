@@ -1,6 +1,5 @@
 package itx.iamservice.core.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.security.PrivateKey;
@@ -9,11 +8,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
+        use = JsonTypeInfo.Id.CLASS,
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ProjectImpl.class, name = "project") })
 public interface Project {
 
     ProjectId getId();
@@ -22,9 +19,11 @@ public interface Project {
 
     OrganizationId getOrganizationId();
 
-    void add(User user);
+    Collection<User> getUsers();
 
-    Collection<User> getAllUsers();
+    KeyPairSerialized getKeyPairSerialized();
+
+    void add(User user);
 
     boolean remove(UserId userId);
 

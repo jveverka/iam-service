@@ -2,6 +2,7 @@ package itx.iamservice.persistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.ModelImpl;
@@ -19,7 +20,9 @@ public class PersistenceServiceImpl implements PersistenceService {
     private final Map<ModelId, String> serializedModels;
 
     public PersistenceServiceImpl() {
-        this.mapper = new ObjectMapper();
+        this.mapper = new ObjectMapper()
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         this.serializedModels = new ConcurrentHashMap<>();
     }
 

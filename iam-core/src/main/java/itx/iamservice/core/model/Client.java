@@ -1,8 +1,10 @@
 package itx.iamservice.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,11 +16,10 @@ public class Client {
     private final Long defaultRefreshTokenDuration;
     private final Set<RoleId> roles;
 
-    @JsonCreator
-    public Client(@JsonProperty("credentials") ClientCredentials credentials,
-                  @JsonProperty("name") String name,
-                  @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
-                  @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration) {
+    public Client(ClientCredentials credentials,
+                  String name,
+                  Long defaultAccessTokenDuration,
+                  Long defaultRefreshTokenDuration) {
         this.credentials = credentials;
         this.name = name;
         this.roles = new HashSet<>();
@@ -26,6 +27,21 @@ public class Client {
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
     }
 
+    @JsonCreator
+    public Client(@JsonProperty("credentials") ClientCredentials credentials,
+                  @JsonProperty("name") String name,
+                  @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
+                  @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
+                  @JsonProperty("roles") Collection<RoleId> roles) {
+        this.credentials = credentials;
+        this.name = name;
+        this.roles = new HashSet<>();
+        this.defaultAccessTokenDuration = defaultAccessTokenDuration;
+        this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
+        this.roles.addAll(roles);
+    }
+
+    @JsonIgnore
     public ClientId getId() {
         return credentials.getId();
     }

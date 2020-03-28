@@ -7,7 +7,7 @@ import itx.iamservice.core.model.RoleId;
 
 import java.util.Set;
 
-public class UPAuthenticationRequest implements AuthenticationRequest<UPCredentialsType> {
+public class UPAuthenticationRequest implements AuthenticationRequest<UPCredentials> {
 
     private final UserId userId;
     private final String password;
@@ -31,8 +31,8 @@ public class UPAuthenticationRequest implements AuthenticationRequest<UPCredenti
     }
 
     @Override
-    public UPCredentialsType getCredentialsType() {
-        return new UPCredentialsType();
+    public Class<UPCredentials> getCredentialsType() {
+        return UPCredentials.class;
     }
 
     @Override

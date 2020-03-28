@@ -1,5 +1,9 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 
 import java.security.PrivateKey;
@@ -19,6 +23,7 @@ public class ProjectImpl implements Project {
     private final Map<UserId, User> users;
     private final Map<RoleId, Role> roles;
     private final KeyPairData keyPairData;
+    private final KeyPairSerialized keyPairSerialized;
     private final Map<ClientId, Client> clients;
     private final Map<PermissionId, Permission> permissions;
 
@@ -31,6 +36,39 @@ public class ProjectImpl implements Project {
         this.clients = new ConcurrentHashMap<>();
         this.permissions = new ConcurrentHashMap<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
+        this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
+    }
+
+    @JsonCreator
+    public ProjectImpl(@JsonProperty("id") ProjectId id,
+                       @JsonProperty("name") String name,
+                       @JsonProperty("organizationId") OrganizationId organizationId,
+                       @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized,
+                       @JsonProperty("users") Collection<User> users,
+                       @JsonProperty("roles") Collection<Role> roles,
+                       @JsonProperty("permissions") Collection<Permission> permissions,
+                       @JsonProperty("clients") Collection<Client> clients) throws PKIException {
+        this.id = id;
+        this.name = name;
+        this.users = new ConcurrentHashMap<>();
+        this.organizationId = organizationId;
+        this.roles = new ConcurrentHashMap<>();
+        this.clients = new ConcurrentHashMap<>();
+        this.permissions = new ConcurrentHashMap<>();
+        this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
+        this.keyPairSerialized = keyPairSerialized;
+        users.forEach(u->{
+            this.users.put(u.getId(), u);
+        });
+        roles.forEach(r->{
+            this.roles.put(r.getId(), r);
+        });
+        permissions.forEach(p->{
+            this.permissions.put(p.getId(), p);
+        });
+        clients.forEach(c->{
+            this.clients.put(c.getId(), c);
+        });
     }
 
     @Override
@@ -49,15 +87,35 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public void add(User user) {
-        users.put(user.getId(), user);
-    }
-
-    @Override
-    public Collection<User> getAllUsers() {
+    public Collection<User> getUsers() {
         return users.values().stream()
                 .filter(user -> user.getProjectId().equals(id))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public KeyPairSerialized getKeyPairSerialized() {
+        return keyPairSerialized;
+    }
+
+    @Override
+    public Collection<Role> getRoles() {
+        return roles.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Client> getClients() {
+        return clients.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Permission> getPermissions() {
+        return this.permissions.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public void add(User user) {
+        users.put(user.getId(), user);
     }
 
     @Override
@@ -81,21 +139,18 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public Collection<Role> getRoles() {
-        return roles.values().stream().collect(Collectors.toList());
-    }
-
-    @Override
     public boolean removeRole(RoleId id) {
         return roles.remove(id) != null;
     }
 
     @Override
+    @JsonIgnore
     public PrivateKey getPrivateKey() {
         return keyPairData.getPrivateKey();
     }
 
     @Override
+    @JsonIgnore
     public X509Certificate getCertificate() {
         return keyPairData.getX509Certificate();
     }
@@ -116,11 +171,6 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public Collection<Client> getClients() {
-        return clients.values().stream().collect(Collectors.toList());
-    }
-
-    @Override
     public boolean verifyClientCredentials(ClientCredentials clientCredentials) {
         return clientCredentials.equals(clients.get(clientCredentials.getId()).getCredentials());
     }
@@ -128,11 +178,6 @@ public class ProjectImpl implements Project {
     @Override
     public void addPermission(Permission permission) {
         this.permissions.put(permission.getId(), permission);
-    }
-
-    @Override
-    public Collection<Permission> getPermissions() {
-        return this.permissions.values().stream().collect(Collectors.toList());
     }
 
     @Override

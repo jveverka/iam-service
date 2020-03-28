@@ -1,17 +1,14 @@
 package itx.iamservice.core.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.Collection;
 import java.util.Optional;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
+        use = JsonTypeInfo.Id.CLASS,
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ModelImpl.class, name = "model") })
 public interface Model {
 
     ModelId getId();

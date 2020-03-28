@@ -1,19 +1,17 @@
 package itx.iamservice.core.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
+        use = JsonTypeInfo.Id.CLASS,
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = UserImpl.class, name = "user") })
 public interface User {
 
     UserId getId();
@@ -22,11 +20,15 @@ public interface User {
 
     ProjectId getProjectId();
 
+    KeyPairSerialized getKeyPairSerialized();
+
+    Collection<Credentials> getCredentials();
+
     void addRole(RoleId roleId);
 
     void addCredentials(Credentials credentials);
 
-    Optional<Credentials> getCredentials(Class<? extends CredentialsType> type);
+    Optional<Credentials> getCredentials(Class<? extends Credentials> type);
 
     PrivateKey getPrivateKey();
 

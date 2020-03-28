@@ -17,7 +17,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
-import itx.iamservice.core.model.extensions.authentication.up.UPCredentialsType;
+import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.model.TokenType;
@@ -100,7 +100,7 @@ public class ClientServiceImpl implements ClientService {
         Optional<User> userOptional = model.getUser(organizationId, projectId, authenticationRequest.getUserId());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            Optional<Credentials> credentials = user.getCredentials(authenticationRequest.getCredentialsType().getClass());
+            Optional<Credentials> credentials = user.getCredentials(authenticationRequest.getCredentialsType());
             if (credentials.isPresent()) {
                 boolean valid = credentials.get().verify(authenticationRequest);
                 if (valid) {
@@ -212,7 +212,7 @@ public class ClientServiceImpl implements ClientService {
         Optional<User> userOptional = model.getUser(organizationId, projectId, userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            Optional<Credentials> credentials = user.getCredentials(UPCredentialsType.class);
+            Optional<Credentials> credentials = user.getCredentials(UPCredentials.class);
             if (credentials.isPresent()) {
                 UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(userId, password, scope, null);
                 boolean valid = credentials.get().verify(authenticationRequest);

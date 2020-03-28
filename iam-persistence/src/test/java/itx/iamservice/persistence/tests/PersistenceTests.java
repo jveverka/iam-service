@@ -3,6 +3,8 @@ package itx.iamservice.persistence.tests;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Project;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.persistence.PersistenceResult;
 import itx.iamservice.persistence.PersistenceServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -32,7 +34,7 @@ public class PersistenceTests {
     @BeforeAll
     private static void init() throws PKIException {
         Security.addProvider(new BouncyCastleProvider());
-        model = TestUtils.createModel();
+        model = ModelUtils.createDefaultModel("secret");
         persistenceService = new PersistenceServiceImpl();
     }
 
@@ -63,8 +65,8 @@ public class PersistenceTests {
         assertEquals(model.getName(), loadedModel.getName());
         assertTrue(model.getOrganizations().size() == loadedModel.getOrganizations().size());
 
-        Optional<Organization> organizationOptional = model.getOrganizations().stream().filter(o -> TestUtils.organizationId.equals(o.getId())).findFirst();
-        Optional<Organization> loadedOrganizationOptional = loadedModel.getOrganizations().stream().filter(o -> TestUtils.organizationId.equals(o.getId())).findFirst();
+        Optional<Organization> organizationOptional = model.getOrganizations().stream().filter(o -> ModelUtils.IAM_ADMINS_ORG.equals(o.getId())).findFirst();
+        Optional<Organization> loadedOrganizationOptional = loadedModel.getOrganizations().stream().filter(o -> ModelUtils.IAM_ADMINS_ORG.equals(o.getId())).findFirst();
         assertTrue(organizationOptional.isPresent());
         assertTrue(loadedOrganizationOptional.isPresent());
 
@@ -74,6 +76,19 @@ public class PersistenceTests {
         assertEquals(organization.getId(), loadedOrganization.getId());
         assertEquals(organization.getName(), loadedOrganization.getName());
         assertEquals(organization.getKeyPairSerialized(), loadedOrganization.getKeyPairSerialized());
+        assertTrue(organization.getProjects().size() == loadedOrganization.getProjects().size());
+
+        Optional<Project> optionalProject = organization.getProjects().stream().filter(p -> ModelUtils.IAM_ADMINS_PROJECT.equals(p.getId())).findFirst();
+        Optional<Project> loadedOptionalProject = loadedOrganization.getProjects().stream().filter(p -> ModelUtils.IAM_ADMINS_PROJECT.equals(p.getId())).findFirst();
+        assertTrue(optionalProject.isPresent());
+        assertTrue(loadedOptionalProject.isPresent());
+
+        Project project = optionalProject.get();
+        Project loadedProject = loadedOptionalProject.get();
+
+        assertEquals(project.getId(), loadedProject.getId());
+        assertEquals(project.getName(), loadedProject.getName());
+
     }
 
 }

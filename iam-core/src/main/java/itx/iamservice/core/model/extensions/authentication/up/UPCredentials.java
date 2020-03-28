@@ -1,16 +1,43 @@
 package itx.iamservice.core.model.extensions.authentication.up;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Credentials;
+import itx.iamservice.core.model.utils.ModelUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UPCredentials implements Credentials<UPCredentialsType, UPAuthenticationRequest> {
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+
+public class UPCredentials implements Credentials<UPAuthenticationRequest> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UPCredentials.class);
 
     private final UserId userId;
-    private final String password;
+    private final String salt;
+    private final String hash;
 
-    public UPCredentials(UserId userId, String password) {
+    public UPCredentials(UserId userId,
+                         String password) throws PKIException {
+        try {
+            this.userId = userId;
+            this.salt = UUID.randomUUID().toString();
+            this.hash = generateHash(salt, password);
+        } catch (Exception e) {
+            throw new PKIException(e);
+        }
+    }
+
+    @JsonCreator
+    public UPCredentials(@JsonProperty("userId") UserId userId,
+                         @JsonProperty("salt") String salt,
+                         @JsonProperty("hash") String hash) {
         this.userId = userId;
-        this.password = password;
+        this.salt = salt;
+        this.hash = hash;
     }
 
     @Override
@@ -19,13 +46,31 @@ public class UPCredentials implements Credentials<UPCredentialsType, UPAuthentic
     }
 
     @Override
-    public UPCredentialsType getType() {
-        return new UPCredentialsType();
+    public Class<UPCredentials> getType() {
+        return UPCredentials.class;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public String getHash() {
+        return hash;
     }
 
     @Override
     public boolean verify(UPAuthenticationRequest authenticationRequest) {
-        return userId.equals(authenticationRequest.getUserId()) && password.equals(authenticationRequest.getPassword());
+        try {
+            String hash = generateHash(salt, authenticationRequest.getPassword());
+            return userId.equals(authenticationRequest.getUserId()) && this.hash.equals(hash);
+        } catch (NoSuchAlgorithmException e) {
+            LOG.error("Error generating hash: ", e);
+            return false;
+        }
+    }
+
+    private String generateHash(String salt, String password) throws NoSuchAlgorithmException {
+        return ModelUtils.getSha512HashBase64(salt + "." + password);
     }
 
 }

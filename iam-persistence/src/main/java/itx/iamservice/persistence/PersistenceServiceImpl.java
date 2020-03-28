@@ -21,8 +21,7 @@ public class PersistenceServiceImpl implements PersistenceService {
 
     public PersistenceServiceImpl() {
         this.mapper = new ObjectMapper()
-                .enable(SerializationFeature.INDENT_OUTPUT)
-                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+                .enable(SerializationFeature.INDENT_OUTPUT);
         this.serializedModels = new ConcurrentHashMap<>();
     }
 

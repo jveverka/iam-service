@@ -1,12 +1,14 @@
-package itx.iamservice.persistence.tests;
+package itx.iamservice.core.tests;
 
+import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.impl.persistence.InMemoryPersistenceServiceImpl;
 import itx.iamservice.core.services.persistence.PersistenceResult;
-import itx.iamservice.persistence.PersistenceServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -26,16 +28,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PersistenceTests {
 
+    private static InMemoryPersistenceServiceImpl persistenceService;
     private static String serialized;
     private static Model model;
     private static Model loadedModel;
-    private static PersistenceServiceImpl persistenceService;
+    private static Organization organization;
+    private static Organization loadedOrganization;
+    private static Project project;
+    private static Project loadedProject;
+    private static Client client;
+    private static Client loadedClient;
+    private static User user;
+    private static User loadedUser;
+
 
     @BeforeAll
     private static void init() throws PKIException {
         Security.addProvider(new BouncyCastleProvider());
         model = ModelUtils.createDefaultModel("secret");
-        persistenceService = new PersistenceServiceImpl();
+        persistenceService = new InMemoryPersistenceServiceImpl();
     }
 
     @Test
@@ -64,31 +75,77 @@ public class PersistenceTests {
         assertEquals(model.getId(), loadedModel.getId());
         assertEquals(model.getName(), loadedModel.getName());
         assertTrue(model.getOrganizations().size() == loadedModel.getOrganizations().size());
+    }
 
+    @Test
+    @Order(4)
+    public void compareOrganizationsInModelTest() {
         Optional<Organization> organizationOptional = model.getOrganizations().stream().filter(o -> ModelUtils.IAM_ADMINS_ORG.equals(o.getId())).findFirst();
         Optional<Organization> loadedOrganizationOptional = loadedModel.getOrganizations().stream().filter(o -> ModelUtils.IAM_ADMINS_ORG.equals(o.getId())).findFirst();
         assertTrue(organizationOptional.isPresent());
         assertTrue(loadedOrganizationOptional.isPresent());
 
-        Organization organization = organizationOptional.get();
-        Organization loadedOrganization = loadedOrganizationOptional.get();
+        organization = organizationOptional.get();
+        loadedOrganization = loadedOrganizationOptional.get();
 
         assertEquals(organization.getId(), loadedOrganization.getId());
         assertEquals(organization.getName(), loadedOrganization.getName());
         assertEquals(organization.getKeyPairSerialized(), loadedOrganization.getKeyPairSerialized());
         assertTrue(organization.getProjects().size() == loadedOrganization.getProjects().size());
+    }
 
+    @Test
+    @Order(5)
+    public void compareProjectsInModelTest() {
         Optional<Project> optionalProject = organization.getProjects().stream().filter(p -> ModelUtils.IAM_ADMINS_PROJECT.equals(p.getId())).findFirst();
         Optional<Project> loadedOptionalProject = loadedOrganization.getProjects().stream().filter(p -> ModelUtils.IAM_ADMINS_PROJECT.equals(p.getId())).findFirst();
         assertTrue(optionalProject.isPresent());
         assertTrue(loadedOptionalProject.isPresent());
 
-        Project project = optionalProject.get();
-        Project loadedProject = loadedOptionalProject.get();
+        project = optionalProject.get();
+        loadedProject = loadedOptionalProject.get();
 
         assertEquals(project.getId(), loadedProject.getId());
         assertEquals(project.getName(), loadedProject.getName());
+        assertEquals(project.getPrivateKey(), loadedProject.getPrivateKey());
+        assertEquals(project.getCertificate(), loadedProject.getCertificate());
+        assertEquals(project.getOrganizationId(), loadedProject.getOrganizationId());
+        assertEquals(project.getKeyPairSerialized(), loadedProject.getKeyPairSerialized());
+        assertTrue(project.getClients().size() == loadedProject.getClients().size());
+        assertTrue(project.getRoles().size() == loadedProject.getRoles().size());
+        assertTrue(project.getPermissions().size() == loadedProject.getPermissions().size());
+        assertTrue(project.getUsers().size() == loadedProject.getUsers().size());
+    }
 
+    @Test
+    @Order(6)
+    public void compareClientsInModelTest() {
+        Optional<Client> optionalClient = project.getClients().stream().filter(c -> ModelUtils.IAM_ADMIN_CLIENT_ID.equals(c.getId())).findFirst();
+        Optional<Client> loadedOptionalClient = loadedProject.getClients().stream().filter(c -> ModelUtils.IAM_ADMIN_CLIENT_ID.equals(c.getId())).findFirst();
+        assertTrue(optionalClient.isPresent());
+        assertTrue(loadedOptionalClient.isPresent());
+
+        client = optionalClient.get();
+        loadedClient = loadedOptionalClient.get();
+
+        assertEquals(client.getId(), loadedClient.getId());
+        assertEquals(client.getName(), loadedClient.getName());
+        assertEquals(client.getDefaultAccessTokenDuration(), loadedClient.getDefaultAccessTokenDuration());
+        assertEquals(client.getDefaultRefreshTokenDuration(), loadedClient.getDefaultRefreshTokenDuration());
+    }
+
+    @Test
+    @Order(7)
+    public void compareUsersInModelTest() {
+        Optional<User> optionalUser = project.getUsers().stream().filter(c -> ModelUtils.IAM_ADMIN_USER.equals(c.getId())).findFirst();
+        Optional<User> loadedOptionalUser = loadedProject.getUsers().stream().filter(c -> ModelUtils.IAM_ADMIN_USER.equals(c.getId())).findFirst();
+        assertTrue(optionalUser.isPresent());
+        assertTrue(loadedOptionalUser.isPresent());
+
+        user = optionalUser.get();
+        loadedUser = loadedOptionalUser.get();
+        assertEquals(user.getId(), loadedUser.getId());
+        assertEquals(user.getName(), loadedUser.getName());
     }
 
 }

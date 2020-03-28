@@ -1,4 +1,4 @@
-package itx.iamservice.persistence;
+package itx.iamservice.core.services.impl.persistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,17 +9,21 @@ import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.services.persistence.PersistenceResult;
 import itx.iamservice.core.services.persistence.PersistenceService;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
-public class PersistenceServiceImpl implements PersistenceService {
+/**
+ * In-memory persistence service implementation (test-purposes) mainly.
+ */
+public class InMemoryPersistenceServiceImpl implements PersistenceService {
 
     private final ObjectMapper mapper;
     private final Map<ModelId, String> serializedModels;
 
-    public PersistenceServiceImpl() {
+    public InMemoryPersistenceServiceImpl() {
         this.mapper = new ObjectMapper()
                 .enable(SerializationFeature.INDENT_OUTPUT);
         this.serializedModels = new ConcurrentHashMap<>();
@@ -43,7 +47,7 @@ public class PersistenceServiceImpl implements PersistenceService {
         try {
             Model model = mapper.readValue(serializedModels.get(id), ModelImpl.class);
             result.complete(model);
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             result.completeExceptionally(e);
         }
         return result;

@@ -1,4 +1,5 @@
 
 include "iam-core"
 include "iam-service"
-include "iam-persistence"
+include "iam-persistence-file-system"
+project(":iam-persistence-file-system").projectDir = new File("iam-persistence/iam-persistence-file-system")

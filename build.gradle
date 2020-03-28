@@ -11,7 +11,7 @@ project(':iam-service') {
     }
 }
 
-project(':iam-persistence') {
+project(':iam-persistence-file-system') {
     dependencies {
         implementation project(':iam-core')
     }

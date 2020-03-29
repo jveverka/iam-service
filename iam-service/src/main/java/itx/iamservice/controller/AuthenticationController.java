@@ -64,21 +64,24 @@ public class AuthenticationController {
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
         if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
-            LOG.info("processRedirect: code={} grantType={}", code, grantType);
+            LOG.info("processRedirect: grantType={} code={}", grantType, code);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code));
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
+            LOG.info("processRedirect: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Set<RoleId> scopes = ModelUtils.getScopes(scope);
             UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, upAuthenticationRequest, scopes);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
+            LOG.info("processRedirect: grantType={} scope={} clientId={}", grantType, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Set<RoleId> scopes = ModelUtils.getScopes(scope);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
+            LOG.info("processRedirect: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
             JWToken jwToken = new JWToken(refreshToken);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Set<RoleId> scopes = ModelUtils.getScopes(scope);

@@ -53,3 +53,4 @@ java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar --spring.config.
 * [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0
 * [RFC6749](https://tools.ietf.org/html/rfc6749) - The OAuth 2.0 Authorization Framework
 * [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
+* [References](docs/references.md)

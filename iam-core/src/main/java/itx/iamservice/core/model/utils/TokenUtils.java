@@ -3,6 +3,7 @@ package itx.iamservice.core.model.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientId;
@@ -13,6 +14,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
@@ -52,10 +54,12 @@ public final class TokenUtils {
     private static final String SHA256_RSA = "SHA256withRSA";
     private static final String CN_DIR_NAME = "CN=";
     private static final String X509_TYPE = "X.509";
+    private static final String ALGORITHM = "RSA";
 
     public static final String ROLES_CLAIM = "roles";
     public static final String TYPE_CLAIM = "typ";
-    private static final String ALGORITHM = "RSA";
+    public static final String NONCE_CLAIM = "nonce";
+    public static final String AUTH_TIME_CLAIM = "auth_time";
 
     private TokenUtils() {
     }
@@ -88,6 +92,24 @@ public final class TokenUtils {
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
         return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, privateKey, type);
+    }
+
+    public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, PrivateKey privateKey) {
+        String subject = organizationId.getId() + "." + projectId.getId() + " " + clientOrUserId;
+        Date issuedAt = new Date();
+        Date expiration = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
+        JwtBuilder builder = Jwts.builder();
+        builder.setSubject(idTokenRequest.getIssuerURL());
+        builder.setSubject(subject);
+        builder.setAudience(clientId.getId());
+        builder.setExpiration(expiration);
+        builder.setIssuedAt(issuedAt);
+        builder.claim(AUTH_TIME_CLAIM, issuedAt.getTime());
+        if (idTokenRequest.getNonce() != null) {
+            builder.claim(NONCE_CLAIM, idTokenRequest.getNonce());
+        }
+        builder.signWith(privateKey);
+        return JWToken.from(builder.compact());
     }
 
     public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, PrivateKey privateKey, TokenType type) {

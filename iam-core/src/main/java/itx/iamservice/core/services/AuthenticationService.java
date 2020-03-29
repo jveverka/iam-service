@@ -9,6 +9,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.TokenResponse;
 
@@ -25,10 +26,12 @@ public interface AuthenticationService {
      * @param clientCredentials
      * @param upAuthenticationRequest
      * @param scopes
+     * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
-                                         ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest, Set<RoleId> scopes);
+                                         ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest,
+                                         Set<RoleId> scopes, IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate end-user in client credentials flow.
@@ -37,18 +40,20 @@ public interface AuthenticationService {
      * @param projectId
      * @param clientCredentials
      * @param scopes
+     * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
-                                         ClientCredentials clientCredentials, Set<RoleId> scopes);
+                                         ClientCredentials clientCredentials, Set<RoleId> scopes, IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate end-user authorization code grant.
      * grant_type=authorization_code
      * @param code
+     * @param idTokenRequest
      * @return
      */
-    Optional<TokenResponse> authenticate(Code code);
+    Optional<TokenResponse> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
      * Get new set of tokens using issued and valid refresh toke.
@@ -57,10 +62,11 @@ public interface AuthenticationService {
      * @param refreshToken
      * @param clientCredentials
      * @param scopes
+     * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> refreshTokens(OrganizationId organizationId, ProjectId projectId, JWToken refreshToken,
-                                         ClientCredentials clientCredentials, Set<RoleId> scopes);
+                                         ClientCredentials clientCredentials, Set<RoleId> scopes, IdTokenRequest idTokenRequest);
 
     /**
      * Get short-lived authorization_code based on clientId, username=userId and password

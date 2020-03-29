@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.caches;
 
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 public interface AuthorizationCodeCache {
 
-    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, UserId userId, String state, Set<RoleId> scope);
+    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Set<RoleId> scope);
 
     int purgeCodes();
 

@@ -20,17 +20,22 @@ public class TokenResponse {
     @JsonProperty("token_type")
     private final String tokenType;
 
+    @JsonProperty("id_token")
+    private final String idToken;
+
     @JsonCreator
     public TokenResponse(@JsonProperty("access_token") String accessToken,
                          @JsonProperty("expires_in") Long expiresIn,
                          @JsonProperty("refresh_expires_in") Long refreshExpiresIn,
                          @JsonProperty("refresh_token") String refreshToken,
-                         @JsonProperty("token_type") String tokenType) {
+                         @JsonProperty("token_type") String tokenType,
+                         @JsonProperty("id_token") String idToken) {
         this.accessToken = accessToken;
         this.expiresIn = expiresIn;
         this.refreshExpiresIn = refreshExpiresIn;
         this.refreshToken = refreshToken;
         this.tokenType = tokenType;
+        this.idToken = idToken;
     }
 
     @JsonProperty("access_token")
@@ -57,4 +62,10 @@ public class TokenResponse {
     public String getTokenType() {
         return tokenType;
     }
+
+    @JsonProperty("id_token")
+    public String getIdToken() {
+        return idToken;
+    }
+
 }

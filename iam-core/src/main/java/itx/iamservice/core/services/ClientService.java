@@ -10,6 +10,7 @@ import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
 
 import java.util.Optional;
@@ -28,18 +29,20 @@ public interface ClientService {
      * @param projectId {@link ProjectId} unique project ID.
      * @param clientCredentials issued client's credentials.
      * @param scope requested client scope.
+     * @param idTokenRequest
      * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
-    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scope);
+    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scope, IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate user and provide valid {@link JWToken} in case authentication has been successful.
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
      * @param authenticationRequest request containing user's credentials.
+     * @param idTokenRequest
      * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
-    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest);
+    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest, IdTokenRequest idTokenRequest);
 
     /**
      * Request new instance of JWToken before issued token expires.
@@ -47,9 +50,10 @@ public interface ClientService {
      * @param projectId {@link ProjectId} unique project ID.
      * @param clientCredentials issued client's credentials.
      * @param token previously issued and valid {@link JWToken}
+     * @param idTokenRequest
      * @return new instance of {@link Tokens} or empty if provided {@link Tokens} was not valid.
      */
-    Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope);
+    Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope, IdTokenRequest idTokenRequest);
 
     /**
      * Login user using userId / password and clientId.
@@ -67,9 +71,10 @@ public interface ClientService {
     /**
      * Authenticate user based on provided {@link Code}
      * @param code authorization code.
+     * @param idTokenRequest
      * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
-    Optional<Tokens> authenticate(Code code);
+    Optional<Tokens> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

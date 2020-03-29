@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.impl.caches;
 
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
@@ -31,10 +32,10 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, UserId userId, String state, Set<RoleId> scope) {
+    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Set<RoleId> scope) {
         Code code = Code.from(UUID.randomUUID().toString());
         AuthorizationCode authorizationCode = new AuthorizationCode(code, state);
-        codes.put(code, new AuthorizationCodeContext(organizationId, projectId, userId, state, new Date(), scope));
+        codes.put(code, new AuthorizationCodeContext(organizationId, projectId, clientId, userId, state, new Date(), scope));
         return authorizationCode;
     }
 

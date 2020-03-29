@@ -9,13 +9,16 @@ public class Tokens {
     private final TokenType tokenType;
     private final Long expiresIn;
     private final Long refreshExpiresIn;
+    private final JWToken idToken;
 
-    public Tokens(JWToken accessToken, JWToken refreshToken, TokenType tokenType, Long expiresIn, Long refreshExpiresIn) {
+    public Tokens(JWToken accessToken, JWToken refreshToken, TokenType tokenType,
+                  Long expiresIn, Long refreshExpiresIn, JWToken idToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.tokenType = tokenType;
         this.expiresIn = expiresIn;
         this.refreshExpiresIn = refreshExpiresIn;
+        this.idToken = idToken;
     }
 
     public JWToken getAccessToken() {
@@ -38,4 +41,7 @@ public class Tokens {
         return refreshExpiresIn;
     }
 
+    public JWToken getIdToken() {
+        return idToken;
+    }
 }

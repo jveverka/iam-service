@@ -7,6 +7,7 @@ import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -48,6 +49,7 @@ public class ClientCCAuthenticationTests {
     private static AuthorizationCodeCache authorizationCodeCache;
     private static JWToken accessToken;
     private static JWToken refreshToken;
+    private static IdTokenRequest idTokenRequest;
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -57,6 +59,7 @@ public class ClientCCAuthenticationTests {
         tokenCache = new TokenCacheImpl(model);
         clientService = new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
+        idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
     }
 
     @Test
@@ -65,7 +68,7 @@ public class ClientCCAuthenticationTests {
     public void authenticateTest() {
         ClientCredentials clientCredentials = ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS;
         Set<RoleId> scope = Set.of(RoleId.from("read-organizations"));
-        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope);
+        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
         assertEquals(ModelUtils.IAM_ADMIN_CLIENT_ID.getId(), defaultClaims.getSubject());

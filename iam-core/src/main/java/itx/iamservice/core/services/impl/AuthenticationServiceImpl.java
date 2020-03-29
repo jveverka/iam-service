@@ -13,6 +13,7 @@ import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.TokenResponse;
 
@@ -28,56 +29,64 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest, Set<RoleId> scopes) {
-        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, upAuthenticationRequest);
+    public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
+                                                ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest,
+                                                Set<RoleId> scopes, IdTokenRequest idTokenRequest) {
+        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, upAuthenticationRequest, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                     tokensOptional.get().getExpiresIn(),
                     tokensOptional.get().getRefreshExpiresIn(),
                     tokensOptional.get().getRefreshToken().getToken(),
-                    tokensOptional.get().getTokenType().getType());
+                    tokensOptional.get().getTokenType().getType(),
+                    tokensOptional.get().getIdToken().getToken());
             return Optional.of(tokenResponse);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scopes) {
-        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, clientCredentials, scopes);
+    public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials,
+                                                Set<RoleId> scopes, IdTokenRequest idTokenRequest) {
+        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, clientCredentials, scopes, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                     tokensOptional.get().getExpiresIn(),
                     tokensOptional.get().getRefreshExpiresIn(),
                     tokensOptional.get().getRefreshToken().getToken(),
-                    tokensOptional.get().getTokenType().getType());
+                    tokensOptional.get().getTokenType().getType(),
+                    tokensOptional.get().getIdToken().getToken());
             return Optional.of(tokenResponse);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<TokenResponse> refreshTokens(OrganizationId organizationId, ProjectId projectId, JWToken refreshToken, ClientCredentials clientCredentials, Set<RoleId> scopes) {
-        Optional<Tokens> tokensOptional = clientService.refresh(organizationId, projectId, clientCredentials, refreshToken, scopes);
+    public Optional<TokenResponse> refreshTokens(OrganizationId organizationId, ProjectId projectId, JWToken refreshToken,
+                                                 ClientCredentials clientCredentials, Set<RoleId> scopes, IdTokenRequest idTokenRequest) {
+        Optional<Tokens> tokensOptional = clientService.refresh(organizationId, projectId, clientCredentials, refreshToken, scopes, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                     tokensOptional.get().getExpiresIn(),
                     tokensOptional.get().getRefreshExpiresIn(),
                     tokensOptional.get().getRefreshToken().getToken(),
-                    tokensOptional.get().getTokenType().getType());
+                    tokensOptional.get().getTokenType().getType(),
+                    tokensOptional.get().getIdToken().getToken());
             return Optional.of(tokenResponse);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<TokenResponse> authenticate(Code code) {
-        Optional<Tokens> tokensOptional = clientService.authenticate(code);
+    public Optional<TokenResponse> authenticate(Code code, IdTokenRequest idTokenRequest) {
+        Optional<Tokens> tokensOptional = clientService.authenticate(code, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                     tokensOptional.get().getExpiresIn(),
                     tokensOptional.get().getRefreshExpiresIn(),
                     tokensOptional.get().getRefreshToken().getToken(),
-                    tokensOptional.get().getTokenType().getType());
+                    tokensOptional.get().getTokenType().getType(),
+                    tokensOptional.get().getIdToken().getToken());
             return Optional.of(tokenResponse);
         }
         return Optional.empty();

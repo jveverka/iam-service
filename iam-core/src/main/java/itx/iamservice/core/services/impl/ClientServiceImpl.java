@@ -26,6 +26,7 @@ import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scope) {
+    public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId,
+                                         ClientCredentials clientCredentials, Set<RoleId> scope, IdTokenRequest idTokenRequest) {
         Optional<Project> projectOptional = model.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> clientOptional = projectOptional.get().getClient(clientCredentials.getId());
@@ -67,8 +69,10 @@ public class ClientServiceImpl implements ClientService {
                     JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
                             roles, project.getPrivateKey(), TokenType.REFRESH);
+                    JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
+                            client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, project.getPrivateKey());
                     Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                            client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L);
+                            client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L, idToken);
                     return Optional.of(tokens);
                 } else {
                     LOG.info("Client {} credentials invalid !", clientCredentials.getId());
@@ -84,7 +88,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, AuthenticationRequest authenticationRequest) {
+    public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId,
+                                         AuthenticationRequest authenticationRequest, IdTokenRequest idTokenRequest) {
         Optional<Project> projectOptional = model.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             ClientCredentials clientCredentials = authenticationRequest.getClientCredentials();
@@ -112,8 +117,10 @@ public class ClientServiceImpl implements ClientService {
                     JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
                             user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
                             roles, user.getPrivateKey(), TokenType.REFRESH);
+                    JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, authenticationRequest.getClientCredentials().getId(),
+                            user.getId().getId(), user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, user.getPrivateKey());
                     Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                            user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L);
+                            user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L, idToken);
                     return Optional.of(tokens);
                 }
             }
@@ -125,7 +132,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope) {
+    public Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials,
+                                    JWToken token, Set<RoleId> scope, IdTokenRequest idTokenRequest) {
         if (!tokenCache.isRevoked(token)) {
             Optional<Project> projectOptional = model.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
@@ -157,8 +165,10 @@ public class ClientServiceImpl implements ClientService {
                         JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
                                 user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
                                 roles, user.getPrivateKey(), TokenType.REFRESH);
+                        JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, clientCredentials.getId(), user.getId().getId(),
+                                user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, user.getPrivateKey());
                         Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                                user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L);
+                                user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L, idToken);
                         return Optional.of(tokens);
                     } else {
                         LOG.info("Invalid JWT type {}, expected type {}", tokenType, TokenType.BEARER.getType());
@@ -179,8 +189,10 @@ public class ClientServiceImpl implements ClientService {
                         JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                                 client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
                                 roles, project.getPrivateKey(), TokenType.REFRESH);
+                        JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
+                                client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, project.getPrivateKey());
                         Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                                client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L);
+                                client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L, idToken);
                         return Optional.of(tokens);
                     } else {
                         LOG.info("Client {} credentials invalid !", clientCredentials.getId());
@@ -197,7 +209,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Set<RoleId> scope, String state) {
+    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId,
+                                             ClientId clientId, String password, Set<RoleId> scope, String state) {
         Optional<Project> projectOptional = model.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> optionalClient = projectOptional.get().getClient(clientId);
@@ -218,7 +231,7 @@ public class ClientServiceImpl implements ClientService {
                 boolean valid = credentials.get().verify(authenticationRequest);
                 if (valid) {
                     Set<RoleId> filteredRoles = TokenUtils.filterRoles(user.getRoles(), scope);
-                    AuthorizationCode authorizationCode = codeCache.issue(organizationId, projectId, userId, state, filteredRoles);
+                    AuthorizationCode authorizationCode = codeCache.issue(organizationId, projectId, clientId, userId, state, filteredRoles);
                     return Optional.of(authorizationCode);
                 }
             }
@@ -229,7 +242,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Optional<Tokens> authenticate(Code code) {
+    public Optional<Tokens> authenticate(Code code, IdTokenRequest idTokenRequest) {
         Optional<AuthorizationCodeContext> contextOptional = codeCache.verifyAndRemove(code);
         if (contextOptional.isPresent()) {
             AuthorizationCodeContext context = contextOptional.get();
@@ -243,8 +256,10 @@ public class ClientServiceImpl implements ClientService {
                 JWToken refreshToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), user.getId(),
                         user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
                         roles, user.getPrivateKey(), TokenType.REFRESH);
+                JWToken idToken = TokenUtils.issueIdToken(context.getOrganizationId(), context.getProjectId(), context.getClientId(), user.getId().getId(),
+                        user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, user.getPrivateKey());
                 Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                        user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L);
+                        user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L, idToken);
                 return Optional.of(tokens);
             } else {
                 LOG.info("User {} not found", context.getUserId());

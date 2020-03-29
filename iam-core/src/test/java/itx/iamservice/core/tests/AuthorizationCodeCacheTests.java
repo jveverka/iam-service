@@ -1,5 +1,6 @@
 package itx.iamservice.core.tests;
 
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
@@ -48,7 +49,8 @@ public class AuthorizationCodeCacheTests {
     @Test
     @Order(2)
     public void testIssueCode() {
-        authorizationCode = authorizationCodeCache.issue(OrganizationId.from("org01"), ProjectId.from("proj01"), UserId.from("usr01"), UUID.randomUUID().toString(), roles);
+        authorizationCode = authorizationCodeCache.issue(OrganizationId.from("org01"), ProjectId.from("proj01"),
+                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), roles);
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());
         assertTrue(verifiedAuthorizationCode.isPresent());

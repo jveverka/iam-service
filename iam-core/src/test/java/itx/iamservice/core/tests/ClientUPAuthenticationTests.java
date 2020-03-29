@@ -11,6 +11,7 @@ import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -54,6 +55,7 @@ public class ClientUPAuthenticationTests {
     private static AuthorizationCodeCache authorizationCodeCache;
     private static JWToken accessToken;
     private static JWToken refreshToken;
+    private static IdTokenRequest idTokenRequest;
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -63,6 +65,7 @@ public class ClientUPAuthenticationTests {
         tokenCache = new TokenCacheImpl(model);
         clientService = new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
+        idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
     }
 
     @Test
@@ -70,7 +73,7 @@ public class ClientUPAuthenticationTests {
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS);
-        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest);
+        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
         assertEquals(ModelUtils.IAM_ADMIN_USER.getId(), defaultClaims.getSubject());
@@ -100,7 +103,7 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(3)
     public void refreshTokenTest() {
-        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, refreshToken, scope);
+        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, refreshToken, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         assertFalse(accessToken.equals(tokensOptional.get().getAccessToken()));
         accessToken = tokensOptional.get().getAccessToken();
@@ -130,7 +133,7 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
-        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, accessToken, scope);
+        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, accessToken, scope, idTokenRequest);
         assertTrue(tokensOptional.isEmpty());
     }
 

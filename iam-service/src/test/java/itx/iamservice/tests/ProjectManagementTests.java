@@ -44,7 +44,6 @@ public class ProjectManagementTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-
     @Test
     @Order(1)
     public void initTest() {

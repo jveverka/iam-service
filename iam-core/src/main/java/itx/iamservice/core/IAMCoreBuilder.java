@@ -5,6 +5,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.ClientService;
+import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.admin.ClientManagementService;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
@@ -15,6 +16,7 @@ import itx.iamservice.core.services.caches.CacheCleanupScheduler;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
+import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
@@ -44,6 +46,7 @@ public class IAMCoreBuilder {
     private OrganizationManagerService organizationManagerService;
     private ProjectManagerService projectManagerService;
     private UserManagerService userManagerService;
+    private ProviderConfigurationService providerConfigurationService;
 
     public IAMCoreBuilder withBCProvider() {
         Security.addProvider(new BouncyCastleProvider());
@@ -112,6 +115,7 @@ public class IAMCoreBuilder {
         organizationManagerService = new OrganizationManagerServiceImpl(model);
         projectManagerService = new ProjectManagerServiceImpl(model);
         userManagerService = new UserManagerServiceImpl(model);
+        providerConfigurationService = new ProviderConfigurationServiceImpl(projectManagerService);
         return new IAMCore();
     }
 
@@ -158,6 +162,10 @@ public class IAMCoreBuilder {
 
         public UserManagerService getUserManagerService() {
             return userManagerService;
+        }
+
+        public ProviderConfigurationService getProviderConfigurationService() {
+            return providerConfigurationService;
         }
 
         @Override

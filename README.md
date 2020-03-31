@@ -42,6 +42,7 @@ java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar --spring.config.
 * [__Management APIs__](docs/apis/IAM-management-apis.md) - manage organization / project / users and credentials.
 * [__Discovery APIs__](docs/apis/IAM-discovery-apis.md) - discover organization / project / user configuration, get public keys.
 * [__Health-Check API__](docs/apis/IAM-heath-check.md) - service health check.
+* [__Provider Configuration APIs__](docs/apis/IAM-provider-configuration.md) - provider configuration discovery.
 * __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v2/api-docs```
 * __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui.html```
 

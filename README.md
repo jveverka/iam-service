@@ -20,9 +20,10 @@ This project is __WIP__, stay tuned !
 ![architecture](docs/IAM-service-architecture.svg)
 
 ### Components
-* [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone server). 
+* [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone authorization and authentication server). 
 * [__iam-core__](iam-core) - core implementation of IAM business logic (no framework dependencies).
 * [__iam-persistence__](iam-persistence) - persistence libraries for data model.
+* [__iam-examples__](iam-examples) - examples how to use and integrate with IAM-service.
 
 ### Build and Run
 System requirements: 
@@ -42,7 +43,6 @@ java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar --spring.config.
 * [__Management APIs__](docs/apis/IAM-management-apis.md) - manage organization / project / users and credentials.
 * [__Discovery APIs__](docs/apis/IAM-discovery-apis.md) - discover organization / project / user configuration, get public keys.
 * [__Health-Check API__](docs/apis/IAM-heath-check.md) - service health check.
-* [__Provider Configuration APIs__](docs/apis/IAM-provider-configuration.md) - provider configuration discovery.
 * __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v2/api-docs```
 * __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui.html```
 
@@ -54,4 +54,5 @@ java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar --spring.config.
 * [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0
 * [RFC6749](https://tools.ietf.org/html/rfc6749) - The OAuth 2.0 Authorization Framework
 * [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
+* [RFC7517](https://tools.ietf.org/html/rfc7517) - JSON Web Key (JWK)
 * [References](docs/references.md)

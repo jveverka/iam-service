@@ -9,11 +9,14 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
+import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.GrantType;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
+import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
 import java.util.Set;
@@ -47,9 +52,12 @@ public class AuthenticationController {
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
     private final AuthenticationService authenticationService;
+    private final ProviderConfigurationService providerConfigurationService;
 
-    public AuthenticationController(@Autowired AuthenticationService authenticationService) {
+    public AuthenticationController(@Autowired AuthenticationService authenticationService,
+                                    @Autowired ProviderConfigurationService providerConfigurationService) {
         this.authenticationService = authenticationService;
+        this.providerConfigurationService = providerConfigurationService;
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -148,6 +156,24 @@ public class AuthenticationController {
             LOG.info("Login Failed: redirectURI={}",  redirectURI);
             return ResponseEntity.status(HttpStatus.FOUND).location(redirectURI).build();
         }
+    }
+
+    @GetMapping(path = "/{organization-id}/{project-id}/.well-known/openid-configuration", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProviderConfigurationResponse> getConfiguration(@PathVariable("organization-id") String organizationId,
+                                                                          @PathVariable("project-id") String projectId,
+                                                                          HttpServletRequest request) throws MalformedURLException {
+        LOG.info("Configuration: {}", request.getRequestURL().toString());
+        URL url = new URL(request.getRequestURL().toString());
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
+        ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
+        ProviderConfigurationResponse configuration = providerConfigurationService.getConfiguration(providerConfigurationRequest);
+        return ResponseEntity.ok(configuration);
+    }
+
+    @GetMapping(path = {"/{organization-id}/{project-id}/certs" , "/{organization-id}/{project-id}/.well-known/jwks.json" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    private ResponseEntity<String> getCerts() {
+        LOG.info("getCerts: ");
+        return ResponseEntity.ok().build();
     }
 
     private String getParameters(Enumeration<String> parameters) {

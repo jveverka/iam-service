@@ -16,3 +16,6 @@ project(':iam-persistence-file-system') {
         implementation project(':iam-core')
     }
 }
+
+project(':iam-resource-server') {
+}

@@ -42,7 +42,7 @@ public class ProviderConfigurationTests {
     @Order(1)
     public void checkCreatedProjectTest() {
         ResponseEntity<ProviderConfigurationResponse> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/config/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration", ProviderConfigurationResponse.class);
+                "http://localhost:" + port + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration", ProviderConfigurationResponse.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ProviderConfigurationResponse providerConfigurationResponse = response.getBody();
         assertNotNull(providerConfigurationResponse);

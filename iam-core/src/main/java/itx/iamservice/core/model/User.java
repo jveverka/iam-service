@@ -22,6 +22,8 @@ public interface User {
 
     KeyPairSerialized getKeyPairSerialized();
 
+    KeyPairData getKeyPairData();
+
     Collection<Credentials> getCredentials();
 
     void addRole(RoleId roleId);

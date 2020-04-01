@@ -1,5 +1,6 @@
 package itx.iamservice.core.tests;
 
+import itx.iamservice.core.model.KeyPairId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.utils.ModelUtils;
@@ -38,6 +39,7 @@ public class TokenCacheTests {
     private static final Long DURATION = 3L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
+    private static KeyPairId keyPairId;
     private static KeyPair keyPair;
     private static Model model;
     private static TokenCache tokenCache;
@@ -49,7 +51,8 @@ public class TokenCacheTests {
         keyPair = TokenUtils.generateKeyPair();
         model = ModelUtils.createDefaultModel("top-secret");
         tokenCache = new TokenCacheImpl(model);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyPair.getPrivate(), TokenType.BEARER);
+        keyPairId = KeyPairId.from("key-001");
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyPairId, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

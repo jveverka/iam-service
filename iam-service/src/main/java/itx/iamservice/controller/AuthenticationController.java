@@ -14,6 +14,7 @@ import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.GrantType;
 import itx.iamservice.core.services.dto.IdTokenRequest;
+import itx.iamservice.core.services.dto.JWKResponse;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
@@ -158,6 +159,7 @@ public class AuthenticationController {
         }
     }
 
+    //https://openid.net/specs/openid-connect-discovery-1_0.html
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/openid-configuration", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProviderConfigurationResponse> getConfiguration(@PathVariable("organization-id") String organizationId,
                                                                           @PathVariable("project-id") String projectId,
@@ -170,10 +172,13 @@ public class AuthenticationController {
         return ResponseEntity.ok(configuration);
     }
 
-    @GetMapping(path = {"/{organization-id}/{project-id}/certs" , "/{organization-id}/{project-id}/.well-known/jwks.json" }, produces = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<String> getCerts() {
+    //https://tools.ietf.org/html/rfc7517
+    @GetMapping(path = "/{organization-id}/{project-id}/.well-known/jwks.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    private ResponseEntity<JWKResponse> getCerts(@PathVariable("organization-id") String organizationId,
+                                                 @PathVariable("project-id") String projectId) {
         LOG.info("getCerts: ");
-        return ResponseEntity.ok().build();
+        JWKResponse jwkData = providerConfigurationService.getJWKData(OrganizationId.from(organizationId), ProjectId.from(projectId));
+        return ResponseEntity.ok(jwkData);
     }
 
     private String getParameters(Enumeration<String> parameters) {

@@ -6,7 +6,7 @@
   Base url in this case is ``http://localhost:8080/services/authentication/{organization-id}/{project-id}``  
   __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/.well-known/openid-configuration``
 
-* Provider configuration __jwks_uri__ as specified by [RFC7517](https://tools.ietf.org/html/rfc7517) JSON Web Key (JWK).
+* Provider configuration __jwks_uri__ as specified by [RFC7517](https://tools.ietf.org/html/rfc7517) JSON Web Key (JWK).  
   __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/.well-known/jwks.json
 
 * __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/token``

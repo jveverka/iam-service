@@ -96,4 +96,10 @@ public class OrganizationImpl implements Organization {
         return keyPairSerialized;
     }
 
+    @Override
+    @JsonIgnore
+    public KeyPairData getKeyPairData() {
+        return keyPairData;
+    }
+
 }

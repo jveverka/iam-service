@@ -23,6 +23,8 @@ public interface Project {
 
     KeyPairSerialized getKeyPairSerialized();
 
+    KeyPairData getKeyPairData();
+
     void add(User user);
 
     boolean remove(UserId userId);

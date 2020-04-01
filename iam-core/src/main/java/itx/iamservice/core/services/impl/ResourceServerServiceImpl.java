@@ -75,7 +75,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 Project project = projectOptional.get();
                 Set<UserId> userIds = projectOptional.get().getUsers().stream().map(user -> user.getId()).collect(Collectors.toSet());
                 ProjectInfo projectInfo = new ProjectInfo(project.getId(), project.getOrganizationId(),
-                        project.getName(), organizationOptional.get().getCertificate(), project.getCertificate(), project.getClients(), userIds);
+                        project.getName(), organizationOptional.get().getKeyPairData(), project.getKeyPairData(), project.getClients(), userIds);
                 return Optional.of(projectInfo);
             }
         }
@@ -91,8 +91,8 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 Optional<User> userOptional = projectOptional.get().getUser(userId);
                 if (userOptional.isPresent()) {
                     UserInfo userInfo = new UserInfo(userId, projectId, organizationId,
-                            userOptional.get().getName(), organizationOptional.get().getCertificate(),
-                            projectOptional.get().getCertificate(), userOptional.get().getCertificate(),
+                            userOptional.get().getName(), organizationOptional.get().getKeyPairData(),
+                            projectOptional.get().getKeyPairData(), userOptional.get().getKeyPairData(),
                             userOptional.get().getRoles());
                     return Optional.of(userInfo);
                 }

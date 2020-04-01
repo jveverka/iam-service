@@ -2,6 +2,7 @@ package itx.iamservice.core.services;
 
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.services.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 
@@ -16,5 +17,13 @@ public interface ProviderConfigurationService {
      * @return provider configuration as specified above.
      */
     ProviderConfigurationResponse getConfiguration(ProviderConfigurationRequest request);
+
+    /**
+     * Get JWK data for project
+     * @param organizationId
+     * @param projectId
+     * @return
+     */
+    JWKResponse getJWKData(OrganizationId organizationId, ProjectId projectId);
 
 }

@@ -102,6 +102,12 @@ public class UserImpl implements User {
     }
 
     @Override
+    @JsonIgnore
+    public KeyPairData getKeyPairData() {
+        return keyPairData;
+    }
+
+    @Override
     public Collection<Credentials> getCredentials() {
         return credentials.values().stream().collect(Collectors.toList());
     }

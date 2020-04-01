@@ -34,4 +34,6 @@ public interface Organization {
 
     KeyPairSerialized getKeyPairSerialized();
 
+    KeyPairData getKeyPairData();
+
 }

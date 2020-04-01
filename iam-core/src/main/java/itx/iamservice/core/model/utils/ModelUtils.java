@@ -4,6 +4,7 @@ import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.KeyPairData;
+import itx.iamservice.core.model.KeyPairId;
 import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
@@ -169,19 +170,19 @@ public final class ModelUtils {
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
         Set<ProjectId> projects = organization.getProjects().stream().map(project -> project.getId()).collect(Collectors.toSet());
-        return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getCertificate());
+        return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getKeyPairData());
     }
 
     public static KeyPairSerialized serializeKeyPair(KeyPairData keyPairData) throws PKIException {
         String privateKey = TokenUtils.serializePrivateKey(keyPairData.getPrivateKey());
         String certificate = TokenUtils.serializeX509Certificate(keyPairData.getX509Certificate());
-        return new KeyPairSerialized(privateKey, certificate);
+        return new KeyPairSerialized(keyPairData.getId(), privateKey, certificate);
     }
 
     public static KeyPairData deserializeKeyPair(KeyPairSerialized keyPairData) throws PKIException {
         PrivateKey privateKey = TokenUtils.deserializePrivateKey(keyPairData.getPrivateKey());
         X509Certificate certificate = TokenUtils.deserializeX509Certificate(keyPairData.getX509Certificate());
-        return new KeyPairData(privateKey, certificate);
+        return new KeyPairData(keyPairData.getId(), privateKey, certificate);
     }
 
     public static String getSha512HashBase64(String data) throws NoSuchAlgorithmException {

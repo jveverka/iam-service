@@ -99,6 +99,12 @@ public class ProjectImpl implements Project {
     }
 
     @Override
+    @JsonIgnore
+    public KeyPairData getKeyPairData() {
+        return keyPairData;
+    }
+
+    @Override
     public Collection<Role> getRoles() {
         return roles.values().stream().collect(Collectors.toList());
     }

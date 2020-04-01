@@ -3,6 +3,7 @@ package itx.iamservice.tests;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -53,6 +54,17 @@ public class ProviderConfigurationTests {
         assertNotNull(providerConfigurationResponse.getScopesSupported());
         assertNotNull(providerConfigurationResponse.getSubjectTypesSupported());
         assertNotNull(providerConfigurationResponse.getTokenEndpoint());
+    }
+
+    @Test
+    @Order(2)
+    public void checkGetJsonWebKeysTest() {
+        ResponseEntity<JWKResponse> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json", JWKResponse.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        JWKResponse jwkResponse = response.getBody();
+        assertNotNull(jwkResponse);
+        assertNotNull(jwkResponse.getKeys());
     }
 
 }

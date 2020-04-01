@@ -7,6 +7,7 @@ import itx.iamservice.core.model.AuthenticationRequest;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.User;
@@ -63,14 +64,16 @@ public class ClientServiceImpl implements ClientService {
                     Project project = projectOptional.get();
                     Set<RoleId> filteredRoles = TokenUtils.filterRoles(client.getRoles(), scope);
                     Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
+                    KeyPairData keyPairData = project.getKeyPairData();
                     JWToken accessToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
-                            roles, project.getPrivateKey(), TokenType.BEARER);
+                            roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
                     JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                             client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
-                            roles, project.getPrivateKey(), TokenType.REFRESH);
+                            roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                     JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
-                            client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, project.getPrivateKey());
+                            client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                            keyPairData.getId(), keyPairData.getPrivateKey());
                     Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
                             client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L, idToken);
                     return Optional.of(tokens);
@@ -111,14 +114,16 @@ public class ClientServiceImpl implements ClientService {
                 if (valid) {
                     Set<RoleId> filteredRoles = TokenUtils.filterRoles(user.getRoles(), authenticationRequest.getScope());
                     Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
+                    KeyPairData keyPairData = user.getKeyPairData();
                     JWToken accessToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
                             user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
-                            roles, user.getPrivateKey(), TokenType.BEARER);
+                            roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
                     JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
                             user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
-                            roles, user.getPrivateKey(), TokenType.REFRESH);
+                            roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                     JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, authenticationRequest.getClientCredentials().getId(),
-                            user.getId().getId(), user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, user.getPrivateKey());
+                            user.getId().getId(), user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                            keyPairData.getId(), keyPairData.getPrivateKey());
                     Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
                             user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L, idToken);
                     return Optional.of(tokens);
@@ -159,14 +164,16 @@ public class ClientServiceImpl implements ClientService {
                     if (TokenType.REFRESH.getType().equals(tokenType)) {
                         Set<RoleId> filteredRoles = TokenUtils.filterRoles(user.getRoles(), scope);
                         Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
+                        KeyPairData keyPairData = user.getKeyPairData();
                         JWToken accessToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
                                 user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
-                                roles, user.getPrivateKey(), TokenType.BEARER);
+                                roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
                         JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, user.getId(),
                                 user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
-                                roles, user.getPrivateKey(), TokenType.REFRESH);
+                                roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                         JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, clientCredentials.getId(), user.getId().getId(),
-                                user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, user.getPrivateKey());
+                                user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                                keyPairData.getId(), keyPairData.getPrivateKey());
                         Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
                                 user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L, idToken);
                         return Optional.of(tokens);
@@ -183,14 +190,16 @@ public class ClientServiceImpl implements ClientService {
                         Project project = projectOptional.get();
                         Set<RoleId> filteredRoles = TokenUtils.filterRoles(client.getRoles(), scope);
                         Set<String> roles = filteredRoles.stream().map(roleId -> roleId.getId()).collect(Collectors.toSet());
+                        KeyPairData keyPairData = project.getKeyPairData();
                         JWToken accessToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                                 client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
-                                roles, project.getPrivateKey(), TokenType.BEARER);
+                                roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
                         JWToken refreshToken = TokenUtils.issueToken(organizationId, projectId, client.getId(),
                                 client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
-                                roles, project.getPrivateKey(), TokenType.REFRESH);
+                                roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                         JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
-                                client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, project.getPrivateKey());
+                                client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                                keyPairData.getId(), keyPairData.getPrivateKey());
                         Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
                                 client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L, idToken);
                         return Optional.of(tokens);
@@ -250,14 +259,16 @@ public class ClientServiceImpl implements ClientService {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 Set<String> roles = context.getRoles().stream().map(r -> r.getId()).collect(Collectors.toSet());
+                KeyPairData keyPairData = user.getKeyPairData();
                 JWToken accessToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), user.getId(),
                         user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS,
-                        roles, user.getPrivateKey(), TokenType.BEARER);
+                        roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
                 JWToken refreshToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), user.getId(),
                         user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS,
-                        roles, user.getPrivateKey(), TokenType.REFRESH);
+                        roles, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                 JWToken idToken = TokenUtils.issueIdToken(context.getOrganizationId(), context.getProjectId(), context.getClientId(), user.getId().getId(),
-                        user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest, user.getPrivateKey());
+                        user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                        keyPairData.getId(), keyPairData.getPrivateKey());
                 Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
                         user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L, idToken);
                 return Optional.of(tokens);

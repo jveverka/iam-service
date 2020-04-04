@@ -11,7 +11,7 @@ public class JWKResponse {
     private final Collection<JWKData> keys;
 
     public JWKResponse() {
-        this.keys = Collections.EMPTY_LIST;
+        this.keys = Collections.emptyList();
     }
 
     @JsonCreator

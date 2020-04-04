@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProviderConfigurationResponse {
@@ -34,6 +35,7 @@ public class ProviderConfigurationResponse {
     @JsonProperty("id_token_encryption_alg_values_supported")
     private final String[] idTokenEncryptionAlgValuesSupported;
 
+    @JsonCreator
     public ProviderConfigurationResponse(@JsonProperty("issuer") String issuer,
                                          @JsonProperty("authorization_endpoint") String authorizationEndpoint,
                                          @JsonProperty("token_endpoint") String tokenEndpoint,

@@ -9,6 +9,7 @@ import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
@@ -18,7 +19,7 @@ import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -127,7 +128,7 @@ public final class ModelUtils {
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
-        Set<ProjectId> projects = organization.getProjects().stream().map(project -> project.getId()).collect(Collectors.toSet());
+        Set<ProjectId> projects = organization.getProjects().stream().map(Project::getId).collect(Collectors.toSet());
         return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getKeyPairData());
     }
 
@@ -145,7 +146,7 @@ public final class ModelUtils {
 
     public static String getSha512HashBase64(String data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
-        byte[] hash = md.digest(data.getBytes(Charset.forName("UTF-8")));
+        byte[] hash = md.digest(data.getBytes(StandardCharsets.UTF_8));
         return Base64.toBase64String(hash);
     }
 
@@ -155,19 +156,18 @@ public final class ModelUtils {
      * @return parsed {@link Set} of scopes.
      */
     public static Set<RoleId> getScopes(String scope) {
-        Set<RoleId> scopes = new HashSet<>();
         if (scope == null) {
-            scopes = Collections.emptySet();
+            return Collections.emptySet();
         } else {
-            scopes = new HashSet<>();
+            Set<RoleId> scopes = new HashSet<>();
             String[] rawScopes = scope.trim().split(" ");
             for (String s: rawScopes) {
                 if (!s.isEmpty()) {
                     scopes.add(RoleId.from(s));
                 }
             }
+            return scopes;
         }
-        return scopes;
     }
 
 }

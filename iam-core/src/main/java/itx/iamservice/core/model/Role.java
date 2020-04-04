@@ -29,9 +29,9 @@ public class Role {
         this.id = id;
         this.name = name;
         this.permissions = new ConcurrentHashMap<>();
-        permissions.forEach(permission -> {
-            this.permissions.put(permission.getId(), permission);
-        });
+        permissions.forEach(permission ->
+            this.permissions.put(permission.getId(), permission)
+        );
     }
 
     public RoleId getId() {

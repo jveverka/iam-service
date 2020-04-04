@@ -61,9 +61,9 @@ public class UserImpl implements User {
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
         this.roles.addAll(roles);
-        credentials.forEach(c->{
-            this.credentials.put(c.getType(), c);
-        });
+        credentials.forEach(c->
+            this.credentials.put(c.getType(), c)
+        );
     }
 
     @Override

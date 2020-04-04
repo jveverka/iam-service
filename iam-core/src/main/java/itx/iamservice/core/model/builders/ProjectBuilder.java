@@ -52,9 +52,9 @@ public final class ProjectBuilder {
     }
 
     public ProjectBuilder addRole(Role role)  {
-        role.getPermissions().forEach(p -> {
-            project.addPermission(p);
-        });
+        role.getPermissions().forEach(p ->
+            project.addPermission(p)
+        );
         project.addRole(role);
         return this;
     }

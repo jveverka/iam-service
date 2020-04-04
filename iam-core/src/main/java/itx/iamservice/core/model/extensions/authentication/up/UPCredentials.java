@@ -61,8 +61,8 @@ public class UPCredentials implements Credentials<UPAuthenticationRequest> {
     @Override
     public boolean verify(UPAuthenticationRequest authenticationRequest) {
         try {
-            String hash = generateHash(salt, authenticationRequest.getPassword());
-            return userId.equals(authenticationRequest.getUserId()) && this.hash.equals(hash);
+            String generatedHash = generateHash(salt, authenticationRequest.getPassword());
+            return userId.equals(authenticationRequest.getUserId()) && this.hash.equals(generatedHash);
         } catch (NoSuchAlgorithmException e) {
             LOG.error("Error generating hash: ", e);
             return false;

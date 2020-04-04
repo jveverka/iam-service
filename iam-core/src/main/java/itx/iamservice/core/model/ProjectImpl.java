@@ -57,18 +57,18 @@ public class ProjectImpl implements Project {
         this.permissions = new ConcurrentHashMap<>();
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
-        users.forEach(u->{
-            this.users.put(u.getId(), u);
-        });
-        roles.forEach(r->{
-            this.roles.put(r.getId(), r);
-        });
-        permissions.forEach(p->{
-            this.permissions.put(p.getId(), p);
-        });
-        clients.forEach(c->{
-            this.clients.put(c.getId(), c);
-        });
+        users.forEach(u->
+            this.users.put(u.getId(), u)
+        );
+        roles.forEach(r->
+            this.roles.put(r.getId(), r)
+        );
+        permissions.forEach(p->
+            this.permissions.put(p.getId(), p)
+        );
+        clients.forEach(c->
+            this.clients.put(c.getId(), c)
+        );
     }
 
     @Override

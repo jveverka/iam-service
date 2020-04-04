@@ -13,9 +13,6 @@ public class ProviderConfigurationResponse {
     @JsonProperty("token_endpoint")
     private final String tokenEndpoint;
 
-    @JsonProperty("userinfo_endpoint")
-    private final String userInfoEndpoint;
-
     @JsonProperty("jwks_uri")
     private final String jwksUri;
 
@@ -40,7 +37,6 @@ public class ProviderConfigurationResponse {
     public ProviderConfigurationResponse(@JsonProperty("issuer") String issuer,
                                          @JsonProperty("authorization_endpoint") String authorizationEndpoint,
                                          @JsonProperty("token_endpoint") String tokenEndpoint,
-                                         @JsonProperty("userinfo_endpoint") String userInfoEndpoint,
                                          @JsonProperty("jwks_uri") String jwksUri,
                                          @JsonProperty("scopes_supported") String[] scopesSupported,
                                          @JsonProperty("response_types_supported") String[] responseTypesSupported,
@@ -51,7 +47,6 @@ public class ProviderConfigurationResponse {
         this.issuer = issuer;
         this.authorizationEndpoint = authorizationEndpoint;
         this.tokenEndpoint = tokenEndpoint;
-        this.userInfoEndpoint = userInfoEndpoint;
         this.jwksUri = jwksUri;
         this.scopesSupported = scopesSupported;
         this.responseTypesSupported = responseTypesSupported;
@@ -71,10 +66,6 @@ public class ProviderConfigurationResponse {
 
     public String getTokenEndpoint() {
         return tokenEndpoint;
-    }
-
-    public String getUserInfoEndpoint() {
-        return userInfoEndpoint;
     }
 
     public String getJwksUri() {

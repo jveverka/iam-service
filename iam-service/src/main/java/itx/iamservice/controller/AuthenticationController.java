@@ -118,7 +118,9 @@ public class AuthenticationController {
                                           @RequestParam("client_id") String clientId,
                                           @RequestParam("redirect_uri") String redirectUri,
                                           @RequestParam("state") String state,
-                                          @RequestParam(name = "scope", required = false) String scope) {
+                                          @RequestParam(name = "scope", required = false) String scope,
+                                          HttpServletRequest request) {
+        LOG.info("getAuth: {}?{}", request.getRequestURL(), request.getQueryString());
         LOG.info("getAuth: {}/{} responseType={} clientId={} redirectUri={} state={} scope={}", organizationId, projectId, responseType, clientId, redirectUri, state, scope);
         if (scope==null) scope = "";
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");

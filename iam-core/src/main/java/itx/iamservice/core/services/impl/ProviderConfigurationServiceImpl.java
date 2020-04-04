@@ -46,9 +46,11 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
         String tokenEndpoint = issuer + "/token";
         String jwksUri = issuer + "/.well-known/jwks.json";
         String introspectionEndpoint = issuer + "/introspect";
+        String revocationEndpoint = issuer + "/revoke";
         return new ProviderConfigurationResponse(issuer, authorizationEndpoint, tokenEndpoint, jwksUri,
                 scopesSupported, responseTypes, grantTypes, subjectTypesSupported,
-                idTokenSigningAlgValuesSupported, idTokenEncryptionAlgValuesSupported, introspectionEndpoint);
+                idTokenSigningAlgValuesSupported, idTokenEncryptionAlgValuesSupported,
+                introspectionEndpoint, revocationEndpoint);
     }
 
     @Override

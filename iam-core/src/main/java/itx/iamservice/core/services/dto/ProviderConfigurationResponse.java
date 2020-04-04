@@ -38,6 +38,9 @@ public class ProviderConfigurationResponse {
     @JsonProperty("introspection_endpoint")
     private final String introspectionEndpoint;
 
+    @JsonProperty("revocation_endpoint")
+    private final String revocationEndpoint;
+
     @JsonCreator
     public ProviderConfigurationResponse(@JsonProperty("issuer") String issuer,
                                          @JsonProperty("authorization_endpoint") String authorizationEndpoint,
@@ -49,7 +52,8 @@ public class ProviderConfigurationResponse {
                                          @JsonProperty("subject_types_supported") String[] subjectTypesSupported,
                                          @JsonProperty("id_token_signing_alg_values_supported") String[] idTokenSigningAlgValuesSupported,
                                          @JsonProperty("id_token_encryption_alg_values_supported") String[] idTokenEncryptionAlgValuesSupported,
-                                         @JsonProperty("introspection_endpoint") String introspectionEndpoint) {
+                                         @JsonProperty("introspection_endpoint") String introspectionEndpoint,
+                                         @JsonProperty("revocation_endpoint") String revocationEndpoint) {
         this.issuer = issuer;
         this.authorizationEndpoint = authorizationEndpoint;
         this.tokenEndpoint = tokenEndpoint;
@@ -61,6 +65,7 @@ public class ProviderConfigurationResponse {
         this.idTokenSigningAlgValuesSupported = idTokenSigningAlgValuesSupported;
         this.idTokenEncryptionAlgValuesSupported = idTokenEncryptionAlgValuesSupported;
         this.introspectionEndpoint = introspectionEndpoint;
+        this.revocationEndpoint = revocationEndpoint;
     }
 
     public String getIssuer() {
@@ -105,6 +110,10 @@ public class ProviderConfigurationResponse {
 
     public String getIntrospectionEndpoint() {
         return introspectionEndpoint;
+    }
+
+    public String getRevocationEndpoint() {
+        return revocationEndpoint;
     }
 
 }

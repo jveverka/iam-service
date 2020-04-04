@@ -40,7 +40,12 @@ public final class ProjectBuilder {
     }
 
     public ClientBuilder addClient(ClientId id, String name) {
-        ClientCredentials credentials = new ClientCredentials(id, UUID.randomUUID().toString());
+        String secret = UUID.randomUUID().toString();
+        return addClient(id, name, secret);
+    }
+
+    public ClientBuilder addClient(ClientId id, String name, String secret) {
+        ClientCredentials credentials = new ClientCredentials(id, secret);
         Client client = new Client(credentials, name, 3600*1000L, 24*3600*1000L);
         project.addClient(client);
         return new ClientBuilder(this, client);

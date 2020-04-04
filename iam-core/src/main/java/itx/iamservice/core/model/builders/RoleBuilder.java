@@ -31,7 +31,9 @@ public final class RoleBuilder {
     }
 
     public Role build() {
-        RoleId id = RoleId.from(UUID.randomUUID().toString());
+        if (id == null) {
+            id = RoleId.from(UUID.randomUUID().toString());
+        }
         return new Role(id, name, permissions);
     }
 

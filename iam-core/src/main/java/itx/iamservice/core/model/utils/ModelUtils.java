@@ -1,28 +1,18 @@
 package itx.iamservice.core.model.utils;
 
-import itx.iamservice.core.model.Client;
-import itx.iamservice.core.model.ClientCredentials;
+import itx.iamservice.core.IAMModelBuilders;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.KeyPairData;
-import itx.iamservice.core.model.KeyPairId;
 import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
-import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.Permission;
-import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
-import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
-import itx.iamservice.core.model.UserImpl;
-import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
@@ -37,135 +27,103 @@ import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class ModelUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelUtils.class);
 
-    private static final String IAM_ADMINS_NAME = "iam-admins";
+    public static final String IAM_ADMINS_NAME = "iam-admins";
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
     public static final UserId IAM_ADMIN_USER = UserId.from("admin");
     public static final ClientId IAM_ADMIN_CLIENT_ID = ClientId.from("admin-client");
-    public static final ClientCredentials IAM_ADMIN_CLIENT_CREDENTIALS = new ClientCredentials(IAM_ADMIN_CLIENT_ID, "top-secret");
+    public static final String IAM_ADMIN_CLIENT_SECRET = "top-secret";
 
     public static final String IAM_SERVICE = "iam-admin-service";
     public static final String READ_ACTION = "read";
     public static final String MODIFY_ACTION = "modify";
+    public static final String CREATE_ACTION = "create";
+    public static final String ORGANIZATION_RESOURCE = "organizations";
+    public static final String PROJECTS_RESOURCE = "projects";
+    public static final String USERS_RESOURCE = "users";
+    public static final String CLIENTS_RESOURCE = "clients";
+    public static final String ROLES_RESOURCE = "roles";
+    public static final String PERMISSIONS_RESOURCE = "permissions";
 
     private ModelUtils() {
     }
 
-    public static String createId() {
-        return UUID.randomUUID().toString();
-    }
-
-    public static OrganizationId createOrganizationId() {
-        return OrganizationId.from(createId());
-    }
-
-    public static ProjectId createProjectId() {
-        return ProjectId.from(createId());
-    }
-
-    public static UserId createUserId() {
-        return UserId.from(createId());
-    }
-
-    public static RoleId createRoleId() {
-        return RoleId.from(createId());
-    }
-
     public static Model createDefaultModel(String iamAdminPassword) throws PKIException {
-        String name = "default-model";
-        ModelId id = ModelId.from(UUID.randomUUID().toString());
-        LOG.info("#MODEL: Initializing default model id={} name={} ...", id, name);
+
+        Role manageOrganizationsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-organizations"), "Can manage organizations.")
+                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
+                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, MODIFY_ACTION)
+                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, CREATE_ACTION)
+                .build();
+
+        Role manageProjectsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-projects"), "Can manage projects.")
+                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, READ_ACTION)
+                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, MODIFY_ACTION)
+                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, CREATE_ACTION)
+                .build();
+
+        Role manageUsersRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-users"), "Can manage users.")
+                .addPermission(IAM_SERVICE, USERS_RESOURCE, READ_ACTION)
+                .addPermission(IAM_SERVICE, USERS_RESOURCE, MODIFY_ACTION)
+                .addPermission(IAM_SERVICE, USERS_RESOURCE, CREATE_ACTION)
+                .build();
+
+        Role manageClientsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-clients"), "Can manage clients.")
+                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, READ_ACTION)
+                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, MODIFY_ACTION)
+                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, CREATE_ACTION)
+                .build();
+
+        Role manageRolesRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-roles"), "Can manage roles.")
+                .addPermission(IAM_SERVICE, ROLES_RESOURCE, READ_ACTION)
+                .addPermission(IAM_SERVICE, ROLES_RESOURCE, MODIFY_ACTION)
+                .addPermission(IAM_SERVICE, ROLES_RESOURCE, CREATE_ACTION)
+                .build();
+
+        Role managePermissionsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-permissions"), "Can manage permissions.")
+                .addPermission(IAM_SERVICE, PERMISSIONS_RESOURCE, READ_ACTION)
+                .addPermission(IAM_SERVICE, PERMISSIONS_RESOURCE, MODIFY_ACTION)
+                .addPermission(IAM_SERVICE, PERMISSIONS_RESOURCE, CREATE_ACTION)
+                .build();
+
+        Role clientReaderRole = IAMModelBuilders.roleBuilder(RoleId.from("read-organizations"), "Can read organizations.")
+                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
+                .build();
+
+        ModelId id = ModelId.from("default-model-001");
+        String modelName = "Default Model";
+
+        LOG.info("#MODEL: Initializing default model id={} name={} ...", id, modelName);
         LOG.info("#MODEL: Default organizationId={}, projectId={}", IAM_ADMINS_ORG.getId(), IAM_ADMINS_PROJECT.getId());
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
-        LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_CREDENTIALS.getId(), IAM_ADMIN_CLIENT_CREDENTIALS.getSecret());
-        ModelImpl model = new ModelImpl(id, name);
-        Organization organization = new OrganizationImpl(IAM_ADMINS_ORG, IAM_ADMINS_NAME);
-        Project project = new ProjectImpl(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME, organization.getId(), organization.getPrivateKey());
-        createAdminRoles().forEach(r-> project.addRole(r));
-        createClientRoles().forEach(r-> project.addRole(r));
-        assignProjectPermissionsToRoles(project);
-
-        Client client = new Client(IAM_ADMIN_CLIENT_CREDENTIALS, "client-1",3600*1000L, 24*3600*1000L);
-        createClientRoles().forEach(r-> client.addRole(r.getId()));
-        project.addClient(client);
-
-        User user = new UserImpl(IAM_ADMIN_USER, "iam-admin", project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
-        UPCredentials upCredentials = new UPCredentials(user.getId(), iamAdminPassword);
-        user.addCredentials(upCredentials);
-        createAdminRoles().forEach(r -> user.addRole(r.getId()));
-
-        organization.add(project);
-        project.add(user);
-        model.add(organization);
-        return model;
-    }
-
-    private static Set<Role> createClientRoles() {
-        Role clientReaderRole = new Role(RoleId.from("read-organizations"), "Can read organizations.");
-        Set<Role> roles = new HashSet<>();
-        roles.add(clientReaderRole);
-        return roles;
-    }
-
-    private static void assignProjectPermissionsToRoles(Project project) {
-        //1. create new permission instances
-        Permission readOrganizationsPermission = new Permission(IAM_SERVICE, "organizations", READ_ACTION);
-        Permission modifyOrganizationPermission = new Permission(IAM_SERVICE, "organizations", MODIFY_ACTION);
-        Permission readProjectsPermission = new Permission(IAM_SERVICE, "projects", READ_ACTION);
-        Permission modifyProjectsPermission = new Permission(IAM_SERVICE, "projects", MODIFY_ACTION);
-        Permission readUsersRole = new Permission(IAM_SERVICE, "users", READ_ACTION);
-        Permission modifyUsersRole =  new Permission(IAM_SERVICE, "users", MODIFY_ACTION);
-        Permission readRolePermission = new Permission(IAM_SERVICE, "roles", READ_ACTION);
-        Permission modifyRolePermission = new Permission(IAM_SERVICE, "roles", MODIFY_ACTION);
-        Permission readPermissionPermission = new Permission(IAM_SERVICE, "permissions", READ_ACTION);
-        Permission modifyPermissionPermission = new Permission(IAM_SERVICE, "permissions", MODIFY_ACTION);
-
-        //2. add permissions to project
-        project.addPermission(readOrganizationsPermission);
-        project.addPermission(modifyOrganizationPermission);
-        project.addPermission(readProjectsPermission);
-        project.addPermission(modifyProjectsPermission);
-        project.addPermission(readUsersRole);
-        project.addPermission(modifyUsersRole);
-        project.addPermission(readRolePermission);
-        project.addPermission(modifyRolePermission);
-        project.addPermission(readPermissionPermission);
-        project.addPermission(modifyPermissionPermission);
-
-        //3. link roles to permissions
-        project.addPermissionToRole(RoleId.from("manage-organizations"), readOrganizationsPermission.getId());
-        project.addPermissionToRole(RoleId.from("read-organizations"), readOrganizationsPermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-organizations"), modifyOrganizationPermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-projects"), readProjectsPermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-projects"), modifyProjectsPermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-users"), readUsersRole.getId());
-        project.addPermissionToRole(RoleId.from("manage-users"), modifyUsersRole.getId());
-        project.addPermissionToRole(RoleId.from("manage-roles"), readRolePermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-roles"), modifyRolePermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-permissions"), readPermissionPermission.getId());
-        project.addPermissionToRole(RoleId.from("manage-permissions"), modifyPermissionPermission.getId());
-    }
-
-    private static Set<Role> createAdminRoles() {
-        Role manageOrganizationsRole = new Role(RoleId.from("manage-organizations"), "Can manage organizations.");
-        Role manageProjectsRole = new Role(RoleId.from("manage-projects"), "Can manage projects.");
-        Role manageUsersRole = new Role(RoleId.from("manage-users"), "Can manage users.");
-        Role manageRolesRole = new Role(RoleId.from("manage-roles"), "Can manage roles.");
-        Role managePermissionsRole = new Role(RoleId.from("manage-permissions"), "Can manage permissions.");
-        Set<Role> roles = new HashSet<>();
-        roles.add(manageOrganizationsRole);
-        roles.add(manageProjectsRole);
-        roles.add(manageUsersRole);
-        roles.add(manageRolesRole);
-        roles.add(managePermissionsRole);
-        return roles;
+        LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), IAM_ADMIN_CLIENT_SECRET);
+        return IAMModelBuilders.modelBuilder(id, modelName)
+                .addOrganization(IAM_ADMINS_ORG, IAM_ADMINS_NAME)
+                .addProject(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME)
+                    .addRole(manageOrganizationsRole)
+                    .addRole(manageProjectsRole)
+                    .addRole(manageUsersRole)
+                    .addRole(manageClientsRole)
+                    .addRole(manageRolesRole)
+                    .addRole(managePermissionsRole)
+                    .addClient(IAM_ADMIN_CLIENT_ID, "client-1", IAM_ADMIN_CLIENT_SECRET)
+                        .addRole(clientReaderRole.getId())
+                    .and()
+                    .addUser(IAM_ADMIN_USER, "iam-admin")
+                        .addUserNamePasswordCredentials(IAM_ADMIN_USER, iamAdminPassword)
+                        .addRole(manageOrganizationsRole.getId())
+                        .addRole(manageProjectsRole.getId())
+                        .addRole(manageUsersRole.getId())
+                        .addRole(manageClientsRole.getId())
+                        .addRole(manageRolesRole.getId())
+                        .addRole(managePermissionsRole.getId())
+                .build();
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {

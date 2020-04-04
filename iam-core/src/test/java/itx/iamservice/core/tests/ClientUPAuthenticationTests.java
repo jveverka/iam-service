@@ -3,6 +3,7 @@ package itx.iamservice.core.tests;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.Project;
@@ -72,7 +73,8 @@ public class ClientUPAuthenticationTests {
     @Order(1)
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
-        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, clientCredentials);
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
@@ -81,7 +83,7 @@ public class ClientUPAuthenticationTests {
         assertEquals(ModelUtils.IAM_ADMINS_PROJECT.getId(), defaultClaims.getAudience());
         List<String> roles = (List<String>)defaultClaims.get(TokenUtils.ROLES_CLAIM);
         assertNotNull(roles);
-        assertTrue(roles.size() == 2);
+        assertEquals(2, roles.size());
         assertTrue(roles.contains("manage-organizations"));
         assertTrue(roles.contains("manage-projects"));
         assertFalse(roles.contains("not-existing-role"));
@@ -103,7 +105,8 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(3)
     public void refreshTokenTest() {
-        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, refreshToken, scope, idTokenRequest);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, refreshToken, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         assertFalse(accessToken.equals(tokensOptional.get().getAccessToken()));
         accessToken = tokensOptional.get().getAccessToken();
@@ -133,7 +136,8 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
-        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_CREDENTIALS, accessToken, scope, idTokenRequest);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, accessToken, scope, idTokenRequest);
         assertTrue(tokensOptional.isEmpty());
     }
 

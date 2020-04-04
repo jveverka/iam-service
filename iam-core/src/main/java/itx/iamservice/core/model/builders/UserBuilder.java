@@ -22,6 +22,12 @@ public final class UserBuilder {
         return this;
     }
 
+    public UserBuilder addUserNamePasswordCredentials(UserId userId, String password) throws PKIException {
+        UPCredentials upCredentials = new UPCredentials(userId, password);
+        user.addCredentials(upCredentials);
+        return this;
+    }
+
     public UserBuilder addUserNamePasswordCredentials(String userName, String password) throws PKIException {
         UserId userId = UserId.from(userName);
         UPCredentials upCredentials = new UPCredentials(userId, password);

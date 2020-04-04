@@ -1,9 +1,15 @@
 package itx.iamservice.core.tests;
 
 import itx.iamservice.core.IAMModelBuilders;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
+import itx.iamservice.core.model.ModelId;
+import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.UserId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -64,7 +70,45 @@ public class IAMModelBuildersTest {
                     .addProject("second project")
                 .build();
         assertNotNull(model);
-
     }
 
+    @Test
+    @Order(3)
+    public void testRoleBuildersWithIds() {
+        adminFullAccess = IAMModelBuilders.roleBuilder(RoleId.from("role-001"),"Admin Full Access Role")
+                .addPermission("administration", "user-management", "create")
+                .addPermission("administration", "user-management", "delete")
+                .addPermission("administration", "user-management", "update")
+                .addPermission("administration", "user-management", "read")
+                .build();
+        adminReadAccess = IAMModelBuilders.roleBuilder(RoleId.from("role-002"),"Admin Read Access Role")
+                .addPermission("administration", "user-management", "read")
+                .build();
+    }
+
+    @Test
+    @Order(4)
+    public void testModelBuilderWithIds() throws PKIException {
+        Model model = IAMModelBuilders.modelBuilder(ModelId.from("model-001"), "my model")
+                .addOrganization(OrganizationId.from("org-001"), "first organization")
+                    .addProject(ProjectId.from("project-001"), "first project")
+                    .addRole(adminFullAccess)
+                    .addRole(adminReadAccess)
+                    .addClient(ClientId.from("client-001"), "test client")
+                        .addRole(adminReadAccess.getId())
+                    .and()
+                    .addUser(UserId.from("user-001"), "admin user")
+                        .addRole(adminFullAccess.getId())
+                        .addUserNamePasswordCredentials(UserId.from("user-001"), "secret")
+                    .and()
+                .and()
+                    .addProject(ProjectId.from("project-002"), "second project")
+                .and().and()
+                .addOrganization(OrganizationId.from("org-002"),"second organization")
+                    .addProject(ProjectId.from("project-001"),"first project")
+                    .and()
+                    .addProject(ProjectId.from("project-002"),"second project")
+                .build();
+        assertNotNull(model);
+    }
 }

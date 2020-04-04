@@ -10,8 +10,15 @@ import java.util.UUID;
 
 public final class RoleBuilder {
 
+    private RoleId id;
     private final String name;
     private final Collection<Permission> permissions;
+
+    public RoleBuilder(RoleId id, String name) {
+        this.id = id;
+        this.name = name;
+        this.permissions = new ArrayList<>();
+    }
 
     public RoleBuilder(String name) {
         this.name = name;
@@ -30,6 +37,10 @@ public final class RoleBuilder {
 
     public static RoleBuilder builder(String name) {
         return new RoleBuilder(name);
+    }
+
+    public static RoleBuilder builder(RoleId id, String name) {
+        return new RoleBuilder(id, name);
     }
 
 }

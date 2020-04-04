@@ -25,6 +25,10 @@ public final class ProjectBuilder {
 
     public UserBuilder addUser(String name) throws PKIException {
         UserId id = UserId.from(UUID.randomUUID().toString());
+        return addUser(id, name);
+    }
+
+    public UserBuilder addUser(UserId id, String name) throws PKIException {
         User user = new UserImpl(id, name, project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
         project.add(user);
         return new UserBuilder(this, user);
@@ -32,6 +36,10 @@ public final class ProjectBuilder {
 
     public ClientBuilder addClient(String name) {
         ClientId id = ClientId.from(UUID.randomUUID().toString());
+        return addClient(id, name);
+    }
+
+    public ClientBuilder addClient(ClientId id, String name) {
         ClientCredentials credentials = new ClientCredentials(id, UUID.randomUUID().toString());
         Client client = new Client(credentials, name, 3600*1000L, 24*3600*1000L);
         project.addClient(client);

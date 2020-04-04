@@ -20,8 +20,12 @@ public final class OrganizationBuilder {
     }
 
     public ProjectBuilder addProject(String name) throws PKIException {
-        ProjectId projectId = ProjectId.from(UUID.randomUUID().toString());
-        Project project = new ProjectImpl(projectId, name, organization.getId(), organization.getPrivateKey());
+        ProjectId id = ProjectId.from(UUID.randomUUID().toString());
+        return addProject(id, name);
+    }
+
+    public ProjectBuilder addProject(ProjectId id, String name) throws PKIException {
+        Project project = new ProjectImpl(id, name, organization.getId(), organization.getPrivateKey());
         organization.add(project);
         return new ProjectBuilder(this, project);
     }

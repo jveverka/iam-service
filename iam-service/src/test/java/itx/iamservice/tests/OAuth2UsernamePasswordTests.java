@@ -2,9 +2,8 @@ package itx.iamservice.tests;
 
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
-import itx.iamservice.services.dto.TokenRevokeResponse;
-import itx.iamservice.services.dto.TokenVerificationResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -86,34 +85,32 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(3)
     public void verifyTokens() {
-        ResponseEntity<TokenVerificationResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().isValid());
+        assertTrue(response.getBody().getActive());
         response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().isValid());
+        assertTrue(response.getBody().getActive());
     }
 
     @Test
     @Order(4)
     public void revokeTokens() {
-        ResponseEntity<TokenRevokeResponse> response = TestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<Void> response = TestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().isValid());
         response = TestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().isValid());
     }
 
     @Test
     @Order(5)
     public void verifyRevokedTokens() {
-        ResponseEntity<TokenVerificationResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getBody().isValid());
+        assertFalse(response.getBody().getActive());
         response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getBody().isValid());
+        assertFalse(response.getBody().getActive());
     }
 
 }

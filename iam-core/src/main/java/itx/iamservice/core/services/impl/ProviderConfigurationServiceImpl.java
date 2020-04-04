@@ -42,11 +42,13 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
         Collection<Role> roles = projectManagerService.getRoles(request.getOrganizationId(), request.getProjectId());
         String[] scopesSupported = roles.stream().map(r->r.getId().getId()).toArray(n-> new String[n]);
         String issuer = request.getBaseURL() + "/" + request.getOrganizationId().getId() + "/" + request.getProjectId();
-        String authorizationEndpoint = issuer + "/auth";
+        String authorizationEndpoint = issuer + "/authorize";
         String tokenEndpoint = issuer + "/token";
         String jwksUri = issuer + "/.well-known/jwks.json";
+        String introspectionEndpoint = issuer + "/introspect";
         return new ProviderConfigurationResponse(issuer, authorizationEndpoint, tokenEndpoint, jwksUri,
-                scopesSupported, responseTypes, grantTypes, subjectTypesSupported, idTokenSigningAlgValuesSupported, idTokenEncryptionAlgValuesSupported);
+                scopesSupported, responseTypes, grantTypes, subjectTypesSupported,
+                idTokenSigningAlgValuesSupported, idTokenEncryptionAlgValuesSupported, introspectionEndpoint);
     }
 
     @Override

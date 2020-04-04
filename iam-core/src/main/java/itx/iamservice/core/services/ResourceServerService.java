@@ -6,6 +6,8 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.services.dto.IntrospectRequest;
+import itx.iamservice.core.services.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
@@ -24,10 +26,10 @@ public interface ResourceServerService {
      * Verify if JWT token is valid. Time stamps and signature is verified.
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
-     * @param token {@link JWToken} to verify.
-     * @return true if provided {@link JWToken} is valid, false otherwise.
+     * @param request {@link IntrospectRequest} to verify.
+     * @return {@link IntrospectResponse} active=true if provided {@link JWToken} is valid, active=false otherwise.
      */
-    boolean verify(OrganizationId organizationId, ProjectId projectId, JWToken token);
+    IntrospectResponse introspect(OrganizationId organizationId, ProjectId projectId, IntrospectRequest request);
 
     /**
      * Get public {@link Project} related information. This information contains X509 certificates of organization and project.

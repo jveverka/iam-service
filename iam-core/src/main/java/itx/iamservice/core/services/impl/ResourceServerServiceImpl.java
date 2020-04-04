@@ -15,8 +15,9 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ResourceServerService;
+import itx.iamservice.core.services.dto.IntrospectRequest;
+import itx.iamservice.core.services.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.UserInfo;
-import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,31 +40,31 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     }
 
     @Override
-    public boolean verify(OrganizationId organizationId, ProjectId projectId, JWToken token) {
-        boolean isRevoked = this.tokenCache.isRevoked(token);
+    public IntrospectResponse introspect(OrganizationId organizationId, ProjectId projectId, IntrospectRequest request) {
+        boolean isRevoked = this.tokenCache.isRevoked(request.getToken());
         if (!isRevoked) {
-            DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
+            DefaultClaims defaultClaims = TokenUtils.extractClaims(request.getToken());
             UserId userId = UserId.from(defaultClaims.getSubject());
             Optional<User> userOptional = this.model.getUser(organizationId, projectId, userId);
             if (userOptional.isPresent()) {
-                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, userOptional.get().getCertificate().getPublicKey());
+                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), userOptional.get().getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsJws.isPresent());
-                return claimsJws.isPresent();
+                return new IntrospectResponse(claimsJws.isPresent());
             } else {
                 ClientId clientId = ClientId.from(defaultClaims.getSubject());
                 Optional<Client> clientOptional = this.model.getClient(organizationId, projectId, clientId);
                 Optional<Project> projectOptional = this.model.getProject(organizationId, projectId);
                 if (projectOptional.isPresent() && clientOptional.isPresent()) {
-                    Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, projectOptional.get().getCertificate().getPublicKey());
+                    Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), projectOptional.get().getCertificate().getPublicKey());
                     LOG.info("JWT verified={}", claimsJws.isPresent());
-                    return claimsJws.isPresent();
+                    return new IntrospectResponse(claimsJws.isPresent());
                 }
                 LOG.info("JWT subject {} not found", userId);
             }
         } else {
-            LOG.info("JWT is revoked: {}", token);
+            LOG.info("JWT is revoked: {}", request.getToken());
         }
-        return false;
+        return new IntrospectResponse(false);
     }
 
     @Override

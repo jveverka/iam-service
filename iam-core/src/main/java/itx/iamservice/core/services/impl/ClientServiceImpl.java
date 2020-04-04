@@ -29,6 +29,7 @@ import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,7 +281,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean revoke(OrganizationId organizationId, ProjectId projectId, JWToken token) {
+    public boolean revoke(OrganizationId organizationId, ProjectId projectId, RevokeTokenRequest request) {
+        JWToken token = request.getToken();
         DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
         String subject = defaultClaims.getSubject();
         Optional<User> userOptional = model.getUser(organizationId, projectId, UserId.from(subject));

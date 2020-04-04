@@ -5,19 +5,25 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
+import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ProviderConfigurationService;
+import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.GrantType;
 import itx.iamservice.core.services.dto.IdTokenRequest;
+import itx.iamservice.core.services.dto.IntrospectRequest;
+import itx.iamservice.core.services.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.JWKResponse;
 import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
+import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +60,17 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final ProviderConfigurationService providerConfigurationService;
+    private final ResourceServerService resourceServerService;
+    private final ClientService clientService;
 
     public AuthenticationController(@Autowired AuthenticationService authenticationService,
-                                    @Autowired ProviderConfigurationService providerConfigurationService) {
+                                    @Autowired ProviderConfigurationService providerConfigurationService,
+                                    @Autowired ResourceServerService resourceServerService,
+                                    @Autowired ClientService clientService) {
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
+        this.resourceServerService = resourceServerService;
+        this.clientService = clientService;
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -111,7 +123,7 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping(path = "/{organization-id}/{project-id}/auth", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> getAuth(@PathVariable("organization-id") String organizationId,
                                           @PathVariable("project-id") String projectId,
                                           @RequestParam("response_type") String responseType,
@@ -181,6 +193,36 @@ public class AuthenticationController {
         LOG.info("getCerts: ");
         JWKResponse jwkData = providerConfigurationService.getJWKData(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(jwkData);
+    }
+
+    //https://tools.ietf.org/html/rfc7662
+    @PostMapping(path = "/{organization-id}/{project-id}/introspect", produces = MediaType.APPLICATION_JSON_VALUE)
+    private ResponseEntity<IntrospectResponse> introspectToken(@PathVariable("organization-id") String organizationId,
+                                                               @PathVariable("project-id") String projectId,
+                                                               @RequestParam("token") String token,
+                                                               @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
+        LOG.info("introspectToken: token={} token_type_hint={}", token, tokenTypeHint);
+        IntrospectRequest request = new IntrospectRequest(JWToken.from(token), getTokenType(tokenTypeHint));
+        IntrospectResponse response = resourceServerService.introspect(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/{organization-id}/{project-id}/revoke", produces = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<Void> revoke(@PathVariable("organization-id") String organizationId,
+                                                      @PathVariable("project-id") String projectId,
+                                                      @RequestParam("token") String token,
+                                                      @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
+        RevokeTokenRequest request = new RevokeTokenRequest(JWToken.from(token), getTokenType(tokenTypeHint));
+        clientService.revoke(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
+        return ResponseEntity.ok().build();
+    }
+
+    private TokenType getTokenType(String tokenTypeHint) {
+        if (tokenTypeHint == null) {
+            return null;
+        } else {
+            return TokenType.getTokenType(tokenTypeHint);
+        }
     }
 
     private String getParameters(Enumeration<String> parameters) {

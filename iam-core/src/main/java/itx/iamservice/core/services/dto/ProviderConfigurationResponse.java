@@ -35,6 +35,9 @@ public class ProviderConfigurationResponse {
     @JsonProperty("id_token_encryption_alg_values_supported")
     private final String[] idTokenEncryptionAlgValuesSupported;
 
+    @JsonProperty("introspection_endpoint")
+    private final String introspectionEndpoint;
+
     @JsonCreator
     public ProviderConfigurationResponse(@JsonProperty("issuer") String issuer,
                                          @JsonProperty("authorization_endpoint") String authorizationEndpoint,
@@ -45,7 +48,8 @@ public class ProviderConfigurationResponse {
                                          @JsonProperty("grant_types_supported") String[] grantTypesSupported,
                                          @JsonProperty("subject_types_supported") String[] subjectTypesSupported,
                                          @JsonProperty("id_token_signing_alg_values_supported") String[] idTokenSigningAlgValuesSupported,
-                                         @JsonProperty("id_token_encryption_alg_values_supported") String[] idTokenEncryptionAlgValuesSupported) {
+                                         @JsonProperty("id_token_encryption_alg_values_supported") String[] idTokenEncryptionAlgValuesSupported,
+                                         @JsonProperty("introspection_endpoint") String introspectionEndpoint) {
         this.issuer = issuer;
         this.authorizationEndpoint = authorizationEndpoint;
         this.tokenEndpoint = tokenEndpoint;
@@ -56,6 +60,7 @@ public class ProviderConfigurationResponse {
         this.subjectTypesSupported = subjectTypesSupported;
         this.idTokenSigningAlgValuesSupported = idTokenSigningAlgValuesSupported;
         this.idTokenEncryptionAlgValuesSupported = idTokenEncryptionAlgValuesSupported;
+        this.introspectionEndpoint = introspectionEndpoint;
     }
 
     public String getIssuer() {
@@ -96,6 +101,10 @@ public class ProviderConfigurationResponse {
 
     public String[] getGrantTypesSupported() {
         return grantTypesSupported;
+    }
+
+    public String getIntrospectionEndpoint() {
+        return introspectionEndpoint;
     }
 
 }

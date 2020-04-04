@@ -12,6 +12,7 @@ import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.services.dto.RevokeTokenRequest;
 
 import java.util.Optional;
 import java.util.Set;
@@ -81,9 +82,9 @@ public interface ClientService {
      * In case provided JWToken is still valid, it is blacklisted and considered invalid for further use.
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
-     * @param token issued and valid {@link JWToken}
+     * @param request issued and valid {@link JWToken}
      * @return true in case provided {@link JWToken} is valid, false otherwise.
      */
-    boolean revoke(OrganizationId organizationId, ProjectId projectId, JWToken token);
+    boolean revoke(OrganizationId organizationId, ProjectId projectId, RevokeTokenRequest request);
 
 }

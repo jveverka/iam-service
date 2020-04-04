@@ -13,6 +13,9 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.dto.IdTokenRequest;
+import itx.iamservice.core.services.dto.IntrospectRequest;
+import itx.iamservice.core.services.dto.IntrospectResponse;
+import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -96,10 +99,12 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(2)
     public void verifyValidTokensTest() {
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
-        assertTrue(result);
-        result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken);
-        assertTrue(result);
+        IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
+        IntrospectRequest requestRefreshToken = new IntrospectRequest(refreshToken, TokenType.REFRESH);
+        IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
+        assertTrue(result.getActive());
+        result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestRefreshToken);
+        assertTrue(result.getActive());
     }
 
     @Test
@@ -115,22 +120,25 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(4)
     public void verifyValidRefreshedTokenTest() {
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
-        assertTrue(result);
+        IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
+        IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
+        assertTrue(result.getActive());
     }
 
     @Test
     @Order(5)
     public void logoutTest() {
-        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
+        RevokeTokenRequest revokeAccessTokenRequest = new RevokeTokenRequest(accessToken, TokenType.BEARER);
+        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
         assertTrue(result);
     }
 
     @Test
     @Order(6)
     public void verifyInvalidTokenTest() {
-        boolean result = resourceServerService.verify(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken);
-        assertFalse(result);
+        IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
+        IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
+        assertFalse(result.getActive());
     }
 
     @Test

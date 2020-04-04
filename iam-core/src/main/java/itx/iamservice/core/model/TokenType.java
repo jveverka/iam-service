@@ -16,4 +16,17 @@ public enum TokenType {
         return type;
     }
 
+    public static TokenType getTokenType(String typeName) {
+        switch (typeName) {
+            case "Bearer":
+                return BEARER;
+            case "Refresh":
+                return REFRESH;
+            case "ID":
+                return ID;
+            default:
+                throw new UnsupportedOperationException("Unsupported token_type " + typeName);
+        }
+    }
+
 }

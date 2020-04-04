@@ -61,6 +61,17 @@ public class OAuth2UsernamePasswordTests {
 
     @Test
     @Order(2)
+    public void verifyTokens() {
+        ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().getActive());
+        response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().getActive());
+    }
+
+    @Test
+    @Order(3)
     public void getRefreshTokens() {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "refresh_token");
@@ -83,8 +94,8 @@ public class OAuth2UsernamePasswordTests {
     }
 
     @Test
-    @Order(3)
-    public void verifyTokens() {
+    @Order(4)
+    public void verifyRefreshedTokens() {
         ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
@@ -94,7 +105,7 @@ public class OAuth2UsernamePasswordTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void revokeTokens() {
         ResponseEntity<Void> response = TestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -103,7 +114,7 @@ public class OAuth2UsernamePasswordTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void verifyRevokedTokens() {
         ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());

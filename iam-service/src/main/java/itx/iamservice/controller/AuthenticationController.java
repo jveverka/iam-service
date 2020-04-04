@@ -87,32 +87,32 @@ public class AuthenticationController {
                                                    @RequestParam(name = "nonce", required = false) String nonce,
                                                    @RequestParam(name = "audience", required = false) String audience,
                                                    HttpServletRequest request) {
-        LOG.info("query={}", request.getRequestURL());
-        LOG.info("parameters=[{}]", getParameters(request.getParameterNames()));
-        LOG.info("nonce={} audience={}", nonce, audience);
+        LOG.info("getTokens: query={}", request.getRequestURL());
+        LOG.info("getTokens: parameters=[{}]", getParameters(request.getParameterNames()));
+        LOG.info("getTokens: nonce={} audience={}", nonce, audience);
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
         IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce);
         if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
-            LOG.info("processRedirect: grantType={} code={}", grantType, code);
+            LOG.info("getTokens: grantType={} code={}", grantType, code);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
-            LOG.info("processRedirect: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
+            LOG.info("getTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Set<RoleId> scopes = ModelUtils.getScopes(scope);
             UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, upAuthenticationRequest, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
-            LOG.info("processRedirect: grantType={} scope={} clientId={}", grantType, scope, clientId);
+            LOG.info("getTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Set<RoleId> scopes = ModelUtils.getScopes(scope);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
-            LOG.info("processRedirect: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
+            LOG.info("getTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
             JWToken jwToken = new JWToken(refreshToken);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Set<RoleId> scopes = ModelUtils.getScopes(scope);
@@ -124,28 +124,30 @@ public class AuthenticationController {
     }
 
     @GetMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<String> getAuth(@PathVariable("organization-id") String organizationId,
-                                          @PathVariable("project-id") String projectId,
-                                          @RequestParam("response_type") String responseType,
-                                          @RequestParam("client_id") String clientId,
-                                          @RequestParam("redirect_uri") String redirectUri,
-                                          @RequestParam("state") String state,
-                                          @RequestParam(name = "scope", required = false) String scope,
-                                          HttpServletRequest request) {
-        LOG.info("getAuth: {}?{}", request.getRequestURL(), request.getQueryString());
-        LOG.info("getAuth: {}/{} responseType={} clientId={} redirectUri={} state={} scope={}", organizationId, projectId, responseType, clientId, redirectUri, state, scope);
-        if (scope==null) scope = "";
+    public ResponseEntity<String> getAuthorize(@PathVariable("organization-id") String organizationId,
+                                               @PathVariable("project-id") String projectId,
+                                               @RequestParam("response_type") String responseType,
+                                               @RequestParam("client_id") String clientId,
+                                               @RequestParam("redirect_uri") String redirectUri,
+                                               @RequestParam("state") String state,
+                                               @RequestParam(name = "scope", required = false) String scope,
+                                               HttpServletRequest request) {
+        LOG.info("getAuthorize: {}?{}", request.getRequestURL(), request.getQueryString());
+        LOG.info("getAuthorize: {}/{} responseType={} clientId={} redirectUri={} state={} scope={}", organizationId, projectId, responseType, clientId, redirectUri, state, scope);
+        if (scope==null) {
+            scope = "";
+        }
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");
         String result = new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
-        result = result.replaceAll("__organization-id__", organizationId);
-        result = result.replaceAll("__project-id__", projectId);
-        result = result.replaceAll("__response-type__", responseType);
-        result = result.replaceAll("__client_id__", clientId);
-        result = result.replaceAll("__redirect_uri__", redirectUri);
-        result = result.replaceAll("__state__", state);
-        result = result.replaceAll("__scope__", scope);
-        result = result.replaceAll("__random__", UUID.randomUUID().toString()); //to prevent form caching
+        result = result.replace("__organization-id__", organizationId);
+        result = result.replace("__project-id__", projectId);
+        result = result.replace("__response-type__", responseType);
+        result = result.replace("__client_id__", clientId);
+        result = result.replace("__redirect_uri__", redirectUri);
+        result = result.replace("__state__", state);
+        result = result.replace("__scope__", scope);
+        result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
         return ResponseEntity.ok(result);
     }
 
@@ -157,7 +159,9 @@ public class AuthenticationController {
                                            @RequestParam("client_id") String clientId,
                                            @RequestParam("redirect_uri") String redirectUri,
                                            @RequestParam("state") String state,
-                                           @RequestParam(name = "scope", required = false) String scope) throws URISyntaxException {
+                                           @RequestParam(name = "scope", required = false) String scope,
+                                           HttpServletRequest request) throws URISyntaxException {
+        LOG.info("getLogin: {}?{}", request.getRequestURL(), request.getQueryString());
         LOG.info("getLogin: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
                 UserId.from(username), ClientId.from(clientId), password, scope, state);
@@ -178,7 +182,7 @@ public class AuthenticationController {
     public ResponseEntity<ProviderConfigurationResponse> getConfiguration(@PathVariable("organization-id") String organizationId,
                                                                           @PathVariable("project-id") String projectId,
                                                                           HttpServletRequest request) throws MalformedURLException {
-        LOG.info("Configuration: {}", request.getRequestURL().toString());
+        LOG.info("getConfiguration: {}", request.getRequestURL());
         URL url = new URL(request.getRequestURL().toString());
         String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
         ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
@@ -188,8 +192,8 @@ public class AuthenticationController {
 
     //https://tools.ietf.org/html/rfc7517
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/jwks.json", produces = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<JWKResponse> getCerts(@PathVariable("organization-id") String organizationId,
-                                                 @PathVariable("project-id") String projectId) {
+    public ResponseEntity<JWKResponse> getCerts(@PathVariable("organization-id") String organizationId,
+                                                @PathVariable("project-id") String projectId) {
         LOG.info("getCerts: ");
         JWKResponse jwkData = providerConfigurationService.getJWKData(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(jwkData);
@@ -197,10 +201,10 @@ public class AuthenticationController {
 
     //https://tools.ietf.org/html/rfc7662
     @PostMapping(path = "/{organization-id}/{project-id}/introspect", produces = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<IntrospectResponse> introspectToken(@PathVariable("organization-id") String organizationId,
-                                                               @PathVariable("project-id") String projectId,
-                                                               @RequestParam("token") String token,
-                                                               @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
+    public ResponseEntity<IntrospectResponse> introspectToken(@PathVariable("organization-id") String organizationId,
+                                                              @PathVariable("project-id") String projectId,
+                                                              @RequestParam("token") String token,
+                                                              @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
         LOG.info("introspectToken: token={} token_type_hint={}", token, tokenTypeHint);
         IntrospectRequest request = new IntrospectRequest(JWToken.from(token), getTokenType(tokenTypeHint));
         IntrospectResponse response = resourceServerService.introspect(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
@@ -209,9 +213,9 @@ public class AuthenticationController {
 
     @PostMapping(path = "/{organization-id}/{project-id}/revoke", produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<Void> revoke(@PathVariable("organization-id") String organizationId,
-                                                      @PathVariable("project-id") String projectId,
-                                                      @RequestParam("token") String token,
-                                                      @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
+                                       @PathVariable("project-id") String projectId,
+                                       @RequestParam("token") String token,
+                                       @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
         RevokeTokenRequest request = new RevokeTokenRequest(JWToken.from(token), getTokenType(tokenTypeHint));
         clientService.revoke(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         return ResponseEntity.ok().build();

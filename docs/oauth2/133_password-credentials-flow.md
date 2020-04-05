@@ -1,5 +1,8 @@
 ## Password Credentials Flow
 [RFC reference](https://tools.ietf.org/html/rfc6749#section-1.3.3)
+
+![flow](133_password-credentials-flow.svg)
+
 * __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/token``
   ``grant_type=password&username=<username>&password=<password>&scope=<scopes>&client_id=<id>&client_secret=<secret>``
 

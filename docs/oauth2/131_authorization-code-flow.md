@@ -21,7 +21,7 @@
 
 * __Grant Type__ : Authorization Code
 * __Callback URL__: ```/services/authentication/iam-admins/iam-admins/token```
-* __Auth URL__: ```http://localhost:8080/services/authentication/iam-admins/iam-admins/auth```
+* __Auth URL__: ```http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize```
 * __Access Token URL__ : ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```
 * __Client ID__: admin-client
 * __Scope__: ""

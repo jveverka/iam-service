@@ -10,6 +10,7 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.UserImpl;
+import itx.iamservice.core.services.caches.ModelCache;
 
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public final class ProjectBuilder {
         return organizationBuilder;
     }
 
-    public Model build() {
+    public ModelCache build() {
         return organizationBuilder.build();
     }
 

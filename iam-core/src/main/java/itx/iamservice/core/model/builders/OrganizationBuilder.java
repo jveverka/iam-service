@@ -6,6 +6,7 @@ import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
+import itx.iamservice.core.services.caches.ModelCache;
 
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public final class OrganizationBuilder {
         return modelBuilder;
     }
 
-    public Model build() {
+    public ModelCache build() {
         return modelBuilder.build();
     }
 

@@ -2,11 +2,11 @@ package itx.iamservice.core.tests;
 
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientCredentials;
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.IntrospectRequest;
 import itx.iamservice.core.services.dto.IntrospectResponse;
@@ -45,7 +45,7 @@ public class ClientCCAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
 
-    private static Model model;
+    private static ModelCache modelCache;
     private static ClientService clientService;
     private static ResourceServerService resourceServerService;
     private static TokenCache tokenCache;
@@ -58,10 +58,10 @@ public class ClientCCAuthenticationTests {
     private static void init() throws PKIException {
         Security.addProvider(new BouncyCastleProvider());
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
-        model = ModelUtils.createDefaultModel(adminPassword);
-        tokenCache = new TokenCacheImpl(model);
-        clientService = new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
-        resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
+        modelCache = ModelUtils.createDefaultModelCache(adminPassword);
+        tokenCache = new TokenCacheImpl(modelCache);
+        clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+        resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
     }
 

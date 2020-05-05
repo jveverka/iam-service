@@ -1,8 +1,8 @@
 package itx.iamservice.config;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.services.caches.ModelCache;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,8 @@ public class ModelConfig {
 
     @Bean
     @Scope("singleton")
-    public Model getModel() throws PKIException {
-        return ModelUtils.createDefaultModel(password);
+    public ModelCache getModelCache() throws PKIException {
+        return ModelUtils.createDefaultModelCache(password);
     }
 
     public String getPassword() {

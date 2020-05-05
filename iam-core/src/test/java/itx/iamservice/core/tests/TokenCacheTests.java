@@ -2,11 +2,11 @@ package itx.iamservice.core.tests;
 
 import itx.iamservice.core.model.KeyPairId;
 import itx.iamservice.core.model.UserId;
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
@@ -41,7 +41,7 @@ public class TokenCacheTests {
 
     private static KeyPairId keyPairId;
     private static KeyPair keyPair;
-    private static Model model;
+    private static ModelCache modelCache;
     private static TokenCache tokenCache;
     private static JWToken jwToken;
 
@@ -49,8 +49,8 @@ public class TokenCacheTests {
     private static void init() throws NoSuchAlgorithmException, NoSuchProviderException, PKIException {
         Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
-        model = ModelUtils.createDefaultModel("top-secret");
-        tokenCache = new TokenCacheImpl(model);
+        modelCache = ModelUtils.createDefaultModelCache("top-secret");
+        tokenCache = new TokenCacheImpl(modelCache);
         keyPairId = KeyPairId.from("key-001");
         jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyPairId, keyPair.getPrivate(), TokenType.BEARER);
     }

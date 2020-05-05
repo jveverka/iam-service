@@ -1,12 +1,12 @@
 package itx.iamservice.core.services.impl.admin;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 
@@ -16,22 +16,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class OrganizationManagerServiceImpl implements OrganizationManagerService {
 
-    private final Model model;
+    private final ModelCache modelCache;
 
-    public OrganizationManagerServiceImpl(Model model) {
-        this.model = model;
+    public OrganizationManagerServiceImpl(ModelCache modelCache) {
+        this.modelCache = modelCache;
     }
 
     @Override
     public boolean create(OrganizationId id, CreateOrganizationRequest createOrganizationRequest) throws PKIException {
-        if (model.getOrganization(id).isPresent()) {
+        if (modelCache.getOrganization(id).isPresent()) {
             return false;
         } else {
-            model.add(new OrganizationImpl(id, createOrganizationRequest.getName()));
+            modelCache.add(new OrganizationImpl(id, createOrganizationRequest.getName()));
             return true;
         }
     }
@@ -48,7 +47,7 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
 
     @Override
     public Collection<Organization> getAll() {
-        return model.getOrganizations();
+        return modelCache.getOrganizations();
     }
 
     @Override
@@ -62,12 +61,12 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
 
     @Override
     public Optional<Organization> get(OrganizationId id) {
-        return model.getOrganization(id);
+        return modelCache.getOrganization(id);
     }
 
     @Override
     public Optional<OrganizationInfo> getInfo(OrganizationId id) throws CertificateEncodingException {
-        Optional<Organization> organization = model.getOrganization(id);
+        Optional<Organization> organization = modelCache.getOrganization(id);
         if (organization.isPresent()) {
             return Optional.of(ModelUtils.createOrganizationInfo(organization.get()));
         }
@@ -76,7 +75,7 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
 
     @Override
     public boolean remove(OrganizationId id) {
-        return model.remove(id);
+        return modelCache.remove(id);
     }
 
 }

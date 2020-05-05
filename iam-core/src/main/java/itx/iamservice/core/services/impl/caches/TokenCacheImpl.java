@@ -3,12 +3,12 @@ package itx.iamservice.core.services.impl.caches;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.TokenUtils;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.dto.JWToken;
 
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 
 public class TokenCacheImpl implements TokenCache {
 
-    private final Model model;
+    private final ModelCache modelCache;
     private Set<JWToken> revokedJWTokens;
 
-    public TokenCacheImpl(Model model) {
+    public TokenCacheImpl(ModelCache modelCache) {
         this.revokedJWTokens = new HashSet<>();
-        this.model = model;
+        this.modelCache = modelCache;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TokenCacheImpl implements TokenCache {
         OrganizationId organizationId = OrganizationId.from(defaultClaims.getIssuer());
         ProjectId projectId = ProjectId.from(defaultClaims.getAudience());
         UserId userId = UserId.from(defaultClaims.getSubject());
-        Optional<User> userOptional = this.model.getUser(organizationId, projectId, userId);
+        Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
         if (userOptional.isPresent()) {
             Optional<Jws<Claims>> verify = TokenUtils.verify(jwToken, userOptional.get().getCertificate().getPublicKey());
             return verify.isPresent();

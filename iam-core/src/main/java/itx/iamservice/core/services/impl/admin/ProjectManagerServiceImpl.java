@@ -1,6 +1,5 @@
 package itx.iamservice.core.services.impl.admin;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
@@ -12,6 +11,7 @@ import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ProjectManagerService;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 
@@ -22,10 +22,10 @@ import java.util.UUID;
 
 public class ProjectManagerServiceImpl implements ProjectManagerService {
 
-    private final Model model;
+    private final ModelCache modelCache;
 
-    public ProjectManagerServiceImpl(Model model) {
-        this.model = model;
+    public ProjectManagerServiceImpl(ModelCache modelCache) {
+        this.modelCache = modelCache;
     }
 
     @Override
@@ -40,10 +40,10 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean create(OrganizationId id, ProjectId projectId, CreateProjectRequest createProjectRequest) throws PKIException {
-        Optional<Organization> organization = model.getOrganization(id);
+        Optional<Organization> organization = modelCache.getOrganization(id);
         if (organization.isPresent()) {
             Project project = new ProjectImpl(projectId, createProjectRequest.getName(), id, organization.get().getPrivateKey());
-            model.add(id, project);
+            modelCache.add(id, project);
             return true;
         }
         return false;
@@ -51,7 +51,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public Collection<Project> getAll(OrganizationId id) {
-        return model.getProjects(id);
+        return modelCache.getProjects(id);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean remove(OrganizationId id, ProjectId projectId) {
-        return model.remove(id, projectId);
+        return modelCache.remove(id, projectId);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {
-        return model.getProject(id, projectId);
+        return modelCache.getProject(id, projectId);
     }
 
 }

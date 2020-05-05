@@ -3,8 +3,6 @@ package itx.iamservice.core.services.impl.admin;
 import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
-import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
@@ -12,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.services.admin.UserManagerService;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateUserRequest;
 
 import java.util.Collection;
@@ -22,15 +21,15 @@ import java.util.UUID;
 
 public class UserManagerServiceImpl implements UserManagerService {
 
-    private final Model model;
+    private final ModelCache modelCache;
 
-    public UserManagerServiceImpl(Model model) {
-        this.model = model;
+    public UserManagerServiceImpl(ModelCache modelCache) {
+        this.modelCache = modelCache;
     }
 
     @Override
     public boolean create(OrganizationId id, ProjectId projectId, UserId userId, String name) throws PKIException {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             Optional<User> userOptional = projectOptional.get().getUser(userId);
             if (userOptional.isEmpty()) {
@@ -43,7 +42,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Optional<UserId> create(OrganizationId id, ProjectId projectId, CreateUserRequest request) throws PKIException {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             UserId userId = UserId.from(UUID.randomUUID().toString());
             projectOptional.get().add(new UserImpl(userId, request.getName(), projectOptional.get().getId(),
@@ -55,7 +54,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Collection<User> getAll(OrganizationId id, ProjectId projectId) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             return projectOptional.get().getUsers();
         }
@@ -64,7 +63,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Optional<User> get(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             return projectOptional.get().getUser(userId);
         }
@@ -73,7 +72,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean remove(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             return projectOptional.get().remove(userId);
         }
@@ -82,7 +81,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             Optional<User> userOptional = projectOptional.get().getUser(userId);
             if (userOptional.isPresent()) {
@@ -95,7 +94,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             Optional<User> userOptional = projectOptional.get().getUser(userId);
             if (userOptional.isPresent()) {
@@ -108,7 +107,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Set<RoleId> getRoles(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             Optional<User> userOptional = projectOptional.get().getUser(userId);
             if (userOptional.isPresent()) {
@@ -120,7 +119,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
-        Optional<Project> projectOptional = model.getProject(id, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             Optional<User> userOptional = projectOptional.get().getUser(userId);
             if (userOptional.isPresent()) {

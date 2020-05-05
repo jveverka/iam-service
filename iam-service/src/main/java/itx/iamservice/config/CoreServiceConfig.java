@@ -1,9 +1,9 @@
 package itx.iamservice.config;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.admin.ClientManagementService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
@@ -25,14 +25,14 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class CoreServiceConfig {
 
-    private final Model model;
+    private final ModelCache modelCache;
     private final TokenCache tokenCache;
     private final AuthorizationCodeCache authorizationCodeCache;
 
-    public CoreServiceConfig(@Autowired Model model,
+    public CoreServiceConfig(@Autowired ModelCache modelCache,
                              @Autowired TokenCache tokenCache,
                              @Autowired AuthorizationCodeCache authorizationCodeCache) {
-        this.model = model;
+        this.modelCache = modelCache;
         this.tokenCache = tokenCache;
         this.authorizationCodeCache = authorizationCodeCache;
     }
@@ -40,37 +40,37 @@ public class CoreServiceConfig {
     @Bean
     @Scope("singleton")
     public ClientService getClientService() {
-        return new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
+        return new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
     }
 
     @Bean
     @Scope("singleton")
     public ResourceServerService getResourceServerService() {
-        return new ResourceServerServiceImpl(model, tokenCache);
+        return new ResourceServerServiceImpl(modelCache, tokenCache);
     }
 
     @Bean
     @Scope("singleton")
     public OrganizationManagerService getOrganizationManagerService() {
-        return new OrganizationManagerServiceImpl(model);
+        return new OrganizationManagerServiceImpl(modelCache);
     }
 
     @Bean
     @Scope("singleton")
     public ProjectManagerService getProjectManagerService() {
-        return new ProjectManagerServiceImpl(model);
+        return new ProjectManagerServiceImpl(modelCache);
     }
 
     @Bean
     @Scope("singleton")
     public UserManagerService getClientManagerService() {
-        return new UserManagerServiceImpl(model);
+        return new UserManagerServiceImpl(modelCache);
     }
 
     @Bean
     @Scope("singleton")
     public ClientManagementService getClientManagementService() {
-        return new ClientManagementServiceImpl(model);
+        return new ClientManagementServiceImpl(modelCache);
     }
 
     @Bean

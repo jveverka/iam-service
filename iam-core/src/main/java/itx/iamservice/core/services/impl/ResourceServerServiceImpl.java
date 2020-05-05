@@ -7,11 +7,11 @@ import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ResourceServerService;
@@ -31,11 +31,11 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceServerServiceImpl.class);
 
-    private final Model model;
+    private final ModelCache modelCache;
     private final TokenCache tokenCache;
 
-    public ResourceServerServiceImpl(Model model, TokenCache tokenCache) {
-        this.model = model;
+    public ResourceServerServiceImpl(ModelCache modelCache, TokenCache tokenCache) {
+        this.modelCache = modelCache;
         this.tokenCache = tokenCache;
     }
 
@@ -45,15 +45,15 @@ public class ResourceServerServiceImpl implements ResourceServerService {
         if (!isRevoked) {
             DefaultClaims defaultClaims = TokenUtils.extractClaims(request.getToken());
             UserId userId = UserId.from(defaultClaims.getSubject());
-            Optional<User> userOptional = this.model.getUser(organizationId, projectId, userId);
+            Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
             if (userOptional.isPresent()) {
                 Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), userOptional.get().getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsJws.isPresent());
                 return new IntrospectResponse(claimsJws.isPresent());
             } else {
                 ClientId clientId = ClientId.from(defaultClaims.getSubject());
-                Optional<Client> clientOptional = this.model.getClient(organizationId, projectId, clientId);
-                Optional<Project> projectOptional = this.model.getProject(organizationId, projectId);
+                Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
+                Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
                 if (projectOptional.isPresent() && clientOptional.isPresent()) {
                     Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), projectOptional.get().getCertificate().getPublicKey());
                     LOG.info("JWT verified={}", claimsJws.isPresent());
@@ -69,9 +69,9 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     @Override
     public Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) throws CertificateEncodingException {
-        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
+        Optional<Organization> organizationOptional = modelCache.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+            Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Project project = projectOptional.get();
                 Set<UserId> userIds = projectOptional.get().getUsers().stream().map(user -> user.getId()).collect(Collectors.toSet());
@@ -85,9 +85,9 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     @Override
     public Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) throws CertificateEncodingException {
-        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
+        Optional<Organization> organizationOptional = modelCache.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+            Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = projectOptional.get().getUser(userId);
                 if (userOptional.isPresent()) {
@@ -104,12 +104,12 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     @Override
     public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
-        return model.getProject(organizationId, projectId);
+        return modelCache.getProject(organizationId, projectId);
     }
 
     @Override
     public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             return projectOptional.get().getUser(userId);
         }
@@ -118,7 +118,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     @Override
     public Optional<Organization> getOrganization(OrganizationId organizationId) {
-        return model.getOrganization(organizationId);
+        return modelCache.getOrganization(organizationId);
     }
 
 }

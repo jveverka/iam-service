@@ -1,8 +1,6 @@
 package itx.iamservice.core.tests;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
-import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
@@ -10,8 +8,10 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProjectManagerServiceTests {
 
-    private static Model model;
+    private static ModelCache modelCache;
     private static OrganizationManagerService organizationManagerService;
     private static ProjectManagerService projectManagerService;
     private static OrganizationId oid001 = OrganizationId.from("organization-001");
@@ -43,9 +43,9 @@ public class ProjectManagerServiceTests {
     @BeforeAll
     private static void init() {
         Security.addProvider(new BouncyCastleProvider());
-        model = new ModelImpl(ModelId.from("model-01"), "test-model");
-        organizationManagerService = new OrganizationManagerServiceImpl(model);
-        projectManagerService = new ProjectManagerServiceImpl(model);
+        modelCache = ModelUtils.createEmptyModelCache(ModelId.from("model-01"), "test-model");
+        organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
+        projectManagerService = new ProjectManagerServiceImpl(modelCache);
     }
 
     @Test

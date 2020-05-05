@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.keys.ModelKey;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +30,7 @@ public class ModelImpl implements Model {
         this.users = new ConcurrentHashMap<>();
         this.clients = new ConcurrentHashMap<>();
         this.roles = new ConcurrentHashMap<>();
+        ModelProvider.setModel(this);
     }
 
     @JsonCreator
@@ -42,6 +45,7 @@ public class ModelImpl implements Model {
         this.clients = new ConcurrentHashMap<>();
         this.roles = new ConcurrentHashMap<>();
         organizations.forEach(organization -> this.organizations.put(organizationKey(organization.getId()), organization));
+        ModelProvider.setModel(this);
     }
 
     @Override
@@ -88,11 +92,33 @@ public class ModelImpl implements Model {
 
     @Override
     public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
-        Organization organization = organizations.get(organizationKey(organizationId));
-        if (organization != null) {
-            return organization.getProject(projectId);
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project != null) {
+            return Optional.of(project);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<Project> getProjects(OrganizationId organizationId) {
+        List<Project> result = new ArrayList<>();
+        ModelKey<Organization> organizationModelKey = ModelKey.from(Organization.class, organizationId);
+        projects.keySet().forEach(k -> {
+            if (k.startsWith(organizationModelKey)) {
+                result.add(projects.get(k));
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public void add(OrganizationId organizationId, Project project) {
+        projects.put(projectKey(organizationId, project.getId()), project);
+    }
+
+    @Override
+    public boolean remove(OrganizationId organizationId, ProjectId projectId) {
+        return projects.remove(projectKey(organizationId, projectId)) != null;
     }
 
     @Override
@@ -109,6 +135,10 @@ public class ModelImpl implements Model {
 
     private static ModelKey<Organization> organizationKey(OrganizationId id) {
         return ModelKey.from(Organization.class, id);
+    }
+
+    private static ModelKey<Project> projectKey(OrganizationId id, ProjectId projectId) {
+        return ModelKey.from(Project.class, id, projectId);
     }
 
 }

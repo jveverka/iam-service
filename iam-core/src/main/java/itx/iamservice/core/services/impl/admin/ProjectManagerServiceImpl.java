@@ -42,22 +42,16 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     public boolean create(OrganizationId id, ProjectId projectId, CreateProjectRequest createProjectRequest) throws PKIException {
         Optional<Organization> organization = model.getOrganization(id);
         if (organization.isPresent()) {
-            Optional<Project> project = organization.get().getProject(projectId);
-            if (project.isEmpty()) {
-                organization.get().add(new ProjectImpl(projectId, createProjectRequest.getName(), id, organization.get().getPrivateKey()));
-                return true;
-            }
+            Project project = new ProjectImpl(projectId, createProjectRequest.getName(), id, organization.get().getPrivateKey());
+            model.add(id, project);
+            return true;
         }
         return false;
     }
 
     @Override
     public Collection<Project> getAll(OrganizationId id) {
-        Optional<Organization> organization = model.getOrganization(id);
-        if (organization.isPresent()) {
-            return organization.get().getProjects();
-        }
-        return Collections.emptyList();
+        return model.getProjects(id);
     }
 
     @Override
@@ -67,11 +61,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean remove(OrganizationId id, ProjectId projectId) {
-        Optional<Organization> organization = model.getOrganization(id);
-        if (organization.isPresent()) {
-            return organization.get().remove(projectId);
-        }
-        return false;
+        return model.remove(id, projectId);
     }
 
     @Override
@@ -159,11 +149,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {
-        Optional<Organization> organization = model.getOrganization(id);
-        if (organization.isPresent()) {
-            return organization.get().getProject(projectId);
-        }
-        return Optional.empty();
+        return model.getProject(id, projectId);
     }
 
 }

@@ -26,7 +26,7 @@ public final class OrganizationBuilder {
 
     public ProjectBuilder addProject(ProjectId id, String name) throws PKIException {
         Project project = new ProjectImpl(id, name, organization.getId(), organization.getPrivateKey());
-        organization.add(project);
+        modelBuilder.addProject(organization.getId(), project);
         return new ProjectBuilder(this, project);
     }
 

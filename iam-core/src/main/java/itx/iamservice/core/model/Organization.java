@@ -1,5 +1,6 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -20,20 +21,17 @@ public interface Organization {
 
     String getName();
 
-    void add(Project project);
-
-    Collection<Project> getProjects();
-
-    boolean remove(ProjectId projectId);
-
-    Optional<Project> getProject(ProjectId projectId);
-
-    PrivateKey getPrivateKey();
-
-    X509Certificate getCertificate();
+    Collection<ProjectId> getProjects();
 
     KeyPairSerialized getKeyPairSerialized();
 
+    @JsonIgnore
+    PrivateKey getPrivateKey();
+
+    @JsonIgnore
+    X509Certificate getCertificate();
+
+    @JsonIgnore
     KeyPairData getKeyPairData();
 
 }

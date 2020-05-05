@@ -7,6 +7,7 @@ import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Project;
 
 import java.util.UUID;
 
@@ -32,6 +33,10 @@ public final class ModelBuilder {
         Organization organization = new OrganizationImpl(id, name);
         this.model.add(organization);
         return new OrganizationBuilder(this, organization);
+    }
+
+    public void addProject(OrganizationId id, Project project) {
+        this.model.add(id, project);
     }
 
     public Model build() {

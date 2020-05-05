@@ -93,7 +93,7 @@ public class ClientManagementServiceImpl implements ClientManagementService {
     private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {
         Optional<Organization> organization = model.getOrganization(id);
         if (organization.isPresent()) {
-            return organization.get().getProject(projectId);
+            return model.getProject(id, projectId);
         }
         return Optional.empty();
     }

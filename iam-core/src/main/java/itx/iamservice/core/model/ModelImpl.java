@@ -30,7 +30,6 @@ public class ModelImpl implements Model {
         this.users = new ConcurrentHashMap<>();
         this.clients = new ConcurrentHashMap<>();
         this.roles = new ConcurrentHashMap<>();
-        ModelProvider.setModel(this);
     }
 
     @JsonCreator
@@ -45,7 +44,6 @@ public class ModelImpl implements Model {
         this.clients = new ConcurrentHashMap<>();
         this.roles = new ConcurrentHashMap<>();
         organizations.forEach(organization -> this.organizations.put(organizationKey(organization.getId()), organization));
-        ModelProvider.setModel(this);
     }
 
     @Override
@@ -80,12 +78,9 @@ public class ModelImpl implements Model {
 
     @Override
     public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        Organization organization = organizations.get(organizationKey(organizationId));
-        if (organization != null) {
-            Optional<Project> project = organization.getProject(projectId);
-            if (project.isPresent()) {
-                return project.get().getUser(userId);
-            }
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project !=  null) {
+            return project.getUser(userId);
         }
         return Optional.empty();
     }
@@ -123,12 +118,9 @@ public class ModelImpl implements Model {
 
     @Override
     public Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
-        Organization organization = organizations.get(organizationKey(organizationId));
-        if (organization != null) {
-            Optional<Project> project = organization.getProject(projectId);
-            if (project.isPresent()) {
-                return project.get().getClient(clientId);
-            }
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project !=  null) {
+            return project.getClient(clientId);
         }
         return Optional.empty();
     }

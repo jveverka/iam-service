@@ -128,7 +128,7 @@ public final class ModelUtils {
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
-        Set<ProjectId> projects = organization.getProjects().stream().map(Project::getId).collect(Collectors.toSet());
+        Set<ProjectId> projects = organization.getProjects().stream().collect(Collectors.toSet());
         return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getKeyPairData());
     }
 

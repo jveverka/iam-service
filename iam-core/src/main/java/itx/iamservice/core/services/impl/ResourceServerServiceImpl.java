@@ -71,7 +71,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     public Optional<ProjectInfo> getProjectInfo(OrganizationId organizationId, ProjectId projectId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = model.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            Optional<Project> projectOptional = model.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Project project = projectOptional.get();
                 Set<UserId> userIds = projectOptional.get().getUsers().stream().map(user -> user.getId()).collect(Collectors.toSet());
@@ -87,7 +87,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     public Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = model.getOrganization(organizationId);
         if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
+            Optional<Project> projectOptional = model.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = projectOptional.get().getUser(userId);
                 if (userOptional.isPresent()) {
@@ -104,21 +104,14 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     @Override
     public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
-        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
-        if (organizationOptional.isPresent()) {
-            return organizationOptional.get().getProject(projectId);
-        }
-        return Optional.empty();
+        return model.getProject(organizationId, projectId);
     }
 
     @Override
     public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        Optional<Organization> organizationOptional = model.getOrganization(organizationId);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                return projectOptional.get().getUser(userId);
-            }
+        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        if (projectOptional.isPresent()) {
+            return projectOptional.get().getUser(userId);
         }
         return Optional.empty();
     }

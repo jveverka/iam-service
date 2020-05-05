@@ -10,9 +10,9 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class OrganizationImpl implements Organization {
 
@@ -54,31 +54,13 @@ public class OrganizationImpl implements Organization {
     }
 
     @Override
-    public Collection<Project> getProjects() {
-        return ModelProvider.getModel().getProjects(id);
+    public Collection<ProjectId> getProjects() {
+        return projects.stream().collect(Collectors.toList());
     }
 
     @Override
-    @JsonIgnore
-    @Deprecated
-    public void add(Project project) {
-        projects.add(project.getId());
-        ModelProvider.getModel().add(id, project);
-    }
-
-    @Override
-    @JsonIgnore
-    @Deprecated
-    public boolean remove(ProjectId projectId) {
-        ModelProvider.getModel().remove(id, projectId);
-        return projects.remove(projectId);
-    }
-
-    @Override
-    @JsonIgnore
-    @Deprecated
-    public Optional<Project> getProject(ProjectId projectId) {
-        return ModelProvider.getModel().getProject(id, projectId);
+    public KeyPairSerialized getKeyPairSerialized() {
+        return keyPairSerialized;
     }
 
     @Override
@@ -91,11 +73,6 @@ public class OrganizationImpl implements Organization {
     @JsonIgnore
     public X509Certificate getCertificate() {
         return keyPairData.getX509Certificate();
-    }
-
-    @Override
-    public KeyPairSerialized getKeyPairSerialized() {
-        return keyPairSerialized;
     }
 
     @Override

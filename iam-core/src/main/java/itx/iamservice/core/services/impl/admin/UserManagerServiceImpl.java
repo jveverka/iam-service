@@ -30,15 +30,12 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean create(OrganizationId id, ProjectId projectId, UserId userId, String name) throws PKIException {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                Optional<User> userOptional = projectOptional.get().getUser(userId);
-                if (userOptional.isEmpty()) {
-                    projectOptional.get().add(new UserImpl(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey()));
-                    return true;
-                }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            Optional<User> userOptional = projectOptional.get().getUser(userId);
+            if (userOptional.isEmpty()) {
+                projectOptional.get().add(new UserImpl(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey()));
+                return true;
             }
         }
         return false;
@@ -46,66 +43,51 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Optional<UserId> create(OrganizationId id, ProjectId projectId, CreateUserRequest request) throws PKIException {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                UserId userId = UserId.from(UUID.randomUUID().toString());
-                projectOptional.get().add(new UserImpl(userId, request.getName(), projectOptional.get().getId(),
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            UserId userId = UserId.from(UUID.randomUUID().toString());
+            projectOptional.get().add(new UserImpl(userId, request.getName(), projectOptional.get().getId(),
                       request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), projectOptional.get().getPrivateKey()));
-                return Optional.of(userId);
-            }
+            return Optional.of(userId);
         }
         return Optional.empty();
     }
 
     @Override
     public Collection<User> getAll(OrganizationId id, ProjectId projectId) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                return projectOptional.get().getUsers();
-            }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            return projectOptional.get().getUsers();
         }
         return Collections.emptyList();
     }
 
     @Override
     public Optional<User> get(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                return projectOptional.get().getUser(userId);
-            }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            return projectOptional.get().getUser(userId);
         }
         return Optional.empty();
     }
 
     @Override
     public boolean remove(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                return projectOptional.get().remove(userId);
-            }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            return projectOptional.get().remove(userId);
         }
         return false;
     }
 
     @Override
     public boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                Optional<User> userOptional = projectOptional.get().getUser(userId);
-                if (userOptional.isPresent()) {
-                    userOptional.get().addRole(roleId);
-                    return true;
-                }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            Optional<User> userOptional = projectOptional.get().getUser(userId);
+            if (userOptional.isPresent()) {
+                userOptional.get().addRole(roleId);
+                return true;
             }
         }
         return false;
@@ -113,15 +95,12 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                Optional<User> userOptional = projectOptional.get().getUser(userId);
-                if (userOptional.isPresent()) {
-                    userOptional.get().removeRole(roleId);
-                    return true;
-                }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            Optional<User> userOptional = projectOptional.get().getUser(userId);
+            if (userOptional.isPresent()) {
+                userOptional.get().removeRole(roleId);
+                return true;
             }
         }
         return false;
@@ -129,14 +108,11 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Set<RoleId> getRoles(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                Optional<User> userOptional = projectOptional.get().getUser(userId);
-                if (userOptional.isPresent()) {
-                    return userOptional.get().getRoles();
-                }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            Optional<User> userOptional = projectOptional.get().getUser(userId);
+            if (userOptional.isPresent()) {
+                return userOptional.get().getRoles();
             }
         }
         return Collections.emptySet();
@@ -144,15 +120,12 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
-        Optional<Organization> organizationOptional = model.getOrganization(id);
-        if (organizationOptional.isPresent()) {
-            Optional<Project> projectOptional = organizationOptional.get().getProject(projectId);
-            if (projectOptional.isPresent()) {
-                Optional<User> userOptional = projectOptional.get().getUser(userId);
-                if (userOptional.isPresent()) {
-                    userOptional.get().addCredentials(credentials);
-                    return true;
-                }
+        Optional<Project> projectOptional = model.getProject(id, projectId);
+        if (projectOptional.isPresent()) {
+            Optional<User> userOptional = projectOptional.get().getUser(userId);
+            if (userOptional.isPresent()) {
+                userOptional.get().addCredentials(credentials);
+                return true;
             }
         }
         return false;

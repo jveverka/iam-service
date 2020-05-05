@@ -2,6 +2,7 @@ package itx.iamservice.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import itx.iamservice.core.model.keys.ModelKey;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,12 +14,20 @@ public class ModelImpl implements Model {
 
     private final ModelId id;
     private final String name;
-    private final Map<OrganizationId, Organization> organizations;
+    private final Map<ModelKey<Organization>, Organization> organizations;
+    private final Map<ModelKey<Project>, Project> projects;
+    private final Map<ModelKey<User>, User> users;
+    private final Map<ModelKey<Client>, Client> clients;
+    private final Map<ModelKey<Role>, Role> roles;
 
     public ModelImpl(ModelId id, String name) {
         this.id = id;
         this.name = name;
         this.organizations = new ConcurrentHashMap<>();
+        this.projects = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<>();
+        this.clients = new ConcurrentHashMap<>();
+        this.roles = new ConcurrentHashMap<>();
     }
 
     @JsonCreator
@@ -28,7 +37,11 @@ public class ModelImpl implements Model {
         this.id = id;
         this.name = name;
         this.organizations = new ConcurrentHashMap<>();
-        organizations.forEach(organization -> this.organizations.put(organization.getId(), organization));
+        this.projects = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<>();
+        this.clients = new ConcurrentHashMap<>();
+        this.roles = new ConcurrentHashMap<>();
+        organizations.forEach(organization -> this.organizations.put(organizationKey(organization.getId()), organization));
     }
 
     @Override
@@ -43,7 +56,7 @@ public class ModelImpl implements Model {
 
     @Override
     public void add(Organization organization) {
-        organizations.put(organization.getId(), organization);
+        organizations.put(organizationKey(organization.getId()), organization);
     }
 
     @Override
@@ -53,17 +66,17 @@ public class ModelImpl implements Model {
 
     @Override
     public Optional<Organization> getOrganization(OrganizationId organizationId) {
-        return Optional.ofNullable(organizations.get(organizationId));
+        return Optional.ofNullable(organizations.get(organizationKey(organizationId)));
     }
 
     @Override
     public boolean remove(OrganizationId organizationId) {
-        return organizations.remove(organizationId) != null;
+        return organizations.remove(organizationKey(organizationId)) != null;
     }
 
     @Override
     public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        Organization organization = organizations.get(organizationId);
+        Organization organization = organizations.get(organizationKey(organizationId));
         if (organization != null) {
             Optional<Project> project = organization.getProject(projectId);
             if (project.isPresent()) {
@@ -75,7 +88,7 @@ public class ModelImpl implements Model {
 
     @Override
     public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
-        Organization organization = organizations.get(organizationId);
+        Organization organization = organizations.get(organizationKey(organizationId));
         if (organization != null) {
             return organization.getProject(projectId);
         }
@@ -84,7 +97,7 @@ public class ModelImpl implements Model {
 
     @Override
     public Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
-        Organization organization = organizations.get(organizationId);
+        Organization organization = organizations.get(organizationKey(organizationId));
         if (organization != null) {
             Optional<Project> project = organization.getProject(projectId);
             if (project.isPresent()) {
@@ -92,6 +105,10 @@ public class ModelImpl implements Model {
             }
         }
         return Optional.empty();
+    }
+
+    private static ModelKey<Organization> organizationKey(OrganizationId id) {
+        return ModelKey.from(Organization.class, id);
     }
 
 }

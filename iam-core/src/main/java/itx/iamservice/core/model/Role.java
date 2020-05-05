@@ -46,10 +46,6 @@ public class Role {
         permissions.put(permission.getId(), permission);
     }
 
-    public Optional<Permission> getPermission(PermissionId id) {
-        return Optional.ofNullable(permissions.get(id));
-    }
-
     public Collection<Permission> getPermissions() {
         return permissions.values().stream().collect(Collectors.toList());
     }

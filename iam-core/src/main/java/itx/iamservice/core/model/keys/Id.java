@@ -1,4 +1,4 @@
-package itx.iamservice.core.model;
+package itx.iamservice.core.model.keys;
 
 import java.util.Objects;
 

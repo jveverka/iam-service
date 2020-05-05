@@ -13,9 +13,11 @@ import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.admin.UserManagerService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.CacheCleanupScheduler;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
+import itx.iamservice.core.services.impl.ModelCacheImpl;
 import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
@@ -35,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class IAMCoreBuilder {
 
     private Model model;
+    private ModelCache modelCache;
     private PersistenceService persistenceService;
     private CacheCleanupScheduler cacheCleanupScheduler;
     private AuthorizationCodeCache authorizationCodeCache;
@@ -55,11 +58,13 @@ public class IAMCoreBuilder {
 
     public IAMCoreBuilder withModel(Model model) {
         this.model = model;
+        this.modelCache = new ModelCacheImpl(model);
         return this;
     }
 
     public IAMCoreBuilder withDefaultModel(String iamAdminPassword) throws PKIException {
-        this.model = ModelUtils.createDefaultModel(iamAdminPassword);
+        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword);
+        this.model = modelCache.getModel();
         return this;
     }
 
@@ -89,7 +94,7 @@ public class IAMCoreBuilder {
     }
 
     public IAMCoreBuilder withDefaultTokenCache() {
-        this.tokenCache = new TokenCacheImpl(model);
+        this.tokenCache = new TokenCacheImpl(modelCache);
         return this;
     }
 
@@ -101,20 +106,20 @@ public class IAMCoreBuilder {
             authorizationCodeCache = new AuthorizationCodeCacheImpl(20L, TimeUnit.MINUTES);
         }
         if (tokenCache == null) {
-            tokenCache = new TokenCacheImpl(model);
+            tokenCache = new TokenCacheImpl(modelCache);
         }
         if (persistenceService == null) {
             persistenceService = new InMemoryPersistenceServiceImpl();
         }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();
-        clientService = new ClientServiceImpl(model, tokenCache, authorizationCodeCache);
+        clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         authenticationService = new AuthenticationServiceImpl(clientService);
-        resourceServerService = new ResourceServerServiceImpl(model, tokenCache);
-        clientManagementService = new ClientManagementServiceImpl(model);
-        organizationManagerService = new OrganizationManagerServiceImpl(model);
-        projectManagerService = new ProjectManagerServiceImpl(model);
-        userManagerService = new UserManagerServiceImpl(model);
+        resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
+        clientManagementService = new ClientManagementServiceImpl(modelCache);
+        organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
+        projectManagerService = new ProjectManagerServiceImpl(modelCache);
+        userManagerService = new UserManagerServiceImpl(modelCache);
         providerConfigurationService = new ProviderConfigurationServiceImpl(projectManagerService);
         return new IAMCore();
     }

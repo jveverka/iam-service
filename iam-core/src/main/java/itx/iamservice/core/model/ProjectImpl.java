@@ -9,8 +9,10 @@ import itx.iamservice.core.model.utils.TokenUtils;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -25,7 +27,7 @@ public class ProjectImpl implements Project {
     private final KeyPairData keyPairData;
     private final KeyPairSerialized keyPairSerialized;
     private final Map<ClientId, Client> clients;
-    private final Map<PermissionId, Permission> permissions;
+    private final Set<Permission> permissions;
 
     public ProjectImpl(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
         this.id = id;
@@ -34,7 +36,7 @@ public class ProjectImpl implements Project {
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
         this.clients = new ConcurrentHashMap<>();
-        this.permissions = new ConcurrentHashMap<>();
+        this.permissions = new HashSet<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
     }
@@ -54,7 +56,7 @@ public class ProjectImpl implements Project {
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
         this.clients = new ConcurrentHashMap<>();
-        this.permissions = new ConcurrentHashMap<>();
+        this.permissions = new HashSet<>();
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
         users.forEach(u->
@@ -64,7 +66,7 @@ public class ProjectImpl implements Project {
             this.roles.put(r.getId(), r)
         );
         permissions.forEach(p->
-            this.permissions.put(p.getId(), p)
+            this.permissions.add(p)
         );
         clients.forEach(c->
             this.clients.put(c.getId(), c)
@@ -116,7 +118,7 @@ public class ProjectImpl implements Project {
 
     @Override
     public Collection<Permission> getPermissions() {
-        return this.permissions.values().stream().collect(Collectors.toList());
+        return this.permissions.stream().collect(Collectors.toList());
     }
 
     @Override
@@ -183,20 +185,21 @@ public class ProjectImpl implements Project {
 
     @Override
     public void addPermission(Permission permission) {
-        this.permissions.put(permission.getId(), permission);
+        this.permissions.add(permission);
     }
 
     @Override
     public boolean removePermission(PermissionId id) {
-        return this.permissions.remove(id) != null;
+        return this.permissions.remove(id);
     }
 
     @Override
     public boolean addPermissionToRole(RoleId roleId, PermissionId permissionId) {
         Role role = roles.get(roleId);
-        Permission permission = permissions.get(permissionId);
-        if (role != null && permission != null) {
-            role.addPermission(permission);
+        Optional<Permission> permission = permissions.stream()
+                .filter(p -> permissionId.getId().equals(permissionId)).findFirst();
+        if (role != null && permission.isPresent()) {
+            role.addPermission(permission.get());
             return true;
         }
         return false;
@@ -205,9 +208,10 @@ public class ProjectImpl implements Project {
     @Override
     public boolean removePermissionFromRole(RoleId roleId, PermissionId permissionId) {
         Role role = roles.get(roleId);
-        Permission permission = permissions.get(permissionId);
-        if (role != null && permission != null) {
-            return role.removePermission(permission.getId());
+        Optional<Permission> permission = permissions.stream()
+                .filter(p -> permissionId.getId().equals(permissionId)).findFirst();
+        if (role != null && permission.isPresent()) {
+            return role.removePermission(permission.get().getId());
         }
         return false;
     }

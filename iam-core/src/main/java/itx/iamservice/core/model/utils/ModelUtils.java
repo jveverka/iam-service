@@ -6,6 +6,7 @@ import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
+import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
@@ -14,7 +15,9 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.OrganizationInfo;
+import itx.iamservice.core.services.impl.ModelCacheImpl;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +58,12 @@ public final class ModelUtils {
     private ModelUtils() {
     }
 
-    public static Model createDefaultModel(String iamAdminPassword) throws PKIException {
+    public static ModelCache createEmptyModelCache(ModelId id, String modelName) {
+        Model model = new ModelImpl(id, modelName);
+        return new ModelCacheImpl(model);
+    }
+
+    public static ModelCache createDefaultModelCache(String iamAdminPassword) throws PKIException {
 
         Role manageOrganizationsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-organizations"), "Can manage organizations.")
                 .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
@@ -128,7 +136,7 @@ public final class ModelUtils {
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
-        Set<ProjectId> projects = organization.getProjects().stream().map(Project::getId).collect(Collectors.toSet());
+        Set<ProjectId> projects = organization.getProjects().stream().collect(Collectors.toSet());
         return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getKeyPairData());
     }
 

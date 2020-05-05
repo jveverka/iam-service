@@ -6,6 +6,7 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
+import itx.iamservice.core.services.caches.ModelCache;
 
 public final class UserBuilder {
 
@@ -39,7 +40,7 @@ public final class UserBuilder {
         return projectBuilder;
     }
 
-    public Model build() {
+    public ModelCache build() {
         return projectBuilder.build();
     }
 

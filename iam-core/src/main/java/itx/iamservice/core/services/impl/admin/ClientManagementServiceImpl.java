@@ -3,13 +3,13 @@ package itx.iamservice.core.services.impl.admin;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ClientManagementService;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateClientRequest;
 
 import java.util.Collection;
@@ -19,10 +19,10 @@ import java.util.UUID;
 
 public class ClientManagementServiceImpl implements ClientManagementService {
 
-    private final Model model;
+    private final ModelCache modelCache;
 
-    public ClientManagementServiceImpl(Model model) {
-        this.model = model;
+    public ClientManagementServiceImpl(ModelCache modelCache) {
+        this.modelCache = modelCache;
     }
 
     @Override
@@ -91,9 +91,9 @@ public class ClientManagementServiceImpl implements ClientManagementService {
     }
 
     private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {
-        Optional<Organization> organization = model.getOrganization(id);
+        Optional<Organization> organization = modelCache.getOrganization(id);
         if (organization.isPresent()) {
-            return organization.get().getProject(projectId);
+            return modelCache.getProject(id, projectId);
         }
         return Optional.empty();
     }

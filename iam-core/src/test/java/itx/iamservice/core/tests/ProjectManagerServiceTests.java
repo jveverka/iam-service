@@ -1,8 +1,6 @@
 package itx.iamservice.core.tests;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
-import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
@@ -10,8 +8,10 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
@@ -27,12 +27,13 @@ import java.security.Security;
 import java.util.Collection;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProjectManagerServiceTests {
 
-    private static Model model;
+    private static ModelCache modelCache;
     private static OrganizationManagerService organizationManagerService;
     private static ProjectManagerService projectManagerService;
     private static OrganizationId oid001 = OrganizationId.from("organization-001");
@@ -42,16 +43,16 @@ public class ProjectManagerServiceTests {
     @BeforeAll
     private static void init() {
         Security.addProvider(new BouncyCastleProvider());
-        model = new ModelImpl(ModelId.from("model-01"), "test-model");
-        organizationManagerService = new OrganizationManagerServiceImpl(model);
-        projectManagerService = new ProjectManagerServiceImpl(model);
+        modelCache = ModelUtils.createEmptyModelCache(ModelId.from("model-01"), "test-model");
+        organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
+        projectManagerService = new ProjectManagerServiceImpl(modelCache);
     }
 
     @Test
     @Order(1)
     public void checkEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 0);
+        assertEquals(0, all.size());
         Optional<Project> projectOptional = projectManagerService.get(oid001, pId001);
         assertTrue(projectOptional.isEmpty());
         projectOptional = projectManagerService.get(oid002, pId001);
@@ -66,7 +67,7 @@ public class ProjectManagerServiceTests {
         result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 2);
+        assertEquals(2, all.size());
     }
 
     @Test
@@ -75,9 +76,9 @@ public class ProjectManagerServiceTests {
         boolean result = projectManagerService.create(oid001, pId001, CreateProjectRequest.from("p001"));
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
-        assertTrue(all.size() == 1);
+        assertEquals(1, all.size());
         all = projectManagerService.getAll(oid002);
-        assertTrue(all.size() == 0);
+        assertEquals(0, all.size());
     }
 
     @Test
@@ -86,9 +87,9 @@ public class ProjectManagerServiceTests {
         boolean result = projectManagerService.create(oid002, pId001, CreateProjectRequest.from("p001"));
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
-        assertTrue(all.size() == 1);
+        assertEquals(1, all.size());
         all = projectManagerService.getAll(oid002);
-        assertTrue(all.size() == 1);
+        assertEquals(1, all.size());
     }
 
     @Test
@@ -97,19 +98,19 @@ public class ProjectManagerServiceTests {
         Role role1 = new Role(RoleId.from("role-001"), "role-001");
         Role role2 = new Role(RoleId.from("role-002"), "role-002");
         Collection<Role> roles = projectManagerService.getRoles(oid001, pId001);
-        assertTrue(roles.size() == 0);
+        assertEquals(0, roles.size());
         boolean result = projectManagerService.addRole(oid001, pId001, role1);
         assertTrue(result);
         result = projectManagerService.addRole(oid001, pId001, role2);
         assertTrue(result);
         roles = projectManagerService.getRoles(oid001, pId001);
-        assertTrue(roles.size() == 2);
+        assertEquals(2, roles.size());
         result= projectManagerService.removeRole(oid001, pId001, role1.getId());
         assertTrue(result);
         result= projectManagerService.removeRole(oid001, pId001, role2.getId());
         assertTrue(result);
         roles = projectManagerService.getRoles(oid001, pId001);
-        assertTrue(roles.size() == 0);
+        assertEquals(0, roles.size());
     }
 
     @Test
@@ -118,7 +119,7 @@ public class ProjectManagerServiceTests {
         boolean result = projectManagerService.remove(oid001, pId001);
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
-        assertTrue(all.size() == 0);
+        assertEquals(0, all.size());
     }
 
     @Test
@@ -127,7 +128,7 @@ public class ProjectManagerServiceTests {
         boolean result = projectManagerService.remove(oid002, pId001);
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid002);
-        assertTrue(all.size() == 0);
+        assertEquals(0, all.size());
     }
 
 }

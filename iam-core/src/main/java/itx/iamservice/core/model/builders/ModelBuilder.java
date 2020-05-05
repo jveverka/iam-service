@@ -7,20 +7,25 @@ import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Project;
+import itx.iamservice.core.services.caches.ModelCache;
+import itx.iamservice.core.services.impl.ModelCacheImpl;
 
 import java.util.UUID;
 
 public final class ModelBuilder {
 
-    private final Model model;
+    private final ModelCache modelCache;
 
     public ModelBuilder(ModelId id, String name) {
-        this.model = new ModelImpl(id, name);
+        Model model = new ModelImpl(id, name);
+        this.modelCache = new ModelCacheImpl(model);
     }
 
     public ModelBuilder(String name) {
         ModelId id = ModelId.from(UUID.randomUUID().toString());
-        this.model = new ModelImpl(id, name);
+        Model model = new ModelImpl(id, name);
+        this.modelCache = new ModelCacheImpl(model);
     }
 
     public OrganizationBuilder addOrganization(String name) throws PKIException {
@@ -30,12 +35,16 @@ public final class ModelBuilder {
 
     public OrganizationBuilder addOrganization(OrganizationId id, String name) throws PKIException {
         Organization organization = new OrganizationImpl(id, name);
-        this.model.add(organization);
+        this.modelCache.add(organization);
         return new OrganizationBuilder(this, organization);
     }
 
-    public Model build() {
-        return model;
+    public void addProject(OrganizationId id, Project project) {
+        this.modelCache.add(id, project);
+    }
+
+    public ModelCache build() {
+        return modelCache;
     }
 
     public static ModelBuilder builder(String name) {

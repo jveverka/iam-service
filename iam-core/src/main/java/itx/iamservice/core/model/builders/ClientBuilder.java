@@ -3,6 +3,7 @@ package itx.iamservice.core.model.builders;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.services.caches.ModelCache;
 
 public final class ClientBuilder {
 
@@ -23,7 +24,7 @@ public final class ClientBuilder {
         return projectBuilder;
     }
 
-    public Model build() {
+    public ModelCache build() {
         return projectBuilder.build();
     }
 

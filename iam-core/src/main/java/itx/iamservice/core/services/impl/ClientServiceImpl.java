@@ -20,6 +20,7 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
@@ -42,12 +43,12 @@ public class ClientServiceImpl implements ClientService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientServiceImpl.class);
 
-    private final Model model;
+    private final ModelCache modelCache;
     private final TokenCache tokenCache;
     private final AuthorizationCodeCache codeCache;
 
-    public ClientServiceImpl(Model model, TokenCache tokenCache, AuthorizationCodeCache codeCache) {
-        this.model = model;
+    public ClientServiceImpl(ModelCache modelCache, TokenCache tokenCache, AuthorizationCodeCache codeCache) {
+        this.modelCache = modelCache;
         this.tokenCache = tokenCache;
         this.codeCache = codeCache;
     }
@@ -55,7 +56,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId,
                                          ClientCredentials clientCredentials, Set<RoleId> scope, IdTokenRequest idTokenRequest) {
-        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> clientOptional = projectOptional.get().getClient(clientCredentials.getId());
             if (clientOptional.isPresent()) {
@@ -94,7 +95,7 @@ public class ClientServiceImpl implements ClientService {
     @SuppressWarnings("unchecked")
     public Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId,
                                          AuthenticationRequest authenticationRequest, IdTokenRequest idTokenRequest) {
-        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             ClientCredentials clientCredentials = authenticationRequest.getClientCredentials();
             boolean validationResult = projectOptional.get().verifyClientCredentials(clientCredentials);
@@ -106,7 +107,7 @@ public class ClientServiceImpl implements ClientService {
             LOG.info("Organization/Project {}/{} not found", organizationId, projectId);
             return Optional.empty();
         }
-        Optional<User> userOptional = model.getUser(organizationId, projectId, authenticationRequest.getUserId());
+        Optional<User> userOptional = modelCache.getUser(organizationId, projectId, authenticationRequest.getUserId());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             Optional<Credentials> credentials = user.getCredentials(authenticationRequest.getCredentialsType());
@@ -141,7 +142,7 @@ public class ClientServiceImpl implements ClientService {
     public Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials,
                                     JWToken token, Set<RoleId> scope, IdTokenRequest idTokenRequest) {
         if (!tokenCache.isRevoked(token)) {
-            Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+            Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 boolean validationResult = projectOptional.get().verifyClientCredentials(clientCredentials);
                 if (!validationResult) {
@@ -154,7 +155,7 @@ public class ClientServiceImpl implements ClientService {
             }
             DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
             String subject = defaultClaims.getSubject();
-            Optional<User> userOptional = model.getUser(organizationId, projectId, UserId.from(subject));
+            Optional<User> userOptional = modelCache.getUser(organizationId, projectId, UserId.from(subject));
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, user.getCertificate().getPublicKey());
@@ -221,7 +222,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId,
                                              ClientId clientId, String password, Set<RoleId> scope, String state) {
-        Optional<Project> projectOptional = model.getProject(organizationId, projectId);
+        Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> optionalClient = projectOptional.get().getClient(clientId);
             if (!optionalClient.isPresent()) {
@@ -232,7 +233,7 @@ public class ClientServiceImpl implements ClientService {
             LOG.info("Organization/Project {}/{} not found", organizationId, projectId);
             return Optional.empty();
         }
-        Optional<User> userOptional = model.getUser(organizationId, projectId, userId);
+        Optional<User> userOptional = modelCache.getUser(organizationId, projectId, userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             Optional<Credentials> credentials = user.getCredentials(UPCredentials.class);
@@ -256,7 +257,7 @@ public class ClientServiceImpl implements ClientService {
         Optional<AuthorizationCodeContext> contextOptional = codeCache.verifyAndRemove(code);
         if (contextOptional.isPresent()) {
             AuthorizationCodeContext context = contextOptional.get();
-            Optional<User> optionalUser = model.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());
+            Optional<User> optionalUser = modelCache.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 Set<String> roles = context.getRoles().stream().map(r -> r.getId()).collect(Collectors.toSet());
@@ -285,7 +286,7 @@ public class ClientServiceImpl implements ClientService {
         JWToken token = request.getToken();
         DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
         String subject = defaultClaims.getSubject();
-        Optional<User> userOptional = model.getUser(organizationId, projectId, UserId.from(subject));
+        Optional<User> userOptional = modelCache.getUser(organizationId, projectId, UserId.from(subject));
         if (userOptional.isPresent()) {
             Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, userOptional.get().getCertificate().getPublicKey());
             LOG.info("JWT verified={}", claimsJws.isPresent());
@@ -295,8 +296,8 @@ public class ClientServiceImpl implements ClientService {
             }
         } else {
             ClientId clientId = ClientId.from(defaultClaims.getSubject());
-            Optional<Client> clientOptional = this.model.getClient(organizationId, projectId, clientId);
-            Optional<Project> projectOptional = this.model.getProject(organizationId, projectId);
+            Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
+            Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent() && clientOptional.isPresent()) {
                 Optional<Jws<Claims>> claimsJws = TokenUtils.verify(token, projectOptional.get().getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsJws.isPresent());

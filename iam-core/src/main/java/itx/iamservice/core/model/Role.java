@@ -4,22 +4,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Role {
 
     private final RoleId id;
     private final String name;
-    private final Map<PermissionId, Permission> permissions;
+    private final Set<Permission> permissions;
 
     public Role(RoleId id, String name) {
         this.id = id;
         this.name = name;
-        this.permissions = new ConcurrentHashMap<>();
+        this.permissions = new HashSet<>();
     }
 
     @JsonCreator
@@ -28,9 +27,9 @@ public class Role {
                 @JsonProperty("permissions") Collection<Permission> permissions) {
         this.id = id;
         this.name = name;
-        this.permissions = new ConcurrentHashMap<>();
+        this.permissions = new HashSet<>();
         permissions.forEach(permission ->
-            this.permissions.put(permission.getId(), permission)
+            this.permissions.add(permission)
         );
     }
 
@@ -43,19 +42,15 @@ public class Role {
     }
 
     public void addPermission(Permission permission) {
-        permissions.put(permission.getId(), permission);
-    }
-
-    public Optional<Permission> getPermission(PermissionId id) {
-        return Optional.ofNullable(permissions.get(id));
+        permissions.add(permission);
     }
 
     public Collection<Permission> getPermissions() {
-        return permissions.values().stream().collect(Collectors.toList());
+        return permissions.stream().collect(Collectors.toList());
     }
 
     public boolean removePermission(PermissionId id) {
-        return permissions.remove(id) != null;
+        return permissions.remove(id);
     }
 
     @Override

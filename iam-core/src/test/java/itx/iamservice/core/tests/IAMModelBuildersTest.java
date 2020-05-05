@@ -10,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.caches.ModelCache;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -49,7 +50,7 @@ public class IAMModelBuildersTest {
     @Test
     @Order(2)
     public void testModelBuilder() throws PKIException {
-        Model model = IAMModelBuilders.modelBuilder("my model")
+        ModelCache modelCache = IAMModelBuilders.modelBuilder("my model")
                 .addOrganization("first organization")
                     .addProject("first project")
                         .addRole(adminFullAccess)
@@ -69,7 +70,7 @@ public class IAMModelBuildersTest {
                     .and()
                     .addProject("second project")
                 .build();
-        assertNotNull(model);
+        assertNotNull(modelCache);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class IAMModelBuildersTest {
     @Test
     @Order(4)
     public void testModelBuilderWithIds() throws PKIException {
-        Model model = IAMModelBuilders.modelBuilder(ModelId.from("model-001"), "my model")
+        ModelCache modelCache = IAMModelBuilders.modelBuilder(ModelId.from("model-001"), "my model")
                 .addOrganization(OrganizationId.from("org-001"), "first organization")
                     .addProject(ProjectId.from("project-001"), "first project")
                     .addRole(adminFullAccess)
@@ -109,6 +110,6 @@ public class IAMModelBuildersTest {
                     .and()
                     .addProject(ProjectId.from("project-002"),"second project")
                 .build();
-        assertNotNull(model);
+        assertNotNull(modelCache);
     }
 }

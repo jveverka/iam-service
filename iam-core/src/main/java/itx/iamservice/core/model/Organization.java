@@ -21,7 +21,11 @@ public interface Organization {
 
     String getName();
 
+    void addProject(ProjectId id);
+
     Collection<ProjectId> getProjects();
+
+    boolean removeProject(ProjectId id);
 
     KeyPairSerialized getKeyPairSerialized();
 

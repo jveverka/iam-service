@@ -54,8 +54,18 @@ public class OrganizationImpl implements Organization {
     }
 
     @Override
+    public void addProject(ProjectId id) {
+        projects.add(id);
+    }
+
+    @Override
     public Collection<ProjectId> getProjects() {
         return projects.stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean removeProject(ProjectId id) {
+        return projects.remove(id);
     }
 
     @Override

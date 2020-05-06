@@ -17,7 +17,7 @@ import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
-import itx.iamservice.core.services.impl.ModelCacheImpl;
+import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
 import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
@@ -56,25 +56,23 @@ public class IAMCoreBuilder {
         return this;
     }
 
+    public IAMCoreBuilder withModel(Model model, PersistenceService persistenceService) {
+        this.model = model;
+        this.persistenceService = persistenceService;
+        this.modelCache = new ModelCacheImpl(model, persistenceService);
+        return this;
+    }
+
     public IAMCoreBuilder withModel(Model model) {
         this.model = model;
-        this.modelCache = new ModelCacheImpl(model);
+        this.persistenceService = new InMemoryPersistenceServiceImpl();
+        this.modelCache = new ModelCacheImpl(model, this.persistenceService);
         return this;
     }
 
     public IAMCoreBuilder withDefaultModel(String iamAdminPassword) throws PKIException {
         this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword);
         this.model = modelCache.getModel();
-        return this;
-    }
-
-    public IAMCoreBuilder withPersistentService(PersistenceService persistenceService) {
-        this.persistenceService = persistenceService;
-        return this;
-    }
-
-    public IAMCoreBuilder withDefaultPersistentService() {
-        this.persistenceService = new InMemoryPersistenceServiceImpl();
         return this;
     }
 

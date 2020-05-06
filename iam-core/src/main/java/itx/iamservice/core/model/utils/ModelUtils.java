@@ -10,14 +10,14 @@ import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.OrganizationInfo;
-import itx.iamservice.core.services.impl.ModelCacheImpl;
+import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
+import itx.iamservice.core.services.impl.persistence.InMemoryPersistenceServiceImpl;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public final class ModelUtils {
 
     public static ModelCache createEmptyModelCache(ModelId id, String modelName) {
         Model model = new ModelImpl(id, modelName);
-        return new ModelCacheImpl(model);
+        return new ModelCacheImpl(model, new InMemoryPersistenceServiceImpl());
     }
 
     public static ModelCache createDefaultModelCache(String iamAdminPassword) throws PKIException {

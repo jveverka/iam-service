@@ -2,6 +2,7 @@ package itx.iamservice.persistence.filesystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.services.persistence.PersistenceService;
@@ -23,6 +24,11 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
     private Path createFilePathFromModelId(Path basePath, ModelId id) {
         String fileName = "model-" + id.getId() + ".json";
         return Paths.get(basePath.toString(), fileName);
+    }
+
+    @Override
+    public void onModelChange(Model model) {
+
     }
 
     @Override

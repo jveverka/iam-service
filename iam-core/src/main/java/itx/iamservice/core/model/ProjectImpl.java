@@ -10,10 +10,8 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -22,7 +20,7 @@ public class ProjectImpl implements Project {
     private final ProjectId id;
     private final OrganizationId organizationId;
     private final String name;
-    private final Map<UserId, User> users;
+    private final Set<UserId> users;
     private final Set<RoleId> roles;
     private final KeyPairData keyPairData;
     private final KeyPairSerialized keyPairSerialized;
@@ -32,7 +30,7 @@ public class ProjectImpl implements Project {
     public ProjectImpl(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
         this.id = id;
         this.name = name;
-        this.users = new ConcurrentHashMap<>();
+        this.users = new HashSet<>();
         this.organizationId = organizationId;
         this.roles = new HashSet<>();
         this.clients = new HashSet<>();
@@ -46,13 +44,13 @@ public class ProjectImpl implements Project {
                        @JsonProperty("name") String name,
                        @JsonProperty("organizationId") OrganizationId organizationId,
                        @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized,
-                       @JsonProperty("users") Collection<User> users,
+                       @JsonProperty("users") Collection<UserId> users,
                        @JsonProperty("roles") Collection<RoleId> roles,
                        @JsonProperty("permissions") Collection<Permission> permissions,
                        @JsonProperty("clients") Collection<ClientId> clients) throws PKIException {
         this.id = id;
         this.name = name;
-        this.users = new ConcurrentHashMap<>();
+        this.users = new HashSet<>();
         this.organizationId = organizationId;
         this.roles = new HashSet<>();
         this.clients = new HashSet<>();
@@ -60,7 +58,7 @@ public class ProjectImpl implements Project {
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
         users.forEach(u->
-            this.users.put(u.getId(), u)
+            this.users.add(u)
         );
         roles.forEach(r->
             this.roles.add(r)
@@ -89,10 +87,8 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public Collection<User> getUsers() {
-        return users.values().stream()
-                .filter(user -> user.getProjectId().equals(id))
-                .collect(Collectors.toList());
+    public Collection<UserId> getUsers() {
+        return users.stream().collect(Collectors.toList());
     }
 
     @Override
@@ -122,18 +118,13 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public void add(User user) {
-        users.put(user.getId(), user);
+    public void add(UserId userId) {
+        users.add(userId);
     }
 
     @Override
     public boolean remove(UserId userId) {
-        return users.remove(userId) != null;
-    }
-
-    @Override
-    public Optional<User> getUser(UserId userId) {
-        return Optional.ofNullable(users.get(userId));
+        return users.remove(userId);
     }
 
     @Override

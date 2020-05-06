@@ -10,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
@@ -52,6 +53,11 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     @Override
     public Collection<Project> getAll(OrganizationId id) {
         return modelCache.getProjects(id);
+    }
+
+    @Override
+    public Collection<User> getUsers(OrganizationId id, ProjectId projectId) {
+        return modelCache.getUsers(id, projectId);
     }
 
     @Override

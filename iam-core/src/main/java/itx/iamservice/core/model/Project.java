@@ -1,6 +1,5 @@
 package itx.iamservice.core.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.security.PrivateKey;
@@ -20,17 +19,15 @@ public interface Project {
 
     OrganizationId getOrganizationId();
 
-    Collection<User> getUsers();
+    Collection<UserId> getUsers();
 
     KeyPairSerialized getKeyPairSerialized();
 
     KeyPairData getKeyPairData();
 
-    void add(User user);
+    void add(UserId userId);
 
     boolean remove(UserId userId);
-
-    Optional<User> getUser(UserId userId);
 
     void addRole(RoleId roleId);
 

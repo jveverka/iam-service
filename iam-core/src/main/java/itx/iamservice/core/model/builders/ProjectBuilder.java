@@ -32,7 +32,7 @@ public final class ProjectBuilder {
 
     public UserBuilder addUser(UserId id, String name) throws PKIException {
         User user = new UserImpl(id, name, project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
-        project.add(user);
+        modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), user);
         return new UserBuilder(this, user);
     }
 

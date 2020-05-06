@@ -82,11 +82,37 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        Project project = projects.get(projectKey(organizationId, projectId));
-        if (project !=  null) {
-            return project.getUser(userId);
+        User user = users.get(userKey(organizationId, projectId, userId));
+        if (user !=  null) {
+            return Optional.of(user);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<User> getUsers(OrganizationId organizationId, ProjectId projectId) {
+        List<User> result = new ArrayList<>();
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        users.keySet().forEach(k -> {
+            if (k.startsWith(projectKey)) {
+                result.add(users.get(k));
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        ModelKey<User> key = userKey(organizationId, projectId, userId);
+        User removed = users.remove(key);
+        if (project != null) {
+            project.remove(userId);
+        }
+        if (removed !=  null) {
+            persistenceService.onNodeDeleted(key, removed);
+        }
+        return removed != null;
     }
 
     @Override
@@ -136,6 +162,17 @@ public class ModelCacheImpl implements ModelCache {
             persistenceService.onNodeDeleted(key, removed);
         }
         return removed != null;
+    }
+
+    @Override
+    public void add(OrganizationId organizationId, ProjectId projectId, User user) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project != null) {
+            ModelKey<User> key = userKey(organizationId, projectId, user.getId());
+            project.add(user.getId());
+            users.put(key, user);
+            persistenceService.onNodeCreated(key, user);
+        }
     }
 
     @Override
@@ -240,6 +277,28 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
+        Role role = roles.get(roleKey(id, projectId, roleId));
+        User user = users.get(userKey(id, projectId, userId));
+        if (role != null && user != null) {
+            user.addRole(roleId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
+        Role role = roles.get(roleKey(id, projectId, roleId));
+        User user = users.get(userKey(id, projectId, userId));
+        if (role != null && user != null) {
+            user.removeRole(roleId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         Role role = roles.get(roleKey(organizationId, projectId, roleId));
         if (role != null) {
@@ -262,6 +321,10 @@ public class ModelCacheImpl implements ModelCache {
 
     private static ModelKey<Role> roleKey(OrganizationId id, ProjectId projectId, RoleId roleId) {
         return ModelKey.from(Role.class, id, projectId, roleId);
+    }
+
+    private static ModelKey<User> userKey(OrganizationId id, ProjectId projectId, UserId userId) {
+        return ModelKey.from(User.class, id, projectId, userId);
     }
 
 }

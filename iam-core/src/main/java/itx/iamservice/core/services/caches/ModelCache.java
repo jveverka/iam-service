@@ -40,7 +40,17 @@ public interface ModelCache {
     boolean remove(OrganizationId organizationId, ProjectId projectId);
 
     //USER
+    void add(OrganizationId organizationId, ProjectId projectId, User user);
+
     Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
+
+    Collection<User> getUsers(OrganizationId organizationId, ProjectId projectId);
+
+    boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId);
+
+    boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId);
+
+    boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId);
 
     //CLIENT
     void add(OrganizationId organizationId, ProjectId projectId, Client client);

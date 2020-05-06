@@ -2,9 +2,9 @@ package itx.iamservice.core.services.impl;
 
 import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.dto.JWKData;
@@ -15,7 +15,6 @@ import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ProviderConfigurationServiceImpl implements ProviderConfigurationService {
@@ -55,17 +54,14 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
 
     @Override
     public JWKResponse getJWKData(OrganizationId organizationId, ProjectId projectId) {
-        Optional<Project> projectOptional = projectManagerService.get(organizationId, projectId);
-        if (projectOptional.isPresent()) {
-            List<KeyPairSerialized> keyPairs = projectOptional.get().getUsers().stream().map(u -> u.getKeyPairSerialized()).collect(Collectors.toList());
-            List<JWKData> keys = new ArrayList<>();
-            keyPairs.forEach(k -> {
-                JWKData jwkData = new JWKData(k.getId().getId(), KEY_TYPE, KEY_USE, KEY_ALGORITHM, KEY_OPERATIONS, k.getX509Certificate());
-                keys.add(jwkData);
-            });
-            return new JWKResponse(keys);
-        }
-        return new JWKResponse();
+        Collection<User> users = projectManagerService.getUsers(organizationId, projectId);
+        List<KeyPairSerialized> keyPairs = users.stream().map(u -> u.getKeyPairSerialized()).collect(Collectors.toList());
+        List<JWKData> keys = new ArrayList<>();
+        keyPairs.forEach(k -> {
+            JWKData jwkData = new JWKData(k.getId().getId(), KEY_TYPE, KEY_USE, KEY_ALGORITHM, KEY_OPERATIONS, k.getX509Certificate());
+            keys.add(jwkData);
+        });
+        return new JWKResponse(keys);
     }
 
 }

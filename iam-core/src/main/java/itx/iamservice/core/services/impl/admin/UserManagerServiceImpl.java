@@ -31,9 +31,10 @@ public class UserManagerServiceImpl implements UserManagerService {
     public boolean create(OrganizationId id, ProjectId projectId, UserId userId, String name) throws PKIException {
         Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
-            Optional<User> userOptional = projectOptional.get().getUser(userId);
+            Optional<User> userOptional = modelCache.getUser(id, projectId, userId);
             if (userOptional.isEmpty()) {
-                projectOptional.get().add(new UserImpl(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey()));
+                User user = new UserImpl(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey());
+                modelCache.add(id, projectId, user);
                 return true;
             }
         }
@@ -45,8 +46,9 @@ public class UserManagerServiceImpl implements UserManagerService {
         Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         if (projectOptional.isPresent()) {
             UserId userId = UserId.from(UUID.randomUUID().toString());
-            projectOptional.get().add(new UserImpl(userId, request.getName(), projectOptional.get().getId(),
-                      request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), projectOptional.get().getPrivateKey()));
+            User user = new UserImpl(userId, request.getName(), projectOptional.get().getId(),
+                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), projectOptional.get().getPrivateKey());
+            modelCache.add(id, projectId, user);
             return Optional.of(userId);
         }
         return Optional.empty();
@@ -54,78 +56,44 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Collection<User> getAll(OrganizationId id, ProjectId projectId) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            return projectOptional.get().getUsers();
-        }
-        return Collections.emptyList();
+        return modelCache.getUsers(id, projectId);
     }
 
     @Override
     public Optional<User> get(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            return projectOptional.get().getUser(userId);
-        }
-        return Optional.empty();
+        return modelCache.getUser(id, projectId, userId);
     }
 
     @Override
     public boolean remove(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            return projectOptional.get().remove(userId);
-        }
-        return false;
+        return modelCache.remove(id, projectId, userId);
     }
 
     @Override
     public boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<User> userOptional = projectOptional.get().getUser(userId);
-            if (userOptional.isPresent()) {
-                userOptional.get().addRole(roleId);
-                return true;
-            }
-        }
-        return false;
+        return modelCache.assignRole(id, projectId, userId, roleId);
     }
 
     @Override
     public boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<User> userOptional = projectOptional.get().getUser(userId);
-            if (userOptional.isPresent()) {
-                userOptional.get().removeRole(roleId);
-                return true;
-            }
-        }
-        return false;
+        return modelCache.removeRole(id, projectId, userId, roleId);
     }
 
     @Override
     public Set<RoleId> getRoles(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<User> userOptional = projectOptional.get().getUser(userId);
-            if (userOptional.isPresent()) {
-                return userOptional.get().getRoles();
-            }
+        Optional<User> userOptional = modelCache.getUser(id, projectId, userId);
+        if (userOptional.isPresent()) {
+            return userOptional.get().getRoles();
         }
         return Collections.emptySet();
     }
 
     @Override
     public boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<User> userOptional = projectOptional.get().getUser(userId);
-            if (userOptional.isPresent()) {
-                userOptional.get().addCredentials(credentials);
-                return true;
-            }
+        Optional<User> userOptional = modelCache.getUser(id, projectId, userId);
+        if (userOptional.isPresent()) {
+            userOptional.get().addCredentials(credentials);
+            return true;
         }
         return false;
     }

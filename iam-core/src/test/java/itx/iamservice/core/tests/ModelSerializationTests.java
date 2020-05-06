@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.Model;
@@ -15,8 +16,16 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
+import itx.iamservice.core.model.Project;
+import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
+import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.UserImpl;
+import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
+import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -24,7 +33,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,7 +79,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeClient() throws PKIException, JsonProcessingException {
+    public void serializeAndDeserializeClient() throws JsonProcessingException {
         ClientCredentials credentials = new ClientCredentials(ClientId.from("client-001"), "secret");
         Client client = new Client(credentials, "name", 10L, 10L, Collections.emptyList());
         String serialized = mapper.writeValueAsString(client);
@@ -92,12 +103,44 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeRole() throws PKIException, JsonProcessingException {
+    public void serializeAndDeserializeRole() throws JsonProcessingException {
         Role role = new Role(RoleId.from("role-001"), "role1", Collections.emptyList());
         String serialized = mapper.writeValueAsString(role);
         Role roleDeserialized = mapper.readValue(serialized, Role.class);
         assertNotNull(roleDeserialized);
         assertEquals(role, roleDeserialized);
+    }
+
+    @Test
+    public void serializeAndDeserializeUser() throws PKIException, JsonProcessingException {
+        Credentials<UPAuthenticationRequest> credentials = new UPCredentials(UserId.from("user"), "secret");
+        List<Credentials> credentialsList = new ArrayList<>();
+        credentialsList.add(credentials);
+        User user = new UserImpl(UserId.from("user-001"), "name",
+                ProjectId.from("project-001"), 10L, 10L,
+                Collections.emptyList(), credentialsList, keyPairSerialized);
+        String serialized = mapper.writeValueAsString(user);
+        User userDeserialized = mapper.readValue(serialized, User.class);
+        assertNotNull(userDeserialized);
+        assertEquals(user.getId(), userDeserialized.getId());
+        assertEquals(user.getName(), userDeserialized.getName());
+        assertEquals(user.getProjectId(), userDeserialized.getProjectId());
+        assertEquals(user.getDefaultAccessTokenDuration(), userDeserialized.getDefaultAccessTokenDuration());
+        assertEquals(user.getDefaultRefreshTokenDuration(), userDeserialized.getDefaultRefreshTokenDuration());
+        assertEquals(user.getKeyPairSerialized(), userDeserialized.getKeyPairSerialized());
+    }
+
+    @Test
+    public void serializeAndDeserializeProject() throws PKIException, JsonProcessingException {
+        Project project = new ProjectImpl(ProjectId.from("project-001"), "name", OrganizationId.from("organization-001"), keyPairSerialized,
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        String serialized = mapper.writeValueAsString(project);
+        Project projectDeserialized = mapper.readValue(serialized, Project.class);
+        assertNotNull(projectDeserialized);
+        assertEquals(project.getId(), projectDeserialized.getId());
+        assertEquals(project.getName(), projectDeserialized.getName());
+        assertEquals(project.getOrganizationId(), projectDeserialized.getOrganizationId());
+        assertEquals(project.getKeyPairSerialized(), projectDeserialized.getKeyPairSerialized());
     }
 
 }

@@ -10,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
@@ -55,6 +56,11 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
+    public Collection<User> getUsers(OrganizationId id, ProjectId projectId) {
+        return modelCache.getUsers(id, projectId);
+    }
+
+    @Override
     public Optional<Project> get(OrganizationId id, ProjectId projectId) {
         return getProject(id, projectId);
     }
@@ -66,21 +72,14 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean addRole(OrganizationId id, ProjectId projectId, Role role) {
-        Optional<Project> project = getProject(id, projectId);
-        if (project.isPresent()) {
-            project.get().addRole(role);
-            return true;
-        }
-        return false;
+        return modelCache.add(id, projectId, role);
     }
 
     @Override
     public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest createRoleRequest) {
-        Optional<Project> project = getProject(id, projectId);
-        if (project.isPresent()) {
-            RoleId roleId = RoleId.from(UUID.randomUUID().toString());
-            Role role = new Role(roleId, createRoleRequest.getName());
-            project.get().addRole(role);
+        RoleId roleId = RoleId.from(UUID.randomUUID().toString());
+        Role role = new Role(roleId, createRoleRequest.getName());
+        if (modelCache.add(id, projectId, role)) {
             return Optional.of(roleId);
         }
         return Optional.empty();
@@ -88,20 +87,12 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean removeRole(OrganizationId id, ProjectId projectId, RoleId roleId) {
-        Optional<Project> project = getProject(id, projectId);
-        if (project.isPresent()) {
-            return project.get().removeRole(roleId);
-        }
-        return false;
+        return modelCache.remove(id,  projectId, roleId);
     }
 
     @Override
     public Collection<Role> getRoles(OrganizationId id, ProjectId projectId) {
-        Optional<Project> project = getProject(id, projectId);
-        if (project.isPresent()) {
-            return project.get().getRoles();
-        }
-        return Collections.emptyList();
+        return modelCache.getRoles(id, projectId);
     }
 
     @Override
@@ -132,20 +123,12 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean addPermissionToRole(OrganizationId id, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
-        Optional<Project> project = getProject(id, projectId);
-        if (project.isPresent()) {
-            return project.get().addPermissionToRole(roleId, permissionId);
-        }
-        return false;
+        return modelCache.addPermissionToRole(id, projectId, roleId, permissionId);
     }
 
     @Override
     public boolean removePermissionFromRole(OrganizationId id, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
-        Optional<Project> project = getProject(id, projectId);
-        if (project.isPresent()) {
-            return project.get().removePermissionFromRole(roleId, permissionId);
-        }
-        return false;
+        return modelCache.removePermissionFromRole(id, projectId, roleId, permissionId);
     }
 
     private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {

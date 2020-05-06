@@ -8,6 +8,7 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 
@@ -21,6 +22,8 @@ public interface ProjectManagerService {
     Optional<ProjectId> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException;
 
     Collection<Project> getAll(OrganizationId id);
+
+    Collection<User> getUsers(OrganizationId id, ProjectId projectId);
 
     Optional<Project> get(OrganizationId id, ProjectId projectId);
 

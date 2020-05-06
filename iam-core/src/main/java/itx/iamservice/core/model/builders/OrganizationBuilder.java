@@ -1,7 +1,7 @@
 package itx.iamservice.core.model.builders;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
+import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
@@ -12,10 +12,12 @@ import java.util.UUID;
 
 public final class OrganizationBuilder {
 
+    private final ModelCache modelCache;
     private final ModelBuilder modelBuilder;
     private final Organization organization;
 
-    public OrganizationBuilder(ModelBuilder modelBuilder, Organization organization) {
+    public OrganizationBuilder(ModelCache modelCache, ModelBuilder modelBuilder, Organization organization) {
+        this.modelCache = modelCache;
         this.modelBuilder = modelBuilder;
         this.organization = organization;
     }
@@ -27,8 +29,12 @@ public final class OrganizationBuilder {
 
     public ProjectBuilder addProject(ProjectId id, String name) throws PKIException {
         Project project = new ProjectImpl(id, name, organization.getId(), organization.getPrivateKey());
-        modelBuilder.addProject(organization.getId(), project);
-        return new ProjectBuilder(this, project);
+        modelCache.add(organization.getId(), project);
+        return new ProjectBuilder(modelCache,this, project);
+    }
+
+    protected Organization getOrganization() {
+        return organization;
     }
 
     public ModelBuilder and() {

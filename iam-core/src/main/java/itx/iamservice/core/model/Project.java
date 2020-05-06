@@ -19,39 +19,31 @@ public interface Project {
 
     OrganizationId getOrganizationId();
 
-    Collection<User> getUsers();
+    Collection<UserId> getUsers();
 
     KeyPairSerialized getKeyPairSerialized();
 
     KeyPairData getKeyPairData();
 
-    void add(User user);
+    void add(UserId userId);
 
     boolean remove(UserId userId);
 
-    Optional<User> getUser(UserId userId);
+    void addRole(RoleId roleId);
 
-    void addRole(Role role);
+    Collection<RoleId> getRoles();
 
-    Optional<Role> getRole(RoleId id);
-
-    Collection<Role> getRoles();
-
-    boolean removeRole(RoleId id);
+    boolean removeRole(RoleId roleId);
 
     PrivateKey getPrivateKey();
 
     X509Certificate getCertificate();
 
-    void addClient(Client client);
-
-    Optional<Client> getClient(ClientId id);
+    void addClient(ClientId id);
 
     boolean removeClient(ClientId id);
 
-    Collection<Client> getClients();
-
-    boolean verifyClientCredentials(ClientCredentials clientCredentials);
+    Collection<ClientId> getClients();
 
     void addPermission(Permission permission);
 
@@ -59,8 +51,6 @@ public interface Project {
 
     boolean removePermission(PermissionId id);
 
-    boolean addPermissionToRole(RoleId roleId, PermissionId permissionId);
-
-    boolean removePermissionFromRole(RoleId roleId, PermissionId permissionId);
+    Optional<Permission> getPermission(PermissionId id);
 
 }

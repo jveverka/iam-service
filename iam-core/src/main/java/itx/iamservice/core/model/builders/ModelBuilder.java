@@ -9,7 +9,8 @@ import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.services.caches.ModelCache;
-import itx.iamservice.core.services.impl.ModelCacheImpl;
+import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
+import itx.iamservice.core.services.persistence.PersistenceService;
 
 import java.util.UUID;
 
@@ -17,15 +18,15 @@ public final class ModelBuilder {
 
     private final ModelCache modelCache;
 
-    public ModelBuilder(ModelId id, String name) {
+    public ModelBuilder(ModelId id, String name, PersistenceService persistenceService) {
         Model model = new ModelImpl(id, name);
-        this.modelCache = new ModelCacheImpl(model);
+        this.modelCache = new ModelCacheImpl(model, persistenceService);
     }
 
-    public ModelBuilder(String name) {
+    public ModelBuilder(String name, PersistenceService persistenceService) {
         ModelId id = ModelId.from(UUID.randomUUID().toString());
         Model model = new ModelImpl(id, name);
-        this.modelCache = new ModelCacheImpl(model);
+        this.modelCache = new ModelCacheImpl(model, persistenceService);
     }
 
     public OrganizationBuilder addOrganization(String name) throws PKIException {
@@ -36,7 +37,7 @@ public final class ModelBuilder {
     public OrganizationBuilder addOrganization(OrganizationId id, String name) throws PKIException {
         Organization organization = new OrganizationImpl(id, name);
         this.modelCache.add(organization);
-        return new OrganizationBuilder(this, organization);
+        return new OrganizationBuilder(modelCache,this, organization);
     }
 
     public void addProject(OrganizationId id, Project project) {
@@ -47,12 +48,12 @@ public final class ModelBuilder {
         return modelCache;
     }
 
-    public static ModelBuilder builder(String name) {
-        return new ModelBuilder(name);
+    public static ModelBuilder builder(String name, PersistenceService persistenceService) {
+        return new ModelBuilder(name, persistenceService);
     }
 
-    public static ModelBuilder builder(ModelId id, String name) {
-        return new ModelBuilder(id, name);
+    public static ModelBuilder builder(ModelId id, String name, PersistenceService persistenceService) {
+        return new ModelBuilder(id, name, persistenceService);
     }
 
 }

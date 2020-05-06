@@ -58,9 +58,9 @@ public class ClientServiceImpl implements ClientService {
                                          ClientCredentials clientCredentials, Set<RoleId> scope, IdTokenRequest idTokenRequest) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
-            Optional<Client> clientOptional = projectOptional.get().getClient(clientCredentials.getId());
+            Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientCredentials.getId());
             if (clientOptional.isPresent()) {
-                boolean validationResult = projectOptional.get().verifyClientCredentials(clientCredentials);
+                boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
                 if (validationResult) {
                     Client client = clientOptional.get();
                     Project project = projectOptional.get();
@@ -98,7 +98,7 @@ public class ClientServiceImpl implements ClientService {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             ClientCredentials clientCredentials = authenticationRequest.getClientCredentials();
-            boolean validationResult = projectOptional.get().verifyClientCredentials(clientCredentials);
+            boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
             if (!validationResult) {
                 LOG.info("Invalid client {} credentials !", clientCredentials.getId());
                 return Optional.empty();
@@ -144,7 +144,7 @@ public class ClientServiceImpl implements ClientService {
         if (!tokenCache.isRevoked(token)) {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
-                boolean validationResult = projectOptional.get().verifyClientCredentials(clientCredentials);
+                boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
                 if (!validationResult) {
                     LOG.info("Invalid client {} credentials !", clientCredentials.getId());
                     return Optional.empty();
@@ -184,9 +184,9 @@ public class ClientServiceImpl implements ClientService {
                     }
                 }
             } else {
-                Optional<Client> clientOptional = projectOptional.get().getClient(clientCredentials.getId());
+                Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientCredentials.getId());
                 if (clientOptional.isPresent()) {
-                    boolean validationResult = projectOptional.get().verifyClientCredentials(clientCredentials);
+                    boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
                     if (validationResult) {
                         Client client = clientOptional.get();
                         Project project = projectOptional.get();
@@ -224,7 +224,7 @@ public class ClientServiceImpl implements ClientService {
                                              ClientId clientId, String password, Set<RoleId> scope, String state) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
-            Optional<Client> optionalClient = projectOptional.get().getClient(clientId);
+            Optional<Client> optionalClient = modelCache.getClient(organizationId, projectId, clientId);
             if (!optionalClient.isPresent()) {
                 LOG.info("Invalid clientId {} !", clientId);
                 return Optional.empty();

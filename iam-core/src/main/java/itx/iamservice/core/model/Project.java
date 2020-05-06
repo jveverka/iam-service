@@ -33,8 +33,6 @@ public interface Project {
 
     void addRole(Role role);
 
-    Optional<Role> getRole(RoleId id);
-
     Collection<Role> getRoles();
 
     boolean removeRole(RoleId id);
@@ -43,15 +41,11 @@ public interface Project {
 
     X509Certificate getCertificate();
 
-    void addClient(Client client);
-
-    Optional<Client> getClient(ClientId id);
+    void addClient(ClientId id);
 
     boolean removeClient(ClientId id);
 
-    Collection<Client> getClients();
-
-    boolean verifyClientCredentials(ClientCredentials clientCredentials);
+    Collection<ClientId> getClients();
 
     void addPermission(Permission permission);
 

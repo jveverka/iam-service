@@ -1,6 +1,7 @@
 package itx.iamservice.core.services.impl.caches;
 
 import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
@@ -86,6 +87,17 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public void add(OrganizationId organizationId, ProjectId projectId, Client client) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project !=  null) {
+            project.addClient(client.getId());
+            ModelKey<Client> key = clientKey(organizationId, projectId, client.getId());
+            clients.put(key, client);
+            persistenceService.onNodeCreated(key, client);
+        }
+    }
+
+    @Override
     public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
         Project project = projects.get(projectKey(organizationId, projectId));
         if (project != null) {
@@ -97,9 +109,9 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public Collection<Project> getProjects(OrganizationId organizationId) {
         List<Project> result = new ArrayList<>();
-        ModelKey<Organization> organizationModelKey = ModelKey.from(Organization.class, organizationId);
+        ModelKey<Organization> organizationKey = ModelKey.from(Organization.class, organizationId);
         projects.keySet().forEach(k -> {
-            if (k.startsWith(organizationModelKey)) {
+            if (k.startsWith(organizationKey)) {
                 result.add(projects.get(k));
             }
         });
@@ -125,11 +137,49 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
-        Project project = projects.get(projectKey(organizationId, projectId));
-        if (project !=  null) {
-            return project.getClient(clientId);
+        ModelKey<Client> key = clientKey(organizationId, projectId, clientId);
+        Client client = clients.get(key);
+        if (client !=  null) {
+            return Optional.of(client);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<Client> getClients(OrganizationId organizationId, ProjectId projectId) {
+        List<Client> result = new ArrayList<>();
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        clients.keySet().forEach(k -> {
+            if (k.startsWith(projectKey)) {
+                result.add(clients.get(k));
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public boolean verifyClientCredentials(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials) {
+        ModelKey<Client> key = clientKey(organizationId, projectId, clientCredentials.getId());
+        Client client = clients.get(key);
+        if (client != null) {
+            return clientCredentials.equals(client.getCredentials());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean remove(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project != null) {
+            project.removeClient(clientId);
+            ModelKey<Client> key = clientKey(organizationId, projectId, clientId);
+            Client removed = clients.remove(key);
+            if (removed != null) {
+                persistenceService.onNodeDeleted(key, removed);
+            }
+            return removed != null;
+        }
+        return false;
     }
 
     private static ModelKey<Organization> organizationKey(OrganizationId id) {
@@ -138,6 +188,10 @@ public class ModelCacheImpl implements ModelCache {
 
     private static ModelKey<Project> projectKey(OrganizationId id, ProjectId projectId) {
         return ModelKey.from(Project.class, id, projectId);
+    }
+
+    private static ModelKey<Client> clientKey(OrganizationId id, ProjectId projectId, ClientId clientId) {
+        return ModelKey.from(Client.class, id, projectId, clientId);
     }
 
 }

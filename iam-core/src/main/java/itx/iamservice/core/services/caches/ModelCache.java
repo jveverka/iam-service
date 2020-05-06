@@ -1,6 +1,7 @@
 package itx.iamservice.core.services.caches;
 
 import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
@@ -20,18 +21,18 @@ public interface ModelCache {
     //ORGANIZATION
     void add(Organization organization);
 
-    Collection<Organization> getOrganizations();
-
     Optional<Organization> getOrganization(OrganizationId organizationId);
+
+    Collection<Organization> getOrganizations();
 
     boolean remove(OrganizationId organizationId);
 
     //PROJECT
+    void add(OrganizationId organizationId, Project  project);
+
     Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
 
     Collection<Project> getProjects(OrganizationId organizationId);
-
-    void add(OrganizationId organizationId, Project  project);
 
     boolean remove(OrganizationId organizationId, ProjectId projectId);
 
@@ -39,8 +40,15 @@ public interface ModelCache {
     Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
     //CLIENT
+    void add(OrganizationId organizationId, ProjectId projectId, Client client);
+
     Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
 
+    Collection<Client> getClients(OrganizationId organizationId, ProjectId projectId);
+
+    boolean verifyClientCredentials(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials);
+
+    boolean remove(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
     //ROLE
 
 }

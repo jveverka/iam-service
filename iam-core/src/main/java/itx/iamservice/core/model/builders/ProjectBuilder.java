@@ -3,7 +3,6 @@ package itx.iamservice.core.model.builders;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Role;
@@ -16,10 +15,12 @@ import java.util.UUID;
 
 public final class ProjectBuilder {
 
+    private final ModelCache modelCache;
     private final OrganizationBuilder organizationBuilder;
     private final Project project;
 
-    public ProjectBuilder(OrganizationBuilder organizationBuilder, Project project) {
+    public ProjectBuilder(ModelCache modelCache, OrganizationBuilder organizationBuilder, Project project) {
+        this.modelCache = modelCache;
         this.organizationBuilder = organizationBuilder;
         this.project = project;
     }
@@ -48,7 +49,7 @@ public final class ProjectBuilder {
     public ClientBuilder addClient(ClientId id, String name, String secret) {
         ClientCredentials credentials = new ClientCredentials(id, secret);
         Client client = new Client(credentials, name, 3600*1000L, 24*3600*1000L);
-        project.addClient(client);
+        modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), client);
         return new ClientBuilder(this, client);
     }
 

@@ -26,7 +26,7 @@ public class ProjectImpl implements Project {
     private final Map<RoleId, Role> roles;
     private final KeyPairData keyPairData;
     private final KeyPairSerialized keyPairSerialized;
-    private final Map<ClientId, Client> clients;
+    private final Set<ClientId> clients;
     private final Set<Permission> permissions;
 
     public ProjectImpl(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
@@ -35,7 +35,7 @@ public class ProjectImpl implements Project {
         this.users = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
-        this.clients = new ConcurrentHashMap<>();
+        this.clients = new HashSet<>();
         this.permissions = new HashSet<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
@@ -49,13 +49,13 @@ public class ProjectImpl implements Project {
                        @JsonProperty("users") Collection<User> users,
                        @JsonProperty("roles") Collection<Role> roles,
                        @JsonProperty("permissions") Collection<Permission> permissions,
-                       @JsonProperty("clients") Collection<Client> clients) throws PKIException {
+                       @JsonProperty("clients") Collection<ClientId> clients) throws PKIException {
         this.id = id;
         this.name = name;
         this.users = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
         this.roles = new ConcurrentHashMap<>();
-        this.clients = new ConcurrentHashMap<>();
+        this.clients = new HashSet<>();
         this.permissions = new HashSet<>();
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
@@ -69,7 +69,7 @@ public class ProjectImpl implements Project {
             this.permissions.add(p)
         );
         clients.forEach(c->
-            this.clients.put(c.getId(), c)
+            this.clients.add(c)
         );
     }
 
@@ -112,8 +112,8 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public Collection<Client> getClients() {
-        return clients.values().stream().collect(Collectors.toList());
+    public Collection<ClientId> getClients() {
+        return clients.stream().collect(Collectors.toList());
     }
 
     @Override
@@ -142,11 +142,6 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public Optional<Role> getRole(RoleId id) {
-        return Optional.ofNullable(roles.get(id));
-    }
-
-    @Override
     public boolean removeRole(RoleId id) {
         return roles.remove(id) != null;
     }
@@ -164,23 +159,13 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public void addClient(Client client) {
-        clients.put(client.getId(), client);
-    }
-
-    @Override
-    public Optional<Client> getClient(ClientId id) {
-        return Optional.ofNullable(clients.get(id));
+    public void addClient(ClientId id) {
+        clients.add(id);
     }
 
     @Override
     public boolean removeClient(ClientId id) {
-        return clients.remove(id) != null;
-    }
-
-    @Override
-    public boolean verifyClientCredentials(ClientCredentials clientCredentials) {
-        return clientCredentials.equals(clients.get(clientCredentials.getId()).getCredentials());
+        return clients.remove(id);
     }
 
     @Override

@@ -3,6 +3,7 @@ package itx.iamservice.core.services.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -20,12 +21,12 @@ public class ProjectInfo {
     private final String name;
     private final CertificateInfo organizationCertificate;
     private final CertificateInfo projectCertificate;
-    private final Collection<Client> clients;
+    private final Collection<ClientId> clients;
     private final Set<UserId> users;
 
     public ProjectInfo(ProjectId id, OrganizationId organizationId, String name,
                        KeyPairData organizationKeyPairData, KeyPairData projectKeyPairData,
-                       Collection<Client> clients, Set<UserId> users) throws CertificateEncodingException {
+                       Collection<ClientId> clients, Set<UserId> users) throws CertificateEncodingException {
         this.id = id;
         this.organizationId = organizationId;
         this.name = name;
@@ -43,7 +44,7 @@ public class ProjectInfo {
                        @JsonProperty("name") String name,
                        @JsonProperty("organizationCertificate") CertificateInfo organizationCertificate,
                        @JsonProperty("projectCertificate") CertificateInfo projectCertificate,
-                       @JsonProperty("clients") Collection<Client> clients,
+                       @JsonProperty("clients") Collection<ClientId> clients,
                        @JsonProperty("users") Set<UserId> users) {
         this.id = id;
         this.organizationId = organizationId;
@@ -74,7 +75,7 @@ public class ProjectInfo {
         return projectCertificate;
     }
 
-    public Collection<Client> getClients() {
+    public Collection<ClientId> getClients() {
         return clients;
     }
 

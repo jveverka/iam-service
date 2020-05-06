@@ -33,7 +33,7 @@ public class ClientManagementServiceImpl implements ClientManagementService {
             ClientCredentials credentials = new ClientCredentials(clientId, UUID.randomUUID().toString());
             Client client = new Client(credentials, createProjectRequest.getName(),
                     createProjectRequest.getDefaultAccessTokenDuration(), createProjectRequest.getDefaultRefreshTokenDuration());
-            projectOptional.get().addClient(client);
+            modelCache.add(id, projectId, client);
             return Optional.of(client.getId());
         }
         return Optional.empty();
@@ -41,20 +41,12 @@ public class ClientManagementServiceImpl implements ClientManagementService {
 
     @Override
     public Collection<Client> getClients(OrganizationId id, ProjectId projectId) {
-        Optional<Project> projectOptional = getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            return projectOptional.get().getClients();
-        }
-        return Collections.emptyList();
+        return modelCache.getClients(id, projectId);
     }
 
     @Override
     public Optional<Client> getClient(OrganizationId id, ProjectId projectId, ClientId clientId) {
-        Optional<Project> projectOptional = getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            return projectOptional.get().getClient(clientId);
-        }
-        return Optional.empty();
+        return modelCache.getClient(id, projectId, clientId);
     }
 
     @Override
@@ -70,7 +62,7 @@ public class ClientManagementServiceImpl implements ClientManagementService {
     public boolean addRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
         Optional<Project> projectOptional = getProject(id, projectId);
         if (projectOptional.isPresent()) {
-            Optional<Client> client = projectOptional.get().getClient(clientId);
+            Optional<Client> client = modelCache.getClient(id, projectId, clientId);
             if (client.isPresent()) {
                 return client.get().addRole(roleId);
             }
@@ -82,7 +74,7 @@ public class ClientManagementServiceImpl implements ClientManagementService {
     public boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
         Optional<Project> projectOptional = getProject(id, projectId);
         if (projectOptional.isPresent()) {
-            Optional<Client> client = projectOptional.get().getClient(clientId);
+            Optional<Client> client = modelCache.getClient(id, projectId, clientId);
             if (client.isPresent()) {
                 return client.get().removeRole(roleId);
             }

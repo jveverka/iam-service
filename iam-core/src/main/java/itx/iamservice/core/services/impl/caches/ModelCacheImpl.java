@@ -6,9 +6,12 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.Permission;
+import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.keys.ModelKey;
@@ -182,6 +185,69 @@ public class ModelCacheImpl implements ModelCache {
         return false;
     }
 
+    @Override
+    public boolean add(OrganizationId organizationId, ProjectId projectId, Role role) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project != null) {
+            project.addRole(role.getId());
+            ModelKey<Role> key = roleKey(organizationId, projectId, role.getId());
+            roles.put(key, role);
+            persistenceService.onNodeCreated(key, role);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId) {
+        List<Role> result = new ArrayList<>();
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        roles.keySet().forEach(k -> {
+            if (k.startsWith(projectKey)) {
+                result.add(roles.get(k));
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        if (project != null) {
+            project.removeRole(roleId);
+            ModelKey<Role> key = roleKey(organizationId, projectId, roleId);
+            Role removed = roles.remove(key);
+            if (removed != null) {
+                persistenceService.onNodeDeleted(key, removed);
+            }
+            return removed != null;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean addPermissionToRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
+        Project project = projects.get(projectKey(organizationId, projectId));
+        Role role = roles.get(roleKey(organizationId, projectId, roleId));
+        if (role != null && project != null) {
+            Optional<Permission> permission = project.getPermission(permissionId);
+            if (permission.isPresent()) {
+                role.addPermission(permission.get());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
+        Role role = roles.get(roleKey(organizationId, projectId, roleId));
+        if (role != null) {
+            return role.removePermission(permissionId);
+        }
+        return false;
+    }
+
     private static ModelKey<Organization> organizationKey(OrganizationId id) {
         return ModelKey.from(Organization.class, id);
     }
@@ -192,6 +258,10 @@ public class ModelCacheImpl implements ModelCache {
 
     private static ModelKey<Client> clientKey(OrganizationId id, ProjectId projectId, ClientId clientId) {
         return ModelKey.from(Client.class, id, projectId, clientId);
+    }
+
+    private static ModelKey<Role> roleKey(OrganizationId id, ProjectId projectId, RoleId roleId) {
+        return ModelKey.from(Role.class, id, projectId, roleId);
     }
 
 }

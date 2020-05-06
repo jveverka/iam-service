@@ -23,7 +23,7 @@ public class ProjectImpl implements Project {
     private final OrganizationId organizationId;
     private final String name;
     private final Map<UserId, User> users;
-    private final Map<RoleId, Role> roles;
+    private final Set<RoleId> roles;
     private final KeyPairData keyPairData;
     private final KeyPairSerialized keyPairSerialized;
     private final Set<ClientId> clients;
@@ -34,7 +34,7 @@ public class ProjectImpl implements Project {
         this.name = name;
         this.users = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
-        this.roles = new ConcurrentHashMap<>();
+        this.roles = new HashSet<>();
         this.clients = new HashSet<>();
         this.permissions = new HashSet<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
@@ -47,14 +47,14 @@ public class ProjectImpl implements Project {
                        @JsonProperty("organizationId") OrganizationId organizationId,
                        @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized,
                        @JsonProperty("users") Collection<User> users,
-                       @JsonProperty("roles") Collection<Role> roles,
+                       @JsonProperty("roles") Collection<RoleId> roles,
                        @JsonProperty("permissions") Collection<Permission> permissions,
                        @JsonProperty("clients") Collection<ClientId> clients) throws PKIException {
         this.id = id;
         this.name = name;
         this.users = new ConcurrentHashMap<>();
         this.organizationId = organizationId;
-        this.roles = new ConcurrentHashMap<>();
+        this.roles = new HashSet<>();
         this.clients = new HashSet<>();
         this.permissions = new HashSet<>();
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
@@ -63,7 +63,7 @@ public class ProjectImpl implements Project {
             this.users.put(u.getId(), u)
         );
         roles.forEach(r->
-            this.roles.put(r.getId(), r)
+            this.roles.add(r)
         );
         permissions.forEach(p->
             this.permissions.add(p)
@@ -107,8 +107,8 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public Collection<Role> getRoles() {
-        return roles.values().stream().collect(Collectors.toList());
+    public Collection<RoleId> getRoles() {
+        return roles.stream().collect(Collectors.toList());
     }
 
     @Override
@@ -137,13 +137,13 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public void addRole(Role role) {
-        roles.put(role.getId(), role);
+    public void addRole(RoleId roleId) {
+        roles.add(roleId);
     }
 
     @Override
     public boolean removeRole(RoleId id) {
-        return roles.remove(id) != null;
+        return roles.remove(id);
     }
 
     @Override
@@ -179,26 +179,8 @@ public class ProjectImpl implements Project {
     }
 
     @Override
-    public boolean addPermissionToRole(RoleId roleId, PermissionId permissionId) {
-        Role role = roles.get(roleId);
-        Optional<Permission> permission = permissions.stream()
-                .filter(p -> permissionId.getId().equals(permissionId)).findFirst();
-        if (role != null && permission.isPresent()) {
-            role.addPermission(permission.get());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean removePermissionFromRole(RoleId roleId, PermissionId permissionId) {
-        Role role = roles.get(roleId);
-        Optional<Permission> permission = permissions.stream()
-                .filter(p -> permissionId.getId().equals(permissionId)).findFirst();
-        if (role != null && permission.isPresent()) {
-            return role.removePermission(permission.get().getId());
-        }
-        return false;
+    public Optional<Permission> getPermission(PermissionId id) {
+        return permissions.stream().filter(p->p.getId().equals(id)).findFirst();
     }
 
 }

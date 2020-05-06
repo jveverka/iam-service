@@ -1,5 +1,6 @@
 package itx.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.security.PrivateKey;
@@ -31,11 +32,11 @@ public interface Project {
 
     Optional<User> getUser(UserId userId);
 
-    void addRole(Role role);
+    void addRole(RoleId roleId);
 
-    Collection<Role> getRoles();
+    Collection<RoleId> getRoles();
 
-    boolean removeRole(RoleId id);
+    boolean removeRole(RoleId roleId);
 
     PrivateKey getPrivateKey();
 
@@ -53,8 +54,6 @@ public interface Project {
 
     boolean removePermission(PermissionId id);
 
-    boolean addPermissionToRole(RoleId roleId, PermissionId permissionId);
-
-    boolean removePermissionFromRole(RoleId roleId, PermissionId permissionId);
+    Optional<Permission> getPermission(PermissionId id);
 
 }

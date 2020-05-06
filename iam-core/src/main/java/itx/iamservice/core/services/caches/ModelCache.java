@@ -6,8 +6,11 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 
@@ -49,6 +52,16 @@ public interface ModelCache {
     boolean verifyClientCredentials(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials);
 
     boolean remove(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
+
     //ROLE
+    boolean add(OrganizationId organizationId, ProjectId projectId, Role role);
+
+    Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId);
+
+    boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId);
+
+    boolean addPermissionToRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId);
+
+    boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId);
 
 }

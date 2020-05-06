@@ -57,7 +57,7 @@ public final class ProjectBuilder {
         role.getPermissions().forEach(p ->
             project.addPermission(p)
         );
-        project.addRole(role);
+        modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), role);
         return this;
     }
 

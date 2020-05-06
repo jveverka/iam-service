@@ -2,8 +2,10 @@ package itx.iamservice.core.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.KeyPairData;
-import itx.iamservice.core.model.KeyPairId;
 import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.ModelId;
@@ -12,8 +14,9 @@ import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.Project;
-import itx.iamservice.core.model.ProjectImpl;
+import itx.iamservice.core.model.Permission;
+import itx.iamservice.core.model.Role;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -65,8 +68,36 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeProject() throws PKIException, JsonProcessingException {
+    public void serializeAndDeserializeClient() throws PKIException, JsonProcessingException {
+        ClientCredentials credentials = new ClientCredentials(ClientId.from("client-001"), "secret");
+        Client client = new Client(credentials, "name", 10L, 10L, Collections.emptyList());
+        String serialized = mapper.writeValueAsString(client);
+        Client clientDeserialized = mapper.readValue(serialized, Client.class);
+        assertNotNull(clientDeserialized);
+        assertEquals(client.getId(), clientDeserialized.getId());
+        assertEquals(client.getName(), clientDeserialized.getName());
+        assertEquals(client.getRoles(), clientDeserialized.getRoles());
+        assertEquals(client.getCredentials(), clientDeserialized.getCredentials());
+        assertEquals(client.getDefaultAccessTokenDuration(), clientDeserialized.getDefaultAccessTokenDuration());
+        assertEquals(client.getDefaultRefreshTokenDuration(), clientDeserialized.getDefaultRefreshTokenDuration());
+    }
 
+    @Test
+    public void serializeAndDeserializePermission() throws JsonProcessingException {
+        Permission permission = new Permission("service", "resource", "action");
+        String serialized = mapper.writeValueAsString(permission);
+        Permission permissionDeserialized = mapper.readValue(serialized, Permission.class);
+        assertNotNull(permissionDeserialized);
+        assertEquals(permission, permissionDeserialized);
+    }
+
+    @Test
+    public void serializeAndDeserializeRole() throws PKIException, JsonProcessingException {
+        Role role = new Role(RoleId.from("role-001"), "role1", Collections.emptyList());
+        String serialized = mapper.writeValueAsString(role);
+        Role roleDeserialized = mapper.readValue(serialized, Role.class);
+        assertNotNull(roleDeserialized);
+        assertEquals(role, roleDeserialized);
     }
 
 }

@@ -1,5 +1,8 @@
 package itx.iamservice.core.model.keys;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -8,7 +11,9 @@ public class ModelKey<T> {
     private final Class<T> type;
     private final Id[] ids;
 
-    public ModelKey(Class<T> type, Id... ids) {
+    @JsonCreator
+    public ModelKey(@JsonProperty("type") Class<T> type,
+                    @JsonProperty("ids") Id... ids) {
         this.type = type;
         this.ids = ids;
     }

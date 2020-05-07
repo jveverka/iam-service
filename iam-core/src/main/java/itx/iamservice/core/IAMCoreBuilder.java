@@ -27,7 +27,7 @@ import itx.iamservice.core.services.impl.admin.UserManagerServiceImpl;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.impl.caches.CacheCleanupSchedulerImpl;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
-import itx.iamservice.core.services.impl.persistence.InMemoryPersistenceServiceImpl;
+import itx.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import itx.iamservice.core.services.persistence.PersistenceService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -65,7 +65,7 @@ public class IAMCoreBuilder {
 
     public IAMCoreBuilder withModel(Model model) {
         this.model = model;
-        this.persistenceService = new InMemoryPersistenceServiceImpl();
+        this.persistenceService = new LoggingPersistenceServiceImpl();
         this.modelCache = new ModelCacheImpl(model, this.persistenceService);
         return this;
     }
@@ -107,7 +107,7 @@ public class IAMCoreBuilder {
             tokenCache = new TokenCacheImpl(modelCache);
         }
         if (persistenceService == null) {
-            persistenceService = new InMemoryPersistenceServiceImpl();
+            persistenceService = new LoggingPersistenceServiceImpl();
         }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();

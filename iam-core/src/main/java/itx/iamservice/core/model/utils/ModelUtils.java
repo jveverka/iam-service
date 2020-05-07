@@ -17,7 +17,8 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
-import itx.iamservice.core.services.impl.persistence.InMemoryPersistenceServiceImpl;
+import itx.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
+import itx.iamservice.core.services.persistence.PersistenceService;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,10 +61,13 @@ public final class ModelUtils {
 
     public static ModelCache createEmptyModelCache(ModelId id, String modelName) {
         Model model = new ModelImpl(id, modelName);
-        return new ModelCacheImpl(model, new InMemoryPersistenceServiceImpl());
+        return new ModelCacheImpl(model, new LoggingPersistenceServiceImpl());
+    }
+    public static ModelCache createDefaultModelCache(String iamAdminPassword) throws PKIException {
+        return createDefaultModelCache(iamAdminPassword, new LoggingPersistenceServiceImpl());
     }
 
-    public static ModelCache createDefaultModelCache(String iamAdminPassword) throws PKIException {
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, PersistenceService persistenceService) throws PKIException {
 
         Role manageOrganizationsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-organizations"), "Can manage organizations.")
                 .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
@@ -112,7 +116,7 @@ public final class ModelUtils {
         LOG.info("#MODEL: Default organizationId={}, projectId={}", IAM_ADMINS_ORG.getId(), IAM_ADMINS_PROJECT.getId());
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), IAM_ADMIN_CLIENT_SECRET);
-        return IAMModelBuilders.modelBuilder(id, modelName)
+        return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
                 .addOrganization(IAM_ADMINS_ORG, IAM_ADMINS_NAME)
                 .addProject(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME)
                     .addRole(manageOrganizationsRole)

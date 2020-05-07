@@ -26,6 +26,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
+import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -141,6 +142,20 @@ public class ModelSerializationTests {
         assertEquals(project.getName(), projectDeserialized.getName());
         assertEquals(project.getOrganizationId(), projectDeserialized.getOrganizationId());
         assertEquals(project.getKeyPairSerialized(), projectDeserialized.getKeyPairSerialized());
+    }
+
+    @Test
+    public void serializeAndDeserializeModelKeys() throws JsonProcessingException {
+        ModelKey<User> userKey = new ModelKey(User.class, OrganizationId.from("o1"), ProjectId.from("p1"), UserId.from("u1"));
+        String serialized = mapper.writeValueAsString(userKey);
+        ModelKey<User> userKeyDeserialized = mapper.readValue(serialized, ModelKey.class);
+        assertNotNull(userKeyDeserialized);
+        assertEquals(userKey, userKeyDeserialized);
+        assertEquals(userKey.getType(), userKeyDeserialized.getType());
+        assertEquals(userKey.getIds().length, userKeyDeserialized.getIds().length);
+        assertEquals(userKey.getIds()[0], userKeyDeserialized.getIds()[0]);
+        assertEquals(userKey.getIds()[1], userKeyDeserialized.getIds()[1]);
+        assertEquals(userKey.getIds()[2], userKeyDeserialized.getIds()[2]);
     }
 
 }

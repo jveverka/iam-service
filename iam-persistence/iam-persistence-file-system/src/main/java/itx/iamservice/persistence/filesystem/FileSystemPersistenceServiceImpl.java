@@ -37,7 +37,7 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
     }
 
     @Override
-    public <T> void onNodeUpdated(ModelKey<T> modelKey, T oldNode, T newNode) {
+    public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
 
     }
 

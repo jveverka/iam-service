@@ -13,7 +13,7 @@ public interface PersistenceService {
 
     <T> void onNodeCreated(ModelKey<T> modelKey, T newNode);
 
-    <T> void onNodeUpdated(ModelKey<T> modelKey, T oldNode, T newNode);
+    <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode);
 
     <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode);
 

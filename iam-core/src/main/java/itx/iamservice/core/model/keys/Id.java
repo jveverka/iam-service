@@ -1,12 +1,21 @@
 package itx.iamservice.core.model.keys;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.Objects;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "typeId")
 public abstract class Id {
 
     private final String id;
 
-    public Id(String id) {
+    @JsonCreator
+    public Id(@JsonProperty("id") String id) {
         this.id = id;
     }
 

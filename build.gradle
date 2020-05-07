@@ -8,10 +8,18 @@ project(':iam-core') {
 project(':iam-service') {
     dependencies {
         implementation project(':iam-core')
+        implementation project(':iam-persistence-file-system')
+        implementation project(':iam-persistence-in-memory')
     }
 }
 
 project(':iam-persistence-file-system') {
+    dependencies {
+        implementation project(':iam-core')
+    }
+}
+
+project(':iam-persistence-in-memory') {
     dependencies {
         implementation project(':iam-core')
     }

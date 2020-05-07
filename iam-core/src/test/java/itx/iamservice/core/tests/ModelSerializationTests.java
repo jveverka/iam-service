@@ -1,6 +1,7 @@
 package itx.iamservice.core.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
@@ -29,6 +30,7 @@ import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
+import itx.iamservice.core.services.persistence.wrappers.OrganizationWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -156,6 +158,39 @@ public class ModelSerializationTests {
         assertEquals(userKey.getIds()[0], userKeyDeserialized.getIds()[0]);
         assertEquals(userKey.getIds()[1], userKeyDeserialized.getIds()[1]);
         assertEquals(userKey.getIds()[2], userKeyDeserialized.getIds()[2]);
+    }
+
+    @Test
+    public void serializeAndDeserializeModelKeyOrganization() throws JsonProcessingException {
+        ModelKey<Organization> organizationKey = new ModelKey(Organization.class, OrganizationId.from("o1"));
+        String serialized = mapper.writeValueAsString(organizationKey);
+        ModelKey<User> userKeyDeserialized = mapper.readValue(serialized, ModelKey.class);
+        assertNotNull(userKeyDeserialized);
+        assertEquals(organizationKey, userKeyDeserialized);
+        assertEquals(organizationKey.getType(), userKeyDeserialized.getType());
+        assertEquals(organizationKey.getIds().length, userKeyDeserialized.getIds().length);
+        assertEquals(organizationKey.getIds()[0], userKeyDeserialized.getIds()[0]);
+    }
+
+    @Test
+    public void serializeAndDeserializeOrganizationWrapper() throws JsonProcessingException, PKIException {
+        ModelKey<Organization> organizationKey = new ModelKey(Organization.class, OrganizationId.from("o1"));
+        Organization organization = new OrganizationImpl(OrganizationId.from("o1"), "name");
+        OrganizationWrapper wrapper = new OrganizationWrapper(organizationKey, organization);
+        String serialized = mapper.writeValueAsString(wrapper);
+        OrganizationWrapper deserialized = mapper.readValue(serialized, OrganizationWrapper.class);
+        assertNotNull(deserialized);
+        assertEquals(wrapper.getKey(), deserialized.getKey());
+        assertEquals(wrapper.getValue().getId(), deserialized.getValue().getId());
+        assertEquals(wrapper.getValue().getName(), deserialized.getValue().getName());
+
+        List<OrganizationWrapper> list = new ArrayList<>();
+        list.add(wrapper);
+        serialized = mapper.writeValueAsString(list);
+        List<OrganizationWrapper> listDeserialized = mapper.readValue(serialized, new TypeReference<List<OrganizationWrapper>>() {});
+        assertNotNull(listDeserialized);
+        assertEquals(list.get(0).getKey(), listDeserialized.get(0).getKey());
+
     }
 
 }

@@ -16,6 +16,7 @@ import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.services.caches.ModelCache;
+import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import itx.iamservice.core.services.persistence.PersistenceService;
 
 import java.util.ArrayList;
@@ -36,6 +37,22 @@ public class ModelCacheImpl implements ModelCache {
     private final Map<ModelKey<Role>, Role> roles;
 
     private final PersistenceService persistenceService;
+
+    public ModelCacheImpl(ModelWrapper modelWrapper, PersistenceService persistenceService) {
+        this.model = modelWrapper.getModel();
+        this.organizations = new ConcurrentHashMap<>();
+        this.projects = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<>();
+        this.clients = new ConcurrentHashMap<>();
+        this.roles = new ConcurrentHashMap<>();
+        modelWrapper.getOrganizations().forEach(o -> this.organizations.put(o.getKey(), o.getValue()));
+        modelWrapper.getProjects().forEach(o -> this.projects.put(o.getKey(), o.getValue()));
+        modelWrapper.getUsers().forEach(o -> this.users.put(o.getKey(), o.getValue()));
+        modelWrapper.getClients().forEach(o -> this.clients.put(o.getKey(), o.getValue()));
+        modelWrapper.getRoles().forEach(o -> this.roles.put(o.getKey(), o.getValue()));
+        this.persistenceService = persistenceService;
+        this.persistenceService.onModelInitialization(modelWrapper);
+    }
 
     public ModelCacheImpl(Model model, PersistenceService persistenceService) {
         this.model = model;

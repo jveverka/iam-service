@@ -1,68 +1,49 @@
-package itx.iamservice.persistence.filesystem;
+package itx.iamservice.persistence.inmemory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.keys.ModelKey;
-import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import itx.iamservice.core.services.persistence.PersistenceService;
+import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
-public class FileSystemPersistenceServiceImpl implements PersistenceService {
+public class InMemoryPersistenceServiceImpl implements PersistenceService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FileSystemPersistenceServiceImpl.class);
-
-    private final Path basePath;
-    private final ObjectMapper mapper;
-    private final boolean flushOnChange;
+    private static final Logger LOG = LoggerFactory.getLogger(InMemoryPersistenceServiceImpl.class);
 
     private ModelWrapper modelWrapper;
+    private final ObjectMapper mapper;
 
-    public FileSystemPersistenceServiceImpl(Path basePath, boolean flushOnChange) {
-        this.basePath = basePath;
-        this.mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        this.flushOnChange = flushOnChange;
-        LOG.info("FileSystemPersistence: path={}, flushOnChange={}", basePath, flushOnChange);
-    }
-
-    private Path createFilePathFromModelId(Path basePath, ModelId id) {
-        String fileName = "model-" + id.getId() + ".json";
-        return Paths.get(basePath.toString(), fileName);
+    public InMemoryPersistenceServiceImpl() {
+        this.mapper = new ObjectMapper();
     }
 
     @Override
     public void onModelInitialization(ModelWrapper modelWrapper) {
         this.modelWrapper = modelWrapper;
-        flushOnChange();
     }
 
     @Override
     public void onModelChange(Model model) {
-        this.modelWrapper  = new ModelWrapper(model);
-        flushOnChange();
+        this.modelWrapper = new ModelWrapper(model);
     }
 
     @Override
     public <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
         putData(modelKey, newNode);
-        flushOnChange();
     }
 
     @Override
     public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
         putData(modelKey, newNode);
-        flushOnChange();
     }
 
     @Override
@@ -78,31 +59,15 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
         } else if (Role.class.equals(modelKey.getType())) {
             modelWrapper.removeRole((ModelKey<Role>)modelKey);
         }
-        flushOnChange();
     }
 
     @Override
     public void flush() throws Exception {
-        flushToFile();
-    }
-
-    public void flushToFile() throws IOException {
-        Path filePath = createFilePathFromModelId(basePath, modelWrapper.getModel().getId());
-        mapper.writeValue(filePath.toFile(), modelWrapper);
+        LOG.info("flush: NOOP");
     }
 
     public String flushToString() throws IOException {
         return mapper.writeValueAsString(modelWrapper);
-    }
-
-    private void flushOnChange() {
-        try {
-            if (flushOnChange) {
-                flush();
-            }
-        } catch (Exception e) {
-            LOG.error("Error: ", e);
-        }
     }
 
     private <T> void putData(ModelKey<T> modelKey, T newNode) {

@@ -9,7 +9,7 @@ import java.util.Objects;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.CLASS,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "typeId")
+        property = "type")
 public abstract class Id {
 
     private final String id;

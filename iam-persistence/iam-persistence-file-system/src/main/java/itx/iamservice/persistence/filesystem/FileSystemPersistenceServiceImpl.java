@@ -12,6 +12,8 @@ import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import itx.iamservice.core.services.persistence.PersistenceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,16 +21,20 @@ import java.nio.file.Paths;
 
 public class FileSystemPersistenceServiceImpl implements PersistenceService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FileSystemPersistenceServiceImpl.class);
+
     private final Path basePath;
     private final ObjectMapper mapper;
+    private final boolean flushOnChange;
 
     private ModelWrapper modelWrapper;
 
-    public FileSystemPersistenceServiceImpl(Path basePath) {
+    public FileSystemPersistenceServiceImpl(Path basePath, boolean flushOnChange) {
         this.basePath = basePath;
         this.mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        this.flushOnChange = flushOnChange;
+        LOG.info("FileSystemPersistence: path={}, flushOnChange={}", basePath, flushOnChange);
     }
-
 
     private Path createFilePathFromModelId(Path basePath, ModelId id) {
         String fileName = "model-" + id.getId() + ".json";
@@ -38,21 +44,25 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
     @Override
     public void onModelInitialization(ModelWrapper modelWrapper) {
         this.modelWrapper = modelWrapper;
+        flushOnChange();
     }
 
     @Override
     public void onModelChange(Model model) {
         this.modelWrapper  = new ModelWrapper(model);
+        flushOnChange();
     }
 
     @Override
     public <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
         putData(modelKey, newNode);
+        flushOnChange();
     }
 
     @Override
     public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
         putData(modelKey, newNode);
+        flushOnChange();
     }
 
     @Override
@@ -68,6 +78,7 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
         } else if (Role.class.equals(modelKey.getType())) {
             modelWrapper.removeRole((ModelKey<Role>)modelKey);
         }
+        flushOnChange();
     }
 
     @Override
@@ -82,6 +93,16 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
 
     public String flushToString() throws IOException {
         return mapper.writeValueAsString(modelWrapper);
+    }
+
+    private void flushOnChange() {
+        try {
+            if (flushOnChange) {
+                flush();
+            }
+        } catch (Exception e) {
+            LOG.error("Error: ", e);
+        }
     }
 
     private <T> void putData(ModelKey<T> modelKey, T newNode) {

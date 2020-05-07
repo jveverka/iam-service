@@ -61,7 +61,7 @@ public class ModelConfig {
     public PersistenceService getPersistenceService() {
         if ("file-system".equals(persistence)) {
             LOG.info("getPersistenceService: {} path={}", persistence, path);
-            persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path));
+            persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path), true);
         } else {
             LOG.info("getPersistenceService: in-memory");
             persistenceService = new InMemoryPersistenceServiceImpl();

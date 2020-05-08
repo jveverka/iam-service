@@ -42,7 +42,7 @@ public class UPCredentials implements Credentials<UPAuthenticationRequest> {
 
     @Override
     public UserId getUserId() {
-        return null;
+        return userId;
     }
 
     @Override

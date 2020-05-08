@@ -1,5 +1,7 @@
 server:
   port: 8080
+#  servlet:
+#    context-path: /auth
 iam-service:
   authorization-code-cache:
     duration: 10

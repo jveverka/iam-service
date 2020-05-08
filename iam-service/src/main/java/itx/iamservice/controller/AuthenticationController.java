@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -58,15 +59,18 @@ public class AuthenticationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
+    private final ServletContext servletContext;
     private final AuthenticationService authenticationService;
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
     private final ClientService clientService;
 
-    public AuthenticationController(@Autowired AuthenticationService authenticationService,
+    public AuthenticationController(@Autowired ServletContext servletContext,
+                                    @Autowired AuthenticationService authenticationService,
                                     @Autowired ProviderConfigurationService providerConfigurationService,
                                     @Autowired ResourceServerService resourceServerService,
                                     @Autowired ClientService clientService) {
+        this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
         this.resourceServerService = resourceServerService;
@@ -140,6 +144,7 @@ public class AuthenticationController {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");
         String result = new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
+        result = result.replace("__context-path__", getContextPath());
         result = result.replace("__organization-id__", organizationId);
         result = result.replace("__project-id__", projectId);
         result = result.replace("__response-type__", responseType);
@@ -236,6 +241,19 @@ public class AuthenticationController {
             sb.append(" ");
         }
         return sb.toString().trim();
+    }
+
+    private String getContextPath() {
+        String path = servletContext.getContextPath();
+        if (path == null || path.isEmpty())  {
+            return "";
+        } else if ("/".equals(path)) {
+            return "";
+        } else if (!path.isEmpty() && !path.startsWith("/")) {
+            return "/" + path;
+        } else {
+            return path;
+        }
     }
 
 }

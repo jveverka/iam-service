@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.Model;
-import itx.iamservice.core.model.ModelId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Role;
@@ -17,28 +16,22 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class FileSystemPersistenceServiceImpl implements PersistenceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemPersistenceServiceImpl.class);
 
-    private final Path basePath;
+    private final Path dataFile;
     private final ObjectMapper mapper;
     private final boolean flushOnChange;
 
     private ModelWrapper modelWrapper;
 
-    public FileSystemPersistenceServiceImpl(Path basePath, boolean flushOnChange) {
-        this.basePath = basePath;
+    public FileSystemPersistenceServiceImpl(Path dataFile, boolean flushOnChange) {
+        this.dataFile = dataFile;
         this.mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         this.flushOnChange = flushOnChange;
-        LOG.info("FileSystemPersistence: path={}, flushOnChange={}", basePath, flushOnChange);
-    }
-
-    private Path createFilePathFromModelId(Path basePath, ModelId id) {
-        String fileName = "model-" + id.getId() + ".json";
-        return Paths.get(basePath.toString(), fileName);
+        LOG.info("FileSystemPersistence: dataFile={}, flushOnChange={}", dataFile, flushOnChange);
     }
 
     @Override
@@ -87,8 +80,7 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
     }
 
     public void flushToFile() throws IOException {
-        Path filePath = createFilePathFromModelId(basePath, modelWrapper.getModel().getId());
-        mapper.writeValue(filePath.toFile(), modelWrapper);
+        mapper.writeValue(dataFile.toFile(), modelWrapper);
     }
 
     public String flushToString() throws IOException {

@@ -46,12 +46,18 @@ public class ModelConfig {
     @Bean
     @Scope("singleton")
     public ModelCache getModelCache(@Autowired PersistenceService persistenceService) throws PKIException, IOException {
-        if ("file-system".equals(persistence)) {
-            LOG.info("populating ModelCache from file: {}", path);
-            DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path), persistenceService);
-            return dataLoadService.populateCache();
-        } else {
-            LOG.info("default ModelCache created");
+        try {
+            if ("file-system".equals(persistence)) {
+                LOG.info("#CONFIG: populating ModelCache from file: {}", path);
+                DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path), persistenceService);
+                return dataLoadService.populateCache();
+            } else {
+                LOG.info("#CONFIG: default ModelCache created");
+                return ModelUtils.createDefaultModelCache(password, persistenceService);
+            }
+        } catch (Exception e) {
+            LOG.error("Error: {}", e.getMessage());
+            LOG.warn("#CONFIG: fallback to default ModelCache");
             return ModelUtils.createDefaultModelCache(password, persistenceService);
         }
     }
@@ -60,10 +66,10 @@ public class ModelConfig {
     @Scope("singleton")
     public PersistenceService getPersistenceService() {
         if ("file-system".equals(persistence)) {
-            LOG.info("getPersistenceService: {} path={}", persistence, path);
+            LOG.info("#CONFIG: getPersistenceService: {} path={}", persistence, path);
             persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path), true);
         } else {
-            LOG.info("getPersistenceService: in-memory");
+            LOG.info("#CONFIG: getPersistenceService: in-memory");
             persistenceService = new InMemoryPersistenceServiceImpl();
         }
         return persistenceService;
@@ -72,7 +78,7 @@ public class ModelConfig {
     @PreDestroy
     public void shutdown() {
         try {
-            LOG.info("Flushing persistence service");
+            LOG.info("#CONFIG: Flushing persistence service");
             persistenceService.flush();
         } catch (Exception e) {
             LOG.error("Error: ", e);

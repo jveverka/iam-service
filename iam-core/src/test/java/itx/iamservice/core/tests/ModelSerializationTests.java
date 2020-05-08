@@ -42,7 +42,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ModelSerializationTests {
 
@@ -191,6 +193,20 @@ public class ModelSerializationTests {
         assertNotNull(listDeserialized);
         assertEquals(list.get(0).getKey(), listDeserialized.get(0).getKey());
 
+    }
+
+    @Test
+    public void serializeAndDeserializeUPCredentials() throws PKIException, JsonProcessingException {
+        UPAuthenticationRequest validRequest = new UPAuthenticationRequest(UserId.from("user-001"), "secret", null, null);
+        UPAuthenticationRequest inValidRequest = new UPAuthenticationRequest(UserId.from("user-001"), "safd", null, null);
+        UPCredentials upCredentials = new UPCredentials(UserId.from("user-001"),  "secret");
+        String serialized = mapper.writeValueAsString(upCredentials);
+        assertTrue(upCredentials.verify(validRequest));
+        assertFalse(upCredentials.verify(inValidRequest));
+
+        UPCredentials deserializedCredentials = mapper.readValue(serialized, UPCredentials.class);
+        assertTrue(deserializedCredentials.verify(validRequest));
+        assertFalse(deserializedCredentials.verify(inValidRequest));
     }
 
 }

@@ -22,5 +22,6 @@ Important core components and interfaces:
   * __UserManagerService__
 * __Caches__ - token caches for intermediate token storage.
   * __AuthorizationCodeCache__
+  * __ModelCache__  
   * __TokenCache__  
   * __CacheCleanupScheduler__

@@ -62,6 +62,8 @@ public final class TokenUtils {
     public static final String NONCE_CLAIM = "nonce";
     public static final String AUTH_TIME_CLAIM = "auth_time";
     public static final String KEY_ID = "kid";
+    public static final String TYP_ID = "typ";
+    public static final String TYP_VALUE = "JWT";
 
     private TokenUtils() {
     }
@@ -101,6 +103,7 @@ public final class TokenUtils {
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
         JwtBuilder builder = Jwts.builder();
+        builder.setHeaderParam(TYP_ID, TYP_VALUE);
         builder.setHeaderParam(KEY_ID, keyPairId.getId());
         builder.setSubject(idTokenRequest.getIssuerURL());
         builder.setSubject(subject);
@@ -117,6 +120,7 @@ public final class TokenUtils {
 
     public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, KeyPairId keyPairId, PrivateKey privateKey, TokenType type) {
         String jwToken = Jwts.builder()
+                .setHeaderParam(TYP_ID, TYP_VALUE)
                 .setHeaderParam(KEY_ID, keyPairId.getId())
                 .setSubject(subject)
                 .signWith(privateKey)

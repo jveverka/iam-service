@@ -33,9 +33,12 @@ public class HealthCheckTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         HealthCheckResponse healthCheckResponse = response.getBody();
         assertNotNull(healthCheckResponse);
-        assertNotNull(healthCheckResponse.getStatus());
+        assertNotNull(healthCheckResponse.getId());
+        assertNotNull(healthCheckResponse.getName());
         assertNotNull(healthCheckResponse.getTimestamp());
-        assertNotNull(healthCheckResponse.getVersion());
+        assertEquals("OK", healthCheckResponse.getStatus());
+        assertEquals("iam-service", healthCheckResponse.getType());
+        assertEquals("1.0.0",  healthCheckResponse.getVersion());
     }
 
 }

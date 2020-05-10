@@ -47,6 +47,7 @@ public class InMemoryPersistenceServiceImpl implements PersistenceService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode) {
         if (Organization.class.equals(modelKey.getType())) {
             modelWrapper.removeOrganization((ModelKey<Organization>)modelKey);
@@ -70,6 +71,7 @@ public class InMemoryPersistenceServiceImpl implements PersistenceService {
         return mapper.writeValueAsString(modelWrapper);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> void putData(ModelKey<T> modelKey, T newNode) {
         if (Organization.class.equals(modelKey.getType())) {
             modelWrapper.putOrganization((ModelKey<Organization>)modelKey, (Organization)newNode);

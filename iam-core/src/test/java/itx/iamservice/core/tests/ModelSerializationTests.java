@@ -149,6 +149,7 @@ public class ModelSerializationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void serializeAndDeserializeModelKeys() throws JsonProcessingException {
         ModelKey<User> userKey = new ModelKey(User.class, OrganizationId.from("o1"), ProjectId.from("p1"), UserId.from("u1"));
         String serialized = mapper.writeValueAsString(userKey);
@@ -163,6 +164,7 @@ public class ModelSerializationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void serializeAndDeserializeModelKeyOrganization() throws JsonProcessingException {
         ModelKey<Organization> organizationKey = new ModelKey(Organization.class, OrganizationId.from("o1"));
         String serialized = mapper.writeValueAsString(organizationKey);
@@ -175,6 +177,7 @@ public class ModelSerializationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void serializeAndDeserializeOrganizationWrapper() throws JsonProcessingException, PKIException {
         ModelKey<Organization> organizationKey = new ModelKey(Organization.class, OrganizationId.from("o1"));
         Organization organization = new OrganizationImpl(OrganizationId.from("o1"), "name");

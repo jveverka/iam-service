@@ -17,11 +17,11 @@ dependencies {
     implementation('io.jsonwebtoken:jjwt-jackson:0.11.1') {
         exclude group: 'com.fasterxml.jackson.core'
     }
-    implementation('org.bouncycastle:bcpg-jdk15on:1.64')
-    implementation('org.bouncycastle:bcpkix-jdk15on:1.64')
-    implementation('com.fasterxml.jackson.core:jackson-annotations:2.10.3')
-    implementation('com.fasterxml.jackson.core:jackson-core:2.10.3')
-    implementation('com.fasterxml.jackson.core:jackson-databind:2.10.3')
+    implementation('org.bouncycastle:bcpg-jdk15on:1.65')
+    implementation('org.bouncycastle:bcpkix-jdk15on:1.65')
+    implementation('com.fasterxml.jackson.core:jackson-annotations:2.10.4')
+    implementation('com.fasterxml.jackson.core:jackson-core:2.10.4')
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.10.4')
     testImplementation('org.slf4j:slf4j-simple:1.7.30')
     testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.5.2')

@@ -41,8 +41,8 @@ java -jar iam-service/build/libs/iam-service-1.0.0-SNAPSHOT.jar --spring.config.
 ## REST endpoints 
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.
 * [__Management APIs__](docs/apis/IAM-management-apis.md) - manage organization / project / users and credentials.
-* [__Discovery APIs__](docs/apis/IAM-discovery-apis.md) - discover organization / project / user configuration, get public keys.
-* [__Health-Check API__](docs/apis/IAM-heath-check.md) - service health check.
+* [__Back-Channel APIs__](docs/apis/IAM-back-channel-apis.md) - discover organization / project / user configuration, get public keys.
+* [__Health-Check API__](docs/apis/IAM-heath-check.md) - service status and health check.
 * __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v2/api-docs```
 * __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui.html```
 

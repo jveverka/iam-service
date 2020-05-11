@@ -1,14 +1,43 @@
-### JWT mappings
-Data model is mapped to registered [JWT claim names](https://tools.ietf.org/html/rfc7519#section-4) according rules below:
-* __iss__ (issuer) - OrganizationId, string. 
-* __aud__  (audience) - ProjectId, string.
-* __subj__ (subject) - ClientId, string.
+## JWT mappings
 
-Remaining registered [JWT claim names](https://tools.ietf.org/html/rfc7519#section-4) are used as following:
+### Header  
+* __typ__ - JWT
+* __kid__ - (Key ID) unique identifier of X.509 certificate 
+  containing public key for JWT signature verification. 
+* __alg__ - RS256 
+
+### Claims 
+#### Access_Token Claims
+Data model mapping of [RFC7519 registered JWT claim names](https://tools.ietf.org/html/rfc7519#section-4):
+* __iss__ (issuer) - OrganizationId, string. 
+* __aud__ (audience) - ProjectId, string.
+* __sub__ (subject) - UserId or ClientId, string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string
 * __nbf__ (Not Before) = iat, datetime+timezone, string
 * __iat__ (Issued At) = current datetime+timezone, string
-* __jti__ (JWT ID) - unique id, random uuid string.
+* __jti__ (JWT ID) - unique id, random UUID string.
 
-Non-registered mappings:
-* __roles__ - string array of roleId(s) for subject. 
+Data model mapping of [OpenID connect standard claims](https://openid.net/specs/openid-connect-core-1_0.html#Claims):
+* NA
+
+Non-registered claim mappings:
+* __typ__ - toke type: __Bearer__
+* __roles__ - subject roles, string array of roleId(s) for subject. 
+* __scope__ - enumeration of following values: [ openid | roles ]
+
+#### Refresh_Token Claims
+* __typ__ - toke type: __Refresh__
+* TBD
+
+#### ID_Token Claims
+* __aud__ (audience) - ProjectId, string.
+* __sub__ (subject) - UserId or ClientId, string.
+* __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string
+* __iat__ (Issued At) = current datetime+timezone, string
+* __auth_time__ - timestamp of client's authentication.
+
+### JWT signature 
+Issued tokens are always signed using private key of issuer.
+__kid__ in JWT header must be used to get X.509 certificate via 
+back channel for JWT signature verification.
+ 

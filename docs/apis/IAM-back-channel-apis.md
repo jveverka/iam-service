@@ -1,4 +1,4 @@
-## Discovery REST APIs
+## Back Channel REST APIs
 
 * Get all organizations managed by this instance of IAM-service.  
   __GET__ ``http://localhost:8080/services/discovery/organizations``

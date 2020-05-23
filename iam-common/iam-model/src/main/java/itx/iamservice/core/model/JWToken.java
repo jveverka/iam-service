@@ -1,4 +1,4 @@
-package itx.iamservice.core.services.dto;
+package itx.iamservice.core.model;
 
 import java.util.Objects;
 

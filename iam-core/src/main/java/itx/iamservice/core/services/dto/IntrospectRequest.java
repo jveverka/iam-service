@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.dto;
 
+import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.TokenType;
 
 public class IntrospectRequest {

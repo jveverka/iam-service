@@ -25,7 +25,7 @@ import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
-import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;

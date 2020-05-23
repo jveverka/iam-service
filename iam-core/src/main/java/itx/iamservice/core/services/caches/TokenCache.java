@@ -1,6 +1,6 @@
 package itx.iamservice.core.services.caches;
 
-import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.model.JWToken;
 
 /**
  * Cache service for revoked token storage.

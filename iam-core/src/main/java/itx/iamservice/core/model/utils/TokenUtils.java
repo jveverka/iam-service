@@ -16,7 +16,7 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.IdTokenRequest;
-import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.model.JWToken;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509v3CertificateBuilder;

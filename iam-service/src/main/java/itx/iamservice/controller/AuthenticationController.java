@@ -1,12 +1,6 @@
 package itx.iamservice.controller;
 
-import itx.iamservice.core.model.ClientCredentials;
-import itx.iamservice.core.model.ClientId;
-import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
-import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.*;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
@@ -20,7 +14,6 @@ import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.services.dto.IntrospectRequest;
 import itx.iamservice.core.services.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.JWKResponse;
-import itx.iamservice.core.services.dto.JWToken;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;

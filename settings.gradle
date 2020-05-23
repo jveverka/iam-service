@@ -1,4 +1,10 @@
 
+include "iam-model"
+project(":iam-model").projectDir = new File("iam-common/iam-model")
+
+include "iam-client"
+project(":iam-client").projectDir = new File("iam-common/iam-client")
+
 include "iam-core"
 include "iam-service"
 include "iam-persistence-file-system"

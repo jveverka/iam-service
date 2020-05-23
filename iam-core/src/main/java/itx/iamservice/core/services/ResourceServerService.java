@@ -9,7 +9,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.dto.IntrospectRequest;
 import itx.iamservice.core.services.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.UserInfo;
-import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
 
 import java.security.cert.CertificateEncodingException;

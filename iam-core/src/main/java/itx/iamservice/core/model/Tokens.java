@@ -1,7 +1,5 @@
 package itx.iamservice.core.model;
 
-import itx.iamservice.core.services.dto.JWToken;
-
 public class Tokens {
 
     private final JWToken accessToken;

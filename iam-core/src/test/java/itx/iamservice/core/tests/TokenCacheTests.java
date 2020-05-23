@@ -11,7 +11,7 @@ import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
-import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.model.JWToken;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;

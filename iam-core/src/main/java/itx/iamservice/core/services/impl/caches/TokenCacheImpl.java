@@ -10,7 +10,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
-import itx.iamservice.core.services.dto.JWToken;
+import itx.iamservice.core.model.JWToken;
 
 import java.util.HashSet;
 import java.util.Optional;

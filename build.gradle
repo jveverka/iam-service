@@ -2,12 +2,25 @@ subprojects {
     apply plugin: "java"
 }
 
+project(':iam-model') {
+}
+
+project(':iam-client') {
+    dependencies {
+        implementation project(':iam-model')
+    }
+}
+
 project(':iam-core') {
+    dependencies {
+        implementation project(':iam-model')
+    }
 }
 
 project(':iam-service') {
     dependencies {
         implementation project(':iam-core')
+        implementation project(':iam-model')
         implementation project(':iam-persistence-file-system')
         implementation project(':iam-persistence-in-memory')
     }

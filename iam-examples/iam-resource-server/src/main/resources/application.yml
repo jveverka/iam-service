@@ -5,7 +5,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/services/authentication/iam-admins/iam-admins
+          #issuer-uri: http://localhost:8080/services/authentication/iam-admins/iam-admins
+          issuer-uri: iam-admins
+          jwk-set-uri: http://localhost:8080/services/authentication/iam-admins/iam-admins/.well-known/jwks.json
           jws-algorithm: RS256
 logging:
   level:

@@ -7,12 +7,12 @@ import java.util.Objects;
 
 public class KeyPairSerialized {
 
-    private final KeyPairId id;
+    private final KeyId id;
     private final String privateKey;
     private final String x509Certificate;
 
     @JsonCreator
-    public KeyPairSerialized(@JsonProperty("id") KeyPairId id,
+    public KeyPairSerialized(@JsonProperty("id") KeyId id,
                              @JsonProperty("privateKey") String privateKey,
                              @JsonProperty("x509Certificate") String x509Certificate) {
         this.id = id;
@@ -28,7 +28,7 @@ public class KeyPairSerialized {
         return x509Certificate;
     }
 
-    public KeyPairId getId() {
+    public KeyId getId() {
         return id;
     }
 

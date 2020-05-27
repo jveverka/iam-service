@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group = 'itx.iamservice'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('com.fasterxml.jackson.core:jackson-annotations:2.10.4')
+    implementation('com.fasterxml.jackson.core:jackson-core:2.10.4')
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.10.4')
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

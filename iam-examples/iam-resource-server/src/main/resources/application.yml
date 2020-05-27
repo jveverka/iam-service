@@ -6,3 +6,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/services/authentication/iam-admins/iam-admins
+          jws-algorithm: RS256
+logging:
+  level:
+    root: TRACE

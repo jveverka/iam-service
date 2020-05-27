@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.keys.Id;
 
-public class KeyPairId extends Id {
+public class KeyId extends Id {
 
     @JsonCreator
-    public KeyPairId(@JsonProperty("id") String id) {
+    public KeyId(@JsonProperty("id") String id) {
         super(id);
     }
 
-    public static KeyPairId from(String id) {
-        return new KeyPairId(id);
+    public static KeyId from(String id) {
+        return new KeyId(id);
     }
 
 }

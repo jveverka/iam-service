@@ -8,7 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.KeyPairData;
-import itx.iamservice.core.model.KeyPairId;
+import itx.iamservice.core.model.KeyId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
@@ -83,28 +83,28 @@ public final class TokenUtils {
         }
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyPairId keyPairId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, clientId.getId(), duration, timeUnit, roles, keyPairId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, projectId, clientId.getId(), duration, timeUnit, roles, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyPairId keyPairId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, userId.getId(), duration, timeUnit, roles, keyPairId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, projectId, userId.getId(), duration, timeUnit, roles, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Long duration, TimeUnit timeUnit, Set<String> roles, KeyPairId keyPairId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Long duration, TimeUnit timeUnit, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, keyPairId, privateKey, type);
+        return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, keyId, privateKey, type);
     }
 
-    public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyPairId keyPairId, PrivateKey privateKey) {
+    public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
         String subject = organizationId.getId() + "." + projectId.getId() + " " + clientOrUserId;
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
         JwtBuilder builder = Jwts.builder();
         builder.setHeaderParam(TYP_ID, TYP_VALUE);
-        builder.setHeaderParam(KEY_ID, keyPairId.getId());
+        builder.setHeaderParam(KEY_ID, keyId.getId());
         builder.setSubject(idTokenRequest.getIssuerURL());
         builder.setSubject(subject);
         builder.setAudience(clientId.getId());
@@ -118,10 +118,10 @@ public final class TokenUtils {
         return JWToken.from(builder.compact());
     }
 
-    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, KeyPairId keyPairId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
         String jwToken = Jwts.builder()
                 .setHeaderParam(TYP_ID, TYP_VALUE)
-                .setHeaderParam(KEY_ID, keyPairId.getId())
+                .setHeaderParam(KEY_ID, keyId.getId())
                 .setSubject(subject)
                 .signWith(privateKey)
                 .setExpiration(expirationTime)
@@ -197,10 +197,10 @@ public final class TokenUtils {
 
     public static KeyPairData createSelfSignedKeyPairData(String issuerAndSubject, Long duration, TimeUnit timeUnit) throws PKIException {
         try {
-            KeyPairId keyPairId = KeyPairId.from(UUID.randomUUID().toString());
+            KeyId keyId = KeyId.from(UUID.randomUUID().toString());
             KeyPair keyPair = generateKeyPair();
             X509Certificate x509Certificate = createSelfSignedCertificate(issuerAndSubject, duration, timeUnit, keyPair);
-            return new KeyPairData(keyPairId, keyPair.getPrivate(), x509Certificate);
+            return new KeyPairData(keyId, keyPair.getPrivate(), x509Certificate);
         } catch (Exception e) {
             throw new PKIException(e);
         }
@@ -208,10 +208,10 @@ public final class TokenUtils {
 
     public static KeyPairData createSignedKeyPairData(String issuer, String subject, Long duration, TimeUnit timeUnit, PrivateKey privateKey) throws PKIException {
         try {
-            KeyPairId keyPairId = KeyPairId.from(UUID.randomUUID().toString());
+            KeyId keyId = KeyId.from(UUID.randomUUID().toString());
             KeyPair keyPair = generateKeyPair();
             X509Certificate x509Certificate = createSignedCertificate(issuer, subject, duration, timeUnit, keyPair.getPublic(), privateKey);
-            return new KeyPairData(keyPairId, keyPair.getPrivate(), x509Certificate);
+            return new KeyPairData(keyId, keyPair.getPrivate(), x509Certificate);
         } catch (Exception e) {
             throw new PKIException(e);
         }

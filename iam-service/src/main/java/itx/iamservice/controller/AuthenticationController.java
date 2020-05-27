@@ -192,7 +192,7 @@ public class AuthenticationController {
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/jwks.json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JWKResponse> getCerts(@PathVariable("organization-id") String organizationId,
                                                 @PathVariable("project-id") String projectId) {
-        LOG.info("getCerts: ");
+        LOG.info("getCerts: organizationId={} projectId={}", organizationId, projectId);
         JWKResponse jwkData = providerConfigurationService.getJWKData(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(jwkData);
     }

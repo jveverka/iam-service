@@ -24,6 +24,7 @@
 * __Auth URL__: ```http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize```
 * __Access Token URL__ : ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```
 * __Client ID__: admin-client
+* __Client Secret__: top-secret
 * __Scope__: ""
 * __State__: <random-string>
 

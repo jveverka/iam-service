@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class JWKData {
@@ -22,18 +23,29 @@ public class JWKData {
     @JsonProperty("x5t#S256")
     private final String x509CertificateSHA256Thumbprint;
 
+    @JsonProperty("n")
+    private final String modulusValue;
+
+    @JsonProperty("e")
+    private final String exponentValue;
+
+    @JsonCreator
     public JWKData(@JsonProperty("kid") String keyId,
                    @JsonProperty("kty") String keyType,
                    @JsonProperty("use") String use,
                    @JsonProperty("alg") String algorithm,
                    @JsonProperty("key_ops") String[] keyOperations,
-                   @JsonProperty("x5t#S256") String x509CertificateSHA256Thumbprint) {
+                   @JsonProperty("x5t#S256") String x509CertificateSHA256Thumbprint,
+                   @JsonProperty("n") String modulusValue,
+                   @JsonProperty("e") String exponentValue) {
         this.keyId = keyId;
         this.keyType = keyType;
         this.use = use;
         this.algorithm = algorithm;
         this.keyOperations = keyOperations;
         this.x509CertificateSHA256Thumbprint = x509CertificateSHA256Thumbprint;
+        this.modulusValue  = modulusValue;
+        this.exponentValue = exponentValue;
     }
 
     public String getKeyId() {
@@ -58,6 +70,14 @@ public class JWKData {
 
     public String getX509CertificateSHA256Thumbprint() {
         return x509CertificateSHA256Thumbprint;
+    }
+
+    public String getModulusValue() {
+        return modulusValue;
+    }
+
+    public String getExponentValue() {
+        return exponentValue;
     }
 
 }

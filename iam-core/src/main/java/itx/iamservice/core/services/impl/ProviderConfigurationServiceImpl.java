@@ -1,6 +1,5 @@
 package itx.iamservice.core.services.impl;
 
-import itx.iamservice.core.model.KeyPairSerialized;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
@@ -12,10 +11,12 @@ import itx.iamservice.core.services.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 
+import java.nio.charset.StandardCharsets;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProviderConfigurationServiceImpl implements ProviderConfigurationService {
 
@@ -25,10 +26,13 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
     private static final String[] idTokenSigningAlgValuesSupported = {"PS384","ES384","RS384","HS256","HS512","ES256","RS256","HS384","ES512","PS256","PS512","RS512"};
     private static final String[] idTokenEncryptionAlgValuesSupported = { "RSA" };
 
-    private static final String KEY_TYPE = "RSA";
-    private static final String KEY_USE = "sig";
-    private static final String[] KEY_OPERATIONS = { "verify" };
-    private static final String KEY_ALGORITHM = "SHA256withRSA";
+    public static final String KEY_TYPE = "RSA";
+    public static final String KEY_USE = "sig";
+    public static final String KEY_ALGORITHM = "SHA256withRSA";
+
+    public static String[] getOperations() {
+        return new String[] { "verify" };
+    }
 
     private final ProjectManagerService projectManagerService;
 
@@ -55,10 +59,15 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
     @Override
     public JWKResponse getJWKData(OrganizationId organizationId, ProjectId projectId) {
         Collection<User> users = projectManagerService.getUsers(organizationId, projectId);
-        List<KeyPairSerialized> keyPairs = users.stream().map(u -> u.getKeyPairSerialized()).collect(Collectors.toList());
         List<JWKData> keys = new ArrayList<>();
-        keyPairs.forEach(k -> {
-            JWKData jwkData = new JWKData(k.getId().getId(), KEY_TYPE, KEY_USE, KEY_ALGORITHM, KEY_OPERATIONS, k.getX509Certificate());
+        users.forEach(u -> {
+            RSAPublicKey publicKey = (RSAPublicKey) u.getKeyPairData().getPublicKey();
+            byte[] modulusBase64 = Base64.getEncoder().encode(publicKey.getModulus().toString().getBytes(StandardCharsets.UTF_8));
+            byte[] exponentBase64 = Base64.getEncoder().encode(publicKey.getPublicExponent().toString().getBytes(StandardCharsets.UTF_8));
+            String modulusBase64String = new String(modulusBase64, StandardCharsets.UTF_8);
+            String exponentBase64String = new String(exponentBase64, StandardCharsets.UTF_8);
+            JWKData jwkData = new JWKData(u.getKeyPairData().getId().getId(), KEY_TYPE, KEY_USE, KEY_ALGORITHM, getOperations(),
+                    u.getKeyPairSerialized().getX509Certificate(), modulusBase64String, exponentBase64String);
             keys.add(jwkData);
         });
         return new JWKResponse(keys);

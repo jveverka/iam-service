@@ -27,8 +27,8 @@ This project is __WIP__, stay tuned !
 
 ### Build and Run
 System requirements: 
-[Java 11](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) or higher, 
-[Gradle 6.2](https://gradle.org/install/) or higher.
+* [Java 11](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) or higher, 
+* [Gradle 6.3](https://gradle.org/install/) or later.
 ```
 gradle clean build test
 

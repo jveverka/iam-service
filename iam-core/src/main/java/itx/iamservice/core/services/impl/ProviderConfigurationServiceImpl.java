@@ -4,6 +4,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
+import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.dto.JWKData;
@@ -11,7 +12,6 @@ import itx.iamservice.core.services.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
 
-import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -62,10 +62,8 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
         List<JWKData> keys = new ArrayList<>();
         users.forEach(u -> {
             RSAPublicKey publicKey = (RSAPublicKey) u.getKeyPairData().getPublicKey();
-            byte[] modulusBase64 = Base64.getEncoder().encode(publicKey.getModulus().toString().getBytes(StandardCharsets.UTF_8));
-            byte[] exponentBase64 = Base64.getEncoder().encode(publicKey.getPublicExponent().toString().getBytes(StandardCharsets.UTF_8));
-            String modulusBase64String = new String(modulusBase64, StandardCharsets.UTF_8);
-            String exponentBase64String = new String(exponentBase64, StandardCharsets.UTF_8);
+            String modulusBase64String = Base64.getEncoder().encodeToString(TokenUtils.toBytesUnsigned(publicKey.getModulus()));
+            String exponentBase64String = Base64.getEncoder().encodeToString(TokenUtils.toBytesUnsigned(publicKey.getPublicExponent()));
             JWKData jwkData = new JWKData(u.getKeyPairData().getId().getId(), KEY_TYPE, KEY_USE, KEY_ALGORITHM, getOperations(),
                     u.getKeyPairSerialized().getX509Certificate(), modulusBase64String, exponentBase64String);
             keys.add(jwkData);

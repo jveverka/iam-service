@@ -1,11 +1,25 @@
 package itx.iamservice.core.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.KeySourceException;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.proc.JWSKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.KeyId;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.KeyPairSerialized;
+import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.TokenType;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.dto.JWKData;
@@ -19,16 +33,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class NimbusJoseTests {
@@ -41,17 +61,16 @@ public class NimbusJoseTests {
 
     @Test
     public void testRSAKeyParse() throws Exception {
-        String keyId = UUID.randomUUID().toString();
+        KeyId keyId = KeyId.from(UUID.randomUUID().toString());
         KeyPair keyPair = TokenUtils.generateKeyPair();
         X509Certificate x509Certificate = TokenUtils.createSelfSignedCertificate("issuer", 24L, TimeUnit.HOURS, keyPair);
-        KeyPairData keyPairData = new KeyPairData(KeyId.from(keyId), keyPair.getPrivate(), x509Certificate);
+        KeyPairData keyPairData = new KeyPairData(keyId, keyPair.getPrivate(), x509Certificate);
         KeyPairSerialized keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
 
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        byte[] modulusBase64 = Base64.getEncoder().encode(publicKey.getModulus().toString().getBytes(StandardCharsets.UTF_8));
-        byte[] exponentBase64 = Base64.getEncoder().encode(publicKey.getPublicExponent().toString().getBytes(StandardCharsets.UTF_8));
-        String modulusBase64String = new String(modulusBase64, StandardCharsets.UTF_8);
-        String exponentBase64String = new String(exponentBase64, StandardCharsets.UTF_8);
+
+        String modulusBase64String = Base64.getEncoder().encodeToString(TokenUtils.toBytesUnsigned(publicKey.getModulus()));
+        String exponentBase64String = Base64.getEncoder().encodeToString(TokenUtils.toBytesUnsigned(publicKey.getPublicExponent()));
 
         JWKData jwkData = new JWKData(keyPairSerialized.getId().getId(),
                 ProviderConfigurationServiceImpl.KEY_TYPE,
@@ -71,6 +90,69 @@ public class NimbusJoseTests {
         PublicKey publicKeyFromRSAKey = rsaKey.toPublicKey();
         assertNotNull(publicKeyFromRSAKey);
 
+        Set<String> roles = new HashSet<>();
+        roles.add("r1");
+        roles.add("r2");
+
+        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("p1"), UserId.from("u1"), 10L,
+                TimeUnit.HOURS, roles, keyId, keyPair.getPrivate(), TokenType.BEARER);
+
+        SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
+        RSASSAVerifier rsassaVerifier = new RSASSAVerifier(rsaKey);
+        boolean result = rsassaVerifier.verify(signedJWT.getHeader(), signedJWT.getSigningInput(), signedJWT.getSignature());
+        assertTrue(result);
+    }
+
+    @Test
+    public void testJWTVerification() throws Exception {
+        KeyId keyId = KeyId.from(UUID.randomUUID().toString());
+        KeyPair keyPair = TokenUtils.generateKeyPair();
+        X509Certificate x509Certificate = TokenUtils.createSelfSignedCertificate("issuer", 24L, TimeUnit.HOURS, keyPair);
+        KeyPairData keyPairData = new KeyPairData(keyId, keyPair.getPrivate(), x509Certificate);
+        KeyPairSerialized keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
+
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        String modulusBase64String = Base64.getEncoder().encodeToString(TokenUtils.toBytesUnsigned(publicKey.getModulus()));
+        String exponentBase64String = Base64.getEncoder().encodeToString(TokenUtils.toBytesUnsigned(publicKey.getPublicExponent()));
+
+        JWKData jwkData = new JWKData(keyPairSerialized.getId().getId(),
+                ProviderConfigurationServiceImpl.KEY_TYPE,
+                ProviderConfigurationServiceImpl.KEY_USE,
+                ProviderConfigurationServiceImpl.KEY_ALGORITHM,
+                ProviderConfigurationServiceImpl.getOperations(), keyPairSerialized.getX509Certificate(),
+                modulusBase64String, exponentBase64String);
+
+        Set<String> roles = new HashSet<>();
+        roles.add("r1");
+        roles.add("r2");
+
+        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("p1"), UserId.from("u1"), 10L,
+                TimeUnit.HOURS, roles, keyId, keyPair.getPrivate(), TokenType.BEARER);
+
+        SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
+        DefaultJWTProcessor defaultJWTProcessor = new DefaultJWTProcessor();
+        defaultJWTProcessor.setJWSKeySelector(new JWSKeySelectorImpl(jwkData));
+        JWTClaimsSet jwtClaimsSet = defaultJWTProcessor.process(signedJWT, null);
+        assertNotNull(jwtClaimsSet);
+        assertNotNull("org", jwtClaimsSet.getIssuer());
+    }
+
+    private class JWSKeySelectorImpl implements JWSKeySelector {
+        private final JWKData jwkData;
+        private JWSKeySelectorImpl(JWKData jwkData) {
+            this.jwkData = jwkData;
+        }
+        @Override
+        public List<? extends Key> selectJWSKeys(JWSHeader header, SecurityContext context) throws KeySourceException {
+            List<Key> keys = new ArrayList<>();
+            try {
+                X509Certificate x509Certificate = TokenUtils.deserializeX509Certificate(jwkData.getX509CertificateSHA256Thumbprint());
+                keys.add(x509Certificate.getPublicKey());
+            } catch (PKIException e) {
+                e.printStackTrace();
+            }
+            return keys;
+        }
     }
 
 }

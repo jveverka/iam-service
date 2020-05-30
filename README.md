@@ -6,7 +6,7 @@ Really simple standalone *Identity Access Management* (IAM) service, authenticat
 Project is compliant with subset of [OAuth2](https://tools.ietf.org/html/rfc6749) 
 and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) specifications. 
 Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519). 
-Please check [use-cases and guidelines](docs/IAM-usecases-and-guidelines.md) for more details.
+Please check [use-cases and guidelines](iam-examples/README.md) for more details.
 
 This project is __WIP__, stay tuned !
 

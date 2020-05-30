@@ -38,5 +38,5 @@ project(':iam-persistence-in-memory') {
     }
 }
 
-project(':iam-resource-server') {
+project(':spring-resource-server') {
 }

@@ -1,3 +1,4 @@
 # IAM Examples
+Projects listed below are show-cases for __iam-service__ deployment, usage and integrations in micro-service environment.
 
-* [IAM-resource-server](iam-resource-server)
+* [spring-resource-server](spring-resource-server) - OAuth2 Spring Security Resource Server demo

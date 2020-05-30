@@ -12,5 +12,5 @@ project(":iam-persistence-file-system").projectDir = new File("iam-persistence/i
 include "iam-persistence-in-memory"
 project(":iam-persistence-in-memory").projectDir = new File("iam-persistence/iam-persistence-in-memory")
 
-include "iam-resource-server"
-project(":iam-resource-server").projectDir = new File("iam-examples/iam-resource-server")
+include "spring-resource-server"
+project(":spring-resource-server").projectDir = new File("iam-examples/spring-resource-server")

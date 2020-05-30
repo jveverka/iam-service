@@ -28,7 +28,7 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
 
     public static final String KEY_TYPE = "RSA";
     public static final String KEY_USE = "sig";
-    public static final String KEY_ALGORITHM = "SHA256withRSA";
+    public static final String KEY_ALGORITHM = "RS256";
 
     public static String[] getOperations() {
         return new String[] { "verify" };

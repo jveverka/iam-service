@@ -11,10 +11,10 @@ Please check [use-cases and guidelines](iam-examples/README.md) for more details
 This project is __WIP__, stay tuned !
 
 ## Supported OAuth2 flows
-* __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).
-* __Password Credentials__ - [flow details](docs/oauth2/133_password-credentials-flow.md).
-* __Client Credentials__ - [flow details](docs/oauth2/134_client-credentials-flow.md).
-* __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-token.md).
+* [x] __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).
+* [x] __Password Credentials__ - [flow details](docs/oauth2/133_password-credentials-flow.md).
+* [x] __Client Credentials__ - [flow details](docs/oauth2/134_client-credentials-flow.md).
+* [x] __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-token.md).
 
 ## Architecture
 ![architecture](docs/IAM-service-architecture.svg)

@@ -1,4 +1,11 @@
 # Use-Cases, Guidelines and Examples
 Projects listed below are show-cases for __iam-service__ various deployments, use-cases and integrations in micro-service environment.
 
-* [spring-resource-server](spring-resource-server) - OAuth2 Spring Security Resource Server demo
+## Guidelines
+* [ ] Installation manual
+* [ ] Project setup
+
+## Examples
+* [x] [spring-resource-server](spring-resource-server) - OAuth2 Spring Security and Resource Server demo.
+* [ ] spring-oauth2-client
+* [ ] spring-method-security

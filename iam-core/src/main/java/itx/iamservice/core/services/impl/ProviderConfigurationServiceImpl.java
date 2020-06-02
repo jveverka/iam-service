@@ -7,10 +7,10 @@ import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
-import itx.iamservice.core.services.dto.JWKData;
-import itx.iamservice.core.services.dto.JWKResponse;
+import itx.iamservice.core.dto.JWKData;
+import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
-import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
+import itx.iamservice.core.dto.ProviderConfigurationResponse;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package itx.iamservice.core.services.dto;
+package itx.iamservice.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,6 +1,6 @@
 package itx.iamservice.tests;
 
-import itx.iamservice.core.services.dto.IntrospectResponse;
+import itx.iamservice.core.dto.IntrospectResponse;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 

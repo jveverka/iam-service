@@ -2,9 +2,9 @@ package itx.iamservice.core.services;
 
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.services.dto.JWKResponse;
+import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
-import itx.iamservice.core.services.dto.ProviderConfigurationResponse;
+import itx.iamservice.core.dto.ProviderConfigurationResponse;
 
 public interface ProviderConfigurationService {
 

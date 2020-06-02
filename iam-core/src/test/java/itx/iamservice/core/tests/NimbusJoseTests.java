@@ -7,7 +7,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
@@ -22,7 +21,7 @@ import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
-import itx.iamservice.core.services.dto.JWKData;
+import itx.iamservice.core.dto.JWKData;
 import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
@@ -62,6 +60,7 @@ public class NimbusJoseTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testRSAKeyParse() throws Exception {
         KeyId keyId = KeyId.from(UUID.randomUUID().toString());
         KeyPair keyPair = TokenUtils.generateKeyPair();
@@ -102,6 +101,7 @@ public class NimbusJoseTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testJWTVerification() throws Exception {
         KeyId keyId = KeyId.from(UUID.randomUUID().toString());
         KeyPair keyPair = TokenUtils.generateKeyPair();

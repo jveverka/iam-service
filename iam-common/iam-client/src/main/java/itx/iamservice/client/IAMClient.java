@@ -1,12 +1,12 @@
 package itx.iamservice.client;
 
-import itx.iamservice.core.model.JWTInfo;
+import com.nimbusds.jwt.JWTClaimsSet;
 import itx.iamservice.core.model.JWToken;
 
 import java.util.Optional;
 
-public interface IAMClient {
+public interface IAMClient extends AutoCloseable {
 
-    Optional<JWTInfo> validate(JWToken token);
+    Optional<JWTClaimsSet> validate(JWToken token);
 
 }

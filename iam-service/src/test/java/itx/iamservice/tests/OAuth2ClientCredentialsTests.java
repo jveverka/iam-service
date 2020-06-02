@@ -1,7 +1,7 @@
 package itx.iamservice.tests;
 
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.services.dto.IntrospectResponse;
+import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;

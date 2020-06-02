@@ -1,4 +1,4 @@
-package itx.iamservice.core.services.dto;
+package itx.iamservice.core.dto;
 
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.TokenType;

@@ -2,7 +2,7 @@ package itx.iamservice.tests;
 
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.services.dto.Code;
-import itx.iamservice.core.services.dto.IntrospectResponse;
+import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;

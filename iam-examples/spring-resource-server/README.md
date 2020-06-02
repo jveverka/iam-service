@@ -5,8 +5,9 @@ JWT tokens issues by __iam-service__ are used to get access to resources hosted 
 
 ![demo-architecture](docs/spring-resource-server.svg)
 
-1. __iam-service__ issues token to client application using one of supported OAuth2 flows.
-2. __client application__ uses issued JWT token to access resources hosted on __spring-resource-server__. 
+1. spring-resource-server downloads the list of JWKs over http as specified in RFC7517 on startup.
+2. __iam-service__ issues token to client application using one of supported OAuth2 flows.
+3. __client application__ uses issued JWT token to access resources hosted on __spring-resource-server__. 
 
 # Build and Run
 ```

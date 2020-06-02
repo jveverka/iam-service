@@ -6,6 +6,7 @@ Projects listed below are show-cases for __iam-service__ various deployments, us
 * [ ] Project setup
 
 ## Examples
-* [x] [spring-resource-server](spring-resource-server) - OAuth2 Spring Security and Resource Server demo.
+* [x] [spring-resource-server servlet](spring-resource-server) - OAuth2 Spring Security and Resource Server demo.
+* [ ] spring-resource-server reactive
 * [ ] spring-oauth2-client
 * [ ] spring-method-security

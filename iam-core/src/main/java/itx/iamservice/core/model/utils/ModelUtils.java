@@ -125,6 +125,7 @@ public final class ModelUtils {
                     .addRole(manageClientsRole)
                     .addRole(manageRolesRole)
                     .addRole(managePermissionsRole)
+                    .addRole(clientReaderRole)
                     .addClient(IAM_ADMIN_CLIENT_ID, "client-1", IAM_ADMIN_CLIENT_SECRET)
                         .addRole(clientReaderRole.getId())
                     .and()

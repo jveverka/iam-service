@@ -41,8 +41,10 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -90,12 +92,8 @@ public class NimbusJoseTests {
         PublicKey publicKeyFromRSAKey = rsaKey.toPublicKey();
         assertNotNull(publicKeyFromRSAKey);
 
-        Set<String> roles = new HashSet<>();
-        roles.add("r1");
-        roles.add("r2");
-
         JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("p1"), UserId.from("u1"), 10L,
-                TimeUnit.HOURS, roles, keyId, keyPair.getPrivate(), TokenType.BEARER);
+                TimeUnit.HOURS, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
         RSASSAVerifier rsassaVerifier = new RSASSAVerifier(rsaKey);
@@ -122,12 +120,8 @@ public class NimbusJoseTests {
                 ProviderConfigurationServiceImpl.getOperations(), keyPairSerialized.getX509Certificate(),
                 modulusBase64String, exponentBase64String);
 
-        Set<String> roles = new HashSet<>();
-        roles.add("r1");
-        roles.add("r2");
-
         JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("p1"), UserId.from("u1"), 10L,
-                TimeUnit.HOURS, roles, keyId, keyPair.getPrivate(), TokenType.BEARER);
+                TimeUnit.HOURS, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
         DefaultJWTProcessor defaultJWTProcessor = new DefaultJWTProcessor();
@@ -153,6 +147,15 @@ public class NimbusJoseTests {
             }
             return keys;
         }
+    }
+
+    private Map<String, Set<String>> createRoleClaims() {
+        Set<String> roles = new HashSet<>();
+        roles.add("r1");
+        roles.add("r2");
+        Map<String, Set<String>> result = new HashMap<>();
+        result.put(TokenUtils.ROLES_CLAIM, roles);
+        return result;
     }
 
 }

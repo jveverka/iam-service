@@ -53,4 +53,8 @@ public class Permission {
         return Objects.hash(id);
     }
 
+    public String asStringValue() {
+        return id.getId();
+    }
+
 }

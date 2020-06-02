@@ -84,12 +84,12 @@ public class ClientUPAuthenticationTests {
         assertEquals(ModelUtils.IAM_ADMIN_USER.getId(), defaultClaims.getSubject());
         assertEquals(ModelUtils.IAM_ADMINS_ORG.getId(), defaultClaims.getIssuer());
         assertEquals(ModelUtils.IAM_ADMINS_PROJECT.getId(), defaultClaims.getAudience());
-        List<String> roles = (List<String>)defaultClaims.get(TokenUtils.ROLES_CLAIM);
-        assertNotNull(roles);
-        assertEquals(2, roles.size());
-        assertTrue(roles.contains("manage-organizations"));
-        assertTrue(roles.contains("manage-projects"));
-        assertFalse(roles.contains("not-existing-role"));
+        List<String> permissions = (List<String>)defaultClaims.get(TokenUtils.PERMISSIONS_CLAIM);
+        assertNotNull(permissions);
+        assertEquals(6, permissions.size());
+        assertTrue(permissions.contains("iam-admin-service.organizations.read"));
+        assertTrue(permissions.contains("iam-admin-service.organizations.modify"));
+        assertFalse(permissions.contains("not-existing-role"));
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);
         assertEquals(TokenType.BEARER.getType(), type);
         accessToken = tokensOptional.get().getAccessToken();

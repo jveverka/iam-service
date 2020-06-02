@@ -21,9 +21,11 @@ import itx.iamservice.core.services.persistence.PersistenceService;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -260,6 +262,32 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public boolean assignRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
+        ModelKey<Client> clientKey = clientKey(id, projectId, clientId);
+        Role role = roles.get(roleKey(id, projectId, roleId));
+        Client client = clients.get(clientKey);
+        if (role != null && client != null) {
+            client.addRole(roleId);
+            persistenceService.onNodeUpdated(clientKey, client);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
+        ModelKey<Client> clientKey = clientKey(id, projectId, clientId);
+        Role role = roles.get(roleKey(id, projectId, roleId));
+        Client client = clients.get(clientKey);
+        if (role != null && client != null) {
+            client.removeRole(roleId);
+            persistenceService.onNodeUpdated(clientKey, client);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean add(OrganizationId organizationId, ProjectId projectId, Role role) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
@@ -349,13 +377,65 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-        Role role = roles.get(roleKey(organizationId, projectId, roleId));
+        Role role = roles.get(roleKey);
         if (role != null) {
             boolean result = role.removePermission(permissionId);
             persistenceService.onNodeUpdated(roleKey, role);
             return result;
         }
         return false;
+    }
+
+    @Override
+    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+        return getPermissions(organizationId, projectId, userId, Set.of());
+    }
+
+    @Override
+    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId, Set<RoleId> roleFilter) {
+        Set<Permission> result = new HashSet<>();
+        ModelKey<User> userKey = userKey(organizationId, projectId, userId);
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        User user = users.get(userKey);
+        Project  project =  projects.get(projectKey);
+        if (user != null && project != null) {
+            for (RoleId roleId: user.getRoles()) {
+                if (roleFilter.isEmpty() || roleFilter.contains(roleId)) {
+                    ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
+                    Role role = roles.get(roleKey);
+                    if (role != null) {
+                        result.addAll(role.getPermissions());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+        return getPermissions(organizationId, projectId, clientId, Set.of());
+    }
+
+    @Override
+    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Set<RoleId> roleFilter) {
+        Set<Permission> result = new HashSet<>();
+        ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        Client client = clients.get(clientKey);
+        Project  project =  projects.get(projectKey);
+        if (client != null && project != null) {
+            for (RoleId roleId: client.getRoles()) {
+                if (roleFilter.isEmpty() || roleFilter.contains(roleId)) {
+                    ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
+                    Role role = roles.get(roleKey);
+                    if (role != null) {
+                        result.addAll(role.getPermissions());
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private static ModelKey<Organization> organizationKey(OrganizationId id) {

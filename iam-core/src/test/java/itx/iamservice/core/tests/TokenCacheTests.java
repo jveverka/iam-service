@@ -23,6 +23,8 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +54,9 @@ public class TokenCacheTests {
         modelCache = ModelUtils.createDefaultModelCache("top-secret");
         tokenCache = new TokenCacheImpl(modelCache);
         keyId = KeyId.from("key-001");
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, ROLES, keyId, keyPair.getPrivate(), TokenType.BEARER);
+        Map<String, Set<String>> roleClaims = new HashMap<>();
+        roleClaims.put(TokenUtils.ROLES_CLAIM, ROLES);
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

@@ -11,6 +11,7 @@ import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.KeyId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenType;
@@ -43,6 +44,8 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -58,6 +61,7 @@ public final class TokenUtils {
     private static final String ALGORITHM = "RSA";
 
     public static final String ROLES_CLAIM = "roles";
+    public static final String PERMISSIONS_CLAIM = "permissions";
     public static final String TYPE_CLAIM = "typ";
     public static final String NONCE_CLAIM = "nonce";
     public static final String AUTH_TIME_CLAIM = "auth_time";
@@ -83,19 +87,26 @@ public final class TokenUtils {
         }
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, clientId.getId(), duration, timeUnit, roles, keyId, privateKey, type);
+    public static Map<String, Set<String>> getPermissionsClaims(Set<Permission> permissions) {
+        Map<String, Set<String>> claims = new HashMap<>();
+        Set<String> values = permissions.stream().map(p->p.asStringValue()).collect(Collectors.toSet());
+        claims.put(PERMISSIONS_CLAIM, values);
+        return claims;
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, userId.getId(), duration, timeUnit, roles, keyId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, projectId, clientId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Long duration, TimeUnit timeUnit, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, projectId, userId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
+    }
+
+    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, roles, keyId, privateKey, type);
+        return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, customClaims, keyId, privateKey, type);
     }
 
     public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
@@ -118,9 +129,9 @@ public final class TokenUtils {
         return JWToken.from(builder.compact());
     }
 
-    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Set<String> roles, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        String jwToken = Jwts.builder()
-                .setHeaderParam(TYP_ID, TYP_VALUE)
+    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        JwtBuilder builder = Jwts.builder();
+        builder.setHeaderParam(TYP_ID, TYP_VALUE)
                 .setHeaderParam(KEY_ID, keyId.getId())
                 .setSubject(subject)
                 .signWith(privateKey)
@@ -129,11 +140,10 @@ public final class TokenUtils {
                 .setIssuedAt(issuedAt)
                 .setNotBefore(notBefore)
                 .setAudience(audience)
-                .claim(ROLES_CLAIM, roles)
                 .claim(TYPE_CLAIM, type.getType())
-                .setId(UUID.randomUUID().toString())
-                .compact();
-        return JWToken.from(jwToken);
+                .setId(UUID.randomUUID().toString());
+        customClaims.forEach((k,v) -> builder.claim(k,v));
+        return JWToken.from(builder.compact());
     }
 
     public static Optional<Jws<Claims>> verify(JWToken jwToken, PublicKey publicKey) {

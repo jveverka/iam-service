@@ -22,8 +22,8 @@ Data model mapping of [OpenID connect standard claims](https://openid.net/specs/
 
 Non-registered claim mappings:
 * __typ__ - toke type: __Bearer__
-* __roles__ - subject roles, string array of roleId(s) for subject. 
-* __scope__ - enumeration of following values: [ openid | roles ]
+* __permissions__ - subject permissions, string array of permissionsId(s) for subject. 
+* __scope__ - enumeration of following values: [ openid | permissions ]
 
 #### Refresh_Token Claims
 * __typ__ - toke type: __Refresh__

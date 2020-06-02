@@ -57,4 +57,13 @@ public class Permission {
         return id.getId();
     }
 
+    public static Permission from(String permission) throws PermissionParsingException {
+        try {
+            String[] splits = permission.split("\\.");
+            return new Permission(splits[0], splits[1], splits[2]);
+        } catch(Exception e) {
+            throw new PermissionParsingException(e);
+        }
+    }
+
 }

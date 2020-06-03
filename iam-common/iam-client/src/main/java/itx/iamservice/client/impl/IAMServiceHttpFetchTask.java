@@ -35,9 +35,10 @@ public class IAMServiceHttpFetchTask implements Runnable {
 
     @Override
     public void run() {
-        LOG.info("fetching data from server ...");
+        String targetUrl = baseUrl.toString()  +  "/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json";
+        LOG.info("Fetching iam-server {}", targetUrl);
         Request request = new Request.Builder()
-                .url(baseUrl.toString()  +  "/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json")
+                .url(targetUrl)
                 .build();
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {

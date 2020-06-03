@@ -47,3 +47,11 @@ project(':iam-persistence-in-memory') {
 
 project(':spring-resource-server') {
 }
+
+project(':spring-method-security') {
+    dependencies {
+        implementation project(':iam-model')
+        implementation project(':iam-client')
+        implementation project(':iam-client-spring')
+    }
+}

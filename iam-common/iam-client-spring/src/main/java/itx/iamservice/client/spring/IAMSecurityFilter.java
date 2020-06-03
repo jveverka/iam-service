@@ -41,7 +41,7 @@ public class IAMSecurityFilter implements Filter {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 String userIdFromJWT = claimSet.get().getSubject();
                 List<String> permissionsFromJWT = (List<String>) claimSet.get().getClaim("permissions");
-                Set<String> setOfPermissions = permissionsFromJWT.stream().collect(Collectors.toSet());
+                Set<String> setOfPermissions = permissionsFromJWT.stream().map(p  -> "ROLE_" + p).collect(Collectors.toSet());
                 securityContext.setAuthentication(new AuthenticationImpl(userIdFromJWT, setOfPermissions));
                 chain.doFilter(request, response);
                 return;

@@ -15,3 +15,5 @@ project(":iam-persistence-in-memory").projectDir = new File("iam-persistence/iam
 
 include "spring-resource-server"
 project(":spring-resource-server").projectDir = new File("iam-examples/spring-resource-server")
+include "spring-method-security"
+project(":spring-method-security").projectDir = new File("iam-examples/spring-method-security")

@@ -1,4 +1,4 @@
-package itx.iamservice.springmicroservice;
+package itx.iamservice.examples.methodsecurity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @SpringBootApplication
-public class MicroServiceApp {
+public class MethodSecurityApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(MicroServiceApp.class, args);
+        SpringApplication.run(MethodSecurityApp.class, args);
     }
 
 }

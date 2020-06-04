@@ -1,6 +1,6 @@
-package itx.iamservice.springmicroservice.controller;
+package itx.iamservice.examples.methodsecurity.controller;
 
-import itx.iamservice.springmicroservice.dto.SystemInfo;
+import itx.iamservice.examples.methodsecurity.dto.SystemInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

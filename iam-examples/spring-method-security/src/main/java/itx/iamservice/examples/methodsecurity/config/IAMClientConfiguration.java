@@ -1,4 +1,4 @@
-package itx.iamservice.springmicroservice.config;
+package itx.iamservice.examples.methodsecurity.config;
 
 import itx.iamservice.client.IAMClient;
 import itx.iamservice.client.IAMClientBuilder;

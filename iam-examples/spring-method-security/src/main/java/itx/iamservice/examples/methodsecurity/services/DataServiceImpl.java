@@ -1,6 +1,6 @@
-package itx.iamservice.springmicroservice.services;
+package itx.iamservice.examples.methodsecurity.services;
 
-import itx.iamservice.springmicroservice.dto.ServerData;
+import itx.iamservice.examples.methodsecurity.dto.ServerData;
 import org.springframework.stereotype.Service;
 
 @Service

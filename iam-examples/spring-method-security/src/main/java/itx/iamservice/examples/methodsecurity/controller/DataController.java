@@ -1,7 +1,7 @@
-package itx.iamservice.springmicroservice.controller;
+package itx.iamservice.examples.methodsecurity.controller;
 
-import itx.iamservice.springmicroservice.dto.ServerData;
-import itx.iamservice.springmicroservice.services.DataService;
+import itx.iamservice.examples.methodsecurity.dto.ServerData;
+import itx.iamservice.examples.methodsecurity.services.DataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

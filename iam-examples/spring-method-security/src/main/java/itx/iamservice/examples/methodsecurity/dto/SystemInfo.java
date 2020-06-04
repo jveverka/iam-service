@@ -1,4 +1,4 @@
-package itx.iamservice.springmicroservice.dto;
+package itx.iamservice.examples.methodsecurity.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

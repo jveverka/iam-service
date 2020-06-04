@@ -1,4 +1,4 @@
-package itx.iamservice.iamresourceserver.dto;
+package itx.iamservice.examples.resourceserver.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

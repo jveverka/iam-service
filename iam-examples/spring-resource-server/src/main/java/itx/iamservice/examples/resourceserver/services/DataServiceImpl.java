@@ -1,6 +1,6 @@
-package itx.iamservice.iamresourceserver.services;
+package itx.iamservice.examples.resourceserver.services;
 
-import itx.iamservice.iamresourceserver.dto.ServerData;
+import itx.iamservice.examples.resourceserver.dto.ServerData;
 import org.springframework.stereotype.Service;
 
 @Service

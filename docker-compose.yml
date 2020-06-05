@@ -5,13 +5,20 @@ services:
     build:
       context: iam-service
       dockerfile: Dockerfile
+    network_mode: "host"
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/services/health/status"]
+      interval: 2s
+      timeout: 1s
+      retries: 5
   spring-method-security:
     image: spring-method-security:1.0.0-SNAPSHOT
     build:
       context: iam-examples/spring-method-security
       dockerfile: Dockerfile
+    network_mode: "host"
     ports:
       - "8082:8082"
     depends_on:
@@ -21,6 +28,7 @@ services:
     build:
       context: iam-examples/spring-resource-server
       dockerfile: Dockerfile
+    network_mode: "host"
     ports:
       - "8081:8081"
     depends_on:

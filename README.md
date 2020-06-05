@@ -31,7 +31,7 @@ System requirements:
 * [Gradle 6.3](https://gradle.org/install/) or later.
 ```
 gradle clean build test
-docker-compose up --build
+docker-compose up --build -d
 docker-compose down -v --rmi all --remove-orphans
 ```
 ## REST endpoints 

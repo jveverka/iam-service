@@ -20,7 +20,7 @@ docker build . -t spring-resource-server:1.0.0-SNAPSHOT
 docker image list
 docker save --output="build/spring-resource-server:1.0.0-SNAPSHOT.tar" spring-resource-server:1.0.0-SNAPSHOT
 docker image rm -f <imageid>
-docker run -p 8881:8081 spring-resource-server:1.0.0-SNAPSHOT
+docker run -p 8081:8081 spring-resource-server:1.0.0-SNAPSHOT
 ```
 
 ### Reference Documentation

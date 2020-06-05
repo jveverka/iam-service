@@ -1,5 +1,6 @@
 server:
   port: 8081
+
 spring:
   security:
     oauth2:
@@ -7,7 +8,8 @@ spring:
         jwt:
           issuer-uri: iam-admins
           jwk-set-uri: http://localhost:8080/services/authentication/iam-admins/iam-admins/.well-known/jwks.json
-          jws-algorithm: RS256
+          jws-algorithm: RS2561
+
 logging:
   level:
     root: TRACE

@@ -9,10 +9,18 @@ JWT tokens issues by __iam-service__ are used to get access to resources hosted 
 2. __iam-service__ issues token to client application using one of supported OAuth2 flows.
 3. __client application__ uses issued JWT token to access resources hosted on __spring-resource-server__. 
 
-# Build and Run
+## Build and Run
 ```
 gradle clean build
-java -jar build/libs/spring-resource-server-0.0.1-SNAPSHOT.jar
+java -jar build/libs/spring-resource-server-1.0.0-SNAPSHOT.jar
+```
+### Build Docker image 
+```
+docker build . -t spring-resource-server:1.0.0-SNAPSHOT
+docker image list
+docker save --output="build/spring-resource-server:1.0.0-SNAPSHOT.tar" spring-resource-server:1.0.0-SNAPSHOT
+docker image rm -f <imageid>
+docker run -p 8881:8081 spring-resource-server:1.0.0-SNAPSHOT
 ```
 
 ### Reference Documentation

@@ -1,5 +1,5 @@
 server:
-  port:  8081
+  port:  8082
 
 iam-client:
   organization-id: iam-admins
@@ -7,3 +7,7 @@ iam-client:
   base-url: http://localhost:8080/services/authentication
   polling-interval: 30
   time-unit: SECONDS
+
+logging:
+  level:
+    root: INFO

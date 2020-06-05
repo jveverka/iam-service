@@ -2,6 +2,7 @@ server:
   port: 8080
 #  servlet:
 #    context-path: /auth
+
 iam-service:
   system-config:
     id: iam-service-001

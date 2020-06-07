@@ -11,7 +11,7 @@ Please check [use-cases and guidelines](iam-examples/README.md) for more details
 This project is __WIP__, stay tuned !
 
 ## Features
-* [x] Self-Contained IAM management.
+* [x] Self-Contained IAM management - users, clients, permission and roles.
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
 * [x] Small build size - __iam-service__ (single jar: ~35Mb, docker: ~182Mb)
 * [x] Seamless integrations with spring framework.

@@ -14,6 +14,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static itx.iamservice.server.tests.TestUtils.checkOrganization;
+import static itx.iamservice.server.tests.TestUtils.checkOrganizationCount;
+import static itx.iamservice.server.tests.TestUtils.checkRemovedOrganization;
+import static itx.iamservice.server.tests.TestUtils.createNewOrganization;
+import static itx.iamservice.server.tests.TestUtils.removeOrganization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -21,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OrganizationManagementTests {
 
-    private static OrganizationId organizationId;
+    private static OrganizationId organizationId01;
+    private static OrganizationId organizationId02;
 
     @LocalServerPort
     private int port;
@@ -31,45 +37,36 @@ public class OrganizationManagementTests {
 
     @Test
     @Order(1)
-    public void createOrganizationTest() {
-        CreateOrganizationRequest createOrganizationTest = new CreateOrganizationRequest("organization-001");
-        ResponseEntity<OrganizationId> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/management/organizations",
-                createOrganizationTest, OrganizationId.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        organizationId = response.getBody();
-        assertNotNull(organizationId);
-        assertNotNull(organizationId.getId());
+    public void createFirstOrganizationTest() {
+        organizationId01 = createNewOrganization(restTemplate, port,"organization-001");
+        checkOrganizationCount(restTemplate, port,2);
+        checkOrganization(restTemplate, port, organizationId01);
     }
 
     @Test
     @Order(2)
-    public void getOrganizationTest() {
-        ResponseEntity<OrganizationInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations/" + organizationId.getId(), OrganizationInfo.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        OrganizationInfo organizationInfo = response.getBody();
-        assertNotNull(organizationInfo);
-        assertEquals(organizationId, organizationInfo.getOrganizationId());
-        assertNotNull(organizationInfo.getName());
-        assertNotNull(organizationInfo.getOrganizationId());
-        assertNotNull(organizationInfo.getProjects());
-        assertNotNull(organizationInfo.getX509Certificate());
+    public void createSecondOrganizationTest() {
+        organizationId02 = createNewOrganization(restTemplate, port,"organization-002");
+        checkOrganizationCount(restTemplate, port, 3);
+        checkOrganization(restTemplate, port, organizationId02);
     }
 
     @Test
     @Order(3)
-    public void removeOrganizationTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/organizations/" + organizationId.getId());
+    public void removeFirstOrganizationTest() {
+        removeOrganization(restTemplate, port, organizationId01);
+        checkOrganizationCount(restTemplate, port, 2);
+        checkOrganization(restTemplate, port, organizationId02);
+        checkRemovedOrganization(restTemplate, port, organizationId01);
     }
 
     @Test
     @Order(4)
-    public void checkRemovedOrganizationTest() {
-        ResponseEntity<OrganizationInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations/" + organizationId.getId(), OrganizationInfo.class);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    public void removeSecondOrganizationTest() {
+        removeOrganization(restTemplate, port,  organizationId02);
+        checkOrganizationCount(restTemplate, port,1);
+        checkRemovedOrganization(restTemplate, port, organizationId01);
+        checkRemovedOrganization(restTemplate, port, organizationId02);
     }
 
 }

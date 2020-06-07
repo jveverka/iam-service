@@ -14,7 +14,7 @@ This project is __WIP__, stay tuned !
 * [x] Self-Contained IAM management - clients, users, credentials, permission and roles.
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
 * [x] Small build size - __iam-service__ (single jar: ~35Mb, docker: ~182Mb)
-* [x] Seamless integrations with spring framework.
+* [x] Seamless integrations with [spring framework](https://spring.io/).
 
 ## Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).

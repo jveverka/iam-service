@@ -1,7 +1,7 @@
 # Spring Resource Server Demo 
 This __iam-service__ integration demo utilizes [Spring Security Framework](https://docs.spring.io/spring-security/site/docs/5.3.3.BUILD-SNAPSHOT/reference/html5/#preface), 
 particularly [OAuth2 resource server](https://docs.spring.io/spring-security/site/docs/5.3.3.BUILD-SNAPSHOT/reference/html5/#oauth2resourceserver). 
-JWT tokens issues by __iam-service__ are used to get access to resources hosted by __spring-resource-server__. 
+JWT tokens issues by __iam-service__ are used to get access to resources hosted by __spring-resource-server__ service. 
 
 ![demo-architecture](docs/spring-resource-server.svg)
 

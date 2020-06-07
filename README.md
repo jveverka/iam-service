@@ -43,7 +43,7 @@ docker-compose down -v --rmi all --remove-orphans
 
 ### Technical documentation
 * [Internal Data Model](docs/IAM-data-model.md) - internal data model description and glossary.
-* [JWT mapping](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
+* [JWT mappings](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
 
 #### Related RFCs and Specifications
 * [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0

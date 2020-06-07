@@ -10,6 +10,12 @@ Please check [use-cases and guidelines](iam-examples/README.md) for more details
 
 This project is __WIP__, stay tuned !
 
+## Features
+* [x] Self-Contained IAM management.
+* [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
+* [x] Small build size - __iam-service__ (single jar: ~35Mb, docker: ~182Mb)
+* [x] Seamless integrations with spring framework.
+
 ## Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).
 * [x] __Password Credentials__ - [flow details](docs/oauth2/133_password-credentials-flow.md).

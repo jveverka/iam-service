@@ -22,8 +22,9 @@ This project is __WIP__, stay tuned !
 ### Components
 * [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone authorization and authentication server). 
 * [__iam-core__](iam-core) - core implementation of IAM business logic (no framework dependencies).
-* [__iam-persistence__](iam-persistence) - persistence libraries for data model.
+* [__iam-persistence__](iam-persistence) - libraries for data model persistence.
 * [__iam-examples__](iam-examples) - examples how to use and integrate with IAM-service.
+* [__iam-common__](iam-common) - libraries for backend services.
 
 ### Build and Run
 Please  check [system requirements](docs/system-requirements.md) before. 

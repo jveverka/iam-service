@@ -1,6 +1,6 @@
 package itx.iamservice.server.tests;
 
-import itx.iamservice.server.services.dto.HealthCheckResponse;
+import itx.iamservice.core.dto.HealthCheckResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

@@ -37,6 +37,7 @@ Please  check [system requirements](docs/system-requirements.md) before.
 ```
 gradle clean build test
 docker-compose up --build -d
+gradle :spring-method-security-IT:clean :spring-method-security-IT:test -Dtest.profile=integration
 docker-compose down -v --rmi all --remove-orphans
 ```
 ## REST endpoints 

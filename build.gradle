@@ -55,3 +55,12 @@ project(':spring-method-security') {
         implementation project(':iam-client-spring')
     }
 }
+
+project(':spring-method-security-IT') {
+    dependencies {
+        testImplementation project(':iam-model')
+        testImplementation project(':iam-client')
+        testImplementation project(':iam-client-spring')
+        testImplementation project(':spring-method-security')
+    }
+}

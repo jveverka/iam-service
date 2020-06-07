@@ -2,7 +2,7 @@ package itx.iamservice.server.services.impl;
 
 import itx.iamservice.server.config.SystemConfiguration;
 import itx.iamservice.server.services.HealthCheckService;
-import itx.iamservice.server.services.dto.HealthCheckResponse;
+import itx.iamservice.core.dto.HealthCheckResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

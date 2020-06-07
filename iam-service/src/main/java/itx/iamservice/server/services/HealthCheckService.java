@@ -1,6 +1,6 @@
 package itx.iamservice.server.services;
 
-import itx.iamservice.server.services.dto.HealthCheckResponse;
+import itx.iamservice.core.dto.HealthCheckResponse;
 
 public interface HealthCheckService {
 

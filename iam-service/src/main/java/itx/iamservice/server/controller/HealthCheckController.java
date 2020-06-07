@@ -1,7 +1,7 @@
 package itx.iamservice.server.controller;
 
 import itx.iamservice.server.services.HealthCheckService;
-import itx.iamservice.server.services.dto.HealthCheckResponse;
+import itx.iamservice.core.dto.HealthCheckResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

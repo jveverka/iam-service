@@ -26,9 +26,7 @@ This project is __WIP__, stay tuned !
 * [__iam-examples__](iam-examples) - examples how to use and integrate with IAM-service.
 
 ### Build and Run
-System requirements: 
-* [Java 11](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) or higher, 
-* [Gradle 6.3](https://gradle.org/install/) or later.
+Please  check [system requirements](docs/system-requirements.md) before. 
 ```
 gradle clean build test
 docker-compose up --build -d

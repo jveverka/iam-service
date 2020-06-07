@@ -20,6 +20,7 @@ import java.security.Security;
 import java.util.Collection;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,7 +43,7 @@ public class OrganizationManagerServiceTests {
     @Order(1)
     public void checkEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 0);
+        assertEquals(0, all.size());
     }
 
     @Test
@@ -51,7 +52,7 @@ public class OrganizationManagerServiceTests {
         boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 1);
+        assertEquals(1, all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
         assertTrue(organization.isPresent());
         organization = organizationManagerService.get(oid002);
@@ -64,7 +65,7 @@ public class OrganizationManagerServiceTests {
         boolean result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 2);
+        assertEquals(2, all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
         assertTrue(organization.isPresent());
         organization = organizationManagerService.get(oid002);
@@ -79,7 +80,7 @@ public class OrganizationManagerServiceTests {
         result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
         assertFalse(result);
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 2);
+        assertEquals(2, all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
         assertTrue(organization.isPresent());
         organization = organizationManagerService.get(oid002);
@@ -92,7 +93,7 @@ public class OrganizationManagerServiceTests {
         boolean removed = organizationManagerService.remove(oid001);
         assertTrue(removed);
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 1);
+        assertEquals(1,all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
         assertTrue(organization.isEmpty());
         organization = organizationManagerService.get(oid002);
@@ -105,7 +106,7 @@ public class OrganizationManagerServiceTests {
         boolean removed = organizationManagerService.remove(oid002);
         assertTrue(removed);
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 0);
+        assertEquals(0,all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
         assertTrue(organization.isEmpty());
         organization = organizationManagerService.get(oid002);
@@ -125,7 +126,7 @@ public class OrganizationManagerServiceTests {
     @Order(7)
     public void checkFinalEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
-        assertTrue(all.size() == 0);
+        assertEquals(0,all.size());
     }
 
 }

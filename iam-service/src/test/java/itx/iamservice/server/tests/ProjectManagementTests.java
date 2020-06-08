@@ -14,6 +14,7 @@ import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 import itx.iamservice.core.services.dto.ProjectInfo;
+import itx.iamservice.core.services.dto.TokenResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static itx.iamservice.server.tests.TestUtils.createAuthorization;
+import static itx.iamservice.server.tests.TestUtils.createNewOrganization;
+import static itx.iamservice.server.tests.TestUtils.getTokenResponseForUserNameAndPassword;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -32,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ProjectManagementTests {
 
+    private static String jwt;
     private static OrganizationId organizationId;
     private static ProjectId projectId;
     private static RoleId roleId;
@@ -47,21 +54,20 @@ public class ProjectManagementTests {
     @Test
     @Order(1)
     public void initTest() {
-        CreateOrganizationRequest createOrganizationTest = new CreateOrganizationRequest("organization-002");
-        ResponseEntity<OrganizationId> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/management/organizations",
-                createOrganizationTest, OrganizationId.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        organizationId = response.getBody();
+        jwt = getTokenResponseForUserNameAndPassword(restTemplate, port).getAccessToken();
+        organizationId = createNewOrganization(jwt, restTemplate, port,"organization-002");
     }
 
     @Test
     @Order(2)
     public void createProjectTest() {
         CreateProjectRequest createProjectRequest = new CreateProjectRequest("project-002");
-        ResponseEntity<ProjectId> response = restTemplate.postForEntity(
+        HttpEntity<CreateProjectRequest> requestEntity = new HttpEntity<>(createProjectRequest, createAuthorization(jwt));
+        ResponseEntity<ProjectId> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects",
-                createProjectRequest, ProjectId.class);
+                HttpMethod.POST,
+                requestEntity,
+                ProjectId.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         projectId = response.getBody();
         assertNotNull(projectId);
@@ -71,8 +77,12 @@ public class ProjectManagementTests {
     @Test
     @Order(3)
     public void checkCreatedProjectTest() {
-        ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<ProjectInfo> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(),
+                HttpMethod.GET,
+                requestEntity,
+                ProjectInfo.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ProjectInfo projectInfo = response.getBody();
         assertNotNull(projectInfo);
@@ -87,9 +97,12 @@ public class ProjectManagementTests {
     @Order(4)
     public void createRoleTest() {
         CreateRoleRequest createRoleRequest = new CreateRoleRequest("role-001");
-        ResponseEntity<RoleId> response = restTemplate.postForEntity(
+        HttpEntity<CreateRoleRequest> requestEntity = new HttpEntity<>(createRoleRequest, createAuthorization(jwt));
+        ResponseEntity<RoleId> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
-                createRoleRequest, RoleId.class);
+                HttpMethod.POST,
+                requestEntity,
+                RoleId.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         roleId = response.getBody();
         assertNotNull(roleId);
@@ -98,8 +111,11 @@ public class ProjectManagementTests {
     @Test
     @Order(5)
     public void getRolesTest() {
-        ResponseEntity<Role[]> response = restTemplate.getForEntity(
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Role[]> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
+                HttpMethod.GET,
+                requestEntity,
                 Role[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Role[] roles = response.getBody();
@@ -116,9 +132,12 @@ public class ProjectManagementTests {
     @Order(6)
     public void createPermissionTest() {
         CreatePermissionRequest createPermissionRequest = new CreatePermissionRequest("service", "resource", "action");
-        ResponseEntity<PermissionId> response = restTemplate.postForEntity(
+        HttpEntity<CreatePermissionRequest> requestEntity = new HttpEntity<>(createPermissionRequest, createAuthorization(jwt));
+        ResponseEntity<PermissionId> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
-                createPermissionRequest, PermissionId.class);
+                HttpMethod.POST,
+                requestEntity,
+                PermissionId.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         permissionId = response.getBody();
         assertNotNull(permissionId);
@@ -128,8 +147,11 @@ public class ProjectManagementTests {
     @Test
     @Order(7)
     public void getPermissionsTest() {
-        ResponseEntity<Permission[]> response = restTemplate.getForEntity(
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Permission[]> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
+                HttpMethod.GET,
+                requestEntity,
                 Permission[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Permission[] permissions = response.getBody();
@@ -141,8 +163,12 @@ public class ProjectManagementTests {
     @Test
     @Order(9)
     public void addPermissionToRoleTest() {
-        restTemplate.put(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(), null);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
+                HttpMethod.PUT,
+                requestEntity,
+                Void.class);
     }
 
     /**
@@ -153,9 +179,12 @@ public class ProjectManagementTests {
     @Order(10)
     public void createClientTest() {
         CreateClientRequest createClientRequest = new CreateClientRequest("client-name", 3600L, 7200L);
-        ResponseEntity<ClientId> response = restTemplate.postForEntity(
+        HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(createClientRequest, createAuthorization(jwt));
+        ResponseEntity<ClientId> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
-                createClientRequest, ClientId.class);
+                HttpMethod.POST,
+                requestEntity,
+                ClientId.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         clientId = response.getBody();
         assertNotNull(clientId);
@@ -165,8 +194,11 @@ public class ProjectManagementTests {
     @Test
     @Order(11)
     public void getClientTest() {
-        ResponseEntity<Client> response = restTemplate.getForEntity(
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Client> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                HttpMethod.GET,
+                requestEntity,
                 Client.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Client clients = response.getBody();
@@ -177,8 +209,11 @@ public class ProjectManagementTests {
     @Test
     @Order(12)
     public void getClientsTest() {
-        ResponseEntity<Client[]> response = restTemplate.getForEntity(
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Client[]> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                HttpMethod.GET,
+                requestEntity,
                 Client[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Client[] clients = response.getBody();
@@ -190,22 +225,34 @@ public class ProjectManagementTests {
     @Test
     @Order(13)
     public void addRoleToClientTest() {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         restTemplate.put(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(), null);
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
+                requestEntity);
     }
 
     @Test
     @Order(14)
     public void removeRoleFromClientTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId());
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
     @Test
     @Order(15)
     public void removeClientTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId());
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
     /**
@@ -215,47 +262,75 @@ public class ProjectManagementTests {
     @Test
     @Order(16)
     public void removePermissionFromRole() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId());
-
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
 
     @Test
     @Order(17)
     public void deletePermissionsTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId());
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
     @Test
     @Order(18)
     public void deleteRoleTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId());
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
 
     @Test
     @Order(19)
     public void removeProjectTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId());
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
     @Test
     @Order(20)
     public void checkRemovedProjectTest() {
-        ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<ProjectInfo> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(),
+                HttpMethod.GET,
+                requestEntity,
+                ProjectInfo.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     @Order(21)
     public void shutdownTest() {
-        restTemplate.delete(
-                "http://localhost:" + port + "/services/management/organizations/" + organizationId.getId());
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/organizations/" + organizationId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
 }

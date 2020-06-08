@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
+import static itx.iamservice.server.tests.TestUtils.getTokenResponseForUserNameAndPassword;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,19 +39,7 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(1)
     public void getTokens() {
-        Map<String, String> urlVariables = new HashMap<>();
-        urlVariables.put("grant_type", "password");
-        urlVariables.put("username", ModelUtils.IAM_ADMIN_USER.getId());
-        urlVariables.put("password", "secret");
-        urlVariables.put("scope", "");
-        urlVariables.put("client_id", "admin-client");
-        urlVariables.put("client_secret", "top-secret");
-        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token" +
-                        "?grant_type={grant_type}&username={username}&scope={scope}&password={password}&client_id={client_id}&client_secret={client_secret}",
-                null, TokenResponse.class, urlVariables);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        tokenResponse = response.getBody();
+        tokenResponse = getTokenResponseForUserNameAndPassword(restTemplate, port);
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

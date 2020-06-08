@@ -28,6 +28,8 @@ project(':iam-service') {
     dependencies {
         implementation project(':iam-core')
         implementation project(':iam-model')
+        implementation project(':iam-client')
+        implementation project(':iam-client-spring')
         implementation project(':iam-persistence-file-system')
         implementation project(':iam-persistence-in-memory')
     }

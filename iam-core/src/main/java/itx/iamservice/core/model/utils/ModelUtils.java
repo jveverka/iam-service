@@ -59,9 +59,9 @@ public final class ModelUtils {
     private ModelUtils() {
     }
 
-    public static ModelCache createEmptyModelCache(ModelId id, String modelName) {
+    public static ModelCache createEmptyModelCache(PersistenceService persistenceService, ModelId id, String modelName) {
         Model model = new ModelImpl(id, modelName);
-        return new ModelCacheImpl(model, new LoggingPersistenceServiceImpl());
+        return new ModelCacheImpl(model, persistenceService);
     }
     public static ModelCache createDefaultModelCache(String iamAdminPassword) throws PKIException {
         return createDefaultModelCache(iamAdminPassword, new LoggingPersistenceServiceImpl());

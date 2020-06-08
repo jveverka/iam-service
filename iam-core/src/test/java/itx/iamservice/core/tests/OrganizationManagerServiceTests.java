@@ -9,6 +9,7 @@ import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
+import itx.iamservice.core.tests.persistence.TestingPersistenceService;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class OrganizationManagerServiceTests {
 
     private static ModelCache modelCache;
+    private static TestingPersistenceService testingPersistenceService;
     private static OrganizationManagerService organizationManagerService;
     private static OrganizationId oid001 = OrganizationId.from("organization-001");
     private static OrganizationId oid002 = OrganizationId.from("organization-002");
@@ -35,7 +37,8 @@ public class OrganizationManagerServiceTests {
     @BeforeAll
     private static void init() {
         Security.addProvider(new BouncyCastleProvider());
-        modelCache = ModelUtils.createEmptyModelCache(ModelId.from("model-01"), "test-model");
+        testingPersistenceService = new TestingPersistenceService();
+        modelCache = ModelUtils.createEmptyModelCache(testingPersistenceService, ModelId.from("model-01"), "test-model");
         organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
     }
 
@@ -44,6 +47,7 @@ public class OrganizationManagerServiceTests {
     public void checkEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(0, all.size());
+        assertEquals(1, testingPersistenceService.getModelsCount());
     }
 
     @Test
@@ -57,6 +61,7 @@ public class OrganizationManagerServiceTests {
         assertTrue(organization.isPresent());
         organization = organizationManagerService.get(oid002);
         assertTrue(organization.isEmpty());
+        assertEquals(1, testingPersistenceService.getNodesCount());
     }
 
     @Test
@@ -70,6 +75,7 @@ public class OrganizationManagerServiceTests {
         assertTrue(organization.isPresent());
         organization = organizationManagerService.get(oid002);
         assertTrue(organization.isPresent());
+        assertEquals(2, testingPersistenceService.getNodesCount());
     }
 
     @Test
@@ -85,6 +91,7 @@ public class OrganizationManagerServiceTests {
         assertTrue(organization.isPresent());
         organization = organizationManagerService.get(oid002);
         assertTrue(organization.isPresent());
+        assertEquals(2, testingPersistenceService.getNodesCount());
     }
 
     @Test
@@ -98,6 +105,7 @@ public class OrganizationManagerServiceTests {
         assertTrue(organization.isEmpty());
         organization = organizationManagerService.get(oid002);
         assertTrue(organization.isPresent());
+        assertEquals(1, testingPersistenceService.getNodesCount());
     }
 
     @Test
@@ -111,6 +119,7 @@ public class OrganizationManagerServiceTests {
         assertTrue(organization.isEmpty());
         organization = organizationManagerService.get(oid002);
         assertTrue(organization.isEmpty());
+        assertEquals(0, testingPersistenceService.getNodesCount());
     }
 
     @Test
@@ -127,6 +136,7 @@ public class OrganizationManagerServiceTests {
     public void checkFinalEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(0,all.size());
+        assertEquals(0, testingPersistenceService.getNodesCount());
     }
 
 }

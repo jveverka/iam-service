@@ -12,6 +12,8 @@ This project is __WIP__, stay tuned !
 
 ## Features
 * [x] Self-Contained IAM management - clients, users, credentials, permission and roles.
+* [x] JWTs issued for authenticated clients and user-agents.
+* [x] Back Channels for JWT verification - backend libraries for resource servers. 
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
 * [x] Small build size - __iam-service__ (single jar: ~35Mb, docker: ~182Mb)
 * [x] Seamless integrations with [spring framework](https://spring.io/).

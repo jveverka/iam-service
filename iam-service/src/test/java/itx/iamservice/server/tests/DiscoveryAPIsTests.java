@@ -15,6 +15,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfo;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfos;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getProjectInfo;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,10 +36,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(1)
     public void getOrganizationsInfoTest() {
-        ResponseEntity<OrganizationInfo[]> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations", OrganizationInfo[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        OrganizationInfo[] organizationInfo = response.getBody();
+        OrganizationInfo[] organizationInfo = getOrganizationInfos(restTemplate, port);
         assertNotNull(organizationInfo);
         assertTrue(organizationInfo.length > 0);
         assertNotNull(organizationInfo[0]);
@@ -48,10 +49,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(2)
     public void getOrganizationInfoTest() {
-        ResponseEntity<OrganizationInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations/" + ModelUtils.IAM_ADMINS_ORG.getId(), OrganizationInfo.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        OrganizationInfo organizationInfo = response.getBody();
+        OrganizationInfo organizationInfo = getOrganizationInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG);
         assertNotNull(organizationInfo);
         assertNotNull(organizationInfo.getName());
         assertNotNull(organizationInfo.getOrganizationId());
@@ -62,12 +60,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(3)
     public void getProjectInfoTest() {
-        String organizationId = ModelUtils.IAM_ADMINS_ORG.getId();
-        String projectId = ModelUtils.IAM_ADMINS_PROJECT.getId();
-        ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/" + organizationId + "/" + projectId, ProjectInfo.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ProjectInfo projectInfo = response.getBody();
+        ProjectInfo projectInfo = getProjectInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
         assertNotNull(projectInfo);
         assertNotNull(projectInfo.getId());
         assertNotNull(projectInfo.getName());
@@ -81,13 +74,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(4)
     public void getUserInfoTest() {
-        String userId = ModelUtils.IAM_ADMIN_USER.getId();
-        String organizationId = ModelUtils.IAM_ADMINS_ORG.getId();
-        String projectId = ModelUtils.IAM_ADMINS_PROJECT.getId();
-        ResponseEntity<UserInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/" + organizationId + "/" + projectId + "/" + userId, UserInfo.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        UserInfo userInfo = response.getBody();
+        UserInfo userInfo = getUserInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
         assertNotNull(userInfo);
         assertNotNull(userInfo.getId());
         assertNotNull(userInfo.getName());

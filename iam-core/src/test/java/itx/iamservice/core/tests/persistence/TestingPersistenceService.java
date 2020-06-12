@@ -36,11 +36,13 @@ public class TestingPersistenceService implements PersistenceService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
         nodes.put((ModelKey<Object>)modelKey, newNode);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
         nodes.put((ModelKey<Object>)modelKey, newNode);
     }

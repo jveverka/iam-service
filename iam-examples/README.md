@@ -1,5 +1,5 @@
 # Use-Cases, Guidelines and Examples
-Projects listed below are show-cases for __iam-service__ various deployments, use-cases and integrations in micro-service environment.
+Listed below are show-cases for various deployments of __iam-service__, use-cases and integrations in micro-service environment.
 
 ## Guidelines
 * [ ] Installation manuals

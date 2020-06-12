@@ -3,6 +3,7 @@ package itx.iamservice.core.model.builders;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.RoleImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public final class RoleBuilder {
         if (id == null) {
             id = RoleId.from(UUID.randomUUID().toString());
         }
-        return new Role(id, name, permissions);
+        return new RoleImpl(id, name, permissions);
     }
 
     public static RoleBuilder builder(String name) {

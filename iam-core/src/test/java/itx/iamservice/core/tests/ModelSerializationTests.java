@@ -23,6 +23,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.RoleImpl;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.UserImpl;
@@ -110,7 +111,7 @@ public class ModelSerializationTests {
 
     @Test
     public void serializeAndDeserializeRole() throws JsonProcessingException {
-        Role role = new Role(RoleId.from("role-001"), "role1", Collections.emptyList());
+        Role role = new RoleImpl(RoleId.from("role-001"), "role1", Collections.emptyList());
         String serialized = mapper.writeValueAsString(role);
         Role roleDeserialized = mapper.readValue(serialized, Role.class);
         assertNotNull(roleDeserialized);

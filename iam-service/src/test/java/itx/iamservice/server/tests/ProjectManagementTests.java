@@ -15,6 +15,7 @@ import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
+import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetUserNamePasswordCredentialsRequest;
 import itx.iamservice.core.services.dto.TokenResponse;
@@ -43,15 +44,21 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.create
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createRoleOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createUserOnProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.deleteRoleFromProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientsOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfoResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getPermissionsForProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getProjectInfoResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getRolesOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokensForClient;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeClientFromProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removePermissionFromProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removePermissionFromRoleOnProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeProjectFromOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeRoleFromClientOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeRoleFromUserOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeUserFromProject;
@@ -266,73 +273,48 @@ public class ProjectManagementTests {
     @Test
     @Order(24)
     public void removePermissionFromRole() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
-                HttpMethod.DELETE,
-                requestEntity,
-                Void.class
-        );
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        removePermissionFromRoleOnProject(jwt, restTemplate, port, organizationId, projectId, roleId, permissionId);
     }
 
 
     @Test
     @Order(25)
     public void deletePermissionsTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId(),
-                HttpMethod.DELETE,
-                requestEntity,
-                Void.class
-        );
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        removePermissionFromProject(jwt, restTemplate, port, organizationId, projectId, permissionId);
     }
 
     @Test
     @Order(26)
     public void deleteRoleTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId(),
-                HttpMethod.DELETE,
-                requestEntity,
-                Void.class
-        );
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        deleteRoleFromProject(jwt, restTemplate, port, organizationId, projectId, roleId);
     }
 
 
     @Test
     @Order(27)
     public void removeProjectTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId(),
-                HttpMethod.DELETE,
-                requestEntity,
-                Void.class
-        );
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        removeProjectFromOrganization(jwt, restTemplate, port, organizationId, projectId);
     }
 
     @Test
     @Order(28)
     public void checkRemovedProjectTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<ProjectInfo> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(),
-                HttpMethod.GET,
-                requestEntity,
-                ProjectInfo.class);
+        ResponseEntity<ProjectInfo> response = getProjectInfoResponse(restTemplate, port, organizationId, projectId);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     @Order(29)
-    public void shutdownTest() {
+    public void removeOrganizationTest() {
         removeOrganization(jwt, restTemplate, port, organizationId);
+    }
+
+    @Test
+    @Order(30)
+    public void checkRemovedOrganization() {
+        ResponseEntity<OrganizationInfo> response = getOrganizationInfoResponse(restTemplate, port, organizationId);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
 }

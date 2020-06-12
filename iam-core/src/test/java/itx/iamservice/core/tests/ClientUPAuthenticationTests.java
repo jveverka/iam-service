@@ -50,6 +50,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClientUPAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
+    private static final String adminSecret = "top-secret";
+
     private static final Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
 
     private static ModelCache modelCache;
@@ -65,7 +67,7 @@ public class ClientUPAuthenticationTests {
     private static void init() throws PKIException {
         Security.addProvider(new BouncyCastleProvider());
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
-        modelCache = ModelUtils.createDefaultModelCache(adminPassword);
+        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret);
         tokenCache = new TokenCacheImpl(modelCache);
         clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
@@ -76,7 +78,7 @@ public class ClientUPAuthenticationTests {
     @Order(1)
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
-        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, clientCredentials);
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
@@ -110,7 +112,7 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(3)
     public void refreshTokenTest() {
-        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, refreshToken, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         assertFalse(accessToken.equals(tokensOptional.get().getAccessToken()));
@@ -144,7 +146,7 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
-        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, accessToken, scope, idTokenRequest);
         assertTrue(tokensOptional.isEmpty());
     }

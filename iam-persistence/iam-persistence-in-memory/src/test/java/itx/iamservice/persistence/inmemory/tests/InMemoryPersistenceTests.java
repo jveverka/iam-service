@@ -31,7 +31,7 @@ public class InMemoryPersistenceTests {
     @Test
     public void testPersistenceSerializationAndLoading() throws PKIException, IOException {
         InMemoryPersistenceServiceImpl persistenceService = new InMemoryPersistenceServiceImpl();
-        ModelUtils.createDefaultModelCache("secret", persistenceService);
+        ModelUtils.createDefaultModelCache("secret", "top-secret", persistenceService);
         String serializedModel = persistenceService.flushToString();
         assertNotNull(serializedModel);
 

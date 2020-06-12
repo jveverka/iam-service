@@ -51,7 +51,7 @@ public class TokenCacheTests {
     private static void init() throws NoSuchAlgorithmException, NoSuchProviderException, PKIException {
         Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
-        modelCache = ModelUtils.createDefaultModelCache("top-secret");
+        modelCache = ModelUtils.createDefaultModelCache("top-secret", "top-secret");
         tokenCache = new TokenCacheImpl(modelCache);
         keyId = KeyId.from("key-001");
         Map<String, Set<String>> roleClaims = new HashMap<>();

@@ -159,6 +159,24 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    public static TokenResponse getTokensForClient(TestRestTemplate restTemplate, int port) {
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        return getTokensForClient(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials);
+    }
+
+    public static TokenResponse getTokensForClient(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientCredentials credentials) {
+        Map<String, String> urlVariables = new HashMap<>();
+        urlVariables.put("grant_type", "client_credentials");
+        urlVariables.put("scope", "");
+        urlVariables.put("client_id", credentials.getId().getId());
+        urlVariables.put("client_secret", credentials.getSecret());
+        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/services/authentication/" + organizationId.getId() + "/"  +  projectId.getId() + "/token?grant_type={grant_type}&scope={scope}&client_id={client_id}&client_secret={client_secret}",
+                null, TokenResponse.class, urlVariables);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
+    }
+
     public static ProjectId createProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProjectRequest createProjectRequest) {
         HttpEntity<CreateProjectRequest> requestEntity = new HttpEntity<>(createProjectRequest, createAuthorization(jwt));
         ResponseEntity<ProjectId> response = restTemplate.exchange(

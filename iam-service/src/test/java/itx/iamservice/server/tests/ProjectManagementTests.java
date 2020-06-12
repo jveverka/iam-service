@@ -48,6 +48,7 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getCli
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getPermissionsForProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getRolesOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokensForClient;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeClientFromProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
@@ -186,12 +187,19 @@ public class ProjectManagementTests {
         addRoleToClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
     }
 
+    @Test
+    @Order(14)
+    public void issueTokensForClient() {
+        TokenResponse tokenResponse = getTokensForClient(restTemplate, port, organizationId, projectId, clientCredentials);
+        assertNotNull(tokenResponse);
+    }
+
     /**
      * User related tests
      */
 
     @Test
-    @Order(14)
+    @Order(15)
     public void createUserTest() {
         CreateUserRequest createUserRequest = new CreateUserRequest("user-001", 3600L, 3600L);
         userId = createUserOnProject(jwt, restTemplate, port, organizationId, projectId, createUserRequest);
@@ -199,13 +207,13 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     public void addRoleToUserTest() {
         assignRoleToUserOnProject(jwt, restTemplate, port, organizationId, projectId, userId, roleId);
     }
 
     @Test
-    @Order(16)
+    @Order(17)
     public void checkUserTest() {
         UserInfo userInfo = getUserInfo(restTemplate, port, organizationId, projectId, userId);
         assertNotNull(userInfo);
@@ -213,28 +221,28 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(17)
+    @Order(18)
     public void setUsernamePasswordCredentials() {
-        SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest = new SetUserNamePasswordCredentialsRequest(userId.getId(), "secret");
+        SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest = new SetUserNamePasswordCredentialsRequest(userId.getId(), "secret-01");
         setUsernamePasswordCredentialsForProjectAndUser(jwt, restTemplate, port, organizationId, projectId, userId, setUserNamePasswordCredentialsRequest);
     }
 
     @Test
-    @Order(18)
-    public void issueAndValidateTokenForUser() {
-        TokenResponse tokenResponse = getTokenResponseForUserNameAndPassword(restTemplate, port, userId.getId(), "secret",
+    @Order(19)
+    public void issueTokensForUser() {
+        TokenResponse tokenResponse = getTokenResponseForUserNameAndPassword(restTemplate, port, userId.getId(), "secret-01",
                 clientCredentials.getId(), clientCredentials.getSecret(), organizationId, projectId);
         assertNotNull(tokenResponse);
     }
 
     @Test
-    @Order(19)
+    @Order(20)
     public void removeRoleFromUserTest() {
         removeRoleFromUserOnProject(jwt, restTemplate, port, organizationId, projectId, userId, roleId);
     }
 
     @Test
-    @Order(20)
+    @Order(21)
     public void deleteUserTest() {
         removeUserFromProject(jwt, restTemplate, port, organizationId, projectId, userId);
     }
@@ -244,19 +252,19 @@ public class ProjectManagementTests {
      */
 
     @Test
-    @Order(21)
+    @Order(22)
     public void removeRoleFromClientTest() {
         removeRoleFromClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
     }
 
     @Test
-    @Order(22)
+    @Order(23)
     public void removeClientTest() {
         removeClientFromProject(jwt, restTemplate, port, organizationId, projectId, clientId);
     }
 
     @Test
-    @Order(23)
+    @Order(24)
     public void removePermissionFromRole() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -270,7 +278,7 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(24)
+    @Order(25)
     public void deletePermissionsTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -283,7 +291,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(25)
+    @Order(26)
     public void deleteRoleTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -297,7 +305,7 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(26)
+    @Order(27)
     public void removeProjectTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -310,7 +318,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(27)
+    @Order(28)
     public void checkRemovedProjectTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<ProjectInfo> response = restTemplate.exchange(
@@ -322,7 +330,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(28)
+    @Order(29)
     public void shutdownTest() {
         removeOrganization(jwt, restTemplate, port, organizationId);
     }

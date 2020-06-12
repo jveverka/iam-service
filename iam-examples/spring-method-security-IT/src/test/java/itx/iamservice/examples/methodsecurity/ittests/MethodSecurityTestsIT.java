@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getHealthCheckResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -29,10 +30,7 @@ public class MethodSecurityTestsIT {
     @Test
     @Order(1)
     public void initialTestsIT() {
-        ResponseEntity<HealthCheckResponse> response = restTemplate.getForEntity(
-                "http://localhost:" + iamServerPort + "/services/health/status", HealthCheckResponse.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        HealthCheckResponse healthCheckResponse = response.getBody();
+        HealthCheckResponse healthCheckResponse = getHealthCheckResponse(restTemplate, iamServerPort);
         assertNotNull(healthCheckResponse);
     }
 

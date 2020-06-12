@@ -1,5 +1,6 @@
-package itx.iamservice.server.tests;
+package itx.iamservice.client.spring.httpclient;
 
+import itx.iamservice.core.dto.HealthCheckResponse;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientId;
@@ -34,6 +35,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public final class HttpClientTestUtils {
 
     private HttpClientTestUtils() {
+    }
+
+    public static HealthCheckResponse getHealthCheckResponse(TestRestTemplate restTemplate, int port) {
+        ResponseEntity<HealthCheckResponse> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/health/status", HealthCheckResponse.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
     }
 
     public static ResponseEntity<IntrospectResponse> getTokenVerificationResponse(TestRestTemplate restTemplate, int port, String token) {

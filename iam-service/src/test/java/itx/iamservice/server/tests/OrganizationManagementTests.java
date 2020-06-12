@@ -10,12 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 
-import static itx.iamservice.server.tests.HttpClientTestUtils.checkOrganization;
-import static itx.iamservice.server.tests.HttpClientTestUtils.checkOrganizationCount;
-import static itx.iamservice.server.tests.HttpClientTestUtils.checkRemovedOrganization;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createNewOrganization;
-import static itx.iamservice.server.tests.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
-import static itx.iamservice.server.tests.HttpClientTestUtils.removeOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkOrganizationCount;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkRemovedOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

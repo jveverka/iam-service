@@ -26,23 +26,23 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.server.tests.HttpClientTestUtils.addPermissionToRoleForProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.addRoleToClientOnTheProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.checkCreatedProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createAuthorization;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createClientOnTheProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createNewOrganization;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createPermissionOnProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.createRoleOnProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.getClientOnTheProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.getClientsOnTheProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.getPermissionsForProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.getRolesOnTheProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
-import static itx.iamservice.server.tests.HttpClientTestUtils.removeClientFromProject;
-import static itx.iamservice.server.tests.HttpClientTestUtils.removeOrganization;
-import static itx.iamservice.server.tests.HttpClientTestUtils.removeRoleFromClientOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addPermissionToRoleForProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addRoleToClientOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkCreatedProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createAuthorization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createClientOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createPermissionOnProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createRoleOnProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientsOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getPermissionsForProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getRolesOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeClientFromProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeRoleFromClientOnTheProject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -183,11 +183,57 @@ public class ProjectManagementTests {
     }
 
     /**
-     * Cleanup after testing, delete operations
+     * User related tests
      */
 
     @Test
     @Order(16)
+    public void createUserTest() {
+
+    }
+
+    @Test
+    @Order(17)
+    public void addRoleToUserTest() {
+
+    }
+
+    @Test
+    @Order(18)
+    public void checkUserTest() {
+
+    }
+
+    @Test
+    @Order(19)
+    public void setUsernamePasswordCredentials() {
+
+    }
+
+    @Test
+    @Order(20)
+    public void checkUsersTest() {
+
+    }
+
+    @Test
+    @Order(21)
+    public void removeRoleFromUserTest() {
+
+    }
+
+    @Test
+    @Order(22)
+    public void deleteUserTest() {
+
+    }
+
+    /**
+     * Cleanup after testing, delete operations
+     */
+
+    @Test
+    @Order(23)
     public void removePermissionFromRole() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -201,7 +247,7 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(17)
+    @Order(24)
     public void deletePermissionsTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -214,7 +260,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(18)
+    @Order(25)
     public void deleteRoleTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -228,7 +274,7 @@ public class ProjectManagementTests {
 
 
     @Test
-    @Order(19)
+    @Order(26)
     public void removeProjectTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -241,7 +287,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(20)
+    @Order(27)
     public void checkRemovedProjectTest() {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<ProjectInfo> response = restTemplate.exchange(
@@ -253,7 +299,7 @@ public class ProjectManagementTests {
     }
 
     @Test
-    @Order(21)
+    @Order(28)
     public void shutdownTest() {
         removeOrganization(jwt, restTemplate, port, organizationId);
     }

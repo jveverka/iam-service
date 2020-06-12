@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-import static itx.iamservice.server.tests.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenRevokeResponse;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenVerificationResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,10 +52,10 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(2)
     public void verifyTokens() {
-        ResponseEntity<IntrospectResponse> response = HttpClientTestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
-        response = HttpClientTestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
     }
@@ -84,10 +86,10 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(4)
     public void verifyRefreshedTokens() {
-        ResponseEntity<IntrospectResponse> response = HttpClientTestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
-        response = HttpClientTestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
     }
@@ -95,19 +97,19 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(5)
     public void revokeTokens() {
-        ResponseEntity<Void> response = HttpClientTestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<Void> response = getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        response = HttpClientTestUtils.getTokenRevokeResponse(restTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenRevokeResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     @Order(6)
     public void verifyRevokedTokens() {
-        ResponseEntity<IntrospectResponse> response = HttpClientTestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertFalse(response.getBody().getActive());
-        response = HttpClientTestUtils.getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertFalse(response.getBody().getActive());
     }

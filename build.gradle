@@ -18,6 +18,13 @@ project(':iam-client-spring') {
     }
 }
 
+project(':iam-spring-httpclient') {
+    dependencies {
+        implementation project(':iam-model')
+        implementation project(':iam-core')
+    }
+}
+
 project(':iam-core') {
     dependencies {
         implementation project(':iam-model')
@@ -32,6 +39,7 @@ project(':iam-service') {
         implementation project(':iam-client-spring')
         implementation project(':iam-persistence-file-system')
         implementation project(':iam-persistence-in-memory')
+        testImplementation project(':iam-spring-httpclient')
     }
 }
 
@@ -64,5 +72,6 @@ project(':spring-method-security-IT') {
         testImplementation project(':iam-client')
         testImplementation project(':iam-client-spring')
         testImplementation project(':spring-method-security')
+        testImplementation project(':iam-spring-httpclient')
     }
 }

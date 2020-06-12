@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.KeyPairSerialized;
@@ -86,7 +87,7 @@ public class ModelSerializationTests {
     @Test
     public void serializeAndDeserializeClient() throws JsonProcessingException {
         ClientCredentials credentials = new ClientCredentials(ClientId.from("client-001"), "secret");
-        Client client = new Client(credentials, "name", 10L, 10L, Collections.emptyList());
+        Client client = new ClientImpl(credentials, "name", 10L, 10L, Collections.emptyList());
         String serialized = mapper.writeValueAsString(client);
         Client clientDeserialized = mapper.readValue(serialized, Client.class);
         assertNotNull(clientDeserialized);

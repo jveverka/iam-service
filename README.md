@@ -26,7 +26,10 @@ Estimated release date: __Sep.2020__
 * [x] __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-token.md).
 
 ## Architecture
-![architecture](docs/IAM-service-architecture.svg)
+![architecture](docs/IAM-service-architecture-simple.svg)
+1. Front channels.
+2. Back channels.   
+[Architecture details](docs/IAM-architecture-details.md).
 
 ### Components
 * [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone authorization and authentication server). 

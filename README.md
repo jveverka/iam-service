@@ -8,7 +8,8 @@ and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) spec
 Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519). 
 Please check [use-cases and guidelines](iam-examples/README.md) for more details.
 
-This project is __WIP__, stay tuned !
+This project is __WIP__, stay tuned !   
+Estimated release date: __Sep.2020__ 
 
 ## Features
 * [x] Self-Contained IAM management - clients, users, credentials, permission and roles.

@@ -24,12 +24,13 @@ import java.nio.file.Path;
 import java.security.Security;
 
 @Configuration
-@ConfigurationProperties(prefix="iam-service.data-storage")
+@ConfigurationProperties(prefix="iam-service.data-model")
 public class ModelConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelConfig.class);
 
-    private String password;
+    private String defaultAdminPassword;
+    private String defaultAdminSecret;
     private String persistence;
     private String path;
 
@@ -37,10 +38,11 @@ public class ModelConfig {
 
     @PostConstruct
     private void init() {
-        LOG.info("#CONFIG: initializing Bouncy Castle Provider ...");
+        LOG.info("#CONFIG: initializing Bouncy Castle Provider (BCP) ...");
         Security.addProvider(new BouncyCastleProvider());
         LOG.info("#CONFIG: BCP initialized.");
-        LOG.info("#CONFIG: admin password initialized={}", !password.isEmpty());
+        LOG.info("#CONFIG: default admin password initialized={}", !defaultAdminPassword.isEmpty());
+        LOG.info("#CONFIG: default admin client secret initialized={}", !defaultAdminSecret.isEmpty());
     }
 
     @Bean
@@ -53,12 +55,12 @@ public class ModelConfig {
                 return dataLoadService.populateCache();
             } else {
                 LOG.info("#CONFIG: default ModelCache created");
-                return ModelUtils.createDefaultModelCache(password, persistenceService);
+                return ModelUtils.createDefaultModelCache(defaultAdminPassword, defaultAdminSecret, persistenceService);
             }
         } catch (Exception e) {
             LOG.error("Error: {}", e.getMessage());
             LOG.warn("#CONFIG: fallback to default ModelCache");
-            return ModelUtils.createDefaultModelCache(password, persistenceService);
+            return ModelUtils.createDefaultModelCache(defaultAdminPassword, defaultAdminSecret, persistenceService);
         }
     }
 
@@ -85,28 +87,20 @@ public class ModelConfig {
         }
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPersistence() {
-        return persistence;
-    }
-
     public void setPersistence(String persistence) {
         this.persistence = persistence;
     }
 
-    public String getPath() {
-        return path;
-    }
-
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setDefaultAdminPassword(String defaultAdminPassword) {
+        this.defaultAdminPassword = defaultAdminPassword;
+    }
+
+    public void setDefaultAdminSecret(String defaultAdminSecret) {
+        this.defaultAdminSecret = defaultAdminSecret;
     }
 
 }

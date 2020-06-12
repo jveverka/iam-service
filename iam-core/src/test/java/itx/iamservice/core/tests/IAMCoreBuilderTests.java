@@ -14,7 +14,7 @@ public class IAMCoreBuilderTests {
     public void testMinimalBuilder() throws Exception {
         IAMCoreBuilder.IAMCore iamCore = IAMCoreBuilder.builder()
                 .withBCProvider()
-                .withDefaultModel("secret")
+                .withDefaultModel("secret", "top-secret")
                 .build();
         assertNotNull(iamCore);
         assertNotNull(iamCore.getModel());
@@ -33,7 +33,7 @@ public class IAMCoreBuilderTests {
     public void testBuilder() throws Exception {
         IAMCoreBuilder.IAMCore iamCore = IAMCoreBuilder.builder()
                 .withBCProvider()
-                .withDefaultModel("secret")
+                .withDefaultModel("secret", "top-secret")
                 .withDefaultAuthorizationCodeCache(20L, TimeUnit.MINUTES)
                 .build();
         assertNotNull(iamCore);

@@ -1,77 +1,32 @@
 package itx.iamservice.core.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
-public class Client {
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ClientImpl.class, name = "client") })
+public interface Client {
 
-    private final ClientCredentials credentials;
-    private final String name;
-    private final Long defaultAccessTokenDuration;
-    private final Long defaultRefreshTokenDuration;
-    private final Set<RoleId> roles;
+    ClientId getId();
 
-    public Client(ClientCredentials credentials,
-                  String name,
-                  Long defaultAccessTokenDuration,
-                  Long defaultRefreshTokenDuration) {
-        this.credentials = credentials;
-        this.name = name;
-        this.roles = new HashSet<>();
-        this.defaultAccessTokenDuration = defaultAccessTokenDuration;
-        this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
-    }
+    String getName();
 
-    @JsonCreator
-    public Client(@JsonProperty("credentials") ClientCredentials credentials,
-                  @JsonProperty("name") String name,
-                  @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
-                  @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
-                  @JsonProperty("roles") Collection<RoleId> roles) {
-        this.credentials = credentials;
-        this.name = name;
-        this.roles = new HashSet<>();
-        this.defaultAccessTokenDuration = defaultAccessTokenDuration;
-        this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
-        this.roles.addAll(roles);
-    }
+    ClientCredentials getCredentials();
 
-    @JsonIgnore
-    public ClientId getId() {
-        return credentials.getId();
-    }
+    Set<RoleId> getRoles();
 
-    public String getName() {
-        return name;
-    }
+    boolean addRole(RoleId roleId);
 
-    public ClientCredentials getCredentials() {
-        return credentials;
-    }
+    boolean removeRole(RoleId roleId);
 
-    public Set<RoleId> getRoles() {
-        return roles;
-    }
+    Long getDefaultAccessTokenDuration();
 
-    public boolean addRole(RoleId roleId) {
-        return roles.add(roleId);
-    }
-
-    public boolean removeRole(RoleId roleId) {
-        return roles.remove(roleId);
-    }
-
-    public Long getDefaultAccessTokenDuration() {
-        return defaultAccessTokenDuration;
-    }
-
-    public Long getDefaultRefreshTokenDuration() {
-        return defaultRefreshTokenDuration;
-    }
+    Long getDefaultRefreshTokenDuration();
 
 }

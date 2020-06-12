@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.KeyPairSerialized;
@@ -22,6 +23,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.RoleImpl;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.UserImpl;
@@ -86,7 +88,7 @@ public class ModelSerializationTests {
     @Test
     public void serializeAndDeserializeClient() throws JsonProcessingException {
         ClientCredentials credentials = new ClientCredentials(ClientId.from("client-001"), "secret");
-        Client client = new Client(credentials, "name", 10L, 10L, Collections.emptyList());
+        Client client = new ClientImpl(credentials, "name", 10L, 10L, Collections.emptyList());
         String serialized = mapper.writeValueAsString(client);
         Client clientDeserialized = mapper.readValue(serialized, Client.class);
         assertNotNull(clientDeserialized);
@@ -109,7 +111,7 @@ public class ModelSerializationTests {
 
     @Test
     public void serializeAndDeserializeRole() throws JsonProcessingException {
-        Role role = new Role(RoleId.from("role-001"), "role1", Collections.emptyList());
+        Role role = new RoleImpl(RoleId.from("role-001"), "role1", Collections.emptyList());
         String serialized = mapper.writeValueAsString(role);
         Role roleDeserialized = mapper.readValue(serialized, Role.class);
         assertNotNull(roleDeserialized);

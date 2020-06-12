@@ -8,7 +8,8 @@ and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) spec
 Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519). 
 Please check [use-cases and guidelines](iam-examples/README.md) for more details.
 
-This project is __WIP__, stay tuned !
+This project is __WIP__, stay tuned !   
+Estimated release date: __Sep.2020__ 
 
 ## Features
 * [x] Self-Contained IAM management - clients, users, credentials, permission and roles.
@@ -25,7 +26,10 @@ This project is __WIP__, stay tuned !
 * [x] __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-token.md).
 
 ## Architecture
-![architecture](docs/IAM-service-architecture.svg)
+![architecture](docs/IAM-service-architecture-simple.svg)
+1. Front channels.
+2. Back channels.   
+[Architecture details](docs/IAM-architecture-details.md).
 
 ### Components
 * [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone authorization and authentication server). 

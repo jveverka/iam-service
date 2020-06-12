@@ -44,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClientCCAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
+    private static final String adminSecret = "top-secret";
 
     private static ModelCache modelCache;
     private static ClientService clientService;
@@ -58,7 +59,7 @@ public class ClientCCAuthenticationTests {
     private static void init() throws PKIException {
         Security.addProvider(new BouncyCastleProvider());
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
-        modelCache = ModelUtils.createDefaultModelCache(adminPassword);
+        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret);
         tokenCache = new TokenCacheImpl(modelCache);
         clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
@@ -69,7 +70,7 @@ public class ClientCCAuthenticationTests {
     @Order(1)
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
-        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, ModelUtils.IAM_ADMIN_CLIENT_SECRET);
+        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         Set<RoleId> scope = Set.of(RoleId.from("read-organizations"));
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());

@@ -10,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.RoleImpl;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.caches.ModelCache;
@@ -78,7 +79,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     @Override
     public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest createRoleRequest) {
         RoleId roleId = RoleId.from(UUID.randomUUID().toString());
-        Role role = new Role(roleId, createRoleRequest.getName());
+        Role role = new RoleImpl(roleId, createRoleRequest.getName());
         if (modelCache.add(id, projectId, role)) {
             return Optional.of(roleId);
         }

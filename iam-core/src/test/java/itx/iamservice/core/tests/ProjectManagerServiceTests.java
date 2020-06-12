@@ -8,6 +8,7 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.RoleImpl;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
@@ -98,8 +99,8 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(5)
     public void addAndRemoveRolesTest() {
-        Role role1 = new Role(RoleId.from("role-001"), "role-001");
-        Role role2 = new Role(RoleId.from("role-002"), "role-002");
+        Role role1 = new RoleImpl(RoleId.from("role-001"), "role-001");
+        Role role2 = new RoleImpl(RoleId.from("role-002"), "role-002");
         Collection<Role> roles = projectManagerService.getRoles(oid001, pId001);
         assertEquals(0, roles.size());
         boolean result = projectManagerService.addRole(oid001, pId001, role1);

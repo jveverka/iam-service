@@ -26,6 +26,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenRevokeResponse;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenVerificationResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -121,10 +123,10 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(4)
     public void verifyTokens() {
-        ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
-        response = TestUtils.getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
     }
@@ -155,10 +157,10 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(6)
     public void verifyRefreshedTokens() {
-        ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
-        response = TestUtils.getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().getActive());
     }
@@ -166,19 +168,19 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(7)
     public void revokeTokens() {
-        ResponseEntity<Void> response = TestUtils.getTokenRevokeResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<Void> response = getTokenRevokeResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        response = TestUtils.getTokenRevokeResponse(testRestTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenRevokeResponse(testRestTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     @Order(8)
     public void verifyRevokedTokens() {
-        ResponseEntity<IntrospectResponse> response = TestUtils.getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
+        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertFalse(response.getBody().getActive());
-        response = TestUtils.getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getAccessToken());
+        response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getAccessToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertFalse(response.getBody().getActive());
     }

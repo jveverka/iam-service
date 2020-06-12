@@ -3,6 +3,7 @@ package itx.iamservice.core.services.impl.admin;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Project;
@@ -31,7 +32,7 @@ public class ClientManagementServiceImpl implements ClientManagementService {
         if (projectOptional.isPresent()) {
             ClientId clientId = ClientId.from(UUID.randomUUID().toString());
             ClientCredentials credentials = new ClientCredentials(clientId, UUID.randomUUID().toString());
-            Client client = new Client(credentials, createProjectRequest.getName(),
+            Client client = new ClientImpl(credentials, createProjectRequest.getName(),
                     createProjectRequest.getDefaultAccessTokenDuration(), createProjectRequest.getDefaultRefreshTokenDuration());
             modelCache.add(id, projectId, client);
             return Optional.of(client.getId());

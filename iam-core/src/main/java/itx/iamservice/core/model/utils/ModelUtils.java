@@ -43,7 +43,6 @@ public final class ModelUtils {
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
     public static final UserId IAM_ADMIN_USER = UserId.from("admin");
     public static final ClientId IAM_ADMIN_CLIENT_ID = ClientId.from("admin-client");
-    public static final String IAM_ADMIN_CLIENT_SECRET = "top-secret";
 
     public static final String IAM_SERVICE = "iam-admin-service";
     public static final String READ_ACTION = "read";
@@ -63,11 +62,11 @@ public final class ModelUtils {
         Model model = new ModelImpl(id, modelName);
         return new ModelCacheImpl(model, persistenceService);
     }
-    public static ModelCache createDefaultModelCache(String iamAdminPassword) throws PKIException {
-        return createDefaultModelCache(iamAdminPassword, new LoggingPersistenceServiceImpl());
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret) throws PKIException {
+        return createDefaultModelCache(iamAdminPassword, iamClientSecret, new LoggingPersistenceServiceImpl());
     }
 
-    public static ModelCache createDefaultModelCache(String iamAdminPassword, PersistenceService persistenceService) throws PKIException {
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
 
         Role manageOrganizationsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-organizations"), "Can manage organizations.")
                 .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
@@ -115,7 +114,7 @@ public final class ModelUtils {
         LOG.info("#MODEL: Initializing default model id={} name={} ...", id, modelName);
         LOG.info("#MODEL: Default organizationId={}, projectId={}", IAM_ADMINS_ORG.getId(), IAM_ADMINS_PROJECT.getId());
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
-        LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), IAM_ADMIN_CLIENT_SECRET);
+        LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), iamClientSecret);
         return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
                 .addOrganization(IAM_ADMINS_ORG, IAM_ADMINS_NAME)
                 .addProject(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME)
@@ -126,7 +125,7 @@ public final class ModelUtils {
                     .addRole(manageRolesRole)
                     .addRole(managePermissionsRole)
                     .addRole(clientReaderRole)
-                    .addClient(IAM_ADMIN_CLIENT_ID, "client-1", IAM_ADMIN_CLIENT_SECRET)
+                    .addClient(IAM_ADMIN_CLIENT_ID, "client-1", iamClientSecret)
                         .addRole(clientReaderRole.getId())
                     .and()
                     .addUser(IAM_ADMIN_USER, "iam-admin")

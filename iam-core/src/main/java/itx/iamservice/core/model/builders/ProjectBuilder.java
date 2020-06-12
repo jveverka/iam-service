@@ -3,6 +3,7 @@ package itx.iamservice.core.model.builders;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Role;
@@ -48,7 +49,7 @@ public final class ProjectBuilder {
 
     public ClientBuilder addClient(ClientId id, String name, String secret) {
         ClientCredentials credentials = new ClientCredentials(id, secret);
-        Client client = new Client(credentials, name, 3600*1000L, 24*3600*1000L);
+        Client client = new ClientImpl(credentials, name, 3600*1000L, 24*3600*1000L);
         modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), client);
         return new ClientBuilder(this, client);
     }

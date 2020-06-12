@@ -70,8 +70,8 @@ public class IAMCoreBuilder {
         return this;
     }
 
-    public IAMCoreBuilder withDefaultModel(String iamAdminPassword) throws PKIException {
-        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword);
+    public IAMCoreBuilder withDefaultModel(String iamAdminPassword, String iamClientSecret) throws PKIException {
+        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword, iamClientSecret);
         this.model = modelCache.getModel();
         return this;
     }

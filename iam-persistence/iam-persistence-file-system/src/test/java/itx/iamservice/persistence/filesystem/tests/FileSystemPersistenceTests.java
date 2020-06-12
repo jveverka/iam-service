@@ -35,7 +35,7 @@ public class FileSystemPersistenceTests {
     @Test
     public void testPersistenceSerializationAndLoading() throws PKIException, IOException {
         FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(sharedTempDir, false);
-        ModelUtils.createDefaultModelCache("secret", persistenceService);
+        ModelUtils.createDefaultModelCache("secret", "top-secret", persistenceService);
         String serializedModel = persistenceService.flushToString();
         assertNotNull(serializedModel);
 

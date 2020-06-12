@@ -26,16 +26,23 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.server.tests.TestUtils.checkCreatedProject;
-import static itx.iamservice.server.tests.TestUtils.createAuthorization;
-import static itx.iamservice.server.tests.TestUtils.createNewOrganization;
-import static itx.iamservice.server.tests.TestUtils.createPermissionOnProject;
-import static itx.iamservice.server.tests.TestUtils.createProject;
-import static itx.iamservice.server.tests.TestUtils.createRoleOnProject;
-import static itx.iamservice.server.tests.TestUtils.getPermissionsForProject;
-import static itx.iamservice.server.tests.TestUtils.getRolesOnTheProject;
-import static itx.iamservice.server.tests.TestUtils.getTokenResponseForUserNameAndPassword;
-import static itx.iamservice.server.tests.TestUtils.removeOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.addPermissionToRoleForProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.addRoleToClientOnTheProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.checkCreatedProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createAuthorization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createClientOnTheProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createNewOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createPermissionOnProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createRoleOnProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.getClientOnTheProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.getClientsOnTheProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.getPermissionsForProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.getRolesOnTheProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.server.tests.HttpClientTestUtils.removeClientFromProject;
+import static itx.iamservice.server.tests.HttpClientTestUtils.removeOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.removeRoleFromClientOnTheProject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -124,13 +131,7 @@ public class ProjectManagementTests {
     @Test
     @Order(9)
     public void addPermissionToRoleTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
-                HttpMethod.PUT,
-                requestEntity,
-                Void.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        addPermissionToRoleForProject(jwt, restTemplate, port, organizationId, projectId, roleId, permissionId);
     }
 
     /**
@@ -141,14 +142,7 @@ public class ProjectManagementTests {
     @Order(10)
     public void createClientTest() {
         CreateClientRequest createClientRequest = new CreateClientRequest("client-name", 3600L, 7200L);
-        HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(createClientRequest, createAuthorization(jwt));
-        ResponseEntity<ClientId> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
-                HttpMethod.POST,
-                requestEntity,
-                ClientId.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        clientId = response.getBody();
+        clientId = createClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, createClientRequest);
         assertNotNull(clientId);
     }
 
@@ -156,29 +150,15 @@ public class ProjectManagementTests {
     @Test
     @Order(11)
     public void getClientTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Client> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
-                HttpMethod.GET,
-                requestEntity,
-                Client.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Client clients = response.getBody();
-        assertNotNull(clients);
-        assertEquals(clientId, clients.getId());
+        Client client = getClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId);
+        assertNotNull(client);
+        assertEquals(clientId, client.getId());
     }
 
     @Test
     @Order(12)
     public void getClientsTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Client[]> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
-                HttpMethod.GET,
-                requestEntity,
-                Client[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Client[] clients = response.getBody();
+        Client[] clients = getClientsOnTheProject(jwt, restTemplate, port, organizationId, projectId);
         assertNotNull(clients);
         assertNotNull(clients[0]);
         assertEquals(clientId, clients[0].getId());
@@ -187,39 +167,19 @@ public class ProjectManagementTests {
     @Test
     @Order(13)
     public void addRoleToClientTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
-                HttpMethod.PUT,
-                requestEntity,
-                Void.class);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        addRoleToClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
     }
 
     @Test
     @Order(14)
     public void removeRoleFromClientTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
-                HttpMethod.DELETE,
-                requestEntity,
-                Void.class
-        );
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        removeRoleFromClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
     }
 
     @Test
     @Order(15)
     public void removeClientTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
-                HttpMethod.DELETE,
-                requestEntity,
-                Void.class
-        );
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        removeClientFromProject(jwt, restTemplate, port, organizationId, projectId, clientId);
     }
 
     /**

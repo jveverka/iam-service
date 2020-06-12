@@ -1,9 +1,6 @@
 package itx.iamservice.server.tests;
 
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.services.dto.CreateOrganizationRequest;
-import itx.iamservice.core.services.dto.OrganizationInfo;
-import itx.iamservice.core.services.dto.TokenResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -12,15 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.server.tests.TestUtils.checkOrganization;
-import static itx.iamservice.server.tests.TestUtils.checkOrganizationCount;
-import static itx.iamservice.server.tests.TestUtils.checkRemovedOrganization;
-import static itx.iamservice.server.tests.TestUtils.createNewOrganization;
-import static itx.iamservice.server.tests.TestUtils.getTokenResponseForUserNameAndPassword;
-import static itx.iamservice.server.tests.TestUtils.removeOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.checkOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.checkOrganizationCount;
+import static itx.iamservice.server.tests.HttpClientTestUtils.checkRemovedOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.createNewOrganization;
+import static itx.iamservice.server.tests.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.server.tests.HttpClientTestUtils.removeOrganization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

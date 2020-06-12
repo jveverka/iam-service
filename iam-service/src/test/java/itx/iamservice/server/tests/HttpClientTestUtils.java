@@ -1,6 +1,8 @@
 package itx.iamservice.server.tests;
 
 import itx.iamservice.core.dto.IntrospectResponse;
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.PermissionId;
@@ -8,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
@@ -28,9 +31,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class TestUtils {
+public final class HttpClientTestUtils {
 
-    private TestUtils() {
+    private HttpClientTestUtils() {
     }
 
     public static ResponseEntity<IntrospectResponse> getTokenVerificationResponse(TestRestTemplate restTemplate, int port, String token) {
@@ -205,6 +208,81 @@ public final class TestUtils {
                 Permission[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
+    }
+
+    public static void addPermissionToRoleForProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Void> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
+                HttpMethod.PUT,
+                requestEntity,
+                Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    public static ClientId createClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest createClientRequest) {
+        HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(createClientRequest, createAuthorization(jwt));
+        ResponseEntity<ClientId> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                HttpMethod.POST,
+                requestEntity,
+                ClientId.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
+    }
+
+    public static Client getClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId  clientId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Client> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                HttpMethod.GET,
+                requestEntity,
+                Client.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
+    }
+
+    public static Client[] getClientsOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Client[]> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                HttpMethod.GET,
+                requestEntity,
+                Client[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
+    }
+
+    public static void addRoleToClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId, RoleId roleId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Void> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
+                HttpMethod.PUT,
+                requestEntity,
+                Void.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    public static void removeRoleFromClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId, RoleId roleId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Void> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    public static void removeClientFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        ResponseEntity<Void> response = restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
 }

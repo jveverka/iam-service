@@ -1,6 +1,7 @@
 package itx.iamservice.server.tests;
 
 import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
@@ -8,11 +9,16 @@ import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
+import itx.iamservice.core.services.dto.CreateUserRequest;
 import itx.iamservice.core.services.dto.ProjectInfo;
+import itx.iamservice.core.services.dto.SetUserNamePasswordCredentialsRequest;
+import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.UserInfo;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -28,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addPermissionToRoleForProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addRoleToClientOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.assignRoleToUserOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkCreatedProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createAuthorization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createClientOnTheProject;
@@ -35,14 +42,19 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.create
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createPermissionOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createRoleOnProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createUserOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientsOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getPermissionsForProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getRolesOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeClientFromProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeRoleFromClientOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeRoleFromUserOnProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeUserFromProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.setUsernamePasswordCredentialsForProjectAndUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -55,7 +67,9 @@ public class ProjectManagementTests {
     private static ProjectId projectId;
     private static RoleId roleId;
     private static PermissionId permissionId;
+    private static ClientCredentials clientCredentials;
     private static ClientId clientId;
+    private static UserId userId;
 
     @LocalServerPort
     private int port;
@@ -142,10 +156,12 @@ public class ProjectManagementTests {
     @Order(10)
     public void createClientTest() {
         CreateClientRequest createClientRequest = new CreateClientRequest("client-name", 3600L, 7200L);
-        clientId = createClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, createClientRequest);
-        assertNotNull(clientId);
+        clientCredentials = createClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, createClientRequest);
+        clientId = clientCredentials.getId();
+        assertNotNull(clientCredentials);
+        assertNotNull(clientCredentials.getId());
+        assertNotNull(clientCredentials.getSecret());
     }
-
 
     @Test
     @Order(11)
@@ -170,67 +186,74 @@ public class ProjectManagementTests {
         addRoleToClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
     }
 
-    @Test
-    @Order(14)
-    public void removeRoleFromClientTest() {
-        removeRoleFromClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
-    }
-
-    @Test
-    @Order(15)
-    public void removeClientTest() {
-        removeClientFromProject(jwt, restTemplate, port, organizationId, projectId, clientId);
-    }
-
     /**
      * User related tests
      */
 
     @Test
-    @Order(16)
+    @Order(14)
     public void createUserTest() {
+        CreateUserRequest createUserRequest = new CreateUserRequest("user-001", 3600L, 3600L);
+        userId = createUserOnProject(jwt, restTemplate, port, organizationId, projectId, createUserRequest);
+        assertNotNull(userId);
+    }
 
+    @Test
+    @Order(15)
+    public void addRoleToUserTest() {
+        assignRoleToUserOnProject(jwt, restTemplate, port, organizationId, projectId, userId, roleId);
+    }
+
+    @Test
+    @Order(16)
+    public void checkUserTest() {
+        UserInfo userInfo = getUserInfo(restTemplate, port, organizationId, projectId, userId);
+        assertNotNull(userInfo);
+        assertEquals(userId, userInfo.getId());
     }
 
     @Test
     @Order(17)
-    public void addRoleToUserTest() {
-
+    public void setUsernamePasswordCredentials() {
+        SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest = new SetUserNamePasswordCredentialsRequest(userId.getId(), "secret");
+        setUsernamePasswordCredentialsForProjectAndUser(jwt, restTemplate, port, organizationId, projectId, userId, setUserNamePasswordCredentialsRequest);
     }
 
     @Test
     @Order(18)
-    public void checkUserTest() {
-
+    public void issueAndValidateTokenForUser() {
+        TokenResponse tokenResponse = getTokenResponseForUserNameAndPassword(restTemplate, port, userId.getId(), "secret",
+                clientCredentials.getId(), clientCredentials.getSecret(), organizationId, projectId);
+        assertNotNull(tokenResponse);
     }
 
     @Test
     @Order(19)
-    public void setUsernamePasswordCredentials() {
-
+    public void removeRoleFromUserTest() {
+        removeRoleFromUserOnProject(jwt, restTemplate, port, organizationId, projectId, userId, roleId);
     }
 
     @Test
     @Order(20)
-    public void checkUsersTest() {
-
-    }
-
-    @Test
-    @Order(21)
-    public void removeRoleFromUserTest() {
-
-    }
-
-    @Test
-    @Order(22)
     public void deleteUserTest() {
-
+        removeUserFromProject(jwt, restTemplate, port, organizationId, projectId, userId);
     }
 
     /**
      * Cleanup after testing, delete operations
      */
+
+    @Test
+    @Order(21)
+    public void removeRoleFromClientTest() {
+        removeRoleFromClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, clientId, roleId);
+    }
+
+    @Test
+    @Order(22)
+    public void removeClientTest() {
+        removeClientFromProject(jwt, restTemplate, port, organizationId, projectId, clientId);
+    }
 
     @Test
     @Order(23)

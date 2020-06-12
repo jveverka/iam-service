@@ -1,6 +1,7 @@
 package itx.iamservice.server.controller;
 
 import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -34,10 +35,10 @@ public class ClientManagementController {
     }
 
     @PostMapping(path = "/{organization-id}/projects/{project-id}/clients", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ClientId> createClient(@PathVariable("organization-id") String organizationId,
-                                                 @PathVariable("project-id") String projectId,
-                                                 @RequestBody CreateClientRequest createClientRequest) {
-        Optional<ClientId> client = clientManagementService.createClient(OrganizationId.from(organizationId), ProjectId.from(projectId), createClientRequest);
+    public ResponseEntity<ClientCredentials> createClient(@PathVariable("organization-id") String organizationId,
+                                                          @PathVariable("project-id") String projectId,
+                                                          @RequestBody CreateClientRequest createClientRequest) {
+        Optional<ClientCredentials> client = clientManagementService.createClient(OrganizationId.from(organizationId), ProjectId.from(projectId), createClientRequest);
         return ResponseEntity.of(client);
     }
 

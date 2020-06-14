@@ -45,7 +45,9 @@ public class IAMClientImpl implements IAMClient {
                 JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
                 RSAKey rsaKey = RSAKey.parse(jsonObject);
                 RSASSAVerifier rsassaVerifier = new RSASSAVerifier(rsaKey);
-                if (signedJWT.verify(rsassaVerifier)) {
+                if (signedJWT.verify(rsassaVerifier) &&
+                        organizationId.getId().equals(signedJWT.getJWTClaimsSet().getIssuer()) &&
+                        signedJWT.getJWTClaimsSet().getAudience().contains(projectId.getId())) {
                     return Optional.of(signedJWT.getJWTClaimsSet());
                 }
             }

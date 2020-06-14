@@ -110,13 +110,13 @@ public final class TokenUtils {
     }
 
     public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
-        String subject = organizationId.getId() + "." + projectId.getId() + " " + clientOrUserId;
+        String subject = organizationId.getId() + "/" + projectId.getId() + "/" + clientOrUserId;
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
         JwtBuilder builder = Jwts.builder();
         builder.setHeaderParam(TYP_ID, TYP_VALUE);
         builder.setHeaderParam(KEY_ID, keyId.getId());
-        builder.setSubject(idTokenRequest.getIssuerURL());
+        builder.setIssuer(organizationId.getId());
         builder.setSubject(subject);
         builder.setAudience(clientId.getId());
         builder.setExpiration(expiration);

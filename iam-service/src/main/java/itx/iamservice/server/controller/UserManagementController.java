@@ -41,7 +41,11 @@ public class UserManagementController {
                                              @PathVariable("project-id") String projectId,
                                              @RequestBody CreateUserRequest createUserRequest) throws PKIException {
         Optional<UserId> userId = userManagerService.create(OrganizationId.from(organizationId), ProjectId.from(projectId), createUserRequest);
-        return ResponseEntity.of(userId);
+        if (userId.isPresent()) {
+            return ResponseEntity.ok(userId.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @DeleteMapping(path = "/{organization-id}/projects/{project-id}/users/{user-id}", produces = MediaType.APPLICATION_JSON_VALUE)

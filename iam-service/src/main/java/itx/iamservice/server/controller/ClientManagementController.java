@@ -39,7 +39,11 @@ public class ClientManagementController {
                                                           @PathVariable("project-id") String projectId,
                                                           @RequestBody CreateClientRequest createClientRequest) {
         Optional<ClientCredentials> client = clientManagementService.createClient(OrganizationId.from(organizationId), ProjectId.from(projectId), createClientRequest);
-        return ResponseEntity.of(client);
+        if (client.isPresent()) {
+            return ResponseEntity.ok(client.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @GetMapping(path = "/{organization-id}/projects/{project-id}/clients/{client-id}", produces = MediaType.APPLICATION_JSON_VALUE)

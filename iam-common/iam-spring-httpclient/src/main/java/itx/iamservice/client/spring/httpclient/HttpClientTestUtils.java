@@ -73,17 +73,21 @@ public final class HttpClientTestUtils {
     }
 
     public static OrganizationId createNewOrganization(String jwt, TestRestTemplate restTemplate, int port, CreateOrganizationRequest request) {
-        HttpEntity<CreateOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
-        ResponseEntity<OrganizationId> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/organizations",
-                HttpMethod.POST,
-                requestEntity,
-                OrganizationId.class);
+        ResponseEntity<OrganizationId> response = createNewOrganizationResponse(jwt, restTemplate, port, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         OrganizationId organizationId = response.getBody();
         assertNotNull(organizationId);
         assertNotNull(organizationId.getId());
         return organizationId;
+    }
+
+    public static ResponseEntity<OrganizationId> createNewOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, CreateOrganizationRequest request) {
+        HttpEntity<CreateOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+        return restTemplate.exchange(
+                "http://localhost:" + port + "/services/management/organizations",
+                HttpMethod.POST,
+                requestEntity,
+                OrganizationId.class);
     }
 
     public static void checkOrganizationCount(String jwt, TestRestTemplate restTemplate, int port, int expectedCount) {
@@ -175,13 +179,18 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
-    public static ProjectId createProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProjectRequest createProjectRequest) {
-        HttpEntity<CreateProjectRequest> requestEntity = new HttpEntity<>(createProjectRequest, createAuthorization(jwt));
-        ResponseEntity<ProjectId> response = restTemplate.exchange(
+
+    public static ResponseEntity<ProjectId> createProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProjectRequest request) {
+        HttpEntity<CreateProjectRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+        return restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects",
                 HttpMethod.POST,
                 requestEntity,
                 ProjectId.class);
+    }
+
+    public static ProjectId createProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProjectRequest request) {
+        ResponseEntity<ProjectId> response = createProjectRequest(jwt, restTemplate, port, organizationId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
@@ -199,13 +208,17 @@ public final class HttpClientTestUtils {
         assertEquals(projectId, projectInfo.getId());
     }
 
-    public static RoleId createRoleOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest createRoleRequest) {
-        HttpEntity<CreateRoleRequest> requestEntity = new HttpEntity<>(createRoleRequest, createAuthorization(jwt));
-        ResponseEntity<RoleId> response = restTemplate.exchange(
+    public static ResponseEntity<RoleId> createRoleOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest request) {
+        HttpEntity<CreateRoleRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+        return restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
                 HttpMethod.POST,
                 requestEntity,
                 RoleId.class);
+    }
+
+    public static RoleId createRoleOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest request) {
+        ResponseEntity<RoleId> response = createRoleOnProjectRequest(jwt,  restTemplate,  port,  organizationId,  projectId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
@@ -253,13 +266,17 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    public static ClientCredentials createClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest createClientRequest) {
-        HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(createClientRequest, createAuthorization(jwt));
-        ResponseEntity<ClientCredentials> response = restTemplate.exchange(
+    public static ResponseEntity<ClientCredentials> createClientOnTheProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
+        HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+        return restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
                 HttpMethod.POST,
                 requestEntity,
                 ClientCredentials.class);
+    }
+
+    public static ClientCredentials createClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
+        ResponseEntity<ClientCredentials> response = createClientOnTheProjectRequest(jwt, restTemplate, port, organizationId, projectId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
@@ -318,13 +335,17 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
-    public static UserId createUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateUserRequest createUserRequest) {
-        HttpEntity<CreateUserRequest> requestEntity = new HttpEntity<>(createUserRequest, createAuthorization(jwt));
-        ResponseEntity<UserId> response = restTemplate.exchange(
+    public static ResponseEntity<UserId> createUserOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) {
+        HttpEntity<CreateUserRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+        return restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users",
                 HttpMethod.POST,
                 requestEntity,
                 UserId.class);
+    }
+
+    public static UserId createUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) {
+        ResponseEntity<UserId> response = createUserOnProjectRequest(jwt, restTemplate, port, organizationId, projectId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }

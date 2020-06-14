@@ -42,7 +42,11 @@ public class ProjectManagementController {
                                                    @RequestBody CreateProjectRequest request) throws PKIException {
         OrganizationId id = OrganizationId.from(organizationId);
         Optional<ProjectId> projectId = projectManagerService.create(id, request);
-        return ResponseEntity.of(projectId);
+        if (projectId.isPresent()) {
+            return ResponseEntity.ok(projectId.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @DeleteMapping(path = "/{organization-id}/projects/{project-id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,7 +65,11 @@ public class ProjectManagementController {
                                              @PathVariable("project-id") String projectId,
                                              @RequestBody CreateRoleRequest request) {
         Optional<RoleId> roleId = projectManagerService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
-        return ResponseEntity.of(roleId);
+        if (roleId.isPresent()) {
+            return ResponseEntity.ok(roleId.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @GetMapping(path = "/{organization-id}/projects/{project-id}/roles", produces = MediaType.APPLICATION_JSON_VALUE)

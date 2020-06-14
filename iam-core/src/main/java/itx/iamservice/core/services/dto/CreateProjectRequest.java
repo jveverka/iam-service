@@ -28,4 +28,8 @@ public class CreateProjectRequest {
         return new CreateProjectRequest(ProjectId.from(id), name);
     }
 
+    public static CreateProjectRequest from(ProjectId id, String name) {
+        return new CreateProjectRequest(id, name);
+    }
+
 }

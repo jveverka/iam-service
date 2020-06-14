@@ -30,7 +30,11 @@ public class OrganizationManagementController {
     @PostMapping(path = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrganizationId> createOrganization(@RequestBody CreateOrganizationRequest request) throws PKIException {
         Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(request);
-        return ResponseEntity.of(organizationIdOptional);
+        if (organizationIdOptional.isPresent()) {
+            return ResponseEntity.ok(organizationIdOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @DeleteMapping(path = "/organizations/{organization-id}", produces = MediaType.APPLICATION_JSON_VALUE)

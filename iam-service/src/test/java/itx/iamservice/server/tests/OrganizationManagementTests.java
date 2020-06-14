@@ -10,13 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkOrganizationCount;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkRemovedOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganization;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganizationResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,6 +57,14 @@ public class OrganizationManagementTests {
 
     @Test
     @Order(3)
+    public void createExistingOrganizationTest() {
+        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-002"), "organization-002-name");
+        ResponseEntity<OrganizationId> response = createNewOrganizationResponse(jwt, restTemplate, port, request);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
     public void removeFirstOrganizationTest() {
         removeOrganization(jwt, restTemplate, port, organizationId01);
         checkOrganizationCount(jwt, restTemplate, port, 2);
@@ -61,7 +73,7 @@ public class OrganizationManagementTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void removeSecondOrganizationTest() {
         removeOrganization(jwt, restTemplate, port,  organizationId02);
         checkOrganizationCount(jwt, restTemplate, port,1);

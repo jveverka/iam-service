@@ -42,7 +42,7 @@ public class ResourceServerTestsIT {
     public void checkResourceServerIsAliveTestsIT() {
         ResponseEntity<SystemInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/info", SystemInfo.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
 }

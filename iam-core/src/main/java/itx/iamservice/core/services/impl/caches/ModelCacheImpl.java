@@ -315,6 +315,12 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public Optional<Role> getRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
+        ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
+        return Optional.ofNullable(roles.get(roleKey));
+    }
+
+    @Override
     public boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);

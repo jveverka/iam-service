@@ -72,10 +72,8 @@ public final class HttpClientTestUtils {
         return requestHeaders;
     }
 
-    public static OrganizationId createNewOrganization(String jwt, TestRestTemplate restTemplate, int port, String name) {
-        CreateOrganizationRequest createOrganizationTest = new CreateOrganizationRequest(name);
-        HttpEntity<CreateOrganizationRequest> requestEntity = new HttpEntity<>(createOrganizationTest, createAuthorization(jwt));
-
+    public static OrganizationId createNewOrganization(String jwt, TestRestTemplate restTemplate, int port, CreateOrganizationRequest request) {
+        HttpEntity<CreateOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         ResponseEntity<OrganizationId> response = restTemplate.exchange(
                 "http://localhost:" + port + "/services/management/organizations",
                 HttpMethod.POST,

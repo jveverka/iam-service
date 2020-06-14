@@ -11,6 +11,7 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.CreateClientRequest;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
@@ -29,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -89,13 +89,14 @@ public class ProjectManagementTests {
     @Order(1)
     public void initTest() {
         jwt = getTokenResponseForUserNameAndPassword(restTemplate, port).getAccessToken();
-        organizationId = createNewOrganization(jwt, restTemplate, port,"organization-002");
+        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-002"), "organization-002-name");
+        organizationId = createNewOrganization(jwt, restTemplate, port,request);
     }
 
     @Test
     @Order(2)
     public void createProjectTest() {
-        CreateProjectRequest createProjectRequest = new CreateProjectRequest("project-002");
+        CreateProjectRequest createProjectRequest = new CreateProjectRequest(ProjectId.from("project-002"), "project-002-name");
         projectId = createProject(jwt, restTemplate, port, organizationId, createProjectRequest);
         assertNotNull(projectId);
         assertNotNull(projectId.getId());
@@ -114,7 +115,7 @@ public class ProjectManagementTests {
     @Test
     @Order(4)
     public void createRoleTest() {
-        CreateRoleRequest createRoleRequest = new CreateRoleRequest("role-001");
+        CreateRoleRequest createRoleRequest = new CreateRoleRequest(RoleId.from("role-001"), "role-001-name");
         roleId = createRoleOnProject(jwt, restTemplate, port, organizationId, projectId, createRoleRequest);
         assertNotNull(roleId);
     }
@@ -163,7 +164,7 @@ public class ProjectManagementTests {
     @Test
     @Order(10)
     public void createClientTest() {
-        CreateClientRequest createClientRequest = new CreateClientRequest("client-name", 3600L, 7200L);
+        CreateClientRequest createClientRequest = new CreateClientRequest(ClientId.from("client-0001"), "client-name", 3600L, 7200L);
         clientCredentials = createClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, createClientRequest);
         clientId = clientCredentials.getId();
         assertNotNull(clientCredentials);
@@ -208,7 +209,7 @@ public class ProjectManagementTests {
     @Test
     @Order(15)
     public void createUserTest() {
-        CreateUserRequest createUserRequest = new CreateUserRequest("user-001", 3600L, 3600L);
+        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "user-001-name", 3600L, 3600L);
         userId = createUserOnProject(jwt, restTemplate, port, organizationId, projectId, createUserRequest);
         assertNotNull(userId);
     }
@@ -299,7 +300,6 @@ public class ProjectManagementTests {
     @Test
     @Order(28)
     public void checkRemovedProjectTest() {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<ProjectInfo> response = getProjectInfoResponse(restTemplate, port, organizationId, projectId);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

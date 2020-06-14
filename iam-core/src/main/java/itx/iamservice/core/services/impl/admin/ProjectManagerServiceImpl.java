@@ -32,9 +32,8 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public Optional<ProjectId> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException {
-        ProjectId projectId = ProjectId.from(UUID.randomUUID().toString());
-        if (create(id, projectId, createProjectRequest)) {
-            return Optional.of(projectId);
+        if (create(id, createProjectRequest.getId(), createProjectRequest)) {
+            return Optional.of(createProjectRequest.getId());
         } else {
             return Optional.empty();
         }
@@ -77,11 +76,13 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest createRoleRequest) {
-        RoleId roleId = RoleId.from(UUID.randomUUID().toString());
-        Role role = new RoleImpl(roleId, createRoleRequest.getName());
-        if (modelCache.add(id, projectId, role)) {
-            return Optional.of(roleId);
+    public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest request) {
+        Optional<Role> roleOptional = modelCache.getRole(id, projectId, request.getId());
+        if (roleOptional.isEmpty()) {
+            Role role = new RoleImpl(request.getId(), request.getName());
+            if (modelCache.add(id, projectId, role)) {
+                return Optional.of(request.getId());
+            }
         }
         return Optional.empty();
     }

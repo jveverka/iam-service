@@ -36,10 +36,9 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
-    public Optional<OrganizationId> create(CreateOrganizationRequest createOrganizationRequest) throws PKIException {
-        OrganizationId id = OrganizationId.from(UUID.randomUUID().toString());
-        if(create(id, createOrganizationRequest)) {
-            return Optional.of(id);
+    public Optional<OrganizationId> create(CreateOrganizationRequest request) throws PKIException {
+        if(create(request.getId(), request)) {
+            return Optional.of(request.getId());
         } else {
             return Optional.empty();
         }

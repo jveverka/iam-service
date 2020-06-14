@@ -21,5 +21,11 @@ dependencies {
 }
 
 test {
+	if (System.properties['test.profile'] != 'integration') {
+		exclude '**/*TestsIT*'
+	}
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 }

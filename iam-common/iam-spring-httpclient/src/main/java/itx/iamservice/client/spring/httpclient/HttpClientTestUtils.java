@@ -463,7 +463,6 @@ public final class HttpClientTestUtils {
     }
 
     public static void removeProjectFromOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
-        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = removeProject(jwt, restTemplate, port, organizationId, projectId);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }

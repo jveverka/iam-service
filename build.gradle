@@ -56,6 +56,10 @@ project(':iam-persistence-in-memory') {
 }
 
 project(':spring-resource-server') {
+    dependencies {
+        testImplementation project(':iam-model')
+        testImplementation project(':iam-spring-httpclient')
+    }
 }
 
 project(':spring-method-security') {
@@ -63,15 +67,7 @@ project(':spring-method-security') {
         implementation project(':iam-model')
         implementation project(':iam-client')
         implementation project(':iam-client-spring')
-    }
-}
-
-project(':spring-method-security-IT') {
-    dependencies {
-        testImplementation project(':iam-model')
-        testImplementation project(':iam-client')
-        testImplementation project(':iam-client-spring')
-        testImplementation project(':spring-method-security')
         testImplementation project(':iam-spring-httpclient')
     }
 }
+

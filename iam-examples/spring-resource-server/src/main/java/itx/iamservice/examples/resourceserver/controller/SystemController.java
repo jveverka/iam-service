@@ -1,6 +1,6 @@
-package itx.iamservice.examples.methodsecurity.controller;
+package itx.iamservice.examples.resourceserver.controller;
 
-import itx.iamservice.examples.methodsecurity.dto.SystemInfo;
+import itx.iamservice.examples.resourceserver.dto.SystemInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,7 @@ public class SystemController {
 
     @GetMapping("/info")
     ResponseEntity<SystemInfo> getSystemInfo() {
-        return ResponseEntity.ok(new SystemInfo("method-security-microservice", "1.0.0"));
+        return ResponseEntity.ok(new SystemInfo("resource-server-microservice", "1.0.0"));
     }
 
 }

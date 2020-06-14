@@ -2,6 +2,7 @@ package itx.iamservice.examples.methodsecurity.ittests;
 
 
 import itx.iamservice.core.dto.HealthCheckResponse;
+import itx.iamservice.examples.methodsecurity.dto.SystemInfo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -20,18 +21,29 @@ public class MethodSecurityTestsIT {
 
     private static TestRestTemplate restTemplate;
     private static int iamServerPort;
+    private static int resourceServerPort;
+    private static String jwt;
 
     @BeforeAll
     public static void init() {
         restTemplate = new TestRestTemplate();
         iamServerPort = 8080;
+        resourceServerPort = 8082;
     }
 
     @Test
     @Order(1)
-    public void initialTestsIT() {
+    public void checkIamServerIsAliveTestsIT() {
         HealthCheckResponse healthCheckResponse = getHealthCheckResponse(restTemplate, iamServerPort);
         assertNotNull(healthCheckResponse);
+    }
+
+    @Test
+    @Order(2)
+    public void checkResourceServerIsAliveTestsIT() {
+        ResponseEntity<SystemInfo> response = restTemplate.getForEntity(
+                "http://localhost:" + resourceServerPort + "/services/info", SystemInfo.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 }

@@ -41,9 +41,13 @@ Estimated release date: __Sep.2020__
 ### Build and Run
 Please  check [system requirements](docs/system-requirements.md) before. 
 ```
+# compile and run JUnit test suite
 gradle clean build test
+
+# test-deploy and run integration test suite.
 docker-compose up --build -d
-gradle :spring-method-security-IT:clean :spring-method-security-IT:test -Dtest.profile=integration
+gradle :spring-method-security:clean :spring-method-security:test -Dtest.profile=integration
+gradle :spring-resource-server:clean :spring-resource-server:test -Dtest.profile=integration
 docker-compose down -v --rmi all --remove-orphans
 ```
 ## REST endpoints 

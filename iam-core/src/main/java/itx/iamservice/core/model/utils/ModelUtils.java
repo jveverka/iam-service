@@ -67,6 +67,10 @@ public final class ModelUtils {
     }
 
     public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, persistenceService);
+    }
+
+    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
 
         Role manageOrganizationsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-organizations"), "Can manage organizations.")
                 .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
@@ -116,8 +120,8 @@ public final class ModelUtils {
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), iamClientSecret);
         return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
-                .addOrganization(IAM_ADMINS_ORG, IAM_ADMINS_NAME)
-                .addProject(IAM_ADMINS_PROJECT, IAM_ADMINS_NAME)
+                .addOrganization(organizationId, IAM_ADMINS_NAME)
+                .addProject(projectId, IAM_ADMINS_NAME)
                     .addRole(manageOrganizationsRole)
                     .addRole(manageProjectsRole)
                     .addRole(manageUsersRole)

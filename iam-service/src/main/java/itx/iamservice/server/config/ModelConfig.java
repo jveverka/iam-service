@@ -1,5 +1,7 @@
 package itx.iamservice.server.config;
 
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.caches.ModelCache;
@@ -29,6 +31,9 @@ public class ModelConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelConfig.class);
 
+    private String adminOrganization;
+    private String adminProject;
+
     private String defaultAdminPassword;
     private String defaultAdminSecret;
     private String persistence;
@@ -43,6 +48,7 @@ public class ModelConfig {
         LOG.info("#CONFIG: BCP initialized.");
         LOG.info("#CONFIG: default admin password initialized={}", !defaultAdminPassword.isEmpty());
         LOG.info("#CONFIG: default admin client secret initialized={}", !defaultAdminSecret.isEmpty());
+        LOG.info("#CONFIG: admin organization/project {}/{}", adminOrganization, adminProject);
     }
 
     @Bean
@@ -55,12 +61,14 @@ public class ModelConfig {
                 return dataLoadService.populateCache();
             } else {
                 LOG.info("#CONFIG: default ModelCache created");
-                return ModelUtils.createDefaultModelCache(defaultAdminPassword, defaultAdminSecret, persistenceService);
+                return ModelUtils.createDefaultModelCache(
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminSecret, persistenceService);
             }
         } catch (Exception e) {
             LOG.error("Error: {}", e.getMessage());
             LOG.warn("#CONFIG: fallback to default ModelCache");
-            return ModelUtils.createDefaultModelCache(defaultAdminPassword, defaultAdminSecret, persistenceService);
+            return ModelUtils.createDefaultModelCache(OrganizationId.from(adminOrganization), ProjectId.from(adminProject),
+                    defaultAdminPassword, defaultAdminSecret, persistenceService);
         }
     }
 
@@ -101,6 +109,14 @@ public class ModelConfig {
 
     public void setDefaultAdminSecret(String defaultAdminSecret) {
         this.defaultAdminSecret = defaultAdminSecret;
+    }
+
+    public void setAdminOrganization(String adminOrganization) {
+        this.adminOrganization = adminOrganization;
+    }
+
+    public void setAdminProject(String adminProject) {
+        this.adminProject = adminProject;
     }
 
 }

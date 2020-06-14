@@ -14,6 +14,8 @@ iam-service:
     duration: 1
     timeunit: MINUTES
   data-model:
+    admin-organization: iam-admins
+    admin-project: iam-admins
     defaultAdminPassword: secret
     defaultAdminSecret: top-secret
     persistence: in-memory #options: in-memory | file-system

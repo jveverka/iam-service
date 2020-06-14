@@ -66,9 +66,9 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(2)
     public void createOrganizationsTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001"));
+        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001", "org-001-name"));
         assertTrue(result);
-        result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002"));
+        result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002", "org-002-name"));
         assertTrue(result);
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(2, all.size());
@@ -77,7 +77,7 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(3)
     public void createFirstProjectTest() throws PKIException {
-        boolean result = projectManagerService.create(oid001, pId001, CreateProjectRequest.from("p001"));
+        boolean result = projectManagerService.create(oid001, pId001, CreateProjectRequest.from("p001", "p001-name"));
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
         assertEquals(1, all.size());
@@ -88,7 +88,7 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(4)
     public void createSecondProjectTest() throws PKIException {
-        boolean result = projectManagerService.create(oid002, pId001, CreateProjectRequest.from("p001"));
+        boolean result = projectManagerService.create(oid002, pId001, CreateProjectRequest.from("p001", "p001-name"));
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
         assertEquals(1, all.size());

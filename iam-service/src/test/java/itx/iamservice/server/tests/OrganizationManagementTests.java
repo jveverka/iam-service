@@ -1,6 +1,7 @@
 package itx.iamservice.server.tests;
 
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,6 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkR
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,7 +36,8 @@ public class OrganizationManagementTests {
     @Order(1)
     public void createFirstOrganizationTest() {
         jwt = getTokenResponseForUserNameAndPassword(restTemplate, port).getAccessToken();
-        organizationId01 = createNewOrganization(jwt, restTemplate, port,"organization-001");
+        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-001"), "organization-001-name");
+        organizationId01 = createNewOrganization(jwt, restTemplate, port,request);
         checkOrganizationCount(jwt, restTemplate, port,2);
         checkOrganization(jwt, restTemplate, port, organizationId01);
     }
@@ -45,7 +45,8 @@ public class OrganizationManagementTests {
     @Test
     @Order(2)
     public void createSecondOrganizationTest() {
-        organizationId02 = createNewOrganization(jwt, restTemplate, port,"organization-002");
+        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-002"), "organization-002-name");
+        organizationId02 = createNewOrganization(jwt, restTemplate, port,request);
         checkOrganizationCount(jwt, restTemplate, port, 3);
         checkOrganization(jwt, restTemplate, port, organizationId02);
     }

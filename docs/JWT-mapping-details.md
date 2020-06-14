@@ -6,8 +6,7 @@
   containing public key for JWT signature verification. 
 * __alg__ - RS256 
 
-### Claims 
-#### Access_Token Claims
+### Claims: Access_Token
 Data model mapping of [RFC7519 registered JWT claim names](https://tools.ietf.org/html/rfc7519#section-4):
 * __iss__ (issuer) - OrganizationId, string. 
 * __aud__ (audience) - ProjectId, string.
@@ -25,11 +24,11 @@ Non-registered claim mappings:
 * __permissions__ - subject permissions, string array of permissionsId(s) for subject. 
 * __scope__ - enumeration of following values: [ openid | permissions ]
 
-#### Refresh_Token Claims
+### Claims: Refresh_Token
 * __typ__ - toke type: __Refresh__
 * TBD
 
-#### ID_Token Claims
+### Claims: ID_Token
 * __aud__ (audience) - ProjectId, string.
 * __sub__ (subject) - UserId or ClientId, string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string

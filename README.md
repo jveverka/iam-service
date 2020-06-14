@@ -45,10 +45,7 @@ Please  check [system requirements](docs/system-requirements.md) before.
 gradle clean build test
 
 # test-deploy and run integration test suite.
-docker-compose up --build -d
-gradle :spring-method-security:clean :spring-method-security:test -Dtest.profile=integration
-gradle :spring-resource-server:clean :spring-resource-server:test -Dtest.profile=integration
-docker-compose down -v --rmi all --remove-orphans
+./run-full-test-suite.sh
 ```
 ## REST endpoints 
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.

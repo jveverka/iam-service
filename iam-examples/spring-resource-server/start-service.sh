@@ -2,7 +2,7 @@
 
 echo "Starting spring-resource-server"
 
-until $(curl --silent --output /dev/null -f http://127.0.0.1:8080/services/health/status); do
+until $(curl --silent --output /dev/null -f http://127.0.0.1:8080/services/authentication/iam-admins/iam-admins/.well-known/jwks.json ); do
   echo "Waiting for iam-service to start ..."
   sleep 1
 done

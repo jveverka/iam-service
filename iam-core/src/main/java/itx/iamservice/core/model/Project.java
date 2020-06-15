@@ -6,6 +6,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.CLASS,
@@ -16,6 +17,8 @@ public interface Project {
     ProjectId getId();
 
     String getName();
+
+    Set<String> getAudience();
 
     OrganizationId getOrganizationId();
 

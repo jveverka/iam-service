@@ -35,9 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TokenCacheTests {
 
     private static final OrganizationId ORGANIZATION_ID = OrganizationId.from("unique-organization-id");
-    private static final ProjectId PROJECT_ID = ProjectId.from("unique-project-id");
     private static final UserId USER_ID = UserId.from("unique-user-id");
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
+    private static final Set<String> AUDIENCE = Set.of("audience");
     private static final Long DURATION = 3L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
@@ -56,7 +56,7 @@ public class TokenCacheTests {
         keyId = KeyId.from("key-001");
         Map<String, Set<String>> roleClaims = new HashMap<>();
         roleClaims.put(TokenUtils.ROLES_CLAIM, ROLES);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

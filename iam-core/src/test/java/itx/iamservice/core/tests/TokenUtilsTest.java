@@ -42,10 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TokenUtilsTest {
 
     private static final String ISSUER = "issuer";
-    private static final String AUDIENCE = "audience";
     private static final String SUBJECT = "subject";
     private static final OrganizationId ORGANIZATION_ID = OrganizationId.from(ISSUER);
-    private static final ProjectId PROJECT_ID = ProjectId.from(AUDIENCE);
+    private static final Set<String> AUDIENCE = Set.of("audience");
     private static final UserId USER_ID = UserId.from(SUBJECT);
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
     private static final Long DURATION = 60L;
@@ -71,14 +70,15 @@ public class TokenUtilsTest {
     public void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         assertNotNull(jwt);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isPresent());
         assertEquals(KEY_ID.getId(), claimsJws.get().getHeader().getKeyId());
         assertEquals(SUBJECT, claimsJws.get().getBody().getSubject());
         assertEquals(ISSUER, claimsJws.get().getBody().getIssuer());
-        assertEquals(AUDIENCE, claimsJws.get().getBody().getAudience());
+        List<String> claimedAudience = (List<String>) claimsJws.get().getBody().get(TokenUtils.AUDIENCE_CLAIM);
+        assertNotNull(claimedAudience);
         List<String> claimedRoles = (List<String>) claimsJws.get().getBody().get(TokenUtils.ROLES_CLAIM);
         assertNotNull(claimedRoles);
         String type = (String)claimsJws.get().getBody().get(TokenUtils.TYPE_CLAIM);
@@ -93,7 +93,7 @@ public class TokenUtilsTest {
     public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, duration, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, duration, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         Thread.sleep(3*1000L);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -102,7 +102,7 @@ public class TokenUtilsTest {
     @Test
     public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         keyPair = TokenUtils.generateKeyPair();
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -111,11 +111,12 @@ public class TokenUtilsTest {
     @Test
     public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());
-        assertEquals(AUDIENCE, defaultClaims.getAudience());
+        List<String> claimedAudience = (List<String>) defaultClaims.get(TokenUtils.AUDIENCE_CLAIM);
+        assertNotNull(claimedAudience);
     }
 
     @Test

@@ -64,6 +64,7 @@ public final class TokenUtils {
     public static final String PERMISSIONS_CLAIM = "permissions";
     public static final String TYPE_CLAIM = "typ";
     public static final String NONCE_CLAIM = "nonce";
+    public static final String AUDIENCE_CLAIM = "aud";
     public static final String AUTH_TIME_CLAIM = "auth_time";
     public static final String KEY_ID = "kid";
     public static final String TYP_ID = "typ";
@@ -94,19 +95,19 @@ public final class TokenUtils {
         return claims;
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, clientId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, ClientId clientId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, audience, clientId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, UserId userId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, userId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, UserId userId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, audience, userId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, String subject, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(subject, organizationId.getId(), projectId.getId(), expirationTime, notBefore, issuedAt, customClaims, keyId, privateKey, type);
+        return issueToken(subject, organizationId.getId(), audience, expirationTime, notBefore, issuedAt, customClaims, keyId, privateKey, type);
     }
 
     public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
@@ -129,7 +130,7 @@ public final class TokenUtils {
         return JWToken.from(builder.compact());
     }
 
-    public static JWToken issueToken(String subject, String issuer, String audience, Date expirationTime, Date notBefore, Date issuedAt, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(String subject, String issuer, Set<String> audience, Date expirationTime, Date notBefore, Date issuedAt, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         JwtBuilder builder = Jwts.builder();
         builder.setHeaderParam(TYP_ID, TYP_VALUE)
                 .setHeaderParam(KEY_ID, keyId.getId())
@@ -139,7 +140,7 @@ public final class TokenUtils {
                 .setIssuer(issuer)
                 .setIssuedAt(issuedAt)
                 .setNotBefore(notBefore)
-                .setAudience(audience)
+                .claim(AUDIENCE_CLAIM, audience)
                 .claim(TYPE_CLAIM, type.getType())
                 .setId(UUID.randomUUID().toString());
         customClaims.forEach((k,v) -> builder.claim(k,v));

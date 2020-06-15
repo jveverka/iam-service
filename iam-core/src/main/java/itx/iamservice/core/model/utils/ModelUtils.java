@@ -29,6 +29,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +45,7 @@ public final class ModelUtils {
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
     public static final UserId IAM_ADMIN_USER = UserId.from("admin");
     public static final ClientId IAM_ADMIN_CLIENT_ID = ClientId.from("admin-client");
+    private static final Collection<String> IAM_AUDIENCE = Arrays.asList(IAM_ADMINS_NAME);
 
     public static final String IAM_SERVICE = "iam-admin-service";
     public static final String READ_ACTION = "read";
@@ -121,7 +124,7 @@ public final class ModelUtils {
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), iamClientSecret);
         return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
                 .addOrganization(organizationId, IAM_ADMINS_NAME)
-                .addProject(projectId, IAM_ADMINS_NAME)
+                .addProject(projectId, IAM_ADMINS_NAME, IAM_AUDIENCE)
                     .addRole(manageOrganizationsRole)
                     .addRole(manageProjectsRole)
                     .addRole(manageUsersRole)

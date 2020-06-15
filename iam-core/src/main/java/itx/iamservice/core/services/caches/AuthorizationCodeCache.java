@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface AuthorizationCodeCache {
 
-    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Set<RoleId> scope);
+    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Set<RoleId> scope, Set<String> audience);
 
     int purgeCodes();
 

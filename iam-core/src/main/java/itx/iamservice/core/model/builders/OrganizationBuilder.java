@@ -8,6 +8,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.services.caches.ModelCache;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public final class OrganizationBuilder {
@@ -22,13 +23,13 @@ public final class OrganizationBuilder {
         this.organization = organization;
     }
 
-    public ProjectBuilder addProject(String name) throws PKIException {
+    public ProjectBuilder addProject(String name, Collection<String> audience) throws PKIException {
         ProjectId id = ProjectId.from(UUID.randomUUID().toString());
-        return addProject(id, name);
+        return addProject(id, name, audience);
     }
 
-    public ProjectBuilder addProject(ProjectId id, String name) throws PKIException {
-        Project project = new ProjectImpl(id, name, organization.getId(), organization.getPrivateKey());
+    public ProjectBuilder addProject(ProjectId id, String name, Collection<String> audience) throws PKIException {
+        Project project = new ProjectImpl(id, name, organization.getId(), organization.getPrivateKey(), audience);
         modelCache.add(organization.getId(), project);
         return new ProjectBuilder(modelCache,this, project);
     }

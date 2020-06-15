@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class NimbusJoseTests {
 
+    private static Set<String> audience = Set.of("aud1", "aud2");
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -91,7 +92,7 @@ public class NimbusJoseTests {
         PublicKey publicKeyFromRSAKey = rsaKey.toPublicKey();
         assertNotNull(publicKeyFromRSAKey);
 
-        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("p1"), UserId.from("u1"), 10L,
+        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), audience, UserId.from("u1"), 10L,
                 TimeUnit.HOURS, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
@@ -120,7 +121,7 @@ public class NimbusJoseTests {
                 ProviderConfigurationServiceImpl.getOperations(), keyPairSerialized.getX509Certificate(),
                 modulusBase64String, exponentBase64String);
 
-        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("p1"), UserId.from("u1"), 10L,
+        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), audience, UserId.from("u1"), 10L,
                 TimeUnit.HOURS, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());

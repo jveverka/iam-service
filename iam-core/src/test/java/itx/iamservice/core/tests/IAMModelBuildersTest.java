@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.security.Security;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -27,6 +29,7 @@ public class IAMModelBuildersTest {
 
     private static Role adminFullAccess;
     private static Role adminReadAccess;
+    private static Set<String> audience = Set.of("audience");
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -52,7 +55,7 @@ public class IAMModelBuildersTest {
     public void testModelBuilder() throws PKIException {
         ModelCache modelCache = IAMModelBuilders.modelBuilder("my model")
                 .addOrganization("first organization")
-                    .addProject("first project")
+                    .addProject("first project", audience)
                         .addRole(adminFullAccess)
                         .addRole(adminReadAccess)
                         .addClient("test client")
@@ -63,12 +66,12 @@ public class IAMModelBuildersTest {
                             .addUserNamePasswordCredentials("admin", "secret")
                         .and()
                     .and()
-                    .addProject("second project")
+                    .addProject("second project", audience)
                 .and().and()
                 .addOrganization("second organization")
-                    .addProject("first project")
+                    .addProject("first project", audience)
                     .and()
-                    .addProject("second project")
+                    .addProject("second project", audience)
                 .build();
         assertNotNull(modelCache);
     }
@@ -92,7 +95,7 @@ public class IAMModelBuildersTest {
     public void testModelBuilderWithIds() throws PKIException {
         ModelCache modelCache = IAMModelBuilders.modelBuilder(ModelId.from("model-001"), "my model")
                 .addOrganization(OrganizationId.from("org-001"), "first organization")
-                    .addProject(ProjectId.from("project-001"), "first project")
+                    .addProject(ProjectId.from("project-001"), "first project", audience)
                     .addRole(adminFullAccess)
                     .addRole(adminReadAccess)
                     .addClient(ClientId.from("client-001"), "test client")
@@ -103,12 +106,12 @@ public class IAMModelBuildersTest {
                         .addUserNamePasswordCredentials(UserId.from("user-001"), "secret")
                     .and()
                 .and()
-                    .addProject(ProjectId.from("project-002"), "second project")
+                    .addProject(ProjectId.from("project-002"), "second project", audience)
                 .and().and()
                 .addOrganization(OrganizationId.from("org-002"),"second organization")
-                    .addProject(ProjectId.from("project-001"),"first project")
+                    .addProject(ProjectId.from("project-001"),"first project", audience)
                     .and()
-                    .addProject(ProjectId.from("project-002"),"second project")
+                    .addProject(ProjectId.from("project-002"),"second project", audience)
                 .build();
         assertNotNull(modelCache);
     }

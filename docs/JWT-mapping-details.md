@@ -21,7 +21,7 @@
 ### Claims: ID_Token
 * __iss__ (issuer) - OrganizationId, string. 
 * __aud__ (audience) - ClientId, string.
-* __sub__ (subject) - Combination of <OrganizationId/ProjectId/[UserId|ClientId]>, string.
+* __sub__ (subject) - Combination of 'OrganizationId/ProjectId/[UserId|ClientId]', string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string
 * __iat__ (Issued At) - current datetime+timezone, string
 * __auth_time__ - timestamp of client's authentication.
@@ -34,5 +34,5 @@ back channel for JWT signature verification.
  
 #### References
 * __Standard Claims__ - Data model mapping of [RFC7519 registered JWT claim names](https://tools.ietf.org/html/rfc7519#section-4):
-* Data model mapping of [OpenID connect standard claims](https://openid.net/specs/openid-connect-core-1_0.html#Claims):
-* Scope - [oauth scopes](https://oauth.net/2/scope/).
+* __Data model__ mapping of [OpenID connect standard claims](https://openid.net/specs/openid-connect-core-1_0.html#Claims):
+* __Scope__ - [oauth scopes](https://oauth.net/2/scope/).

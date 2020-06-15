@@ -26,8 +26,9 @@ public class ProjectImpl implements Project {
     private final KeyPairSerialized keyPairSerialized;
     private final Set<ClientId> clients;
     private final Set<Permission> permissions;
+    private final Set<String> audience;
 
-    public ProjectImpl(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey) throws PKIException {
+    public ProjectImpl(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey, Collection<String> audience) throws PKIException {
         this.id = id;
         this.name = name;
         this.users = new HashSet<>();
@@ -37,6 +38,10 @@ public class ProjectImpl implements Project {
         this.permissions = new HashSet<>();
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), 10*365L, TimeUnit.DAYS, organizationPrivateKey);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
+        this.audience = new HashSet<>();
+        audience.forEach(a->
+                this.audience.add(a)
+        );
     }
 
     @JsonCreator
@@ -47,7 +52,8 @@ public class ProjectImpl implements Project {
                        @JsonProperty("users") Collection<UserId> users,
                        @JsonProperty("roles") Collection<RoleId> roles,
                        @JsonProperty("permissions") Collection<Permission> permissions,
-                       @JsonProperty("clients") Collection<ClientId> clients) throws PKIException {
+                       @JsonProperty("clients") Collection<ClientId> clients,
+                       @JsonProperty("audience") Collection<String> audience) throws PKIException {
         this.id = id;
         this.name = name;
         this.users = new HashSet<>();
@@ -55,6 +61,7 @@ public class ProjectImpl implements Project {
         this.roles = new HashSet<>();
         this.clients = new HashSet<>();
         this.permissions = new HashSet<>();
+        this.audience = new HashSet<>();
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
         users.forEach(u->
@@ -69,6 +76,9 @@ public class ProjectImpl implements Project {
         clients.forEach(c->
             this.clients.add(c)
         );
+        audience.forEach(a->
+                this.audience.add(a)
+        );
     }
 
     @Override
@@ -79,6 +89,11 @@ public class ProjectImpl implements Project {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Set<String> getAudience() {
+        return audience;
     }
 
     @Override

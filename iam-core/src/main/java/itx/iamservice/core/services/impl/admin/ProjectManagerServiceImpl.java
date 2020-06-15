@@ -31,14 +31,14 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public Optional<ProjectId> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException {
+    public Optional<ProjectId> create(OrganizationId id, CreateProjectRequest request) throws PKIException {
         Optional<Organization> organizationOptional = modelCache.getOrganization(id);
-        Optional<Project> projectOptional  = modelCache.getProject(id, createProjectRequest.getId());
+        Optional<Project> projectOptional  = modelCache.getProject(id, request.getId());
         if (organizationOptional.isPresent() && projectOptional.isEmpty()) {
-            Project project = new ProjectImpl(createProjectRequest.getId(),
-                    createProjectRequest.getName(), id, organizationOptional.get().getPrivateKey());
+            Project project = new ProjectImpl(request.getId(),
+                    request.getName(), id, organizationOptional.get().getPrivateKey(), request.getAudience());
             modelCache.add(id, project);
-            return Optional.of(createProjectRequest.getId());
+            return Optional.of(request.getId());
         } else {
             return Optional.empty();
         }

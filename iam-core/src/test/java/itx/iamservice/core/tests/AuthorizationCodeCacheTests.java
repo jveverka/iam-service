@@ -31,6 +31,7 @@ public class AuthorizationCodeCacheTests {
     private static TimeUnit timeUnit = TimeUnit.SECONDS;
     private static AuthorizationCodeCache authorizationCodeCache;
     private static Set<RoleId> roles = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
+    private static Set<String> audience = Set.of("aud1", "aud2");
 
     private static AuthorizationCode authorizationCode;
 
@@ -50,7 +51,7 @@ public class AuthorizationCodeCacheTests {
     @Order(2)
     public void testIssueCode() {
         authorizationCode = authorizationCodeCache.issue(OrganizationId.from("org01"), ProjectId.from("proj01"),
-                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), roles);
+                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), roles, audience);
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());
         assertTrue(verifiedAuthorizationCode.isPresent());

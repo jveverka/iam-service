@@ -33,6 +33,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Set;
+
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addPermissionToRoleForProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addRoleToClientOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.assignRoleToUserOnProject;
@@ -100,7 +102,7 @@ public class ProjectManagementTests {
     @Test
     @Order(2)
     public void createProjectTest() {
-        CreateProjectRequest createProjectRequest = new CreateProjectRequest(ProjectId.from("project-002"), "project-002-name");
+        CreateProjectRequest createProjectRequest = new CreateProjectRequest(ProjectId.from("project-002"), "project-002-name", Set.of("project-002"));
         projectId = createProject(jwt, restTemplate, port, organizationId, createProjectRequest);
         assertNotNull(projectId);
         assertNotNull(projectId.getId());
@@ -109,7 +111,7 @@ public class ProjectManagementTests {
     @Test
     @Order(3)
     public void createExistingProjectTest() {
-        CreateProjectRequest createProjectRequest = new CreateProjectRequest(ProjectId.from("project-002"), "project-002-name");
+        CreateProjectRequest createProjectRequest = new CreateProjectRequest(ProjectId.from("project-002"), "project-002-name", Set.of("project-002"));
         ResponseEntity<ProjectId> response = createProjectRequest(jwt, restTemplate, port, organizationId, createProjectRequest);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }

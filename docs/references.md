@@ -6,3 +6,8 @@
 * [Spring Security OAuth2](https://projects.spring.io/spring-security-oauth/docs/oauth2.html)
 * [SpringBoot + SpringSecurity + JWT](https://www.youtube.com/watch?v=X80nJ5T7YpE)
 * [Okta endpoints](https://developer.okta.com/docs/reference/api/oidc/#endpoints)
+
+## IAM servers
+* [connect2id](https://connect2id.com/downloads)
+* [keycloak](https://www.keycloak.org/)
+* [wso2](https://wso2.com/identity-and-access-management/)

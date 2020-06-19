@@ -4,6 +4,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.PermissionId;
+import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
@@ -41,9 +42,9 @@ public class ProjectManagementController {
     public ResponseEntity<ProjectId> createProject(@PathVariable("organization-id") String organizationId,
                                                    @RequestBody CreateProjectRequest request) throws PKIException {
         OrganizationId id = OrganizationId.from(organizationId);
-        Optional<ProjectId> projectId = projectManagerService.create(id, request);
+        Optional<Project> projectId = projectManagerService.create(id, request);
         if (projectId.isPresent()) {
-            return ResponseEntity.ok(projectId.get());
+            return ResponseEntity.ok(projectId.get().getId());
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }

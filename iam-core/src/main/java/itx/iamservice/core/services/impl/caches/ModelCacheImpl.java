@@ -6,16 +6,19 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.services.caches.ModelCache;
+import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import itx.iamservice.core.services.persistence.PersistenceService;
 
@@ -108,8 +111,12 @@ public class ModelCacheImpl implements ModelCache {
         return removed != null;
     }
 
+    /**
+     * User Methods
+     */
+
     @Override
-    public Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+    public synchronized Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         User user = users.get(userKey(organizationId, projectId, userId));
         if (user !=  null) {
             return Optional.of(user);
@@ -118,7 +125,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Collection<User> getUsers(OrganizationId organizationId, ProjectId projectId) {
+    public synchronized Collection<User> getUsers(OrganizationId organizationId, ProjectId projectId) {
         List<User> result = new ArrayList<>();
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         users.keySet().forEach(k -> {
@@ -130,7 +137,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+    public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         ModelKey<User> key = userKey(organizationId, projectId, userId);
@@ -146,7 +153,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public void add(OrganizationId organizationId, ProjectId projectId, Client client) {
+    public synchronized void add(OrganizationId organizationId, ProjectId projectId, Client client) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         if (project !=  null) {
@@ -159,7 +166,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
+    public synchronized Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
         Project project = projects.get(projectKey(organizationId, projectId));
         if (project != null) {
             return Optional.of(project);
@@ -168,7 +175,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Collection<Project> getProjects(OrganizationId organizationId) {
+    public synchronized Collection<Project> getProjects(OrganizationId organizationId) {
         List<Project> result = new ArrayList<>();
         ModelKey<Organization> organizationKey = ModelKey.from(Organization.class, organizationId);
         projects.keySet().forEach(k -> {
@@ -180,20 +187,27 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public void add(OrganizationId organizationId, Project project) {
+    public synchronized Optional<Project> add(OrganizationId organizationId, CreateProjectRequest request) throws PKIException {
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
+        ModelKey<Project> projectKey = projectKey(organizationId, request.getId());
         Organization organization = organizations.get(organizationKey);
-        if (organization != null) {
-            organization.addProject(project.getId());
+        Project p = projects.get(projectKey);
+        if (organization != null && p == null) {
+            organization.addProject(request.getId());
+            ModelKey<Project> key = projectKey(organizationId, request.getId());
+            Project project = new ProjectImpl(request.getId(),
+                    request.getName(), organization.getId(), organization.getPrivateKey(), request.getAudience());
+            projects.put(key, project);
+            persistenceService.onNodeCreated(key, project);
             persistenceService.onNodeUpdated(organizationKey, organization);
+            return Optional.of(project);
+        } else {
+            return Optional.empty();
         }
-        ModelKey<Project> key = projectKey(organizationId, project.getId());
-        projects.put(key, project);
-        persistenceService.onNodeCreated(key, project);
     }
 
     @Override
-    public boolean remove(OrganizationId organizationId, ProjectId projectId) {
+    public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId) {
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
         ModelKey<Project> key = projectKey(organizationId, projectId);
         Organization organization = organizations.get(organizationKey);
@@ -209,7 +223,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public void add(OrganizationId organizationId, ProjectId projectId, User user) {
+    public synchronized void add(OrganizationId organizationId, ProjectId projectId, User user) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         if (project != null) {
@@ -222,7 +236,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+    public synchronized Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         ModelKey<Client> key = clientKey(organizationId, projectId, clientId);
         Client client = clients.get(key);
         if (client !=  null) {
@@ -232,7 +246,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Collection<Client> getClients(OrganizationId organizationId, ProjectId projectId) {
+    public synchronized Collection<Client> getClients(OrganizationId organizationId, ProjectId projectId) {
         List<Client> result = new ArrayList<>();
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         clients.keySet().forEach(k -> {
@@ -244,7 +258,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean verifyClientCredentials(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials) {
+    public synchronized boolean verifyClientCredentials(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials) {
         ModelKey<Client> key = clientKey(organizationId, projectId, clientCredentials.getId());
         Client client = clients.get(key);
         if (client != null) {
@@ -254,7 +268,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean remove(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+    public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         if (project != null) {
@@ -271,7 +285,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean assignRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
+    public synchronized boolean assignRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
         ModelKey<Client> clientKey = clientKey(id, projectId, clientId);
         Role role = roles.get(roleKey(id, projectId, roleId));
         Client client = clients.get(clientKey);
@@ -284,7 +298,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
+    public synchronized boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
         ModelKey<Client> clientKey = clientKey(id, projectId, clientId);
         Role role = roles.get(roleKey(id, projectId, roleId));
         Client client = clients.get(clientKey);
@@ -297,7 +311,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean add(OrganizationId organizationId, ProjectId projectId, Role role) {
+    public synchronized boolean add(OrganizationId organizationId, ProjectId projectId, Role role) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         if (project != null) {
@@ -312,7 +326,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId) {
+    public synchronized Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId) {
         List<Role> result = new ArrayList<>();
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         roles.keySet().forEach(k -> {
@@ -324,13 +338,13 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Optional<Role> getRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
+    public synchronized Optional<Role> getRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
         return Optional.ofNullable(roles.get(roleKey));
     }
 
     @Override
-    public boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
+    public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         if (project != null) {
@@ -347,7 +361,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean addPermissionToRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
+    public synchronized boolean addPermissionToRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
@@ -364,7 +378,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
+    public synchronized boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
         ModelKey<User> userKey = userKey(id, projectId, userId);
         Role role = roles.get(roleKey(id, projectId, roleId));
         User user = users.get(userKey);
@@ -377,7 +391,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
+    public synchronized boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
         ModelKey<User> userKey = userKey(id, projectId, userId);
         Role role = roles.get(roleKey(id, projectId, roleId));
         User user = users.get(userKey);
@@ -390,7 +404,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
+    public synchronized boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
         Role role = roles.get(roleKey);
         if (role != null) {
@@ -402,12 +416,12 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         return getPermissions(organizationId, projectId, userId, Set.of());
     }
 
     @Override
-    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId, Set<RoleId> roleFilter) {
+    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId, Set<RoleId> roleFilter) {
         Set<Permission> result = new HashSet<>();
         ModelKey<User> userKey = userKey(organizationId, projectId, userId);
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
@@ -428,12 +442,12 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         return getPermissions(organizationId, projectId, clientId, Set.of());
     }
 
     @Override
-    public Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Set<RoleId> roleFilter) {
+    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Set<RoleId> roleFilter) {
         Set<Permission> result = new HashSet<>();
         ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);

@@ -40,10 +40,6 @@ public final class ModelBuilder {
         return new OrganizationBuilder(modelCache,this, organization);
     }
 
-    public void addProject(OrganizationId id, Project project) {
-        this.modelCache.add(id, project);
-    }
-
     public ModelCache build() {
         return modelCache;
     }

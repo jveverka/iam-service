@@ -79,7 +79,7 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(3)
     public void createFirstProjectTest() throws PKIException {
-        Optional<ProjectId> result = projectManagerService.create(oid001, CreateProjectRequest.from(pId001, "p001-name"));
+        Optional<Project> result = projectManagerService.create(oid001, CreateProjectRequest.from(pId001, "p001-name"));
         assertTrue(result.isPresent());
         Collection<Project> all = projectManagerService.getAll(oid001);
         assertEquals(1, all.size());
@@ -90,7 +90,7 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(4)
     public void createSecondProjectTest() throws PKIException {
-        Optional<ProjectId> result = projectManagerService.create(oid002, CreateProjectRequest.from(pId001, "p001-name"));
+        Optional<Project> result = projectManagerService.create(oid002, CreateProjectRequest.from(pId001, "p001-name"));
         assertTrue(result.isPresent());
         Collection<Project> all = projectManagerService.getAll(oid001);
         assertEquals(1, all.size());

@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public interface ProjectManagerService {
 
-    Optional<ProjectId> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException;
+    Optional<Project> create(OrganizationId id, CreateProjectRequest createProjectRequest) throws PKIException;
 
     Collection<Project> getAll(OrganizationId id);
 

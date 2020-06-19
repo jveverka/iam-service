@@ -1,13 +1,11 @@
 package itx.iamservice.core.services.impl.admin;
 
-import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.ProjectImpl;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.RoleImpl;
@@ -20,7 +18,6 @@ import itx.iamservice.core.services.dto.CreateRoleRequest;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.UUID;
 
 public class ProjectManagerServiceImpl implements ProjectManagerService {
 
@@ -31,17 +28,8 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public Optional<ProjectId> create(OrganizationId id, CreateProjectRequest request) throws PKIException {
-        Optional<Organization> organizationOptional = modelCache.getOrganization(id);
-        Optional<Project> projectOptional  = modelCache.getProject(id, request.getId());
-        if (organizationOptional.isPresent() && projectOptional.isEmpty()) {
-            Project project = new ProjectImpl(request.getId(),
-                    request.getName(), id, organizationOptional.get().getPrivateKey(), request.getAudience());
-            modelCache.add(id, project);
-            return Optional.of(request.getId());
-        } else {
-            return Optional.empty();
-        }
+    public Optional<Project> create(OrganizationId id, CreateProjectRequest request) throws PKIException {
+        return modelCache.add(id, request);
     }
 
     @Override
@@ -56,7 +44,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public Optional<Project> get(OrganizationId id, ProjectId projectId) {
-        return getProject(id, projectId);
+        return modelCache.getProject(id, projectId);
     }
 
     @Override
@@ -93,7 +81,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public void addPermission(OrganizationId id, ProjectId projectId, Permission permission) {
-        Optional<Project> project = getProject(id, projectId);
+        Optional<Project> project = modelCache.getProject(id, projectId);
         if (project.isPresent()) {
             project.get().addPermission(permission);
         }
@@ -101,7 +89,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public Collection<Permission> getPermissions(OrganizationId id, ProjectId projectId) {
-        Optional<Project> project = getProject(id, projectId);
+        Optional<Project> project = modelCache.getProject(id, projectId);
         if (project.isPresent()) {
             return project.get().getPermissions();
         }
@@ -110,7 +98,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public boolean removePermission(OrganizationId id, ProjectId projectId, PermissionId permissionId) {
-        Optional<Project> project = getProject(id, projectId);
+        Optional<Project> project = modelCache.getProject(id, projectId);
         if (project.isPresent()) {
             return project.get().removePermission(permissionId);
         }
@@ -125,10 +113,6 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     @Override
     public boolean removePermissionFromRole(OrganizationId id, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         return modelCache.removePermissionFromRole(id, projectId, roleId, permissionId);
-    }
-
-    private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {
-        return modelCache.getProject(id, projectId);
     }
 
 }

@@ -6,6 +6,7 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.Project;
@@ -14,6 +15,7 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.CreateProjectRequest;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,7 +35,7 @@ public interface ModelCache {
     boolean remove(OrganizationId organizationId);
 
     //PROJECT
-    void add(OrganizationId organizationId, Project  project);
+    Optional<Project> add(OrganizationId organizationId, CreateProjectRequest request) throws PKIException;
 
     Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId);
 

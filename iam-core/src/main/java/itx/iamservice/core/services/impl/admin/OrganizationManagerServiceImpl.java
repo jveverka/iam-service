@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class OrganizationManagerServiceImpl implements OrganizationManagerService {
 
@@ -27,12 +26,7 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
 
     @Override
     public Optional<OrganizationId> create(CreateOrganizationRequest request) throws PKIException {
-        if (!modelCache.getOrganization(request.getId()).isPresent()) {
-            modelCache.add(new OrganizationImpl(request.getId(), request.getName()));
-            return Optional.of(request.getId());
-        } else {
-            return Optional.empty();
-        }
+        return modelCache.add(new OrganizationImpl(request.getId(), request.getName()));
     }
 
     @Override

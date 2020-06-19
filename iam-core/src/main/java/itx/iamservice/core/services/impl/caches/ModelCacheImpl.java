@@ -68,29 +68,38 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public Model getModel() {
+    public synchronized Model getModel() {
         return model;
     }
 
+    /**
+     * Organization methods
+     **/
+
     @Override
-    public void add(Organization organization) {
+    public synchronized Optional<OrganizationId> add(Organization organization) {
         ModelKey<Organization> key = organizationKey(organization.getId());
-        organizations.put(key , organization);
-        persistenceService.onNodeCreated(key, organization);
+        if (organizations.get(key) == null) {
+            organizations.put(key, organization);
+            persistenceService.onNodeCreated(key, organization);
+            return Optional.of(organization.getId());
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Collection<Organization> getOrganizations() {
+    public synchronized Collection<Organization> getOrganizations() {
         return organizations.values().stream().collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Organization> getOrganization(OrganizationId organizationId) {
+    public synchronized Optional<Organization> getOrganization(OrganizationId organizationId) {
         return Optional.ofNullable(organizations.get(organizationKey(organizationId)));
     }
 
     @Override
-    public boolean remove(OrganizationId organizationId) {
+    public synchronized boolean remove(OrganizationId organizationId) {
         ModelKey<Organization> key = organizationKey(organizationId);
         Organization removed = organizations.remove(key);
         if (removed != null) {

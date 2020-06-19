@@ -24,7 +24,7 @@ public interface ModelCache {
     Model getModel();
 
     //ORGANIZATION
-    void add(Organization organization);
+    Optional<OrganizationId> add(Organization organization);
 
     Optional<Organization> getOrganization(OrganizationId organizationId);
 

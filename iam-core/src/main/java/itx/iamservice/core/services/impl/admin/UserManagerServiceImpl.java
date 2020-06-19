@@ -28,20 +28,6 @@ public class UserManagerServiceImpl implements UserManagerService {
     }
 
     @Override
-    public boolean create(OrganizationId id, ProjectId projectId, UserId userId, String name) throws PKIException {
-        Optional<Project> projectOptional = modelCache.getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<User> userOptional = modelCache.getUser(id, projectId, userId);
-            if (userOptional.isEmpty()) {
-                User user = new UserImpl(userId, name, projectOptional.get().getId(), 3600*1000L, 24*3600*1000L, projectOptional.get().getPrivateKey());
-                modelCache.add(id, projectId, user);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public Optional<UserId> create(OrganizationId id, ProjectId projectId, CreateUserRequest request) throws PKIException {
         Optional<Project> projectOptional = modelCache.getProject(id, projectId);
         Optional<User> userOptional = modelCache.getUser(id, projectId, request.getId());

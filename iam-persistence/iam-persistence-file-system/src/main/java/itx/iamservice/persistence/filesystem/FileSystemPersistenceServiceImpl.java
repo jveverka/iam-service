@@ -35,32 +35,41 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
     }
 
     @Override
-    public void onModelInitialization(ModelWrapper modelWrapper) {
+    public synchronized void onModelInitialization(ModelWrapper modelWrapper) {
+        long timeStamp = System.nanoTime();
         this.modelWrapper = modelWrapper;
         flushOnChange();
+        LOG.trace("onModelInitialization: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public void onModelChange(Model model) {
+    public synchronized void onModelChange(Model model) {
+        long timeStamp = System.nanoTime();
         this.modelWrapper  = new ModelWrapper(model);
         flushOnChange();
+        LOG.trace("onModelChange: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
+    public synchronized <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
+        long timeStamp = System.nanoTime();
         putData(modelKey, newNode);
         flushOnChange();
+        LOG.trace("onNodeCreated: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
+    public synchronized <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
+        long timeStamp = System.nanoTime();
         putData(modelKey, newNode);
         flushOnChange();
+        LOG.trace("onNodeUpdated: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode) {
+    public synchronized <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode) {
+        long timeStamp = System.nanoTime();
         if (Organization.class.equals(modelKey.getType())) {
             modelWrapper.removeOrganization((ModelKey<Organization>)modelKey);
         } else if (Project.class.equals(modelKey.getType())) {
@@ -73,18 +82,19 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
             modelWrapper.removeRole((ModelKey<Role>)modelKey);
         }
         flushOnChange();
+        LOG.trace("onNodeDeleted: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public void flush() throws Exception {
+    public synchronized void flush() throws Exception {
         flushToFile();
     }
 
-    public void flushToFile() throws IOException {
+    public synchronized void flushToFile() throws IOException {
         mapper.writeValue(dataFile.toFile(), modelWrapper);
     }
 
-    public String flushToString() throws IOException {
+    public synchronized String flushToString() throws IOException {
         return mapper.writeValueAsString(modelWrapper);
     }
 

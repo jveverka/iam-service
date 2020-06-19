@@ -7,6 +7,6 @@ import itx.iamservice.core.services.caches.ModelCache;
  */
 public interface DataLoadService {
 
-    ModelCache populateCache();
+    ModelCache populateCache() throws Exception;
 
 }

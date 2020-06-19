@@ -1,6 +1,5 @@
 package itx.iamservice.persistence.filesystem;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
@@ -17,25 +16,38 @@ public class FileSystemDataLoadServiceImpl implements DataLoadService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileSystemDataLoadServiceImpl.class);
 
-    private final ModelWrapper modelWrapper;
     private final PersistenceService persistenceService;
+    private Path dataFile;
+    private String serializedModel;
 
-    public FileSystemDataLoadServiceImpl(Path dataFile, PersistenceService persistenceService) throws IOException {
+    public FileSystemDataLoadServiceImpl(Path dataFile, PersistenceService persistenceService) {
         LOG.info("FileSystemPersistence: loading from dataFile={}", dataFile);
-        ObjectMapper mapper = new ObjectMapper();
-        this.modelWrapper = mapper.readValue(dataFile.toFile(), ModelWrapper.class);
         this.persistenceService = persistenceService;
+        this.dataFile = dataFile;
+        this.serializedModel = null;
     }
 
-    public FileSystemDataLoadServiceImpl(String serializedModel, PersistenceService persistenceService) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        this.modelWrapper = mapper.readValue(serializedModel, ModelWrapper.class);
+    public FileSystemDataLoadServiceImpl(String serializedModel, PersistenceService persistenceService) {
         this.persistenceService = persistenceService;
+        this.dataFile = null;
+        this.serializedModel = serializedModel;
     }
 
     @Override
-    public ModelCache populateCache() {
-        return new ModelCacheImpl(modelWrapper, persistenceService);
+    public ModelCache populateCache() throws IOException {
+        long timeStamp = System.nanoTime();
+        ObjectMapper mapper = new ObjectMapper();
+        if (dataFile != null) {
+            ModelWrapper modelWrapper = mapper.readValue(dataFile.toFile(), ModelWrapper.class);
+            LOG.trace("populateCache: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
+            return new ModelCacheImpl(modelWrapper, persistenceService);
+        } else if (serializedModel != null) {
+            ModelWrapper modelWrapper = mapper.readValue(serializedModel, ModelWrapper.class);
+            LOG.trace("populateCache: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
+            return new ModelCacheImpl(modelWrapper, persistenceService);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }

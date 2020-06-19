@@ -27,28 +27,37 @@ public class InMemoryPersistenceServiceImpl implements PersistenceService {
     }
 
     @Override
-    public void onModelInitialization(ModelWrapper modelWrapper) {
+    public synchronized void onModelInitialization(ModelWrapper modelWrapper) {
+        long timeStamp = System.nanoTime();
         this.modelWrapper = modelWrapper;
+        LOG.info("onModelInitialization: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public void onModelChange(Model model) {
+    public synchronized void onModelChange(Model model) {
+        long timeStamp = System.nanoTime();
         this.modelWrapper = new ModelWrapper(model);
+        LOG.info("onModelChange: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
+    public synchronized <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
+        long timeStamp = System.nanoTime();
         putData(modelKey, newNode);
+        LOG.info("onNodeCreated: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
+    public synchronized <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
+        long timeStamp = System.nanoTime();
         putData(modelKey, newNode);
+        LOG.info("onNodeUpdated: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode) {
+    public synchronized <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode) {
+        long timeStamp = System.nanoTime();
         if (Organization.class.equals(modelKey.getType())) {
             modelWrapper.removeOrganization((ModelKey<Organization>)modelKey);
         } else if (Project.class.equals(modelKey.getType())) {
@@ -60,14 +69,15 @@ public class InMemoryPersistenceServiceImpl implements PersistenceService {
         } else if (Role.class.equals(modelKey.getType())) {
             modelWrapper.removeRole((ModelKey<Role>)modelKey);
         }
+        LOG.info("onNodeDeleted: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
     }
 
     @Override
-    public void flush() throws Exception {
+    public synchronized void flush() throws Exception {
         LOG.info("flush: NOOP");
     }
 
-    public String flushToString() throws IOException {
+    public synchronized String flushToString() throws IOException {
         return mapper.writeValueAsString(modelWrapper);
     }
 

@@ -53,20 +53,9 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
-    public boolean addRole(OrganizationId id, ProjectId projectId, Role role) {
-        return modelCache.add(id, projectId, role);
-    }
-
-    @Override
     public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest request) {
-        Optional<Role> roleOptional = modelCache.getRole(id, projectId, request.getId());
-        if (roleOptional.isEmpty()) {
-            Role role = new RoleImpl(request.getId(), request.getName());
-            if (modelCache.add(id, projectId, role)) {
-                return Optional.of(request.getId());
-            }
-        }
-        return Optional.empty();
+        Role role = new RoleImpl(request.getId(), request.getName());
+        return modelCache.add(id, projectId, role);
     }
 
     @Override

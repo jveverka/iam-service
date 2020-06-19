@@ -311,18 +311,20 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public synchronized boolean add(OrganizationId organizationId, ProjectId projectId, Role role) {
+    public synchronized Optional<RoleId> add(OrganizationId organizationId, ProjectId projectId, Role role) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        Role r = roles.get(roleKey(organizationId, projectId, role.getId()));
         Project project = projects.get(projectKey);
-        if (project != null) {
+        if (project != null && r == null) {
             project.addRole(role.getId());
-            persistenceService.onNodeUpdated(projectKey, project);
             ModelKey<Role> key = roleKey(organizationId, projectId, role.getId());
             roles.put(key, role);
+            persistenceService.onNodeUpdated(projectKey, project);
             persistenceService.onNodeCreated(key, role);
-            return true;
+            return Optional.of(role.getId());
+        } else {
+            return Optional.empty();
         }
-        return false;
     }
 
     @Override

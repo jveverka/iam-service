@@ -15,6 +15,7 @@ import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
+import itx.iamservice.core.services.dto.CreateRoleRequest;
 import itx.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ProjectManagerServiceImpl;
 import itx.iamservice.core.tests.persistence.TestingPersistenceService;
@@ -101,20 +102,20 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(5)
     public void addAndRemoveRolesTest() {
-        Role role1 = new RoleImpl(RoleId.from("role-001"), "role-001");
-        Role role2 = new RoleImpl(RoleId.from("role-002"), "role-002");
+        CreateRoleRequest request1 = new CreateRoleRequest(RoleId.from("role-001"), "role-001");
+        CreateRoleRequest request2 = new CreateRoleRequest(RoleId.from("role-002"), "role-002");
         Collection<Role> roles = projectManagerService.getRoles(oid001, pId001);
         assertEquals(0, roles.size());
-        boolean result = projectManagerService.addRole(oid001, pId001, role1);
-        assertTrue(result);
-        result = projectManagerService.addRole(oid001, pId001, role2);
-        assertTrue(result);
+        Optional<RoleId> result = projectManagerService.addRole(oid001, pId001, request1);
+        assertTrue(result.isPresent());
+        result = projectManagerService.addRole(oid001, pId001, request2);
+        assertTrue(result.isPresent());
         roles = projectManagerService.getRoles(oid001, pId001);
         assertEquals(2, roles.size());
-        result= projectManagerService.removeRole(oid001, pId001, role1.getId());
-        assertTrue(result);
-        result= projectManagerService.removeRole(oid001, pId001, role2.getId());
-        assertTrue(result);
+        boolean removeResult = projectManagerService.removeRole(oid001, pId001, request1.getId());
+        assertTrue(removeResult);
+        removeResult = projectManagerService.removeRole(oid001, pId001, request2.getId());
+        assertTrue(removeResult);
         roles = projectManagerService.getRoles(oid001, pId001);
         assertEquals(0, roles.size());
     }

@@ -72,7 +72,7 @@ public interface ModelCache {
     boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId);
 
     //ROLE
-    boolean add(OrganizationId organizationId, ProjectId projectId, Role role);
+    Optional<RoleId> add(OrganizationId organizationId, ProjectId projectId, Role role);
 
     Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId);
 

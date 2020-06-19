@@ -26,18 +26,9 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
-    public boolean create(OrganizationId id, CreateOrganizationRequest createOrganizationRequest) throws PKIException {
-        if (modelCache.getOrganization(id).isPresent()) {
-            return false;
-        } else {
-            modelCache.add(new OrganizationImpl(id, createOrganizationRequest.getName()));
-            return true;
-        }
-    }
-
-    @Override
     public Optional<OrganizationId> create(CreateOrganizationRequest request) throws PKIException {
-        if(create(request.getId(), request)) {
+        if (!modelCache.getOrganization(request.getId()).isPresent()) {
+            modelCache.add(new OrganizationImpl(request.getId(), request.getName()));
             return Optional.of(request.getId());
         } else {
             return Optional.empty();

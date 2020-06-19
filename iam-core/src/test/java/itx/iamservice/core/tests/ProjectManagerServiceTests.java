@@ -39,8 +39,8 @@ public class ProjectManagerServiceTests {
     private static TestingPersistenceService testingPersistenceService;
     private static OrganizationManagerService organizationManagerService;
     private static ProjectManagerService projectManagerService;
-    private static OrganizationId oid001 = OrganizationId.from("organization-001");
-    private static OrganizationId oid002 = OrganizationId.from("organization-002");
+    private static OrganizationId oid001;
+    private static OrganizationId oid002;
     private static ProjectId pId001 = ProjectId.from("projectid-001");
 
     @BeforeAll
@@ -66,10 +66,12 @@ public class ProjectManagerServiceTests {
     @Test
     @Order(2)
     public void createOrganizationsTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001", "org-001-name"));
-        assertTrue(result);
-        result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002", "org-002-name"));
-        assertTrue(result);
+        Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-001", "org-001-name"));
+        assertTrue(result.isPresent());
+        oid001 = result.get();
+        result = organizationManagerService.create(CreateOrganizationRequest.from("org-002", "org-002-name"));
+        assertTrue(result.isPresent());
+        oid002 = result.get();
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(2, all.size());
     }

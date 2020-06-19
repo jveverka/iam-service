@@ -12,8 +12,6 @@ import java.util.Optional;
 
 public interface OrganizationManagerService {
 
-    boolean create(OrganizationId id, CreateOrganizationRequest createOrganizationRequest) throws PKIException;
-
     Optional<OrganizationId> create(CreateOrganizationRequest createOrganizationRequest) throws PKIException;
 
     Collection<Organization> getAll();

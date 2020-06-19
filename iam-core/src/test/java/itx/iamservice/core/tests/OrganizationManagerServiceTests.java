@@ -31,8 +31,8 @@ public class OrganizationManagerServiceTests {
     private static ModelCache modelCache;
     private static TestingPersistenceService testingPersistenceService;
     private static OrganizationManagerService organizationManagerService;
-    private static OrganizationId oid001 = OrganizationId.from("organization-001");
-    private static OrganizationId oid002 = OrganizationId.from("organization-002");
+    private static OrganizationId oid001;
+    private static OrganizationId oid002;
 
     @BeforeAll
     private static void init() {
@@ -53,8 +53,9 @@ public class OrganizationManagerServiceTests {
     @Test
     @Order(2)
     public void createFirstOrganizationTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001", "org-001-name"));
-        assertTrue(result);
+        Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-001", "org-001-name"));
+        assertTrue(result.isPresent());
+        oid001 = result.get();
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(1, all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
@@ -67,8 +68,9 @@ public class OrganizationManagerServiceTests {
     @Test
     @Order(2)
     public void createSecondOrganizationTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002", "org-002-name"));
-        assertTrue(result);
+        Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-002", "org-002-name"));
+        oid002 = result.get();
+        assertTrue(result.isPresent());
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(2, all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);
@@ -81,10 +83,10 @@ public class OrganizationManagerServiceTests {
     @Test
     @Order(3)
     public void createExistingOrganizationTest() throws PKIException {
-        boolean result = organizationManagerService.create(oid001, CreateOrganizationRequest.from("org-001", "org-001-name"));
-        assertFalse(result);
-        result = organizationManagerService.create(oid002, CreateOrganizationRequest.from("org-002", "org-002-name"));
-        assertFalse(result);
+        Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-001", "org-001-name"));
+        assertFalse(result.isPresent());
+        result = organizationManagerService.create(CreateOrganizationRequest.from("org-002", "org-002-name"));
+        assertFalse(result.isPresent());
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(2, all.size());
         Optional<Organization> organization = organizationManagerService.get(oid001);

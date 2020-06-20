@@ -86,6 +86,12 @@ public interface ModelCache {
     boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId);
 
     //PERMISSIONS
+    boolean addPermission(OrganizationId organizationId, ProjectId projectId, Permission permission);
+
+    boolean removePermission(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId);
+
+    Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId);
+
     Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
     Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId, Set<RoleId> roleFilter);

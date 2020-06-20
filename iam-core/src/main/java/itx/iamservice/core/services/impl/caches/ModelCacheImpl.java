@@ -418,6 +418,40 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public synchronized boolean addPermission(OrganizationId organizationId, ProjectId projectId, Permission permission) {
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        Project  project =  projects.get(projectKey);
+        if (project != null) {
+            project.addPermission(permission);
+            persistenceService.onNodeUpdated(projectKey, project);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized boolean removePermission(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        Project  project =  projects.get(projectKey);
+        if (project != null) {
+            project.removePermission(permissionId);
+            persistenceService.onNodeUpdated(projectKey, project);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId) {
+        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        Project  project =  projects.get(projectKey);
+        if (project != null) {
+            return Set.copyOf(project.getPermissions());
+        }
+        return Set.of();
+    }
+
+    @Override
     public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         return getPermissions(organizationId, projectId, userId, Set.of());
     }

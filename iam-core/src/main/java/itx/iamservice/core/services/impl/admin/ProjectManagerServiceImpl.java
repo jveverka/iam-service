@@ -16,7 +16,6 @@ import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 public class ProjectManagerServiceImpl implements ProjectManagerService {
@@ -70,28 +69,17 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     @Override
     public void addPermission(OrganizationId id, ProjectId projectId, Permission permission) {
-        Optional<Project> project = modelCache.getProject(id, projectId);
-        if (project.isPresent()) {
-            project.get().addPermission(permission);
-        }
+        modelCache.addPermission(id, projectId, permission);
     }
 
     @Override
     public Collection<Permission> getPermissions(OrganizationId id, ProjectId projectId) {
-        Optional<Project> project = modelCache.getProject(id, projectId);
-        if (project.isPresent()) {
-            return project.get().getPermissions();
-        }
-        return Collections.emptyList();
+        return modelCache.getPermissions(id, projectId);
     }
 
     @Override
     public boolean removePermission(OrganizationId id, ProjectId projectId, PermissionId permissionId) {
-        Optional<Project> project = modelCache.getProject(id, projectId);
-        if (project.isPresent()) {
-            return project.get().removePermission(permissionId);
-        }
-        return false;
+        return modelCache.removePermission(id, projectId, permissionId);
     }
 
     @Override

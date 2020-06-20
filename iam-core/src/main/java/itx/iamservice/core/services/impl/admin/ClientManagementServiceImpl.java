@@ -47,43 +47,17 @@ public class ClientManagementServiceImpl implements ClientManagementService {
 
     @Override
     public boolean removeClient(OrganizationId id, ProjectId projectId, ClientId clientId) {
-        Optional<Project> projectOptional = getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            return projectOptional.get().removeClient(clientId);
-        }
-        return false;
+        return modelCache.remove(id, projectId, clientId);
     }
 
     @Override
     public boolean addRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
-        Optional<Project> projectOptional = getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<Client> client = modelCache.getClient(id, projectId, clientId);
-            if (client.isPresent()) {
-                return client.get().addRole(roleId);
-            }
-        }
-        return false;
+        return modelCache.assignRole(id, projectId, clientId, roleId);
     }
 
     @Override
     public boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
-        Optional<Project> projectOptional = getProject(id, projectId);
-        if (projectOptional.isPresent()) {
-            Optional<Client> client = modelCache.getClient(id, projectId, clientId);
-            if (client.isPresent()) {
-                return client.get().removeRole(roleId);
-            }
-        }
-        return false;
-    }
-
-    private Optional<Project> getProject(OrganizationId id, ProjectId projectId) {
-        Optional<Organization> organization = modelCache.getOrganization(id);
-        if (organization.isPresent()) {
-            return modelCache.getProject(id, projectId);
-        }
-        return Optional.empty();
+        return modelCache.removeRole(id, projectId, clientId, roleId);
     }
 
 }

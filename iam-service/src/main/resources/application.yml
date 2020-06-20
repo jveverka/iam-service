@@ -1,7 +1,11 @@
 server:
   port: 8080
+  shutdown: graceful
 #  servlet:
 #    context-path: /auth
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
 
 iam-service:
   system-config:

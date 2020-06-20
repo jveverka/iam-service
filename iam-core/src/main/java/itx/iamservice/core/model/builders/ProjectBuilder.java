@@ -10,6 +10,7 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.ModelCache;
+import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
 
 import java.util.Optional;
@@ -53,10 +54,13 @@ public final class ProjectBuilder {
     }
 
     public ClientBuilder addClient(ClientId id, String name, String secret) {
-        ClientCredentials credentials = new ClientCredentials(id, secret);
-        Client client = new ClientImpl(credentials, name, 3600*1000L, 24*3600*1000L);
-        modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), client);
-        return new ClientBuilder(this, client);
+        CreateClientRequest request = new CreateClientRequest(id, name, 3600*1000L, 24*3600*1000L, secret);
+        Optional<Client> client = modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), request);
+        if (client.isPresent()) {
+            return new ClientBuilder(this, client.get());
+        } else {
+            throw new UnsupportedOperationException("Create client failed !");
+        }
     }
 
     public ProjectBuilder addRole(Role role)  {

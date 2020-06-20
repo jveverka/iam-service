@@ -3,6 +3,7 @@ package itx.iamservice.core.services.impl.caches;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
@@ -20,6 +21,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.services.caches.ModelCache;
+import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
 import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -157,16 +160,22 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public synchronized void add(OrganizationId organizationId, ProjectId projectId, Client client) {
+    public synchronized Optional<Client> add(OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        ModelKey<Client> clientKey = clientKey(organizationId, projectId, request.getId());
         Project project = projects.get(projectKey);
-        if (project !=  null) {
+        Client c = clients.get(clientKey);
+        if (project !=  null && c == null) {
+            ClientCredentials credentials = new ClientCredentials(request.getId(), request.getSecret());
+            Client client = new ClientImpl(credentials, request.getName(),
+                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration());
             project.addClient(client.getId());
+            clients.put(clientKey, client);
             persistenceService.onNodeUpdated(projectKey, project);
-            ModelKey<Client> key = clientKey(organizationId, projectId, client.getId());
-            clients.put(key, client);
-            persistenceService.onNodeCreated(key, client);
+            persistenceService.onNodeCreated(clientKey, client);
+            return Optional.of(client);
         }
+        return Optional.empty();
     }
 
     @Override

@@ -186,7 +186,7 @@ public class ProjectManagementTests {
     @Test
     @Order(11)
     public void createClientTest() {
-        CreateClientRequest createClientRequest = new CreateClientRequest(ClientId.from("client-0001"), "client-name", 3600L, 7200L);
+        CreateClientRequest createClientRequest = new CreateClientRequest(ClientId.from("client-0001"), "client-name", 3600L, 7200L, "secret");
         clientCredentials = createClientOnTheProject(jwt, restTemplate, port, organizationId, projectId, createClientRequest);
         clientId = clientCredentials.getId();
         assertNotNull(clientCredentials);
@@ -197,7 +197,7 @@ public class ProjectManagementTests {
     @Test
     @Order(12)
     public void createExistingClientTest() {
-        CreateClientRequest createClientRequest = new CreateClientRequest(ClientId.from("client-0001"), "client-name", 3600L, 7200L);
+        CreateClientRequest createClientRequest = new CreateClientRequest(ClientId.from("client-0001"), "client-name", 3600L, 7200L, "secret");
         ResponseEntity<ClientCredentials> response = createClientOnTheProjectRequest(jwt, restTemplate, port, organizationId, projectId, createClientRequest);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }

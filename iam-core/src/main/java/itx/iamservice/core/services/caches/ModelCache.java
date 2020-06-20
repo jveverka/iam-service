@@ -16,6 +16,7 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
 
@@ -61,7 +62,7 @@ public interface ModelCache {
     boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials);
 
     //CLIENT
-    void add(OrganizationId organizationId, ProjectId projectId, Client client);
+    Optional<Client> add(OrganizationId organizationId, ProjectId projectId, CreateClientRequest request);
 
     Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
 

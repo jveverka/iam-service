@@ -28,14 +28,9 @@ public class ClientManagementServiceImpl implements ClientManagementService {
 
     @Override
     public Optional<ClientCredentials> createClient(OrganizationId id, ProjectId projectId, CreateClientRequest request) {
-        Optional<Project> projectOptional = getProject(id, projectId);
-        Optional<Client> clientOptional = modelCache.getClient(id, projectId, request.getId());
-        if (projectOptional.isPresent() && clientOptional.isEmpty()) {
-            ClientCredentials credentials = new ClientCredentials(request.getId(), UUID.randomUUID().toString());
-            Client client = new ClientImpl(credentials, request.getName(),
-                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration());
-            modelCache.add(id, projectId, client);
-            return Optional.of(credentials);
+        Optional<Client> client = modelCache.add(id, projectId, request);
+        if (client.isPresent()) {
+            return Optional.of(client.get().getCredentials());
         }
         return Optional.empty();
     }

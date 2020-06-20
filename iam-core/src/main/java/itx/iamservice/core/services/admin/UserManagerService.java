@@ -15,7 +15,7 @@ import java.util.Set;
 
 public interface UserManagerService {
 
-    Optional<UserId> create(OrganizationId id, ProjectId projectId, CreateUserRequest request) throws PKIException;
+    Optional<User> create(OrganizationId id, ProjectId projectId, CreateUserRequest request) throws PKIException;
 
     Collection<User> getAll(OrganizationId id, ProjectId projectId);
 

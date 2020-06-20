@@ -17,6 +17,7 @@ import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
+import itx.iamservice.core.services.dto.CreateUserRequest;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public interface ModelCache {
     boolean remove(OrganizationId organizationId, ProjectId projectId);
 
     //USER
-    void add(OrganizationId organizationId, ProjectId projectId, User user);
+    Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException;
 
     Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId);
 

@@ -4,6 +4,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.admin.UserManagerService;
@@ -40,9 +41,9 @@ public class UserManagementController {
     public ResponseEntity<UserId> createUser(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
                                              @RequestBody CreateUserRequest createUserRequest) throws PKIException {
-        Optional<UserId> userId = userManagerService.create(OrganizationId.from(organizationId), ProjectId.from(projectId), createUserRequest);
-        if (userId.isPresent()) {
-            return ResponseEntity.ok(userId.get());
+        Optional<User> user = userManagerService.create(OrganizationId.from(organizationId), ProjectId.from(projectId), createUserRequest);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get().getId());
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }

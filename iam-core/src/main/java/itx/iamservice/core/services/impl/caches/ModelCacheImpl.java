@@ -17,9 +17,11 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.model.keys.ModelKey;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
+import itx.iamservice.core.services.dto.CreateUserRequest;
 import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import itx.iamservice.core.services.persistence.PersistenceService;
 
@@ -224,16 +226,22 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public synchronized void add(OrganizationId organizationId, ProjectId projectId, User user) {
+    public synchronized Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+        ModelKey<User> userKey = userKey(organizationId, projectId, request.getId());
         Project project = projects.get(projectKey);
-        if (project != null) {
+        User u = users.get(userKey);
+        if (project != null && u == null) {
+            User user = new UserImpl(request.getId(), request.getName(), project.getId(),
+                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), project.getPrivateKey());
             ModelKey<User> key = userKey(organizationId, projectId, user.getId());
             project.add(user.getId());
-            persistenceService.onNodeUpdated(projectKey, project);
             users.put(key, user);
+            persistenceService.onNodeUpdated(projectKey, project);
             persistenceService.onNodeCreated(key, user);
+            return Optional.of(user);
         }
+        return Optional.empty();
     }
 
     @Override

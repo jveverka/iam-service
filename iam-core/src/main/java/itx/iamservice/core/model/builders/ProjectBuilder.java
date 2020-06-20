@@ -9,9 +9,10 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
-import itx.iamservice.core.model.UserImpl;
 import itx.iamservice.core.services.caches.ModelCache;
+import itx.iamservice.core.services.dto.CreateUserRequest;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public final class ProjectBuilder {
@@ -32,9 +33,13 @@ public final class ProjectBuilder {
     }
 
     public UserBuilder addUser(UserId id, String name) throws PKIException {
-        User user = new UserImpl(id, name, project.getId(), 3600*1000L, 24*3600*1000L, project.getPrivateKey());
-        modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), user);
-        return new UserBuilder(this, user);
+        CreateUserRequest request = new CreateUserRequest(id, name, 3600*1000L, 24*3600*1000L);
+        Optional<User> user = modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), request);
+        if (user.isPresent()) {
+            return new UserBuilder(this, user.get());
+        } else {
+            throw new UnsupportedOperationException("Create user failed !");
+        }
     }
 
     public ClientBuilder addClient(String name) {

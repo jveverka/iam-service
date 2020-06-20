@@ -10,10 +10,17 @@ import itx.iamservice.core.model.ModelImpl;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.RoleImpl;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.builders.ClientBuilder;
+import itx.iamservice.core.model.builders.ModelBuilder;
+import itx.iamservice.core.model.builders.OrganizationBuilder;
+import itx.iamservice.core.model.builders.ProjectBuilder;
+import itx.iamservice.core.model.builders.UserBuilder;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
@@ -29,10 +36,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -187,6 +196,61 @@ public final class ModelUtils {
             }
             return scopes;
         }
+    }
+
+    /**
+     * Create Large data model for performance testing.
+     * @param organizations - number of organizations in the model
+     * @param projects - number of projects in organization
+     * @param clients - number of clients in project 
+     * @param users - number of users in project
+     * @param permissions - number of permissions in project
+     * @param roles - number of roles in project
+     * @param persistenceService - persistence service
+     * @return
+     * @throws PKIException
+     */
+    public static ModelCache createModel(int organizations, int projects, int clients, int users, int permissions, int roles, PersistenceService persistenceService) throws PKIException {
+        ModelBuilder modelBuilder = IAMModelBuilders.modelBuilder(ModelId.from("test-model"), "test-model", persistenceService);
+        String organizationPrefix = "organization-";
+        String projectPrefix = "project-";
+        String permissionPrefix = "resource-";
+        String rolePrefix = "role-";
+        String clientPrefix = "client-";
+        String userPrefix = "user-";
+
+        for (int orgIndex=0; orgIndex<organizations; orgIndex++) {
+            OrganizationId organizationId = OrganizationId.from(organizationPrefix + orgIndex);
+            OrganizationBuilder organizationBuilder = modelBuilder.addOrganization(organizationId, organizationPrefix + "name-" + orgIndex);
+            for (int projectIndex=0; projectIndex<projects; projectIndex++) {
+                ProjectId projectId = ProjectId.from(projectPrefix + projectIndex);
+                Collection<String> audience = Set.of("service1", "service2", "service3");
+                ProjectBuilder projectBuilder = organizationBuilder.addProject(projectId, projectPrefix + "name-" + projectIndex, audience);
+                Set<Permission> projectPermissions = new HashSet<>();
+                List<Role> projectRoles = new ArrayList<>();
+                for (int permissionIndex=0; permissionIndex<permissions; permissionIndex++) {
+                    Permission permission = new Permission("service1", permissionPrefix + permissionIndex,  "action");
+                    projectPermissions.add(permission);
+                    projectBuilder.addPermission(permission);
+                }
+                for (int roleIndex=0; roleIndex<roles; roleIndex++) {
+                    Role role = new RoleImpl(RoleId.from(rolePrefix + roleIndex), "name", projectPermissions);
+                    projectRoles.add(role);
+                    projectBuilder.addRole(role);
+                }
+                for (int clientIndex=0; clientIndex<clients; clientIndex++) {
+                    ClientBuilder builder = projectBuilder.addClient(ClientId.from(clientPrefix + clientIndex), "name",  "secret");
+                    projectRoles.forEach(r->builder.addRole(r.getId()));
+                }
+                for (int userIndex=0; userIndex<users; userIndex++) {
+                    UserId userId = UserId.from(userPrefix + userIndex);
+                    UserBuilder builder = projectBuilder.addUser(userId, "name");
+                    projectRoles.forEach(r->builder.addRole(r.getId()));
+                    builder.addUserNamePasswordCredentials(userId, "secret");
+                }
+            }
+        }
+        return modelBuilder.build();
     }
 
 }

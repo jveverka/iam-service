@@ -5,6 +5,7 @@ import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
@@ -61,6 +62,11 @@ public final class ProjectBuilder {
         } else {
             throw new UnsupportedOperationException("Create client failed !");
         }
+    }
+
+    public ProjectBuilder addPermission(Permission permission) {
+        project.addPermission(permission);
+        return this;
     }
 
     public ProjectBuilder addRole(Role role)  {

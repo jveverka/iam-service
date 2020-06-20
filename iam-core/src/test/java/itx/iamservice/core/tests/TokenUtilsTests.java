@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TokenUtilsTest {
+public class TokenUtilsTests {
 
     private static final String ISSUER = "issuer";
     private static final String SUBJECT = "subject";

@@ -1,9 +1,7 @@
 package itx.iamservice.core.model.builders;
 
 import itx.iamservice.core.model.Client;
-import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
-import itx.iamservice.core.model.ClientImpl;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.Project;

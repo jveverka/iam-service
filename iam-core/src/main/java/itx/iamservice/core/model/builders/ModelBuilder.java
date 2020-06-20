@@ -7,7 +7,6 @@ import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.Project;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
 import itx.iamservice.core.services.persistence.PersistenceService;

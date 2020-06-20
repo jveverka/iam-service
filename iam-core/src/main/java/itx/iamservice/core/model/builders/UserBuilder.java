@@ -1,6 +1,5 @@
 package itx.iamservice.core.model.builders;
 
-import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;

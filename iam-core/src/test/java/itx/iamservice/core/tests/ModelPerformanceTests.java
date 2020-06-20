@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,6 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ModelPerformanceTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelPerformanceTests.class);
+
+    private static int organizations = 3;
+    private static int projects = 3;
+    private static int clients = 4;
+    private static int users = 3;
+    private static int permissions = 5;
+    private static int roles = 2;
 
     private static ModelCache model;
 
@@ -43,14 +51,14 @@ public class ModelPerformanceTests {
     public void generateBigModel() throws PKIException {
         PersistenceService persistenceService = new LoggingPersistenceServiceImpl();
         long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        model = ModelUtils.createModel(3, 3, 4, 3, 5, 3, persistenceService);
+        model = ModelUtils.createModel(organizations, projects, clients, users, permissions, roles, persistenceService);
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         LOG.info("memory allocated for model = {}Mb", (((memAfter - memBefore)/1024F)/1024F));
         assertNotNull(model);
         assertNotNull(model.getModel());
         assertNotNull(model.getModel().getId());
         assertNotNull(model.getModel().getName());
-        assertEquals(3,  model.getOrganizations().size());
+        assertEquals(organizations,  model.getOrganizations().size());
     }
 
     @Test
@@ -59,11 +67,11 @@ public class ModelPerformanceTests {
         ModelWrapper modelWrapper = model.export();
         assertNotNull(modelWrapper);
         assertNotNull(modelWrapper.getModel());
-        assertEquals(3, modelWrapper.getOrganizations().size());
-        assertEquals(3*3, modelWrapper.getProjects().size());
-        assertEquals(3*3*4, modelWrapper.getClients().size());
-        assertEquals(3*3*3, modelWrapper.getUsers().size());
-        assertEquals(3*3*3, modelWrapper.getRoles().size());
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
+        assertEquals(organizations*projects, modelWrapper.getProjects().size());
+        assertEquals(organizations*projects*clients, modelWrapper.getClients().size());
+        assertEquals(organizations*projects*users, modelWrapper.getUsers().size());
+        assertEquals(organizations*projects*roles, modelWrapper.getRoles().size());
     }
     
     @Test
@@ -71,9 +79,18 @@ public class ModelPerformanceTests {
     public void checkProjects() {
         Optional<Organization> organization = model.getOrganization(OrganizationId.from("organization-0"));
         assertTrue(organization.isPresent());
-        Collection<ProjectId> projects = organization.get().getProjects();
-        assertNotNull(projects);
-        assertEquals(3, projects.size());
+        Collection<ProjectId> projectsCollection = organization.get().getProjects();
+        assertNotNull(projectsCollection);
+        assertEquals(projects, projectsCollection.size());
+    }
+
+    @Test
+    @Order(4)
+    public void removeOrganizationWithExistingProjects() {
+        boolean result = model.remove(OrganizationId.from("organization-0"));
+        assertFalse(result);
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
     }
 
 }

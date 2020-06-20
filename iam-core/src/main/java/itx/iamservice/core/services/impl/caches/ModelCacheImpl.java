@@ -128,13 +128,15 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId) {
-        //TODO: remove dependent objects
-        ModelKey<Organization> key = organizationKey(organizationId);
-        Organization removed = organizations.remove(key);
-        if (removed != null) {
-            persistenceService.onNodeDeleted(key, removed);
+        if (!hasProjectsInOrganization(organizationId)) {
+            ModelKey<Organization> key = organizationKey(organizationId);
+            Organization removed = organizations.remove(key);
+            if (removed != null) {
+                persistenceService.onNodeDeleted(key, removed);
+            }
+            return removed != null;
         }
-        return removed != null;
+        return false;
     }
 
     /**
@@ -584,6 +586,16 @@ public class ModelCacheImpl implements ModelCache {
 
     private static ModelKey<User> userKey(OrganizationId id, ProjectId projectId, UserId userId) {
         return ModelKey.from(User.class, id, projectId, userId);
+    }
+
+    private boolean hasProjectsInOrganization(OrganizationId id) {
+        ModelKey<Organization> organizationKey = organizationKey(id);
+        for (ModelKey<Project> key: projects.keySet()) {
+            if (key.startsWith(organizationKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

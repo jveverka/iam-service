@@ -67,6 +67,7 @@ project(':spring-method-security') {
         implementation project(':iam-model')
         implementation project(':iam-client')
         implementation project(':iam-client-spring')
+        testImplementation project(':iam-core')
         testImplementation project(':iam-spring-httpclient')
     }
 }

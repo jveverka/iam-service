@@ -3,6 +3,7 @@ package itx.iamservice.core.services.caches;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
@@ -55,6 +56,8 @@ public interface ModelCache {
     boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId);
 
     boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId);
+
+    boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials);
 
     //CLIENT
     void add(OrganizationId organizationId, ProjectId projectId, Client client);

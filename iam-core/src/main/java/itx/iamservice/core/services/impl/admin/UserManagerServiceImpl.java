@@ -76,12 +76,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
-        Optional<User> userOptional = modelCache.getUser(id, projectId, userId);
-        if (userOptional.isPresent()) {
-            userOptional.get().addCredentials(credentials);
-            return true;
-        }
-        return false;
+        return modelCache.setCredentials(id, projectId, userId, credentials);
     }
 
 }

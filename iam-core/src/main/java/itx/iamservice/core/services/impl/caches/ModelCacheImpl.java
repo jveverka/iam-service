@@ -3,6 +3,7 @@ package itx.iamservice.core.services.impl.caches;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.Credentials;
 import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
@@ -399,6 +400,18 @@ public class ModelCacheImpl implements ModelCache {
         User user = users.get(userKey);
         if (role != null && user != null) {
             user.removeRole(roleId);
+            persistenceService.onNodeUpdated(userKey, user);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
+        ModelKey<User> userKey = userKey(id, projectId, userId);
+        User user = users.get(userKey);
+        if (user != null) {
+            user.addCredentials(credentials);
             persistenceService.onNodeUpdated(userKey, user);
             return true;
         }

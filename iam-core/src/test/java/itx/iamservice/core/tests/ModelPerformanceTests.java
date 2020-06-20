@@ -8,6 +8,7 @@ import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import itx.iamservice.core.services.persistence.PersistenceService;
+import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -51,9 +52,22 @@ public class ModelPerformanceTests {
         assertNotNull(model.getModel().getName());
         assertEquals(3,  model.getOrganizations().size());
     }
-    
+
     @Test
     @Order(2)
+    public void checkModelCache() {
+        ModelWrapper modelWrapper = model.export();
+        assertNotNull(modelWrapper);
+        assertNotNull(modelWrapper.getModel());
+        assertEquals(3, modelWrapper.getOrganizations().size());
+        assertEquals(3*3, modelWrapper.getProjects().size());
+        assertEquals(3*3*4, modelWrapper.getClients().size());
+        assertEquals(3*3*3, modelWrapper.getUsers().size());
+        assertEquals(3*3*3, modelWrapper.getRoles().size());
+    }
+    
+    @Test
+    @Order(3)
     public void checkProjects() {
         Optional<Organization> organization = model.getOrganization(OrganizationId.from("organization-0"));
         assertTrue(organization.isPresent());

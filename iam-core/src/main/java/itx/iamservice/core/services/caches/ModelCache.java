@@ -19,12 +19,15 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
+import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 public interface ModelCache {
+
+    ModelWrapper export();
 
     Model getModel();
 

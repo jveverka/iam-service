@@ -24,18 +24,21 @@ import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
+import itx.iamservice.core.services.persistence.wrappers.ClientWrapper;
 import itx.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import itx.iamservice.core.services.persistence.PersistenceService;
+import itx.iamservice.core.services.persistence.wrappers.OrganizationWrapper;
+import itx.iamservice.core.services.persistence.wrappers.ProjectWrapper;
+import itx.iamservice.core.services.persistence.wrappers.RoleWrapper;
+import itx.iamservice.core.services.persistence.wrappers.UserWrapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -75,6 +78,21 @@ public class ModelCacheImpl implements ModelCache {
         this.roles = new ConcurrentHashMap<>();
         this.persistenceService = persistenceService;
         this.persistenceService.onModelChange(model);
+    }
+
+    @Override
+    public synchronized ModelWrapper export() {
+        List<OrganizationWrapper> organizationWrappers = new ArrayList<>();
+        organizations.forEach((k,v) -> organizationWrappers.add(new OrganizationWrapper(k,v)));
+        List<ProjectWrapper> projectWrappers = new ArrayList<>();
+        projects.forEach((k,v) -> projectWrappers.add(new ProjectWrapper(k,v)));
+        List<UserWrapper> usersWrappers = new ArrayList<>();
+        users.forEach((k,v) -> usersWrappers.add(new UserWrapper(k,v)));
+        List<ClientWrapper> clientWrappers = new ArrayList<>();
+        clients.forEach((k,v) -> clientWrappers.add(new ClientWrapper(k,v)));
+        List<RoleWrapper> roleWrappers = new ArrayList<>();
+        roles.forEach((k,v) -> roleWrappers.add(new RoleWrapper(k,v)));
+        return new ModelWrapper(model, organizationWrappers, projectWrappers, usersWrappers, clientWrappers, roleWrappers);
     }
 
     @Override

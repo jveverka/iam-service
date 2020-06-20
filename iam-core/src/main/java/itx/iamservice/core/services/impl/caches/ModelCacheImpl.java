@@ -110,6 +110,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId) {
+        //TODO: remove dependent objects
         ModelKey<Organization> key = organizationKey(organizationId);
         Organization removed = organizations.remove(key);
         if (removed != null) {
@@ -147,14 +148,14 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
-        ModelKey<User> key = userKey(organizationId, projectId, userId);
-        User removed = users.remove(key);
+        ModelKey<User> userKey = userKey(organizationId, projectId, userId);
+        User removed = users.remove(userKey);
         if (project != null) {
             project.remove(userId);
             persistenceService.onNodeUpdated(projectKey, project);
         }
         if (removed !=  null) {
-            persistenceService.onNodeDeleted(key, removed);
+            persistenceService.onNodeDeleted(userKey, removed);
         }
         return removed != null;
     }
@@ -221,6 +222,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId) {
+        //TODO: remove dependent objects
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
         ModelKey<Project> key = projectKey(organizationId, projectId);
         Organization organization = organizations.get(organizationKey);
@@ -293,10 +295,10 @@ public class ModelCacheImpl implements ModelCache {
         if (project != null) {
             project.removeClient(clientId);
             persistenceService.onNodeUpdated(projectKey, project);
-            ModelKey<Client> key = clientKey(organizationId, projectId, clientId);
-            Client removed = clients.remove(key);
+            ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
+            Client removed = clients.remove(clientKey);
             if (removed != null) {
-                persistenceService.onNodeDeleted(key, removed);
+                persistenceService.onNodeDeleted(clientKey, removed);
             }
             return removed != null;
         }
@@ -376,6 +378,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
+        //TODO: don't remove role if used by users or clients
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);
         if (project != null) {
@@ -472,6 +475,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean removePermission(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
+        //TODO: remove permission only if not used in roles
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project  project =  projects.get(projectKey);
         if (project != null) {

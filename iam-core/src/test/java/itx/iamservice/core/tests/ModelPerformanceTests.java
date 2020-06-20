@@ -93,4 +93,13 @@ public class ModelPerformanceTests {
         assertEquals(organizations, modelWrapper.getOrganizations().size());
     }
 
+    @Test
+    @Order(5)
+    public void removeProjectWithExistingUsersAndClientsAndRoles() {
+        boolean result = model.remove(OrganizationId.from("organization-0"), ProjectId.from("project-0"));
+        assertFalse(result);
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations*projects, modelWrapper.getProjects().size());
+    }
+
 }

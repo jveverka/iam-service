@@ -128,7 +128,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId) {
-        if (!hasProjectsInOrganization(organizationId)) {
+        if (!checkOrganizationReferences(organizationId)) {
             ModelKey<Organization> key = organizationKey(organizationId);
             Organization removed = organizations.remove(key);
             if (removed != null) {
@@ -242,19 +242,21 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId) {
-        //TODO: remove dependent objects
-        ModelKey<Organization> organizationKey = organizationKey(organizationId);
-        ModelKey<Project> key = projectKey(organizationId, projectId);
-        Organization organization = organizations.get(organizationKey);
-        if (organization != null) {
-            organization.removeProject(projectId);
-            persistenceService.onNodeUpdated(organizationKey, organization);
+        if (!checkProjectReferences(organizationId, projectId)) {
+            ModelKey<Organization> organizationKey = organizationKey(organizationId);
+            ModelKey<Project> key = projectKey(organizationId, projectId);
+            Organization organization = organizations.get(organizationKey);
+            if (organization != null) {
+                organization.removeProject(projectId);
+                persistenceService.onNodeUpdated(organizationKey, organization);
+            }
+            Project removed = projects.remove(key);
+            if (removed != null) {
+                persistenceService.onNodeDeleted(key, removed);
+            }
+            return removed != null;
         }
-        Project removed = projects.remove(key);
-        if (removed != null) {
-            persistenceService.onNodeDeleted(key, removed);
-        }
-        return removed != null;
+        return false;
     }
 
     @Override
@@ -588,10 +590,30 @@ public class ModelCacheImpl implements ModelCache {
         return ModelKey.from(User.class, id, projectId, userId);
     }
 
-    private boolean hasProjectsInOrganization(OrganizationId id) {
+    private boolean checkOrganizationReferences(OrganizationId id) {
         ModelKey<Organization> organizationKey = organizationKey(id);
         for (ModelKey<Project> key: projects.keySet()) {
             if (key.startsWith(organizationKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkProjectReferences(OrganizationId id, ProjectId projectId)  {
+        ModelKey<Project> projectKey = projectKey(id,  projectId);
+        for (ModelKey<User> key: users.keySet()) {
+            if (key.startsWith(projectKey)) {
+                return true;
+            }
+        }
+        for (ModelKey<Client> key: clients.keySet()) {
+            if (key.startsWith(projectKey)) {
+                return true;
+            }
+        }
+        for (ModelKey<Role> key: roles.keySet()) {
+            if (key.startsWith(projectKey)) {
                 return true;
             }
         }

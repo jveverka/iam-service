@@ -27,6 +27,7 @@ import itx.iamservice.core.services.persistence.PersistenceService;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -346,6 +347,16 @@ public class ModelCacheImpl implements ModelCache {
             }
         });
         return result;
+    }
+
+    @Override
+    public synchronized Set<RoleId> getRoles(OrganizationId organizationId, ProjectId projectId, UserId userId) {
+        ModelKey<User> userKey = userKey(organizationId, projectId, userId);
+        User user = users.get(userKey);
+        if (user != null) {
+            return Set.copyOf(user.getRoles());
+        }
+        return Set.of();
     }
 
     @Override

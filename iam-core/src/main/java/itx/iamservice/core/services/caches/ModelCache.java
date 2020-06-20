@@ -80,6 +80,8 @@ public interface ModelCache {
 
     Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId);
 
+    Set<RoleId> getRoles(OrganizationId organizationId, ProjectId projectId, UserId userId);
+
     Optional<Role> getRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId);
 
     boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId);

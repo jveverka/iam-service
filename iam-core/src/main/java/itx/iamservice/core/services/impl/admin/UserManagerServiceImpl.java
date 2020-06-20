@@ -59,11 +59,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 
     @Override
     public Set<RoleId> getRoles(OrganizationId id, ProjectId projectId, UserId userId) {
-        Optional<User> userOptional = modelCache.getUser(id, projectId, userId);
-        if (userOptional.isPresent()) {
-            return userOptional.get().getRoles();
-        }
-        return Collections.emptySet();
+        return modelCache.getRoles(id, projectId, userId);
     }
 
     @Override

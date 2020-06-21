@@ -1,9 +1,13 @@
 package itx.iamservice.core.tests;
 
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
@@ -100,6 +104,135 @@ public class ModelPerformanceTests {
         assertFalse(result);
         ModelWrapper modelWrapper = model.export();
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
+    }
+
+    @Test
+    @Order(6)
+    public void removeRoleInUse() {
+        boolean result = model.remove(OrganizationId.from("organization-0"), ProjectId.from("project-0"), RoleId.from("role-0"));
+        assertFalse(result);
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations*projects*roles, modelWrapper.getRoles().size());
+    }
+
+    @Test
+    @Order(7)
+    public void removePermissionInUse() {
+        boolean result = model.removePermission(OrganizationId.from("organization-0"), ProjectId.from("project-0"), PermissionId.from("service1.resource-0.action"));
+        assertFalse(result);
+    }
+
+    @Test
+    @Order(8)
+    public void removeAllUsers() {
+        for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
+            for (int projectIndex=0; projectIndex<projects; projectIndex++) {
+                for (int userIndex=0; userIndex<users; userIndex++) {
+                    boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex),
+                            ProjectId.from("project-" + projectIndex), UserId.from("user-" + userIndex));
+                    assertTrue(result);
+                }
+            }
+        }
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
+        assertEquals(organizations*projects, modelWrapper.getProjects().size());
+        assertEquals(organizations*projects*clients, modelWrapper.getClients().size());
+        assertEquals(0, modelWrapper.getUsers().size());
+        assertEquals(organizations*projects*roles, modelWrapper.getRoles().size());
+    }
+
+    @Test
+    @Order(9)
+    public void removeAllClients() {
+        for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
+            for (int projectIndex=0; projectIndex<projects; projectIndex++) {
+                for (int clientIndex=0; clientIndex<clients; clientIndex++) {
+                    boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex),
+                            ProjectId.from("project-" + projectIndex), ClientId.from("client-" + clientIndex));
+                    assertTrue(result);
+                }
+            }
+        }
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
+        assertEquals(organizations*projects, modelWrapper.getProjects().size());
+        assertEquals(0, modelWrapper.getClients().size());
+        assertEquals(0, modelWrapper.getUsers().size());
+        assertEquals(organizations*projects*roles, modelWrapper.getRoles().size());
+    }
+
+    @Test
+    @Order(10)
+    public void removeAllRoles() {
+        for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
+            for (int projectIndex=0; projectIndex<projects; projectIndex++) {
+                for (int roleIndex=0; roleIndex<roles; roleIndex++) {
+                    boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex),
+                            ProjectId.from("project-" + projectIndex), RoleId.from("role-" + roleIndex));
+                    assertTrue(result);
+                }
+            }
+        }
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
+        assertEquals(organizations*projects, modelWrapper.getProjects().size());
+        assertEquals(0, modelWrapper.getClients().size());
+        assertEquals(0, modelWrapper.getUsers().size());
+        assertEquals(0, modelWrapper.getRoles().size());
+    }
+
+    @Test
+    @Order(11)
+    public void removeAllPermissions() {
+        for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
+            for (int projectIndex=0; projectIndex<projects; projectIndex++) {
+                for (int permissionIndex=0; permissionIndex<permissions; permissionIndex++) {
+                    boolean result = model.removePermission(OrganizationId.from("organization-" + organizationsIndex),
+                            ProjectId.from("project-" + projectIndex), PermissionId.from("permission-" + permissionIndex));
+                    assertTrue(result);
+                }
+            }
+        }
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
+        assertEquals(organizations*projects, modelWrapper.getProjects().size());
+        assertEquals(0, modelWrapper.getClients().size());
+        assertEquals(0, modelWrapper.getUsers().size());
+        assertEquals(0, modelWrapper.getRoles().size());
+    }
+
+    @Test
+    @Order(12)
+    public void removeAllProjects() {
+        for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
+            for (int projectIndex=0; projectIndex<projects; projectIndex++) {
+                 boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex),
+                         ProjectId.from("project-" + projectIndex));
+                 assertTrue(result);
+            }
+        }
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(organizations, modelWrapper.getOrganizations().size());
+        assertEquals(0, modelWrapper.getProjects().size());
+        assertEquals(0, modelWrapper.getClients().size());
+        assertEquals(0, modelWrapper.getUsers().size());
+        assertEquals(0, modelWrapper.getRoles().size());
+    }
+
+    @Test
+    @Order(13)
+    public void removeAllOrganizations() {
+        for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
+             boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex));
+             assertTrue(result);
+        }
+        ModelWrapper modelWrapper = model.export();
+        assertEquals(0, modelWrapper.getProjects().size());
+        assertEquals(0, modelWrapper.getOrganizations().size());
+        assertEquals(0, modelWrapper.getUsers().size());
+        assertEquals(0, modelWrapper.getClients().size());
+        assertEquals(0, modelWrapper.getRoles().size());
     }
 
 }

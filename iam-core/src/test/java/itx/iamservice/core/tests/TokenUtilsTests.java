@@ -109,6 +109,7 @@ public class TokenUtilsTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);

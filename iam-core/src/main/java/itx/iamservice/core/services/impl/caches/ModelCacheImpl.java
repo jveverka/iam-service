@@ -400,18 +400,19 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
-        //TODO: don't remove role if used by users or clients
-        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project project = projects.get(projectKey);
-        if (project != null) {
-            project.removeRole(roleId);
-            persistenceService.onNodeUpdated(projectKey, project);
-            ModelKey<Role> key = roleKey(organizationId, projectId, roleId);
-            Role removed = roles.remove(key);
-            if (removed != null) {
-                persistenceService.onNodeDeleted(key, removed);
+        if (!checkRoleReferences(organizationId, projectId, roleId)) {
+            ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+            Project project = projects.get(projectKey);
+            if (project != null) {
+                project.removeRole(roleId);
+                persistenceService.onNodeUpdated(projectKey, project);
+                ModelKey<Role> key = roleKey(organizationId, projectId, roleId);
+                Role removed = roles.remove(key);
+                if (removed != null) {
+                    persistenceService.onNodeDeleted(key, removed);
+                }
+                return removed != null;
             }
-            return removed != null;
         }
         return false;
     }
@@ -497,13 +498,14 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized boolean removePermission(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
-        //TODO: remove permission only if not used in roles
-        ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project  project =  projects.get(projectKey);
-        if (project != null) {
-            project.removePermission(permissionId);
-            persistenceService.onNodeUpdated(projectKey, project);
-            return true;
+        if (!checkPermissionReferences(organizationId, projectId, permissionId)) {
+            ModelKey<Project> projectKey = projectKey(organizationId, projectId);
+            Project project = projects.get(projectKey);
+            if (project != null) {
+                project.removePermission(permissionId);
+                persistenceService.onNodeUpdated(projectKey, project);
+                return true;
+            }
         }
         return false;
     }
@@ -590,8 +592,8 @@ public class ModelCacheImpl implements ModelCache {
         return ModelKey.from(User.class, id, projectId, userId);
     }
 
-    private boolean checkOrganizationReferences(OrganizationId id) {
-        ModelKey<Organization> organizationKey = organizationKey(id);
+    private boolean checkOrganizationReferences(OrganizationId organizationId) {
+        ModelKey<Organization> organizationKey = organizationKey(organizationId);
         for (ModelKey<Project> key: projects.keySet()) {
             if (key.startsWith(organizationKey)) {
                 return true;
@@ -600,8 +602,8 @@ public class ModelCacheImpl implements ModelCache {
         return false;
     }
 
-    private boolean checkProjectReferences(OrganizationId id, ProjectId projectId)  {
-        ModelKey<Project> projectKey = projectKey(id,  projectId);
+    private boolean checkProjectReferences(OrganizationId organizationId, ProjectId projectId)  {
+        ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
         for (ModelKey<User> key: users.keySet()) {
             if (key.startsWith(projectKey)) {
                 return true;
@@ -615,6 +617,35 @@ public class ModelCacheImpl implements ModelCache {
         for (ModelKey<Role> key: roles.keySet()) {
             if (key.startsWith(projectKey)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkPermissionReferences(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
+        ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
+        for (Map.Entry<ModelKey<Role>, Role> entry: roles.entrySet()) {
+            if (entry.getKey().startsWith(projectKey)) {
+                for (Permission permission : entry.getValue().getPermissions()) {
+                    if (permission.getId().equals(permissionId)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkRoleReferences(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
+        ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
+        for (Map.Entry<ModelKey<User>, User> entry: users.entrySet()) {
+            if (entry.getKey().startsWith(projectKey)) {
+                return entry.getValue().getRoles().contains(roleId);
+            }
+        }
+        for (Map.Entry<ModelKey<Client>, Client> entry: clients.entrySet()) {
+            if (entry.getKey().startsWith(projectKey)) {
+                return entry.getValue().getRoles().contains(roleId);
             }
         }
         return false;

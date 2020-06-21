@@ -1,5 +1,9 @@
 server:
   port:  8082
+  shutdown: graceful
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
 
 iam-client:
   organization-id: iam-admins

@@ -54,6 +54,7 @@ gradle clean build test
 * [__Health-Check API__](docs/apis/IAM-heath-check.md) - service status and health check.
 * __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v2/api-docs```
 * __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui.html```
+* [__Security Rules__](docs/IAM-service-security.md) - accessing APIs.
 
 ### Technical documentation
 * [Internal Data Model](docs/IAM-data-model.md) - internal data model description and glossary.

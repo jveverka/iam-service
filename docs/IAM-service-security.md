@@ -1,16 +1,15 @@
 # IAM Service Security Model
 
 ## Roles and Permissions
-* iam-manager
+* __iam-manager__, scope: iam-admins
   * iam-service.organizations.all
   * iam-service.project.all
   * iam-service.iam-admins.all
-* iam-project-owner
+* __iam-organization-owner__, scope: organizationId  
+  * iam-service.organization.all
+* __iam-project-owner__, scope: organizationId/projectId 
   * iam-service.project.all
-* iam-client
+* __iam-client__, scope: organizationId/projectId 
   * iam-service.project-client.modify
-* iam-user
+* __iam-user__, scope: organizationId/projectId
   * iam-service.project-user.modify
-* anonymous - unauthorized clients
-  * iam-service.organizations.read
-  * iam-service.projects.read

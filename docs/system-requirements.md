@@ -5,6 +5,7 @@
 * [Gradle 6.3](https://gradle.org/install/) or later.
 * [docker.io](https://linuxconfig.org/how-to-install-docker-on-ubuntu-20-04-lts-focal-fossa) 19.03.8  or later. 
 * [docker-compose](https://linuxconfig.org/how-to-install-docker-compose-on-ubuntu-20-04-focal-fossa-linux) 1.25.0 or later.
+* Recommended OS: Ubuntu 20.04 LTS (to test and compile)
 
 ### Verify System  Requirements
 ```

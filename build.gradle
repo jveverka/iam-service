@@ -1,5 +1,30 @@
 subprojects {
-    apply plugin: "java"
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion = '0.8.2'
+    }
+
+    ext {
+        jacocoDestinationFile = file("$buildDir/jacoco/test.exec")
+    }
+
+    test {
+        useJUnitPlatform()
+        jacoco {
+            destinationFile = file(jacocoDestinationFile)
+        }
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\nTest result: ${result.resultType}"
+                println "Test summary: ${result.testCount} tests, " +
+                        "${result.successfulTestCount} succeeded, " +
+                        "${result.failedTestCount} failed, " +
+                        "${result.skippedTestCount} skipped"
+            }
+        }
+    }
 }
 
 project(':iam-model') {
@@ -71,4 +96,5 @@ project(':spring-method-security') {
         testImplementation project(':iam-spring-httpclient')
     }
 }
+
 

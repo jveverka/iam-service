@@ -9,7 +9,9 @@ import itx.iamservice.core.model.utils.TokenUtils;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ public class OrganizationImpl implements Organization {
     private final Set<ProjectId> projects;
     private final KeyPairData keyPairData;
     private final KeyPairSerialized keyPairSerialized;
+    private final Map<String, String> properties;
 
     public OrganizationImpl(OrganizationId id, String name) throws PKIException {
         this.id = id;
@@ -28,19 +31,22 @@ public class OrganizationImpl implements Organization {
         this.projects = new HashSet<>();
         this.keyPairData = TokenUtils.createSelfSignedKeyPairData(id.getId(), 365L, TimeUnit.DAYS);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
+        this.properties = new HashMap<>();
     }
 
     @JsonCreator
     public OrganizationImpl(@JsonProperty("id") OrganizationId id,
                             @JsonProperty("name") String name,
                             @JsonProperty("projects") Collection<ProjectId> projects,
-                            @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized) throws PKIException {
+                            @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized,
+                            @JsonProperty("properties") Map<String, String> properties) throws PKIException {
         this.id = id;
         this.name = name;
         this.projects = new HashSet<>();
         projects.forEach(project -> this.projects.add(project));
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
+        this.properties = properties;
     }
 
     @Override
@@ -89,6 +95,16 @@ public class OrganizationImpl implements Organization {
     @JsonIgnore
     public KeyPairData getKeyPairData() {
         return keyPairData;
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    @Override
+    public void setProperty(String key, String value) {
+        this.properties.put(key, value);
     }
 
 }

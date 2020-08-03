@@ -40,7 +40,9 @@ import org.junit.jupiter.api.Test;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,7 +75,9 @@ public class ModelSerializationTests {
 
     @Test
     public void serializeAndDeserializeOrganization() throws PKIException, JsonProcessingException {
-        Organization organization = new OrganizationImpl(OrganizationId.from("org-001"), "name", Collections.emptyList(), keyPairSerialized);
+        Map<String, String> properties = new HashMap<>();
+        properties.put("key", "value");
+        Organization organization = new OrganizationImpl(OrganizationId.from("org-001"), "name", Collections.emptyList(), keyPairSerialized, properties);
         String serialized = mapper.writeValueAsString(organization);
         Organization organizationDeserialized = mapper.readValue(serialized, Organization.class);
         assertNotNull(organizationDeserialized);
@@ -83,6 +87,7 @@ public class ModelSerializationTests {
         assertEquals(keyPairSerialized.getId(), organizationDeserialized.getKeyPairSerialized().getId());
         assertEquals(keyPairSerialized.getPrivateKey(), organizationDeserialized.getKeyPairSerialized().getPrivateKey());
         assertEquals(keyPairSerialized.getX509Certificate(), organizationDeserialized.getKeyPairSerialized().getX509Certificate());
+        assertEquals(organization.getProperties().size(), organizationDeserialized.getProperties().size());
     }
 
     @Test

@@ -12,6 +12,48 @@ CLEANUP_RESULT="${RED}FAILED${NOCOLOR}"
 CUMULATIVE_RESULT="${RED}FAILED${NOCOLOR}"
 RESULT_COUNTER=0
 
+echo ".___   _____      _____              _________                  .__              "
+echo "|   | /  _  \    /     \            /   _____/ ______________  _|__| ____  ____  "
+echo "|   |/  /_\  \  /  \ /  \   ______  \_____  \_/ __ \_  __ \  \/ /  |/ ___\/ __ \ "
+echo "|   /    |    \/    Y    \ /_____/  /        \  ___/|  | \/\   /|  \  \__\  ___/ "
+echo "|___\____|__  /\____|__  /         /_______  /\___  >__|    \_/ |__|\___  >___  >"
+echo "            \/         \/                  \/     \/                    \/    \/ "
+
+echo "Full Build & Integration Tests"
+echo ""
+
+#0. Check system dependencies.
+which java
+if [ $? = 0  ]; then
+  echo -e "Java          ${GREEN}OK${NOCOLOR}"
+else
+  echo -e "${RED}ERROR: java not installed.${NOCOLOR}"
+  exit 1
+fi
+which gradle
+if [ $? = 0  ]; then
+  echo -e "Gradle        ${GREEN}OK${NOCOLOR}"
+else
+  echo -e "${RED}ERROR: gradle not installed.${NOCOLOR}"
+  exit 1
+fi
+
+which docker
+if [ $? = 0  ]; then
+  echo -e "Docker        ${GREEN}OK${NOCOLOR}"
+else
+  echo -e "${RED}ERROR: docker not installed.${NOCOLOR}"
+  exit 1
+fi
+
+which docker-compose
+if [ $? = 0  ]; then
+  echo -e "docker-compose ${GREEN}OK${NOCOLOR}"
+else
+  echo -e "${RED}ERROR: docker-compose not installed.${NOCOLOR}"
+  exit 1
+fi
+
 #1. Build project and run JUnit tests
 gradle clean build test
 if [ $? -eq  0 ]; then

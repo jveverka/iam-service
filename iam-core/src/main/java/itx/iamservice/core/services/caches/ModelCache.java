@@ -40,6 +40,10 @@ public interface ModelCache {
 
     boolean remove(OrganizationId organizationId);
 
+    void setProperty(OrganizationId id, String key, String value);
+
+    void removeProperty(OrganizationId id, String key);
+
     //PROJECT
     Optional<Project> add(OrganizationId organizationId, CreateProjectRequest request) throws PKIException;
 

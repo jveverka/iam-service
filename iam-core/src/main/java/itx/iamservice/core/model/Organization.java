@@ -43,4 +43,6 @@ public interface Organization {
 
     void setProperty(String key, String value);
 
+    void removeProperty(String key);
+
 }

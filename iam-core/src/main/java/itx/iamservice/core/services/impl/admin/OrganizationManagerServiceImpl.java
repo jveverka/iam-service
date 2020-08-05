@@ -62,4 +62,14 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
         return modelCache.remove(id);
     }
 
+    @Override
+    public void setProperty(OrganizationId id, String key, String value) {
+        modelCache.setProperty(id, key, value);
+    }
+
+    @Override
+    public void removeProperty(OrganizationId id, String key) {
+        modelCache.removeProperty(id, key);
+    }
+
 }

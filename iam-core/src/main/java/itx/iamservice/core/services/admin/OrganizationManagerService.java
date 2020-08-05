@@ -24,4 +24,8 @@ public interface OrganizationManagerService {
 
     boolean remove(OrganizationId id);
 
+    void setProperty(OrganizationId id, String key, String value);
+
+    void removeProperty(OrganizationId id, String key);
+
 }

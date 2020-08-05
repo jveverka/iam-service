@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class OrganizationImpl implements Organization {
         this.projects = new HashSet<>();
         this.keyPairData = TokenUtils.createSelfSignedKeyPairData(id.getId(), 365L, TimeUnit.DAYS);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
-        this.properties = new HashMap<>();
+        this.properties = new ConcurrentHashMap<>();
     }
 
     @JsonCreator
@@ -105,6 +106,11 @@ public class OrganizationImpl implements Organization {
     @Override
     public void setProperty(String key, String value) {
         this.properties.put(key, value);
+    }
+
+    @Override
+    public void removeProperty(String key) {
+        this.properties.remove(key);
     }
 
 }

@@ -139,6 +139,26 @@ public class ModelCacheImpl implements ModelCache {
         return false;
     }
 
+    @Override
+    public synchronized void setProperty(OrganizationId id, String key, String value) {
+        ModelKey<Organization> organizationKey = organizationKey(id);
+        Organization organization = organizations.get(organizationKey);
+        if (organization != null) {
+            organization.setProperty(key, value);
+            persistenceService.onNodeUpdated(organizationKey, organization);
+        }
+    }
+
+    @Override
+    public synchronized void removeProperty(OrganizationId id, String key) {
+        ModelKey<Organization> organizationKey = organizationKey(id);
+        Organization organization = organizations.get(organizationKey);
+        if (organization != null) {
+            organization.removeProperty(key);
+            persistenceService.onNodeUpdated(organizationKey, organization);
+        }
+    }
+
     /**
      * User Methods
      */

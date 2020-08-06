@@ -10,20 +10,37 @@ please see [this](IAM-data-model.md) chapter.
 Internal security model design, Role - Permission relation:
 
 * __iam-admin__ role
-  * *iam-service.organizations.all* - full organization management, actions: read, write.
-  * *iam-service.projects.all* - full project management, actions: read, write.
-  * *iam-service.users.all* - full user management, actions: read, write.
-  * *iam-service.clients.all* - full client management, actions: read, write.
+  * *iam-service.organizations.all* 
+  * *iam-service.projects.all* 
+  * *iam-service.users.all* 
+  * *iam-service.clients.all* 
 * __iam-organization-owner__ role, restricted to: organizationId  
-  * *iam-service.organization.all* - full organization management, actions: read, write.
-  * *iam-service.projects.all* - full project management, actions: read, write.
-  * *iam-service.users.all* - full user management, actions: read, write.
-  * *iam-service.clients.all* - full client management, actions: read, write.
+  * *iam-service.organization.all* 
+  * *iam-service.projects.all* 
+  * *iam-service.users.all* 
+  * *iam-service.clients.all* 
 * __iam-project-owner__ role, restricted to: organizationId/projectId 
-  * *iam-service.project.all* - full project management, actions: read, write.
-  * *iam-service.users.all* - full user management, actions: read, write.
-  * *iam-service.clients.all* - full client management, actions: read, write.
+  * *iam-service.project.all* 
+  * *iam-service.users.all* 
+  * *iam-service.clients.all* 
 * __iam-client__ role, restricted to: organizationId/projectId/clientId
-  * *iam-service.client.modify* - modify own properties, set own credentials.
+  * *iam-service.client.modify* 
 * __iam-user__ role, limited to: organizationId/projectId/userId
-  * *iam-service.user.modify* - modify own properties, set own credentials.
+  * *iam-service.user.modify* 
+
+
+* __actions__
+  * *all* - all actions on dada model such as read, create, update and delete objects
+  * *modify* - modify existing object properties
+
+
+| permission                    | description                                         |
+|-------------------------------|-----------------------------------------------------|
+| iam-service.organizations.all | full organizations management, actions: read, write |
+| iam-service.organization.all  | full organization management, actions: read, write  |
+| iam-service.projects.all      | full project management, actions: read, write       |
+| iam-service.project.all       | full project management, actions: read, write       |
+| iam-service.users.all         | full user management, actions: read, write          | 
+| iam-service.clients.all       | full client management, actions: read, write        |
+| iam-service.client.modify     | modify own properties, set own credentials          |
+| iam-service.user.modify       | modify own properties, set own credentials          |

@@ -41,7 +41,7 @@ public class InMemoryPersistenceTests {
         assertEquals(1, modelWrapper.getProjects().size());
         assertEquals(1, modelWrapper.getClients().size());
         assertEquals(1, modelWrapper.getUsers().size());
-        assertEquals(7, modelWrapper.getRoles().size());
+        assertEquals(2, modelWrapper.getRoles().size());
 
         DataLoadService dataLoadService = new InMemoryDataLoadServiceImpl(modelWrapper, persistenceService);
         ModelCache modelCache = dataLoadService.populateCache();

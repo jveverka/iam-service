@@ -14,6 +14,8 @@ Internal security model design, Role - Permission relation:
   * *iam-service.projects.all* 
   * *iam-service.users.all* 
   * *iam-service.clients.all* 
+* __iam-admin-client__ role, restricted to: iam-admin organizationId  
+  * *iam-service.organization.read*     
 * __iam-organization-owner__ role, restricted to: organizationId  
   * *iam-service.organization.all* 
   * *iam-service.projects.all* 
@@ -31,6 +33,7 @@ Internal security model design, Role - Permission relation:
 
 * __actions__
   * *all* - all actions on dada model such as read, create, update and delete objects
+  * *read* - only read current state
   * *modify* - modify existing object properties
 
 

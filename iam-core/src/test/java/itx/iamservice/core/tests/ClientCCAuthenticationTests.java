@@ -71,7 +71,7 @@ public class ClientCCAuthenticationTests {
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
-        Set<RoleId> scope = Set.of(RoleId.from("read-organizations"));
+        Set<RoleId> scope = Set.of(RoleId.from("iam-admin-client"));
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
@@ -80,7 +80,7 @@ public class ClientCCAuthenticationTests {
         List<String> permissions = (List<String>)defaultClaims.get(TokenUtils.PERMISSIONS_CLAIM);
         assertNotNull(permissions);
         assertEquals(1, permissions.size());
-        assertTrue(permissions.contains("iam-admin-service.organizations.read"));
+        assertTrue(permissions.contains("iam-admin-service.organization.read"));
         assertFalse(permissions.contains("not-existing-role"));
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);
         assertEquals(TokenType.BEARER.getType(), type);

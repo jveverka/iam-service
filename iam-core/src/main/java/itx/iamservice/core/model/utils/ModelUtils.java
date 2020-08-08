@@ -57,15 +57,17 @@ public final class ModelUtils {
     private static final Collection<String> IAM_AUDIENCE = Arrays.asList(IAM_ADMINS_NAME);
 
     public static final String IAM_SERVICE = "iam-admin-service";
-    public static final String READ_ACTION = "read";
-    public static final String MODIFY_ACTION = "modify";
-    public static final String CREATE_ACTION = "create";
-    public static final String ORGANIZATION_RESOURCE = "organizations";
+    public static final String ACTION_ALL = "all";
+    public static final String ACTION_READ = "read";
+    public static final String ACTION_MODIFY = "modify";
+    public static final String ORGANIZATIONS_RESOURCE = "organizations";
+    public static final String ORGANIZATION_RESOURCE = "organization";
     public static final String PROJECTS_RESOURCE = "projects";
+    public static final String PROJECT_RESOURCE = "project";
     public static final String USERS_RESOURCE = "users";
+    public static final String USER_RESOURCE = "user";
     public static final String CLIENTS_RESOURCE = "clients";
-    public static final String ROLES_RESOURCE = "roles";
-    public static final String PERMISSIONS_RESOURCE = "permissions";
+    public static final String CLIENT_RESOURCE = "client";
 
     private ModelUtils() {
     }
@@ -84,44 +86,15 @@ public final class ModelUtils {
 
     public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
 
-        Role manageOrganizationsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-organizations"), "Can manage organizations.")
-                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
-                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, MODIFY_ACTION)
-                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, CREATE_ACTION)
+        Role iamAdmin = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin"), "Manage IAM-Service")
+                .addPermission(IAM_SERVICE, ORGANIZATIONS_RESOURCE, ACTION_ALL)
+                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, ACTION_ALL)
+                .addPermission(IAM_SERVICE, USERS_RESOURCE, ACTION_ALL)
+                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, ACTION_ALL)
                 .build();
 
-        Role manageProjectsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-projects"), "Can manage projects.")
-                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, READ_ACTION)
-                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, MODIFY_ACTION)
-                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, CREATE_ACTION)
-                .build();
-
-        Role manageUsersRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-users"), "Can manage users.")
-                .addPermission(IAM_SERVICE, USERS_RESOURCE, READ_ACTION)
-                .addPermission(IAM_SERVICE, USERS_RESOURCE, MODIFY_ACTION)
-                .addPermission(IAM_SERVICE, USERS_RESOURCE, CREATE_ACTION)
-                .build();
-
-        Role manageClientsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-clients"), "Can manage clients.")
-                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, READ_ACTION)
-                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, MODIFY_ACTION)
-                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, CREATE_ACTION)
-                .build();
-
-        Role manageRolesRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-roles"), "Can manage roles.")
-                .addPermission(IAM_SERVICE, ROLES_RESOURCE, READ_ACTION)
-                .addPermission(IAM_SERVICE, ROLES_RESOURCE, MODIFY_ACTION)
-                .addPermission(IAM_SERVICE, ROLES_RESOURCE, CREATE_ACTION)
-                .build();
-
-        Role managePermissionsRole = IAMModelBuilders.roleBuilder(RoleId.from("manage-permissions"), "Can manage permissions.")
-                .addPermission(IAM_SERVICE, PERMISSIONS_RESOURCE, READ_ACTION)
-                .addPermission(IAM_SERVICE, PERMISSIONS_RESOURCE, MODIFY_ACTION)
-                .addPermission(IAM_SERVICE, PERMISSIONS_RESOURCE, CREATE_ACTION)
-                .build();
-
-        Role clientReaderRole = IAMModelBuilders.roleBuilder(RoleId.from("read-organizations"), "Can read organizations.")
-                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, READ_ACTION)
+        Role iamClientRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-client"), "IAM Client role.")
+                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, ACTION_READ)
                 .build();
 
         ModelId id = ModelId.from("default-model-001");
@@ -134,24 +107,14 @@ public final class ModelUtils {
         return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
                 .addOrganization(organizationId, IAM_ADMINS_NAME)
                 .addProject(projectId, IAM_ADMINS_NAME, IAM_AUDIENCE)
-                    .addRole(manageOrganizationsRole)
-                    .addRole(manageProjectsRole)
-                    .addRole(manageUsersRole)
-                    .addRole(manageClientsRole)
-                    .addRole(manageRolesRole)
-                    .addRole(managePermissionsRole)
-                    .addRole(clientReaderRole)
+                    .addRole(iamAdmin)
+                    .addRole(iamClientRole)
                     .addClient(IAM_ADMIN_CLIENT_ID, "client-1", iamClientSecret)
-                        .addRole(clientReaderRole.getId())
+                        .addRole(iamClientRole.getId())
                     .and()
                     .addUser(IAM_ADMIN_USER, "iam-admin")
                         .addUserNamePasswordCredentials(IAM_ADMIN_USER, iamAdminPassword)
-                        .addRole(manageOrganizationsRole.getId())
-                        .addRole(manageProjectsRole.getId())
-                        .addRole(manageUsersRole.getId())
-                        .addRole(manageClientsRole.getId())
-                        .addRole(manageRolesRole.getId())
-                        .addRole(managePermissionsRole.getId())
+                        .addRole(iamAdmin.getId())
                 .build();
     }
 

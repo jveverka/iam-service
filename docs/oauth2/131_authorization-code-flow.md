@@ -20,7 +20,7 @@
 ### Test in Postman
 
 * __Grant Type__ : Authorization Code
-* __Callback URL__: ```/services/authentication/iam-admins/iam-admins/token```
+* __Callback URL__: ```your/callback/url```
 * __Auth URL__: ```http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize```
 * __Access Token URL__ : ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```
 * __Client ID__: admin-client

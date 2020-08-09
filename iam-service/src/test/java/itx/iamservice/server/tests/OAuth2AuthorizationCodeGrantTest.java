@@ -79,15 +79,13 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Order(2)
     public void getAuthorizationCodeTest() {
         Map<String, String> urlVariables = new HashMap<>();
-        urlVariables.put("organization-id", "iam-admins");
-        urlVariables.put("project-id", "iam-admins");
         urlVariables.put("username", "admin");
         urlVariables.put("password", "secret");
         urlVariables.put("client_id", "admin-client");
         urlVariables.put("redirect_uri", redirectUri);
         urlVariables.put("state", "1234");
         ResponseEntity<Object> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/authentication/login?organization-id={organization-id}&project-id={project-id}&state={state}&username={username}&password={password}&client_id={client_id}&redirect_uri={redirect_uri}",
+                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/login?state={state}&username={username}&password={password}&client_id={client_id}&redirect_uri={redirect_uri}",
                 HttpMethod.GET, null, Object.class, urlVariables);
         assertEquals(HttpStatus.MOVED_PERMANENTLY, response.getStatusCode());
         URI redirectedUri = response.getHeaders().getLocation();

@@ -149,9 +149,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getLogin(@RequestParam("organization-id") String organizationId,
-                                           @RequestParam("project-id") String projectId,
+    @GetMapping(path = "/{organization-id}/{project-id}/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLogin(@PathVariable("organization-id") String organizationId,
+                                           @PathVariable("project-id") String projectId,
                                            @RequestParam("username") String username,
                                            @RequestParam("password") String password,
                                            @RequestParam("client_id") String clientId,

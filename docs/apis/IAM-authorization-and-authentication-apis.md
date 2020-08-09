@@ -23,5 +23,5 @@
   __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/revoke``
 
 * Redirects to *redirect_uri* in Authorization Code Grant flow and issues access_code token.  
-  __GET__  ``http://localhost:8080/services/authentication/login``
+  __GET__  ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/login``
 

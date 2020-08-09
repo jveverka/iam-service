@@ -1,5 +1,7 @@
 package itx.iamservice.server.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.model.*;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
@@ -57,17 +59,20 @@ public class AuthenticationController {
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
     private final ClientService clientService;
+    private final ObjectMapper objectMapper;
 
     public AuthenticationController(@Autowired ServletContext servletContext,
                                     @Autowired AuthenticationService authenticationService,
                                     @Autowired ProviderConfigurationService providerConfigurationService,
                                     @Autowired ResourceServerService resourceServerService,
-                                    @Autowired ClientService clientService) {
+                                    @Autowired ClientService clientService,
+                                    @Autowired ObjectMapper objectMapper) {
         this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
         this.resourceServerService = resourceServerService;
         this.clientService = clientService;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -145,6 +150,57 @@ public class AuthenticationController {
         result = result.replace("__redirect_uri__", redirectUri);
         result = result.replace("__state__", state);
         result = result.replace("__scope__", scope);
+        result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<String> getConsent(@PathVariable("organization-id") String organizationId,
+                                             @PathVariable("project-id") String projectId,
+                                             @RequestParam("username") String username,
+                                             @RequestParam("password") String password,
+                                             @RequestParam("client_id") String clientId,
+                                             @RequestParam("redirect_uri") String redirectUri,
+                                             @RequestParam("state") String state,
+                                             @RequestParam(name = "scope", required = false) String scope,
+                                             HttpServletRequest request) {
+        LOG.info("getConsent: {}?{}", request.getRequestURL(), request.getQueryString());
+        LOG.info("getConsent: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
+        Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
+                UserId.from(username), ClientId.from(clientId), password, scope, state);
+        if (authorizationCode.isPresent()) {
+            // Authentication OK: proceed to consent screen
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/consent-form.html");
+            String result = new BufferedReader(new InputStreamReader(is))
+                    .lines().collect(Collectors.joining("\n"));
+            result = result.replace("__context-path__", getContextPath());
+            result = result.replace("__organization-id__", organizationId);
+            result = result.replace("__project-id__", projectId);
+            result = result.replace("__code__", authorizationCode.get().getCode().getCodeValue());
+            result = result.replace("__state__", authorizationCode.get().getState());
+            result = result.replace("\"__available_scopes__\"", renderScopesToJson(authorizationCode.get().getAvailableScopes()));
+            result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
+            return ResponseEntity.ok(result);
+        } else {
+            // Authentication ERROR: show login error !
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-error.html");
+            String result = new BufferedReader(new InputStreamReader(is))
+                    .lines().collect(Collectors.joining("\n"));
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @GetMapping(path = "/{organization-id}/{project-id}/sign-up", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<String> getSignUp(@PathVariable("organization-id") String organizationId,
+                                            @PathVariable("project-id") String projectId,
+                                            HttpServletRequest request) {
+        LOG.info("getConsent: {}?{}", request.getRequestURL(), request.getQueryString());
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/signup-form.html");
+        String result = new BufferedReader(new InputStreamReader(is))
+                .lines().collect(Collectors.joining("\n"));
+        result = result.replace("__context-path__", getContextPath());
+        result = result.replace("__organization-id__", organizationId);
+        result = result.replace("__project-id__", projectId);
         result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
         return ResponseEntity.ok(result);
     }
@@ -246,6 +302,14 @@ public class AuthenticationController {
             return "/" + path;
         } else {
             return path;
+        }
+    }
+
+    private String renderScopesToJson(Set<String> scopes) {
+        try {
+            return objectMapper.writeValueAsString(scopes);
+        } catch (JsonProcessingException e) {
+            return "[]";
         }
     }
 

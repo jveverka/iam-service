@@ -12,12 +12,12 @@
     <h1>Consent</h1>
     <div id="scopes-selector">
     </div><br/>
-    <form action="__context-path__/services/authentication/__organization-id__/__project-id__/login">
+    <form action="__context-path__/services/authentication/__organization-id__/__project-id__/login-with-scopes" method="POST">
       <input type="hidden" autocomplete="off" id="random" name="random" value="__random__">
-      <input type="hidden" autocomplete="off" id="code" name="random" value="__code__">
-      <input type="hidden" autocomplete="off" id="state" name="random" value="__state__">
+      <input type="hidden" autocomplete="off" id="code" name="code" value="__code__">
+      <input type="hidden" autocomplete="off" id="state" name="state" value="__state__">
       <input type="hidden" autocomplete="off" id="scope" name="scope" value="">
-      <input onclick="onFormSubmit();" type="submit" value="Submit">
+      <input type="submit" value="Submit">
     </form>
     <script>
       var available_scopes = "__available_scopes__";

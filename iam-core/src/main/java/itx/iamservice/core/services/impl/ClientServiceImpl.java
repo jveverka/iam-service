@@ -34,9 +34,9 @@ import itx.iamservice.core.services.dto.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ClientServiceImpl implements ClientService {
@@ -279,6 +279,12 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<Tokens> authenticate(Code code) {
+        IdTokenRequest idTokenRequest = new IdTokenRequest(null, UUID.randomUUID().toString());
+        return authenticate(code, idTokenRequest);
     }
 
     @Override

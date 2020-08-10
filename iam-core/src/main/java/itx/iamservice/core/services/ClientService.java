@@ -77,6 +77,13 @@ public interface ClientService {
     Optional<Tokens> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
+     * Authenticate user based on provided {@link Code}
+     * @param code authorization code.
+     * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
+     */
+    Optional<Tokens> authenticate(Code code);
+
+    /**
      * Logout client action revokes validity of issued {@link JWToken}.
      * In case provided JWToken is still valid, it is blacklisted and considered invalid for further use.
      * @param organizationId {@link OrganizationId} unique organization ID.

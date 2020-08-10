@@ -47,11 +47,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -82,8 +80,32 @@ public class AuthenticationController {
         this.objectMapper = objectMapper;
     }
 
-    @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
+    // TODO: workaround for insomnia client
+    @GetMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
+                                                   @PathVariable("project-id") String projectId,
+                                                   @RequestParam("grant_type") String grantType,
+                                                   @RequestParam(name = "nonce", required = false) String nonce,
+                                                   @RequestParam(name = "code", required = false) String code,
+                                                   @RequestParam(name = "scope", required = false) String scope,
+                                                   HttpServletRequest request) {
+        IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce);
+        LOG.info("getTokens: query={}", request.getRequestURL());
+        LOG.info("getTokens: parameters=[{}]", getParameters(request.getParameterNames()));
+        LOG.info("getTokens: nonce={}", nonce);
+        LOG.info("getTokens: scope={}", scope);
+        GrantType grantTypeEnum = GrantType.getGrantType(grantType);
+        if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
+            LOG.info("getTokens: grantType={} code={}", grantType, code);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
+            return ResponseEntity.of(tokensOptional);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TokenResponse> postGetTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
                                                    @RequestParam("grant_type") String grantType,
                                                    @RequestParam(name = "username", required = false) String username,
@@ -96,32 +118,32 @@ public class AuthenticationController {
                                                    @RequestParam(name = "nonce", required = false) String nonce,
                                                    @RequestParam(name = "audience", required = false) String audience,
                                                    HttpServletRequest request) {
-        LOG.info("getTokens: query={}", request.getRequestURL());
-        LOG.info("getTokens: parameters=[{}]", getParameters(request.getParameterNames()));
-        LOG.info("getTokens: nonce={} audience={}", nonce, audience);
+        LOG.info("postGetTokens: query={}", request.getRequestURL());
+        LOG.info("postGetTokens: parameters=[{}]", getParameters(request.getParameterNames()));
+        LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
         IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce);
         if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
-            LOG.info("getTokens: grantType={} code={}", grantType, code);
+            LOG.info("postGetTokens: grantType={} code={}", grantType, code);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
-            LOG.info("getTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
+            LOG.info("postGetTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Scope scopes = ModelUtils.getScopes(scope);
             UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, upAuthenticationRequest, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
-            LOG.info("getTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
+            LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Scope scopes = ModelUtils.getScopes(scope);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
-            LOG.info("getTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
+            LOG.info("postGetTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
             JWToken jwToken = new JWToken(refreshToken);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Scope scopes = ModelUtils.getScopes(scope);
@@ -177,13 +199,15 @@ public class AuthenticationController {
                 UserId.from(username), ClientId.from(clientId), password, scope, state);
         if (authorizationCode.isPresent()) {
             // Authentication OK: proceed to consent screen
+            String code = authorizationCode.get().getCode().getCodeValue();
+            LOG.info("getConsent: code={}", code);
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/consent-form.html");
             String result = new BufferedReader(new InputStreamReader(is))
                     .lines().collect(Collectors.joining("\n"));
             result = result.replace("__context-path__", getContextPath());
             result = result.replace("__organization-id__", organizationId);
             result = result.replace("__project-id__", projectId);
-            result = result.replace("__code__", authorizationCode.get().getCode().getCodeValue());
+            result = result.replace("__code__", code);
             result = result.replace("__state__", authorizationCode.get().getState());
             result = result.replace("\"__available_scopes__\"", renderScopesToJson(authorizationCode.get().getAvailableScopes()));
             result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
@@ -212,6 +236,31 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping(path = "/{organization-id}/{project-id}/login-with-scopes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLoginWithScopes(@PathVariable("organization-id") String organizationId,
+                                           @PathVariable("project-id") String projectId,
+                                           @RequestParam("code") String code,
+                                           @RequestParam("state") String state,
+                                           @RequestParam("scope") String scope,
+                                           HttpServletRequest request) throws Exception {
+        LOG.info("getLoginWithScopes: {}?{}", request.getRequestURL(), request.getQueryString());
+        LOG.info("getLoginWithScopes: code={} state={} scope={}", code, state, scope);
+        //Optional<TokenResponse> tokens = authenticationService.authenticate(new Code(code));
+        //if (tokens.isPresent()) {
+            URL url = new URL(request.getRequestURL().toString());
+            String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
+            String redirectUri = baseUrl + "/" + organizationId + "/" + projectId + "/token";
+            scope = scope.replace(" ", "%20");
+            URI redirectURI = new URI(redirectUri + "?code=" + code + "&state=" + state + "&grant_type=authorization_code" + "&scope=" + scope);
+            LOG.info("Login OK: redirectURI={}",  redirectURI);
+            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectURI).build();
+        //} else {
+        //    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        //}
+    }
+
+    //TODO: deprecated
+    @Deprecated
     @GetMapping(path = "/{organization-id}/{project-id}/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getLogin(@PathVariable("organization-id") String organizationId,
                                            @PathVariable("project-id") String projectId,
@@ -221,7 +270,7 @@ public class AuthenticationController {
                                            @RequestParam("redirect_uri") String redirectUri,
                                            @RequestParam("state") String state,
                                            @RequestParam(name = "scope", required = false) String scope,
-                                           HttpServletRequest request) throws URISyntaxException {
+                                           HttpServletRequest request) throws Exception {
         LOG.info("getLogin: {}?{}", request.getRequestURL(), request.getQueryString());
         LOG.info("getLogin: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),

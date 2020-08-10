@@ -34,14 +34,18 @@ function onScopeSelect(input_element) {
            }
        }
    }
+   onScopeChange();
 }
 
-function onFormSubmit() {
-   console.log("on consent form submit");
+function onScopeChange() {
    var result_scopes = "";
    for (i = 0; i < scopes_selected.length; i++) {
        if (!(!scopes_selected[i] || 0 === scopes_selected[i].length)) {
-          result_scopes = result_scopes + " " + scopes_selected[i];
+          if (result_scopes === "") {
+            result_scopes = scopes_selected[i];
+          } else {
+            result_scopes = result_scopes + " " + scopes_selected[i];
+          }
        }
    }
    console.log("result scopes: " + result_scopes);

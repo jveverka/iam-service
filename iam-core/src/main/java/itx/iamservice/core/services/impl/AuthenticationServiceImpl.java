@@ -94,6 +94,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    public Optional<TokenResponse> authenticate(Code code) {
+        Optional<Tokens> tokensOptional = clientService.authenticate(code);
+        if (tokensOptional.isPresent()) {
+            TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
+                    tokensOptional.get().getExpiresIn(),
+                    tokensOptional.get().getRefreshExpiresIn(),
+                    tokensOptional.get().getRefreshToken().getToken(),
+                    tokensOptional.get().getTokenType().getType(),
+                    tokensOptional.get().getIdToken().getToken());
+            return Optional.of(tokenResponse);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, String scopes, String state) {
         Scope scope = ModelUtils.getScopes(scopes);
         return clientService.login(organizationId, projectId, userId, clientId, password, scope, state);

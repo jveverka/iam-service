@@ -56,6 +56,14 @@ public interface AuthenticationService {
     Optional<TokenResponse> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
+     * Authenticate end-user authorization code grant.
+     * grant_type=authorization_code
+     * @param code
+     * @return
+     */
+    Optional<TokenResponse> authenticate(Code code);
+
+    /**
      * Get new set of tokens using issued and valid refresh toke.
      * @param organizationId
      * @param projectId

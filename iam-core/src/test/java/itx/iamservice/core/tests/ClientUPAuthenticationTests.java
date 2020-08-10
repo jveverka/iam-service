@@ -9,13 +9,13 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.dto.IntrospectRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -52,7 +52,7 @@ public class ClientUPAuthenticationTests {
     private static final String adminPassword = "top-secret";
     private static final String adminSecret = "top-secret";
 
-    private static final Set<RoleId> scope = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
+    private static final Scope scope = new Scope(Set.of("manage-organizations", "manage-projects", "not-existing-role"));
 
     private static ModelCache modelCache;
     private static ClientService clientService;

@@ -5,9 +5,9 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
@@ -40,6 +40,7 @@ public class TokenCacheTests {
     private static final Set<String> AUDIENCE = Set.of("audience");
     private static final Long DURATION = 3L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
+    private static final Scope SCOPE = Scope.empty();
 
     private static KeyId keyId;
     private static KeyPair keyPair;
@@ -56,7 +57,7 @@ public class TokenCacheTests {
         keyId = KeyId.from("key-001");
         Map<String, Set<String>> roleClaims = new HashMap<>();
         roleClaims.put(TokenUtils.ROLES_CLAIM, ROLES);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, SCOPE, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

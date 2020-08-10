@@ -3,9 +3,9 @@ package itx.iamservice.core.tests;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
@@ -30,8 +30,8 @@ public class AuthorizationCodeCacheTests {
     private static Long maxDuration = 3L;
     private static TimeUnit timeUnit = TimeUnit.SECONDS;
     private static AuthorizationCodeCache authorizationCodeCache;
-    private static Set<RoleId> roles = Set.of(RoleId.from("manage-organizations"), RoleId.from("manage-projects"), RoleId.from("not-existing-role"));
     private static Set<String> audience = Set.of("aud1", "aud2");
+    private static final Scope scope = new Scope(Set.of("manage-organizations", "manage-projects", "not-existing-role"));
 
     private static AuthorizationCode authorizationCode;
 
@@ -51,7 +51,7 @@ public class AuthorizationCodeCacheTests {
     @Order(2)
     public void testIssueCode() {
         authorizationCode = authorizationCodeCache.issue(OrganizationId.from("org01"), ProjectId.from("proj01"),
-                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), roles, audience);
+                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), scope, audience);
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());
         assertTrue(verifiedAuthorizationCode.isPresent());

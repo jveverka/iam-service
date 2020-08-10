@@ -4,16 +4,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.KeyId;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.KeyPairData;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.services.dto.Scope;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,9 +50,14 @@ public class TokenUtilsTests {
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
     private static final Long DURATION = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
-    private static final Set<RoleId> availableRoles = Set.of(RoleId.from("role1"), RoleId.from("role2"), RoleId.from("role3"));
+    private static final Set<Permission> availablePermissions = Set.of(
+            new Permission("service", "resource1", "all"),
+            new Permission("service", "resource2", "all"),
+            new Permission("service", "resource3", "all")
+            );
     private static final KeyId KEY_ID = KeyId.from("key-001");
     private static final Map<String, Set<String>> claimRoles = new HashMap<>();
+    private static final Scope scope = Scope.empty();
 
     @BeforeAll
     private static void init() {
@@ -70,7 +76,7 @@ public class TokenUtilsTests {
     public void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, scope, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         assertNotNull(jwt);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isPresent());
@@ -93,7 +99,7 @@ public class TokenUtilsTests {
     public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, duration, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, duration, TIME_UNIT, scope, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         Thread.sleep(3*1000L);
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -102,7 +108,7 @@ public class TokenUtilsTests {
     @Test
     public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, scope, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         keyPair = TokenUtils.generateKeyPair();
         Optional<Jws<Claims>> claimsJws = TokenUtils.verify(jwt, keyPair.getPublic());
         assertTrue(claimsJws.isEmpty());
@@ -112,7 +118,7 @@ public class TokenUtilsTests {
     @SuppressWarnings("unchecked")
     public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
+        JWToken jwt = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, scope, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
         assertEquals(SUBJECT, defaultClaims.getSubject());
         assertEquals(ISSUER, defaultClaims.getIssuer());
@@ -126,8 +132,8 @@ public class TokenUtilsTests {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + 3600*1000L);
-        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.ID);
-        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.ID);
+        JWToken jwt1 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, scope, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.ID);
+        JWToken jwt2 = TokenUtils.issueToken(SUBJECT, ISSUER, AUDIENCE, expirationTime, notBefore, issuedAt, scope, claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.ID);
         assertFalse(jwt1.equals(jwt2));
     }
 
@@ -146,40 +152,40 @@ public class TokenUtilsTests {
 
     private static Stream<Arguments> createRoleFilterArguments() {
         return Stream.of(
-                Arguments.of(availableRoles, Set.of(), availableRoles),
-                Arguments.of(availableRoles, Set.of(RoleId.from("role1")), Set.of(RoleId.from("role1"))),
-                Arguments.of(availableRoles, Set.of(RoleId.from("roleX")), Set.of()),
-                Arguments.of(availableRoles, Set.of(RoleId.from("role1"), RoleId.from("roleX")), Set.of(RoleId.from("role1")))
+                Arguments.of(availablePermissions, Set.of(), availablePermissions),
+                Arguments.of(availablePermissions, new Scope(Set.of("service.resource1.all")), new Scope(Set.of("service.resource1.all"))),
+                Arguments.of(availablePermissions, new Scope(Set.of("roleX")), new Scope(Set.of())),
+                Arguments.of(availablePermissions, new Scope(Set.of("service.resource1.all", "roleX")), new Scope(Set.of("service.resource1.all")))
         );
     }
 
     @ParameterizedTest
     @MethodSource("createRoleFilterArguments")
-    public void roleFilteringTest(Set<RoleId> availableRoles, Set<RoleId> scope, Set<RoleId> expectedResult) {
-        Set<RoleId> filterRoles = TokenUtils.filterRoles(availableRoles, scope);
-        assertNotNull(filterRoles);
-        assertTrue(expectedResult.size() == filterRoles.size());
-        filterRoles.forEach(
-                r -> assertTrue(expectedResult.contains(r))
+    public void roleFilteringTest(Set<Permission> availablePermissions, Scope scope, Scope expectedResult) {
+        Scope filterScopes = TokenUtils.filterScopes(availablePermissions, scope);
+        assertNotNull(filterScopes);
+        assertTrue(expectedResult.getValues().size() == filterScopes.getValues().size());
+        filterScopes.getValues().forEach(
+                r -> assertTrue(expectedResult.getValues().contains(r))
         );
     }
 
     private static Stream<Arguments> createScopeArguments() {
         return Stream.of(
-                Arguments.of(null, Set.of()),
-                Arguments.of("", Set.of()),
-                Arguments.of(" ", Set.of()),
-                Arguments.of("   ", Set.of()),
-                Arguments.of("role1", Set.of(RoleId.from("role1"))),
-                Arguments.of(" roleX ", Set.of(RoleId.from("roleX"))),
-                Arguments.of("role1 roleX", Set.of(RoleId.from("role1"), RoleId.from("roleX")))
+                Arguments.of(null, new Scope(Set.of())),
+                Arguments.of("", new Scope(Set.of())),
+                Arguments.of(" ", new Scope(Set.of())),
+                Arguments.of("   ", new Scope(Set.of())),
+                Arguments.of("service.resource1.all", new Scope(Set.of("service.resource1.all"))),
+                Arguments.of(" roleX ", new Scope(Set.of("roleX"))),
+                Arguments.of("service.resource1.all roleX", new Scope(Set.of("service.resource1.all", "roleX")))
         );
     }
 
     @ParameterizedTest
     @MethodSource("createScopeArguments")
     public void scopeParsingTest(String scopes, Set<RoleId> expectedResult) {
-        Set<RoleId> result = ModelUtils.getScopes(scopes);
+        Scope result = ModelUtils.getScopes(scopes);
         assertNotNull(result);
         assertEquals(result, expectedResult);
     }

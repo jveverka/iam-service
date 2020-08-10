@@ -4,13 +4,13 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.dto.IntrospectRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -71,7 +71,7 @@ public class ClientCCAuthenticationTests {
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
-        Set<RoleId> scope = Set.of(RoleId.from("iam-admin-client"));
+        Scope scope = new Scope(Set.of("iam-admin-client"));
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());

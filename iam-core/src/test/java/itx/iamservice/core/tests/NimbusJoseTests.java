@@ -22,6 +22,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.dto.JWKData;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -54,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NimbusJoseTests {
 
     private static Set<String> audience = Set.of("aud1", "aud2");
+    private static final Scope scope = Scope.empty();
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -93,7 +95,7 @@ public class NimbusJoseTests {
         assertNotNull(publicKeyFromRSAKey);
 
         JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), audience, UserId.from("u1"), 10L,
-                TimeUnit.HOURS, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
+                TimeUnit.HOURS, scope, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
         RSASSAVerifier rsassaVerifier = new RSASSAVerifier(rsaKey);
@@ -122,7 +124,7 @@ public class NimbusJoseTests {
                 modulusBase64String, exponentBase64String);
 
         JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), audience, UserId.from("u1"), 10L,
-                TimeUnit.HOURS, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
+                TimeUnit.HOURS, scope, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
         DefaultJWTProcessor defaultJWTProcessor = new DefaultJWTProcessor();

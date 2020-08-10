@@ -24,4 +24,8 @@ public class Scope {
         return values.isEmpty();
     }
 
+    public static Scope empty() {
+        return new Scope(Set.of());
+    }
+
 }

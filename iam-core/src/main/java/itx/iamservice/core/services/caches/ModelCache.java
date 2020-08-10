@@ -108,10 +108,6 @@ public interface ModelCache {
 
     Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
-    Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId, Set<RoleId> roleFilter);
-
     Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId);
-
-    Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Set<RoleId> roleFilter);
 
 }

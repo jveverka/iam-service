@@ -18,6 +18,7 @@ import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.services.dto.Scope;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -66,6 +67,7 @@ public final class TokenUtils {
     public static final String NONCE_CLAIM = "nonce";
     public static final String AUDIENCE_CLAIM = "aud";
     public static final String AUTH_TIME_CLAIM = "auth_time";
+    public static final String SCOPE_CLAIM = "scope";
     public static final String KEY_ID = "kid";
     public static final String TYP_ID = "typ";
     public static final String TYP_VALUE = "JWT";
@@ -74,17 +76,19 @@ public final class TokenUtils {
     }
 
     /**
-     * Filter roles by scope. If scope is empty, return all available roles. If scope contains some roles that
-     * are not present in availableRoles set, those are ignored.
-     * @param availableRoles all available roles.
-     * @param scope subset of available roles.
-     * @return role set filtered by scope.
+     * Filter permissions by scope. If scope is empty, return all available permissions. If scope contains some permissions that
+     * are not present in availablePermissions set, those are ignored.
+     * @param availablePermissions all available permissions.
+     * @param scope subset of available permissions.
+     * @return permissions set filtered by scope.
      */
-    public static Set<RoleId> filterRoles(Set<RoleId> availableRoles, Set<RoleId> scope) {
+    public static Scope filterScopes(Set<Permission> availablePermissions, Scope scope) {
         if (scope.isEmpty()) {
-            return availableRoles;
+            Set<String> scopes = availablePermissions.stream().map(p->p.asStringValue()).collect(Collectors.toSet());
+            return new Scope(scopes);
         } else {
-            return availableRoles.stream().filter(s -> scope.contains(s)).collect(Collectors.toSet());
+            Set<String> scopes = availablePermissions.stream().filter(p -> scope.getValues().contains(p.asStringValue())).map(p->p.asStringValue()).collect(Collectors.toSet());
+            return new Scope(scopes);
         }
     }
 
@@ -95,19 +99,19 @@ public final class TokenUtils {
         return claims;
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, ClientId clientId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, audience, clientId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, ClientId clientId, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, audience, clientId.getId(), duration, timeUnit, scope, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, UserId userId, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, audience, userId.getId(), duration, timeUnit, customClaims, keyId, privateKey, type);
+    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, UserId userId, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(organizationId, audience, userId.getId(), duration, timeUnit, scope, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, String subject, Long duration, TimeUnit timeUnit, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(OrganizationId organizationId, Set<String> audience, String subject, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(subject, organizationId.getId(), audience, expirationTime, notBefore, issuedAt, customClaims, keyId, privateKey, type);
+        return issueToken(subject, organizationId.getId(), audience, expirationTime, notBefore, issuedAt, scope, customClaims, keyId, privateKey, type);
     }
 
     public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
@@ -130,20 +134,23 @@ public final class TokenUtils {
         return JWToken.from(builder.compact());
     }
 
-    public static JWToken issueToken(String subject, String issuer, Set<String> audience, Date expirationTime, Date notBefore, Date issuedAt, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(String subject, String issuer, Set<String> audience, Date expirationTime, Date notBefore, Date issuedAt, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         JwtBuilder builder = Jwts.builder();
-        builder.setHeaderParam(TYP_ID, TYP_VALUE)
-                .setHeaderParam(KEY_ID, keyId.getId())
-                .setSubject(subject)
-                .signWith(privateKey)
-                .setExpiration(expirationTime)
-                .setIssuer(issuer)
-                .setIssuedAt(issuedAt)
-                .setNotBefore(notBefore)
-                .claim(AUDIENCE_CLAIM, audience)
-                .claim(TYPE_CLAIM, type.getType())
-                .setId(UUID.randomUUID().toString());
-        customClaims.forEach((k,v) -> builder.claim(k,v));
+        builder.setHeaderParam(TYP_ID, TYP_VALUE);
+        builder.setHeaderParam(KEY_ID, keyId.getId());
+        builder.setSubject(subject);
+        builder.signWith(privateKey);
+        builder.setExpiration(expirationTime);
+        builder.setIssuer(issuer);
+        builder.setIssuedAt(issuedAt);
+        builder.setNotBefore(notBefore);
+        builder.claim(AUDIENCE_CLAIM, audience);
+        builder.claim(TYPE_CLAIM, type.getType());
+        builder.claim(SCOPE_CLAIM, String.join(" ", scope.getValues()));
+        builder.setId(UUID.randomUUID().toString());
+        if (customClaims != null) {
+            customClaims.forEach((k, v) -> builder.claim(k, v));
+        }
         return JWToken.from(builder.compact());
     }
 

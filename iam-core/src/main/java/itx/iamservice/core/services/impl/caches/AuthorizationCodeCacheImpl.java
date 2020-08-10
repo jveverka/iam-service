@@ -9,6 +9,7 @@ import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.Scope;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -32,9 +33,9 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Set<RoleId> scope, Set<String> audience) {
+    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience) {
         Code code = Code.from(UUID.randomUUID().toString());
-        AuthorizationCode authorizationCode = new AuthorizationCode(code, state);
+        AuthorizationCode authorizationCode = new AuthorizationCode(code, state, scope);
         codes.put(code, new AuthorizationCodeContext(organizationId, projectId, clientId, userId, state, new Date(), scope, audience));
         return authorizationCode;
     }

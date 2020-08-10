@@ -1,15 +1,14 @@
 package itx.iamservice.core.services.dto;
 
 import java.util.Objects;
-import java.util.Set;
 
 public final class AuthorizationCode {
 
     private final Code code;
     private final String state;
-    private final Set<String> availableScopes;
+    private final Scope availableScopes;
 
-    public AuthorizationCode(Code code, String state, Set<String> availableScopes) {
+    public AuthorizationCode(Code code, String state, Scope availableScopes) {
         this.code = code;
         this.state = state;
         this.availableScopes = availableScopes;
@@ -23,7 +22,7 @@ public final class AuthorizationCode {
         return state;
     }
 
-    public Set<String> getAvailableScopes() {
+    public Scope getAvailableScopes() {
         return availableScopes;
     }
 

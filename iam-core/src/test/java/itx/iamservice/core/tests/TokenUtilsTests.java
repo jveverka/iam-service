@@ -152,7 +152,7 @@ public class TokenUtilsTests {
 
     private static Stream<Arguments> createRoleFilterArguments() {
         return Stream.of(
-                Arguments.of(availablePermissions, Set.of(), availablePermissions),
+                Arguments.of(availablePermissions, new Scope(Set.of()), new Scope(Set.of("service.resource1.all", "service.resource2.all", "service.resource3.all"))),
                 Arguments.of(availablePermissions, new Scope(Set.of("service.resource1.all")), new Scope(Set.of("service.resource1.all"))),
                 Arguments.of(availablePermissions, new Scope(Set.of("roleX")), new Scope(Set.of())),
                 Arguments.of(availablePermissions, new Scope(Set.of("service.resource1.all", "roleX")), new Scope(Set.of("service.resource1.all")))
@@ -184,7 +184,7 @@ public class TokenUtilsTests {
 
     @ParameterizedTest
     @MethodSource("createScopeArguments")
-    public void scopeParsingTest(String scopes, Set<RoleId> expectedResult) {
+    public void scopeParsingTest(String scopes, Scope expectedResult) {
         Scope result = ModelUtils.getScopes(scopes);
         assertNotNull(result);
         assertEquals(result, expectedResult);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class Scope {
@@ -28,4 +29,16 @@ public class Scope {
         return new Scope(Set.of());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Scope scope = (Scope) o;
+        return Objects.equals(values, scope.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(values);
+    }
 }

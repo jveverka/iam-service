@@ -2,7 +2,13 @@ package itx.iamservice.server.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import itx.iamservice.core.model.*;
+import itx.iamservice.core.model.ClientCredentials;
+import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.TokenType;
+import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
@@ -19,6 +25,7 @@ import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.dto.ProviderConfigurationResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,21 +110,21 @@ public class AuthenticationController {
         } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
             LOG.info("getTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
-            Set<RoleId> scopes = ModelUtils.getScopes(scope);
+            Scope scopes = ModelUtils.getScopes(scope);
             UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, upAuthenticationRequest, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
             LOG.info("getTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
-            Set<RoleId> scopes = ModelUtils.getScopes(scope);
+            Scope scopes = ModelUtils.getScopes(scope);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
             LOG.info("getTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
             JWToken jwToken = new JWToken(refreshToken);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
-            Set<RoleId> scopes = ModelUtils.getScopes(scope);
+            Scope scopes = ModelUtils.getScopes(scope);
             Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(orgId, projId, jwToken, clientCredentials, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else {
@@ -305,9 +312,9 @@ public class AuthenticationController {
         }
     }
 
-    private String renderScopesToJson(Set<String> scopes) {
+    private String renderScopesToJson(Scope scopes) {
         try {
-            return objectMapper.writeValueAsString(scopes);
+            return objectMapper.writeValueAsString(scopes.getValues());
         } catch (JsonProcessingException e) {
             return "[]";
         }

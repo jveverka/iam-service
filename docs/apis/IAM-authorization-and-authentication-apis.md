@@ -1,6 +1,5 @@
 ## Authorization and Authentication REST APIs
 
-*  __Base url__ in this case is ``http://localhost:8080/services/authentication/{organization-id}/{project-id}``    
 * Provider configuration as required by [RFC8414](https://tools.ietf.org/html/rfc8414#section-3), 
   [OpenID](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig) or 
   [Provider Meta-Data](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)  
@@ -25,3 +24,8 @@
 * Redirects to *redirect_uri* in Authorization Code Grant flow and issues access_code token.  
   __GET__  ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/login``
 
+* Endpoint to invoke login for Authorization Code Grant flow without UI.
+  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize-programmatic``
+
+* Endpoint to provide consent for Authorization Code Grant flow without UI.
+  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/consent-programmatic``

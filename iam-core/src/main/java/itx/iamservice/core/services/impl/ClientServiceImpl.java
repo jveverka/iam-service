@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ClientServiceImpl implements ClientService {
@@ -282,9 +281,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Optional<Tokens> authenticate(Code code) {
-        IdTokenRequest idTokenRequest = new IdTokenRequest(null, UUID.randomUUID().toString());
-        return authenticate(code, idTokenRequest);
+    public boolean setScope(Code code, Scope scope) {
+        return codeCache.setScope(code, scope);
     }
 
     @Override

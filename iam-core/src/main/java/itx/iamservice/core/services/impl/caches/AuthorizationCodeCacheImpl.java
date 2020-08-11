@@ -3,7 +3,6 @@ package itx.iamservice.core.services.impl.caches;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.dto.AuthorizationCode;
@@ -52,6 +51,20 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
         int purged = codes.size() - purgedCodes.size();
         codes = purgedCodes;
         return purged;
+    }
+
+    @Override
+    public boolean setScope(Code code, Scope scope) {
+        AuthorizationCodeContext context = codes.get(code);
+        if (context != null) {
+            AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(
+                    context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
+                    context.getState(), context.getIssued(), scope, context.getAudience());
+            codes.put(code, updatedContext);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

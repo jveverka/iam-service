@@ -80,29 +80,23 @@ public class AuthenticationController {
         this.objectMapper = objectMapper;
     }
 
+    /**
     // TODO: workaround for insomnia client
     @GetMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
-                                                   @RequestParam("grant_type") String grantType,
+                                                   @RequestParam("code") String code,
+                                                   @RequestParam("state") String state,
                                                    @RequestParam(name = "nonce", required = false) String nonce,
-                                                   @RequestParam(name = "code", required = false) String code,
-                                                   @RequestParam(name = "scope", required = false) String scope,
                                                    HttpServletRequest request) {
         IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce);
         LOG.info("getTokens: query={}", request.getRequestURL());
         LOG.info("getTokens: parameters=[{}]", getParameters(request.getParameterNames()));
-        LOG.info("getTokens: nonce={}", nonce);
-        LOG.info("getTokens: scope={}", scope);
-        GrantType grantTypeEnum = GrantType.getGrantType(grantType);
-        if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
-            LOG.info("getTokens: grantType={} code={}", grantType, code);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
-            return ResponseEntity.of(tokensOptional);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        LOG.info("getTokens: org={} proj={} code={} state={} nonce={}", organizationId, projectId, code, state, nonce);
+        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
+        return ResponseEntity.of(tokensOptional);
     }
+    */
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> postGetTokens(@PathVariable("organization-id") String organizationId,
@@ -195,8 +189,9 @@ public class AuthenticationController {
                                              HttpServletRequest request) {
         LOG.info("getConsent: {}?{}", request.getRequestURL(), request.getQueryString());
         LOG.info("getConsent: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
+        Scope scopes = ModelUtils.getScopes(scope);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(username), ClientId.from(clientId), password, scope, state);
+                UserId.from(username), ClientId.from(clientId), password, scopes, state);
         if (authorizationCode.isPresent()) {
             // Authentication OK: proceed to consent screen
             String code = authorizationCode.get().getCode().getCodeValue();
@@ -221,6 +216,24 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping(path = "/{organization-id}/{project-id}/login-with-scopes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> getLoginWithScopes(@PathVariable("organization-id") String organizationId,
+                                           @PathVariable("project-id") String projectId,
+                                           @RequestParam("code") String code,
+                                           @RequestParam("state") String state,
+                                           @RequestParam("scope") String scope,
+                                           HttpServletRequest request) throws Exception {
+        LOG.info("getLoginWithScopes: {}?{}", request.getRequestURL(), request.getQueryString());
+        LOG.info("getLoginWithScopes: code={} state={} scope={}", code, state, scope);
+        URL url = new URL(request.getRequestURL().toString());
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
+        String redirectUri = baseUrl + "/" + organizationId + "/" + projectId + "/token";
+        URI redirectURI = new URI(redirectUri + "?code=" + code + "&state=" + state);
+        LOG.info("Login OK: redirectURI={}",  redirectURI);
+        authenticationService.setScope(new Code(code), ModelUtils.getScopes(scope));
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectURI).build();
+    }
+
     @GetMapping(path = "/{organization-id}/{project-id}/sign-up", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> getSignUp(@PathVariable("organization-id") String organizationId,
                                             @PathVariable("project-id") String projectId,
@@ -234,29 +247,6 @@ public class AuthenticationController {
         result = result.replace("__project-id__", projectId);
         result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
         return ResponseEntity.ok(result);
-    }
-
-    @PostMapping(path = "/{organization-id}/{project-id}/login-with-scopes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getLoginWithScopes(@PathVariable("organization-id") String organizationId,
-                                           @PathVariable("project-id") String projectId,
-                                           @RequestParam("code") String code,
-                                           @RequestParam("state") String state,
-                                           @RequestParam("scope") String scope,
-                                           HttpServletRequest request) throws Exception {
-        LOG.info("getLoginWithScopes: {}?{}", request.getRequestURL(), request.getQueryString());
-        LOG.info("getLoginWithScopes: code={} state={} scope={}", code, state, scope);
-        //Optional<TokenResponse> tokens = authenticationService.authenticate(new Code(code));
-        //if (tokens.isPresent()) {
-            URL url = new URL(request.getRequestURL().toString());
-            String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
-            String redirectUri = baseUrl + "/" + organizationId + "/" + projectId + "/token";
-            scope = scope.replace(" ", "%20");
-            URI redirectURI = new URI(redirectUri + "?code=" + code + "&state=" + state + "&grant_type=authorization_code" + "&scope=" + scope);
-            LOG.info("Login OK: redirectURI={}",  redirectURI);
-            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectURI).build();
-        //} else {
-        //    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        //}
     }
 
     //TODO: deprecated
@@ -273,8 +263,9 @@ public class AuthenticationController {
                                            HttpServletRequest request) throws Exception {
         LOG.info("getLogin: {}?{}", request.getRequestURL(), request.getQueryString());
         LOG.info("getLogin: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
+        Scope scopes = ModelUtils.getScopes(scope);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(username), ClientId.from(clientId), password, scope, state);
+                UserId.from(username), ClientId.from(clientId), password, scopes, state);
         if (authorizationCode.isPresent())  {
             URI redirectURI = new URI(redirectUri + "?code=" + authorizationCode.get().getCode() + "&state=" + state);
             LOG.info("Login OK: redirectURI={}",  redirectURI);
@@ -286,6 +277,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.FOUND).location(redirectURI).build();
         }
     }
+
 
     //https://openid.net/specs/openid-connect-discovery-1_0.html
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/openid-configuration", produces = MediaType.APPLICATION_JSON_VALUE)

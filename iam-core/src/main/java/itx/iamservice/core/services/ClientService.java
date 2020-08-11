@@ -77,11 +77,12 @@ public interface ClientService {
     Optional<Tokens> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
-     * Authenticate user based on provided {@link Code}
-     * @param code authorization code.
-     * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
+     * Set scope for existing code context.
+     * @param code
+     * @param scope new scope
+     * @return
      */
-    Optional<Tokens> authenticate(Code code);
+    boolean setScope(Code code, Scope scope);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

@@ -56,12 +56,12 @@ public interface AuthenticationService {
     Optional<TokenResponse> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
-     * Authenticate end-user authorization code grant.
-     * grant_type=authorization_code
+     * Set scope in existing authorization code grant flow.
      * @param code
+     * @param scope - updated scope
      * @return
      */
-    Optional<TokenResponse> authenticate(Code code);
+    boolean setScope(Code code, Scope scope);
 
     /**
      * Get new set of tokens using issued and valid refresh toke.
@@ -88,6 +88,6 @@ public interface AuthenticationService {
      * @param state
      * @return
      */
-    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, String scope, String state);
+    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state);
 
 }

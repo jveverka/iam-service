@@ -12,6 +12,7 @@ import itx.iamservice.core.services.dto.Scope;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -57,9 +58,15 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     public boolean setScope(Code code, Scope scope) {
         AuthorizationCodeContext context = codes.get(code);
         if (context != null) {
+            Set<String> filteredScopes = new HashSet<>();
+            context.getScope().getValues().forEach(s->{
+                if (scope.getValues().contains(s)) {
+                    filteredScopes.add(s);
+                }
+            });
             AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(
                     context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
-                    context.getState(), context.getIssued(), scope, context.getAudience());
+                    context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience());
             codes.put(code, updatedContext);
             return true;
         } else {

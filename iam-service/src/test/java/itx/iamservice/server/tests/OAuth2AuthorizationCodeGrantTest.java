@@ -1,8 +1,10 @@
 package itx.iamservice.server.tests;
 
 import itx.iamservice.core.model.TokenType;
-import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.AuthorizationCodeGrantRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
+import itx.iamservice.core.services.dto.ConsentRequest;
 import itx.iamservice.core.services.dto.TokenResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -13,18 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenRevokeResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenVerificationResponse;
@@ -38,9 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class OAuth2AuthorizationCodeGrantTest {
 
     private static TokenResponse tokenResponse;
-    private static Code code;
+    private static AuthorizationCode authorizationCode;
     private static String redirectUri;
-    private static RestTemplate restTemplate;
 
     @LocalServerPort
     private int port;
@@ -50,12 +50,6 @@ public class OAuth2AuthorizationCodeGrantTest {
 
     @BeforeAll
     public static void init() {
-        restTemplate = new RestTemplate( new SimpleClientHttpRequestFactory(){
-            @Override
-            protected void prepareConnection(HttpURLConnection connection, String httpMethod ) {
-                connection.setInstanceFollowRedirects(false);
-            }
-        });
     }
 
     @Test
@@ -68,7 +62,7 @@ public class OAuth2AuthorizationCodeGrantTest {
         urlVariables.put("state", "1234");
         urlVariables.put("client_id", "admin-client");
         urlVariables.put("redirect_uri", redirectUri);
-        ResponseEntity<String> response = restTemplate.getForEntity(
+        ResponseEntity<String> response = testRestTemplate.getForEntity(
                 "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize?response_type={response_type}&scope={scope}&state={state}&client_id={client_id}&redirect_uri={redirect_uri}",
                 String.class, urlVariables);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -78,33 +72,33 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(2)
     public void getAuthorizationCodeTest() {
-        Map<String, String> urlVariables = new HashMap<>();
-        urlVariables.put("username", "admin");
-        urlVariables.put("password", "secret");
-        urlVariables.put("client_id", "admin-client");
-        urlVariables.put("redirect_uri", redirectUri);
-        urlVariables.put("state", "1234");
-        ResponseEntity<Object> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/login?state={state}&username={username}&password={password}&client_id={client_id}&redirect_uri={redirect_uri}",
-                HttpMethod.GET, null, Object.class, urlVariables);
-        assertEquals(HttpStatus.MOVED_PERMANENTLY, response.getStatusCode());
-        URI redirectedUri = response.getHeaders().getLocation();
-        assertNotNull(redirectedUri);
-        assertTrue(redirectedUri.toString().startsWith(redirectUri));
-        MultiValueMap<String, String> queryParameters = UriComponentsBuilder.fromUri(redirectedUri).build().getQueryParams();
-        String codeString = queryParameters.getFirst("code");
-        String stateString = queryParameters.getFirst("state");
-        assertNotNull(codeString);
-        assertNotNull(stateString);
-        code = new Code(codeString);
+        AuthorizationCodeGrantRequest request = new AuthorizationCodeGrantRequest("admin", "secret", "admin-client", Set.of(), "123");
+        HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
+        ResponseEntity<AuthorizationCode> response = testRestTemplate.postForEntity(
+                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize-programmatic",
+                httpEntity, AuthorizationCode.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        authorizationCode = response.getBody();
+        assertNotNull(authorizationCode);
     }
 
     @Test
     @Order(3)
+    public void getProvideConsentTest() {
+        ConsentRequest request = new ConsentRequest(authorizationCode.getCode(), authorizationCode.getAvailableScopes().getValues());
+        HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
+        ResponseEntity<Void> response = testRestTemplate.postForEntity(
+                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/consent-programmatic",
+                httpEntity, Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
     public void getTokensTest() {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "authorization_code");
-        urlVariables.put("code", code.getCodeValue());
+        urlVariables.put("code", authorizationCode.getCode().getCodeValue());
         ResponseEntity<TokenResponse> response = testRestTemplate.exchange(
                 "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token?grant_type={grant_type}&code={code}",
                 HttpMethod.POST,null, TokenResponse.class, urlVariables);
@@ -119,7 +113,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void verifyTokens() {
         ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -130,7 +124,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void getRefreshTokens() {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "refresh_token");
@@ -153,7 +147,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void verifyRefreshedTokens() {
         ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -164,7 +158,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void revokeTokens() {
         ResponseEntity<Void> response = getTokenRevokeResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -173,7 +167,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     public void verifyRevokedTokens() {
         ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(testRestTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());

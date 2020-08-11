@@ -1,5 +1,8 @@
 package itx.iamservice.core.services.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public final class AuthorizationCode {
@@ -8,7 +11,10 @@ public final class AuthorizationCode {
     private final String state;
     private final Scope availableScopes;
 
-    public AuthorizationCode(Code code, String state, Scope availableScopes) {
+    @JsonCreator
+    public AuthorizationCode(@JsonProperty("code") Code code,
+                             @JsonProperty("state") String state,
+                             @JsonProperty("availableScopes") Scope availableScopes) {
         this.code = code;
         this.state = state;
         this.availableScopes = availableScopes;

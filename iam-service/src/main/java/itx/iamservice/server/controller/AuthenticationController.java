@@ -16,7 +16,9 @@ import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.AuthorizationCodeGrantRequest;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.ConsentRequest;
 import itx.iamservice.core.services.dto.GrantType;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.dto.IntrospectRequest;
@@ -36,6 +38,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,6 +53,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -249,35 +253,27 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
-    //TODO: deprecated
-    @Deprecated
-    @GetMapping(path = "/{organization-id}/{project-id}/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getLogin(@PathVariable("organization-id") String organizationId,
-                                           @PathVariable("project-id") String projectId,
-                                           @RequestParam("username") String username,
-                                           @RequestParam("password") String password,
-                                           @RequestParam("client_id") String clientId,
-                                           @RequestParam("redirect_uri") String redirectUri,
-                                           @RequestParam("state") String state,
-                                           @RequestParam(name = "scope", required = false) String scope,
-                                           HttpServletRequest request) throws Exception {
-        LOG.info("getLogin: {}?{}", request.getRequestURL(), request.getQueryString());
-        LOG.info("getLogin: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
-        Scope scopes = ModelUtils.getScopes(scope);
+    @PostMapping(path = "/{organization-id}/{project-id}/authorize-programmatic", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthorizationCode> authorizeProgrammatically(@PathVariable("organization-id") String organizationId,
+                                                      @PathVariable("project-id") String projectId,
+                                                      @RequestBody AuthorizationCodeGrantRequest request) {
+        Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(username), ClientId.from(clientId), password, scopes, state);
-        if (authorizationCode.isPresent())  {
-            URI redirectURI = new URI(redirectUri + "?code=" + authorizationCode.get().getCode() + "&state=" + state);
-            LOG.info("Login OK: redirectURI={}",  redirectURI);
-            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectURI).build();
-        } else {
-            String errorDescription = "login-failed";
-            URI redirectURI = new URI(redirectUri + "?error=invalid_request&error_description=" + errorDescription + "&state=" + state);
-            LOG.info("Login Failed: redirectURI={}",  redirectURI);
-            return ResponseEntity.status(HttpStatus.FOUND).location(redirectURI).build();
-        }
+                UserId.from(request.getUsername()), ClientId.from(request.getClientId()), request.getPassword(), scopes, request.getState());
+        return ResponseEntity.of(authorizationCode);
     }
 
+    @PostMapping(path = "/{organization-id}/{project-id}/consent-programmatic", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
+                                                        @PathVariable("project-id") String projectId,
+                                                        @RequestBody ConsentRequest request) {
+        Scope scopes = new Scope(Set.copyOf(request.getScopes()));
+        if (authenticationService.setScope(request.getCode(), scopes)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
 
     //https://openid.net/specs/openid-connect-discovery-1_0.html
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/openid-configuration", produces = MediaType.APPLICATION_JSON_VALUE)

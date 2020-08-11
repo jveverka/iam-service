@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../login.css">
   </head>
   <body onload="onLoad();">
+    <div class="main-wrapper">
     <h1>Login</h1>
     <form action="__context-path__/services/authentication/__organization-id__/__project-id__/consent">
       <input type="hidden" autocomplete="off" id="response-type" name="response-type" value="__response-type__">
@@ -24,6 +25,7 @@
       <div id="roles-and-scope-selector"></div>
       <input type="submit" value="Submit">
     </form>
+    </div>
     <a href="__context-path__/services/authentication/__organization-id__/__project-id__/sign-up">sign up</a>
     <script src="../../../../login.js"></script>
   </body>

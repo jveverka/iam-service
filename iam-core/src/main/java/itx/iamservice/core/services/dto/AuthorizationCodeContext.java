@@ -2,9 +2,7 @@ package itx.iamservice.core.services.dto;
 
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 
 import java.util.Date;
@@ -18,17 +16,17 @@ public class AuthorizationCodeContext {
     private final ClientId clientId;
     private final String state;
     private final Date issued;
-    private final Set<RoleId> roles;
+    private final Scope scope;
     private final Set<String> audience;
 
-    public AuthorizationCodeContext(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Date issued, Set<RoleId> roles, Set<String> audience) {
+    public AuthorizationCodeContext(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Date issued, Scope scope, Set<String> audience) {
         this.organizationId = organizationId;
         this.projectId = projectId;
         this.clientId = clientId;
         this.userId = userId;
         this.state = state;
         this.issued = issued;
-        this.roles = roles;
+        this.scope = scope;
         this.audience = audience;
     }
 
@@ -56,8 +54,8 @@ public class AuthorizationCodeContext {
         return clientId;
     }
 
-    public Set<RoleId> getRoles() {
-        return roles;
+    public Scope getScope() {
+        return scope;
     }
 
     public Set<String> getAudience() {

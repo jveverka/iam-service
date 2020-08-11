@@ -1,6 +1,7 @@
 package itx.iamservice.core.model;
 
-import java.util.Set;
+import itx.iamservice.core.services.dto.Scope;
+
 
 /**
  * Authentication Request from user (subject).
@@ -24,7 +25,7 @@ public interface AuthenticationRequest<C extends Credentials> {
      * Scope requested by user (subject).
      * @return
      */
-    Set<RoleId> getScope();
+    Scope getScope();
 
     /**
      * Get client's credentials.

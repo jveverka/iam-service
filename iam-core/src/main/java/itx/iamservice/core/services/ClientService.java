@@ -5,7 +5,6 @@ import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
@@ -13,9 +12,9 @@ import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
+import itx.iamservice.core.services.dto.Scope;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Service providing client authentication and token invalidation (revoke).
@@ -33,7 +32,7 @@ public interface ClientService {
      * @param idTokenRequest
      * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
-    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Set<RoleId> scope, IdTokenRequest idTokenRequest);
+    Optional<Tokens> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, Scope scope, IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate user and provide valid {@link JWToken} in case authentication has been successful.
@@ -54,7 +53,7 @@ public interface ClientService {
      * @param idTokenRequest
      * @return new instance of {@link Tokens} or empty if provided {@link Tokens} was not valid.
      */
-    Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Set<RoleId> scope, IdTokenRequest idTokenRequest);
+    Optional<Tokens> refresh(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials, JWToken token, Scope scope, IdTokenRequest idTokenRequest);
 
     /**
      * Login user using userId / password and clientId.
@@ -67,7 +66,7 @@ public interface ClientService {
      * @param state client's state.
      * @return {@link AuthorizationCode} single use authorization code token.
      */
-    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Set<RoleId> scope, String state);
+    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state);
 
     /**
      * Authenticate user based on provided {@link Code}
@@ -76,6 +75,14 @@ public interface ClientService {
      * @return valid {@link Tokens} in case authentication has been successful, empty otherwise.
      */
     Optional<Tokens> authenticate(Code code, IdTokenRequest idTokenRequest);
+
+    /**
+     * Set scope for existing code context.
+     * @param code
+     * @param scope new scope
+     * @return
+     */
+    boolean setScope(Code code, Scope scope);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

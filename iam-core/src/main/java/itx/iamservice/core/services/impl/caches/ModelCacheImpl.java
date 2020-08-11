@@ -542,11 +542,6 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        return getPermissions(organizationId, projectId, userId, Set.of());
-    }
-
-    @Override
-    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, UserId userId, Set<RoleId> roleFilter) {
         Set<Permission> result = new HashSet<>();
         ModelKey<User> userKey = userKey(organizationId, projectId, userId);
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
@@ -554,13 +549,11 @@ public class ModelCacheImpl implements ModelCache {
         Project  project =  projects.get(projectKey);
         if (user != null && project != null) {
             for (RoleId roleId: user.getRoles()) {
-                if (roleFilter.isEmpty() || roleFilter.contains(roleId)) {
-                    ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-                    Role role = roles.get(roleKey);
-                    if (role != null) {
-                        result.addAll(role.getPermissions());
-                    }
-                }
+                 ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
+                 Role role = roles.get(roleKey);
+                 if (role != null) {
+                     result.addAll(role.getPermissions());
+                 }
             }
         }
         return result;
@@ -568,11 +561,6 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
-        return getPermissions(organizationId, projectId, clientId, Set.of());
-    }
-
-    @Override
-    public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId, ClientId clientId, Set<RoleId> roleFilter) {
         Set<Permission> result = new HashSet<>();
         ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
@@ -580,13 +568,11 @@ public class ModelCacheImpl implements ModelCache {
         Project  project =  projects.get(projectKey);
         if (client != null && project != null) {
             for (RoleId roleId: client.getRoles()) {
-                if (roleFilter.isEmpty() || roleFilter.contains(roleId)) {
-                    ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-                    Role role = roles.get(roleKey);
-                    if (role != null) {
-                        result.addAll(role.getPermissions());
-                    }
-                }
+                 ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
+                 Role role = roles.get(roleKey);
+                 if (role != null) {
+                     result.addAll(role.getPermissions());
+                 }
             }
         }
         return result;

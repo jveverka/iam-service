@@ -23,6 +23,7 @@ import itx.iamservice.core.model.builders.ProjectBuilder;
 import itx.iamservice.core.model.builders.UserBuilder;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.OrganizationInfo;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
 import itx.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import itx.iamservice.core.services.persistence.PersistenceService;
@@ -144,20 +145,20 @@ public final class ModelUtils {
     /**
      * Parse set of scopes from {@ling String} containing space delimited, case sensitive scopes.
      * @param scope {@ling String} containing scopes.
-     * @return parsed {@link Set} of scopes.
+     * @return parsed set od {@link Scope}(s).
      */
-    public static Set<RoleId> getScopes(String scope) {
+    public static Scope getScopes(String scope) {
         if (scope == null) {
-            return Collections.emptySet();
+            return new Scope(Collections.emptySet());
         } else {
-            Set<RoleId> scopes = new HashSet<>();
+            Set<String> scopes = new HashSet<>();
             String[] rawScopes = scope.trim().split(" ");
             for (String s: rawScopes) {
                 if (!s.isEmpty()) {
-                    scopes.add(RoleId.from(s));
+                    scopes.add(s);
                 }
             }
-            return scopes;
+            return new Scope(scopes);
         }
     }
 

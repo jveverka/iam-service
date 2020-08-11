@@ -3,15 +3,16 @@ package itx.iamservice.core.services.impl.caches;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
+import itx.iamservice.core.services.dto.Scope;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,9 +33,9 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Set<RoleId> scope, Set<String> audience) {
+    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience) {
         Code code = Code.from(UUID.randomUUID().toString());
-        AuthorizationCode authorizationCode = new AuthorizationCode(code, state);
+        AuthorizationCode authorizationCode = new AuthorizationCode(code, state, scope);
         codes.put(code, new AuthorizationCodeContext(organizationId, projectId, clientId, userId, state, new Date(), scope, audience));
         return authorizationCode;
     }
@@ -51,6 +52,26 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
         int purged = codes.size() - purgedCodes.size();
         codes = purgedCodes;
         return purged;
+    }
+
+    @Override
+    public boolean setScope(Code code, Scope scope) {
+        AuthorizationCodeContext context = codes.get(code);
+        if (context != null) {
+            Set<String> filteredScopes = new HashSet<>();
+            context.getScope().getValues().forEach(s->{
+                if (scope.getValues().contains(s)) {
+                    filteredScopes.add(s);
+                }
+            });
+            AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(
+                    context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
+                    context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience());
+            codes.put(code, updatedContext);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -16,6 +16,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,8 +42,12 @@ public class IAMSecurityFilter implements Filter {
             if (claimSet.isPresent()) {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 String userIdFromJWT = claimSet.get().getSubject();
-                List<String> permissionsFromJWT = (List<String>) claimSet.get().getClaim("permissions");
-                Set<String> setOfPermissions = permissionsFromJWT.stream().map(p  -> "ROLE_" + p).collect(Collectors.toSet());
+                String scopeClaim = (String) claimSet.get().getClaim("scope");
+                String[] scopes = scopeClaim.split(" ");
+                Set<String> setOfPermissions = new HashSet<>();
+                for (int i=0; i<scopes.length; i++) {
+                    setOfPermissions.add("ROLE_" + scopes[i]);
+                }
                 securityContext.setAuthentication(new AuthenticationImpl(userIdFromJWT, setOfPermissions));
                 chain.doFilter(request, response);
                 return;

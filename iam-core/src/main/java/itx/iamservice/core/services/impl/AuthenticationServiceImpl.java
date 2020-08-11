@@ -15,6 +15,7 @@ import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
 
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
                                                 ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest,
-                                                Set<RoleId> scopes, IdTokenRequest idTokenRequest) {
+                                                Scope scope, IdTokenRequest idTokenRequest) {
         Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, upAuthenticationRequest, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
@@ -47,8 +48,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials,
-                                                Set<RoleId> scopes, IdTokenRequest idTokenRequest) {
-        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, clientCredentials, scopes, idTokenRequest);
+                                                Scope scope, IdTokenRequest idTokenRequest) {
+        Optional<Tokens> tokensOptional = clientService.authenticate(organizationId, projectId, clientCredentials, scope, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                     tokensOptional.get().getExpiresIn(),
@@ -63,8 +64,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Optional<TokenResponse> refreshTokens(OrganizationId organizationId, ProjectId projectId, JWToken refreshToken,
-                                                 ClientCredentials clientCredentials, Set<RoleId> scopes, IdTokenRequest idTokenRequest) {
-        Optional<Tokens> tokensOptional = clientService.refresh(organizationId, projectId, clientCredentials, refreshToken, scopes, idTokenRequest);
+                                                 ClientCredentials clientCredentials, Scope scope, IdTokenRequest idTokenRequest) {
+        Optional<Tokens> tokensOptional = clientService.refresh(organizationId, projectId, clientCredentials, refreshToken, scope, idTokenRequest);
         if (tokensOptional.isPresent()) {
             TokenResponse tokenResponse = new TokenResponse(tokensOptional.get().getAccessToken().getToken(),
                     tokensOptional.get().getExpiresIn(),
@@ -93,9 +94,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, String scope, String state) {
-        Set<RoleId> scopes = ModelUtils.getScopes(scope);
-        return clientService.login(organizationId, projectId, userId, clientId, password, scopes, state);
+    public boolean setScope(Code code, Scope scope) {
+        return clientService.setScope(code, scope);
+    }
+
+    @Override
+    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state) {
+        return clientService.login(organizationId, projectId, userId, clientId, password, scope, state);
     }
 
 }

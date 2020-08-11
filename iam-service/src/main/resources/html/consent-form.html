@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="stylesheet" type="text/css" href="../../../../consent.css">
+  </head>
+  <body onload="onLoad();">
+    <div class="main-wrapper">
+    <h1>Consent</h1>
+    <div id="scopes-selector">
+    </div><br/>
+    <form action="__context-path__/services/authentication/__organization-id__/__project-id__/login-with-scopes" method="POST">
+      <input type="hidden" autocomplete="off" id="random" name="random" value="__random__">
+      <input type="hidden" autocomplete="off" id="code" name="code" value="__code__">
+      <input type="hidden" autocomplete="off" id="state" name="state" value="__state__">
+      <input type="hidden" autocomplete="off" id="scope" name="scope" value="">
+      <input type="submit" value="Submit">
+    </form>
+    </div>
+    <script>
+      var available_scopes = "__available_scopes__";
+    </script>
+    <script src="../../../../consent.js"></script>
+  </body>
+</html>

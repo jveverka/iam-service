@@ -4,13 +4,13 @@ import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.dto.AuthorizationCode;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
 
 import java.util.Optional;
@@ -25,13 +25,13 @@ public interface AuthenticationService {
      * @param projectId
      * @param clientCredentials
      * @param upAuthenticationRequest
-     * @param scopes
+     * @param scope
      * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
                                          ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest,
-                                         Set<RoleId> scopes, IdTokenRequest idTokenRequest);
+                                         Scope scope, IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate end-user in client credentials flow.
@@ -39,12 +39,12 @@ public interface AuthenticationService {
      * @param organizationId
      * @param projectId
      * @param clientCredentials
-     * @param scopes
+     * @param scope
      * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
-                                         ClientCredentials clientCredentials, Set<RoleId> scopes, IdTokenRequest idTokenRequest);
+                                         ClientCredentials clientCredentials, Scope scope, IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate end-user authorization code grant.
@@ -56,17 +56,25 @@ public interface AuthenticationService {
     Optional<TokenResponse> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
+     * Set scope in existing authorization code grant flow.
+     * @param code
+     * @param scope - updated scope
+     * @return
+     */
+    boolean setScope(Code code, Scope scope);
+
+    /**
      * Get new set of tokens using issued and valid refresh toke.
      * @param organizationId
      * @param projectId
      * @param refreshToken
      * @param clientCredentials
-     * @param scopes
+     * @param scope
      * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> refreshTokens(OrganizationId organizationId, ProjectId projectId, JWToken refreshToken,
-                                         ClientCredentials clientCredentials, Set<RoleId> scopes, IdTokenRequest idTokenRequest);
+                                         ClientCredentials clientCredentials, Scope scope, IdTokenRequest idTokenRequest);
 
     /**
      * Get short-lived authorization_code based on clientId, username=userId and password
@@ -80,6 +88,6 @@ public interface AuthenticationService {
      * @param state
      * @return
      */
-    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, String scope, String state);
+    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state);
 
 }

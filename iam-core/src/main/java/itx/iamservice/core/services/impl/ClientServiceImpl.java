@@ -40,6 +40,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static itx.iamservice.core.model.utils.TokenUtils.TYPE_CLAIM;
+
 public class ClientServiceImpl implements ClientService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientServiceImpl.class);
@@ -163,7 +165,7 @@ public class ClientServiceImpl implements ClientService {
                 LOG.info("JWT verified={}", claimsOptional.isPresent());
                 if (claimsOptional.isPresent()) {
                     Claims claims = claimsOptional.get().getBody();
-                    String tokenType = (String)claims.get(TokenUtils.TYPE_CLAIM);
+                    String tokenType = (String)claims.get(TYPE_CLAIM);
                     if (TokenType.REFRESH.getType().equals(tokenType)) {
                         Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                         Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
@@ -326,7 +328,10 @@ public class ClientServiceImpl implements ClientService {
             if (userOptional.isPresent()) {
                 PublicKey publicKey = userOptional.get().getKeyPairData().getPublicKey();
                 Optional<Jws<Claims>> claims = TokenUtils.verify(token, publicKey);
-                if (claims.isPresent() && claims.get().getBody().getSubject().equals(userOptional.get().getId().getId())) {
+                String type = claims.get().getBody().get(TYPE_CLAIM, String.class);
+                if (claims.isPresent() &&
+                        claims.get().getBody().getSubject().equals(userOptional.get().getId().getId()) &&
+                        TokenType.BEARER.getType().equals(type)) {
                     return Optional.of(new UserInfoResponse(userOptional.get().getId().getId()));
                 }
             }

@@ -12,6 +12,9 @@
   Supported grant types: grant_type = authorization_code | refresh_token | password | client_credentials  
   __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/token``
 
+* UserInfo verification endpoint as specified in [OIDC core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest)   
+  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/userinfo``
+
 * Start Authorization Code Grant flow.   
   __GET__  ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize``
 
@@ -24,8 +27,8 @@
 * Redirects to *redirect_uri* in Authorization Code Grant flow and issues access_code token.  
   __GET__  ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/login``
 
-* Endpoint to invoke login for Authorization Code Grant flow without UI.
+* Endpoint to invoke login for Authorization Code Grant flow without UI.    
   __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize-programmatic``
 
-* Endpoint to provide consent for Authorization Code Grant flow without UI.
+* Endpoint to provide consent for Authorization Code Grant flow without UI.   
   __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/consent-programmatic``

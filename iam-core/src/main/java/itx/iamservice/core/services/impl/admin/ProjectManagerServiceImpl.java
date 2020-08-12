@@ -92,4 +92,14 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
         return modelCache.removePermissionFromRole(id, projectId, roleId, permissionId);
     }
 
+    @Override
+    public void setProperty(OrganizationId id, ProjectId projectId, String key, String value) {
+        modelCache.setProperty(id, projectId, key, value);
+    }
+
+    @Override
+    public void removeProperty(OrganizationId id, ProjectId projectId, String key) {
+        modelCache.removeProperty(id, projectId, key);
+    }
+
 }

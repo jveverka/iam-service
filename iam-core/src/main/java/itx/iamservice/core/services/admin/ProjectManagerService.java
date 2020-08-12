@@ -43,4 +43,8 @@ public interface ProjectManagerService {
 
     boolean removePermissionFromRole(OrganizationId id, ProjectId projectId, RoleId roleId, PermissionId permissionId);
 
+    void setProperty(OrganizationId id, ProjectId projectId, String key, String value);
+
+    void removeProperty(OrganizationId id, ProjectId projectId, String key);
+
 }

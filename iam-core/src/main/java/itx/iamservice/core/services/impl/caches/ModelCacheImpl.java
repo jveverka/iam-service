@@ -280,6 +280,26 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public synchronized void setProperty(OrganizationId id, ProjectId projectId, String key, String value) {
+        ModelKey<Project> projectKey = projectKey(id, projectId);
+        Project project = projects.get(projectKey);
+        if (project != null) {
+            project.setProperty(key, value);
+            persistenceService.onNodeUpdated(projectKey, project);
+        }
+    }
+
+    @Override
+    public synchronized void removeProperty(OrganizationId id, ProjectId projectId, String key) {
+        ModelKey<Project> projectKey = projectKey(id, projectId);
+        Project project = projects.get(projectKey);
+        if (project != null) {
+            project.removeProperty(key);
+            persistenceService.onNodeUpdated(projectKey, project);
+        }
+    }
+
+    @Override
     public synchronized Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         ModelKey<User> userKey = userKey(organizationId, projectId, request.getId());

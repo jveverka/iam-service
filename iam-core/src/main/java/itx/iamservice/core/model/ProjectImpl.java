@@ -10,8 +10,10 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class ProjectImpl implements Project {
     private final Set<ClientId> clients;
     private final Set<Permission> permissions;
     private final Set<String> audience;
+    private final Map<String, String> properties;
 
     public ProjectImpl(ProjectId id, String name, OrganizationId organizationId, PrivateKey organizationPrivateKey, Collection<String> audience) throws PKIException {
         this.id = id;
@@ -42,6 +45,7 @@ public class ProjectImpl implements Project {
         audience.forEach(a->
                 this.audience.add(a)
         );
+        this.properties = new ConcurrentHashMap<>();
     }
 
     @JsonCreator
@@ -53,7 +57,8 @@ public class ProjectImpl implements Project {
                        @JsonProperty("roles") Collection<RoleId> roles,
                        @JsonProperty("permissions") Collection<Permission> permissions,
                        @JsonProperty("clients") Collection<ClientId> clients,
-                       @JsonProperty("audience") Collection<String> audience) throws PKIException {
+                       @JsonProperty("audience") Collection<String> audience,
+                       @JsonProperty("properties") Map<String, String> properties) throws PKIException {
         this.id = id;
         this.name = name;
         this.users = new HashSet<>();
@@ -79,6 +84,7 @@ public class ProjectImpl implements Project {
         audience.forEach(a->
                 this.audience.add(a)
         );
+        this.properties = properties;
     }
 
     @Override
@@ -187,6 +193,21 @@ public class ProjectImpl implements Project {
     @Override
     public Optional<Permission> getPermission(PermissionId id) {
         return permissions.stream().filter(p->p.getId().equals(id)).findFirst();
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    @Override
+    public void setProperty(String key, String value) {
+        properties.put(key, value);
+    }
+
+    @Override
+    public void removeProperty(String key) {
+        properties.remove(key);
     }
 
 }

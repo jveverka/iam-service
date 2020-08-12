@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -55,5 +56,11 @@ public interface Project {
     boolean removePermission(PermissionId id);
 
     Optional<Permission> getPermission(PermissionId id);
+
+    Map<String, String> getProperties();
+
+    void setProperty(String key, String value);
+
+    void removeProperty(String key);
 
 }

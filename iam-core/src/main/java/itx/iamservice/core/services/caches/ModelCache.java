@@ -53,6 +53,10 @@ public interface ModelCache {
 
     boolean remove(OrganizationId organizationId, ProjectId projectId);
 
+    void setProperty(OrganizationId id, ProjectId projectId, String key, String value);
+
+    void removeProperty(OrganizationId id, ProjectId projectId, String key);
+
     //USER
     Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException;
 

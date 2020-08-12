@@ -326,7 +326,7 @@ public class AuthenticationController {
                                                         @PathVariable("project-id") String projectId,
                                                         HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
-        if (authorization.startsWith("Bearer ")) {
+        if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring("Bearer ".length());
             Optional<UserInfoResponse> response = clientService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), JWToken.from(token));
             return ResponseEntity.of(response);

@@ -144,8 +144,9 @@ public class ModelSerializationTests {
 
     @Test
     public void serializeAndDeserializeProject() throws PKIException, JsonProcessingException {
+        Map<String, String> properties = new HashMap<>();
         Project project = new ProjectImpl(ProjectId.from("project-001"), "name", OrganizationId.from("organization-001"), keyPairSerialized,
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), properties);
         String serialized = mapper.writeValueAsString(project);
         Project projectDeserialized = mapper.readValue(serialized, Project.class);
         assertNotNull(projectDeserialized);

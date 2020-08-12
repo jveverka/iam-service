@@ -54,8 +54,8 @@ gradle clean build jacocoTestReport
 * [__Management APIs__](docs/apis/IAM-management-apis.md) - manage organization / project / users and credentials.
 * [__Back-Channel APIs__](docs/apis/IAM-back-channel-apis.md) - discover organization / project / user configuration, get public keys.
 * [__Health-Check API__](docs/apis/IAM-heath-check.md) - service status and health check.
-* __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v2/api-docs```
-* __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui.html```
+* __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v3/api-docs```
+* __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui/index.html```
 * [__Security Rules__](docs/IAM-service-security.md) - accessing APIs.
 
 ### Technical documentation

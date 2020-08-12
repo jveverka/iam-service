@@ -31,9 +31,11 @@ import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
+import itx.iamservice.core.services.dto.UserInfoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.PublicKey;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -314,4 +316,22 @@ public class ClientServiceImpl implements ClientService {
         }
         return false;
     }
+
+    @Override
+    public Optional<UserInfoResponse> getUserInfo(OrganizationId organizationId, ProjectId projectId, JWToken token) {
+        if (!tokenCache.isRevoked(token)) {
+            DefaultClaims defaultClaims = TokenUtils.extractClaims(token);
+            String subject = defaultClaims.getSubject();
+            Optional<User> userOptional = modelCache.getUser(organizationId, projectId, UserId.from(subject));
+            if (userOptional.isPresent()) {
+                PublicKey publicKey = userOptional.get().getKeyPairData().getPublicKey();
+                Optional<Jws<Claims>> claims = TokenUtils.verify(token, publicKey);
+                if (claims.isPresent() && claims.get().getBody().getSubject().equals(userOptional.get().getId().getId())) {
+                    return Optional.of(new UserInfoResponse(userOptional.get().getId().getId()));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
 }

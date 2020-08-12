@@ -13,6 +13,7 @@ import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
+import itx.iamservice.core.services.dto.UserInfoResponse;
 
 import java.util.Optional;
 
@@ -93,5 +94,14 @@ public interface ClientService {
      * @return true in case provided {@link JWToken} is valid, false otherwise.
      */
     boolean revoke(OrganizationId organizationId, ProjectId projectId, RevokeTokenRequest request);
+
+    /**
+     * Get user info for issued JWT
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param token issued and valid {@link JWToken}
+     * @return {@link UserInfoResponse} in case user exists and provided {@link JWToken} is valid.
+     */
+    Optional<UserInfoResponse> getUserInfo(OrganizationId organizationId, ProjectId projectId, JWToken token);
 
 }

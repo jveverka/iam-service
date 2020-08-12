@@ -24,6 +24,7 @@ import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetUserNamePasswordCredentialsRequest;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.core.services.dto.UserInfo;
+import itx.iamservice.core.services.dto.UserInfoResponse;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -474,6 +475,16 @@ public final class HttpClientTestUtils {
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
+        );
+    }
+
+    public static ResponseEntity<UserInfoResponse> getUserInfo(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
+        HttpEntity<UserInfoResponse> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        return restTemplate.exchange(
+                "http://localhost:" + port + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/userinfo",
+                HttpMethod.GET,
+                requestEntity,
+                UserInfoResponse.class
         );
     }
 

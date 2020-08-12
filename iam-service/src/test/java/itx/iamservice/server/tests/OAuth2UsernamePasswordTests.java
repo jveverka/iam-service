@@ -1,8 +1,11 @@
 package itx.iamservice.server.tests;
 
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.UserInfoResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,7 @@ import java.util.Map;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenRevokeResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenVerificationResponse;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -62,6 +66,16 @@ public class OAuth2UsernamePasswordTests {
 
     @Test
     @Order(3)
+    public void testUserInfo() {
+        ResponseEntity<UserInfoResponse> response = getUserInfo(tokenResponse.getAccessToken(), restTemplate, port, OrganizationId.from("iam-admins"), ProjectId.from("iam-admins"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        UserInfoResponse userInfoResponse = response.getBody();
+        assertNotNull(userInfoResponse);
+        assertEquals("admin", userInfoResponse.getSub());
+    }
+
+    @Test
+    @Order(4)
     public void getRefreshTokens() {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "refresh_token");
@@ -84,7 +98,7 @@ public class OAuth2UsernamePasswordTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void verifyRefreshedTokens() {
         ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -95,7 +109,7 @@ public class OAuth2UsernamePasswordTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void revokeTokens() {
         ResponseEntity<Void> response = getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -104,7 +118,7 @@ public class OAuth2UsernamePasswordTests {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void verifyRevokedTokens() {
         ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
         assertEquals(HttpStatus.OK, response.getStatusCode());

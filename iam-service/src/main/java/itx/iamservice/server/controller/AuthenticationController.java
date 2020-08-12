@@ -29,6 +29,7 @@ import itx.iamservice.core.dto.ProviderConfigurationResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.UserInfoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,6 +318,21 @@ public class AuthenticationController {
         RevokeTokenRequest request = new RevokeTokenRequest(JWToken.from(token), getTokenType(tokenTypeHint));
         clientService.revoke(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         return ResponseEntity.ok().build();
+    }
+
+    //https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest
+    @GetMapping(path = "/{organization-id}/{project-id}/userinfo", produces = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable("organization-id") String organizationId,
+                                                        @PathVariable("project-id") String projectId,
+                                                        HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization.startsWith("Bearer ")) {
+            String token = authorization.substring("Bearer ".length());
+            Optional<UserInfoResponse> response = clientService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), JWToken.from(token));
+            return ResponseEntity.of(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     private TokenType getTokenType(String tokenTypeHint) {

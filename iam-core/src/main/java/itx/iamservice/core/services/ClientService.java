@@ -96,7 +96,7 @@ public interface ClientService {
     boolean revoke(OrganizationId organizationId, ProjectId projectId, RevokeTokenRequest request);
 
     /**
-     * Get user info for issued JWT
+     * Get user info for issued JWT specified in @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest">OIDC core 1.0</a>
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
      * @param token issued and valid {@link JWToken}

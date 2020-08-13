@@ -85,8 +85,7 @@ public class AuthenticationController {
         this.objectMapper = objectMapper;
     }
 
-    /**
-    // TODO: workaround for insomnia client
+    // TODO: workaround for insomnia and beowser client
     @GetMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
@@ -101,7 +100,6 @@ public class AuthenticationController {
         Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
         return ResponseEntity.of(tokensOptional);
     }
-    */
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> postGetTokens(@PathVariable("organization-id") String organizationId,
@@ -221,7 +219,7 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping(path = "/{organization-id}/{project-id}/login-with-scopes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{organization-id}/{project-id}/login-with-scopes", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<Void> getLoginWithScopes(@PathVariable("organization-id") String organizationId,
                                            @PathVariable("project-id") String projectId,
                                            @RequestParam("code") String code,

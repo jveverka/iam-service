@@ -8,6 +8,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
@@ -67,7 +68,7 @@ public interface ClientService {
      * @param state client's state.
      * @return {@link AuthorizationCode} single use authorization code token.
      */
-    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state);
+    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
 
     /**
      * Authenticate user based on provided {@link Code}
@@ -103,5 +104,12 @@ public interface ClientService {
      * @return {@link UserInfoResponse} in case user exists and provided {@link JWToken} is valid.
      */
     Optional<UserInfoResponse> getUserInfo(OrganizationId organizationId, ProjectId projectId, JWToken token);
+
+    /**
+     * Get {@link AuthorizationCodeContext} for {@link Code}.
+     * @param code
+     * @return
+     */
+    Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code);
 
 }

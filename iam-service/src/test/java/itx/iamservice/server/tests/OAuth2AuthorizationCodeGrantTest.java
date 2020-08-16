@@ -73,7 +73,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(2)
     public void getAuthorizationCodeTest() {
-        AuthorizationCodeGrantRequest request = new AuthorizationCodeGrantRequest("admin", "secret", "admin-client", Set.of(), "123");
+        AuthorizationCodeGrantRequest request = new AuthorizationCodeGrantRequest("admin", "secret", "admin-client", Set.of(), "123", "");
         HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
         ResponseEntity<AuthorizationCode> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize-programmatic",

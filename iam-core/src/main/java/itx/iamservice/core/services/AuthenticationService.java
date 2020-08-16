@@ -7,6 +7,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
@@ -88,6 +89,8 @@ public interface AuthenticationService {
      * @param state
      * @return
      */
-    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state);
+    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
+
+    Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code);
 
 }

@@ -33,10 +33,10 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience) {
+    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI) {
         Code code = Code.from(UUID.randomUUID().toString());
         AuthorizationCode authorizationCode = new AuthorizationCode(code, state, scope);
-        codes.put(code, new AuthorizationCodeContext(organizationId, projectId, clientId, userId, state, new Date(), scope, audience));
+        codes.put(code, new AuthorizationCodeContext(organizationId, projectId, clientId, userId, state, new Date(), scope, audience, redirectURI));
         return authorizationCode;
     }
 
@@ -66,7 +66,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
             });
             AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(
                     context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
-                    context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience());
+                    context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience(), context.getRedirectURI());
             codes.put(code, updatedContext);
             return true;
         } else {
@@ -77,6 +77,15 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     @Override
     public Optional<AuthorizationCodeContext> verifyAndRemove(Code code) {
         AuthorizationCodeContext context = codes.remove(code);
+        if (context != null) {
+            return verify(context);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<AuthorizationCodeContext> get(Code code) {
+        AuthorizationCodeContext context = codes.get(code);
         if (context != null) {
             return verify(context);
         }

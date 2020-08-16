@@ -8,28 +8,49 @@
     <meta http-equiv="Expires" content="0" />
     <link rel="shortcut icon" type="image/x-icon" href="../../../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../../../../bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../../login-form.css">
   </head>
-  <body onload="onLoad();">
-    <div class="main-wrapper">
-    <h1>Login</h1>
-    <form action="__context-path__/services/authentication/__organization-id__/__project-id__/consent">
-      <input type="hidden" autocomplete="off" id="response-type" name="response-type" value="__response-type__">
-      <input type="hidden" autocomplete="off" id="client_id" name="client_id" value="__client_id__">
-      <input type="hidden" autocomplete="off" id="redirect_uri" name="redirect_uri" value="__redirect_uri__">
-      <input type="hidden" autocomplete="off" id="state" name="state" value="__state__">
-      <input type="hidden" autocomplete="off" id="random" name="random" value="__random__">
-      <input type="hidden" autocomplete="off" id="scope" name="scope" value="__scope__">
-      <table>
-        <tr><td>username</td><td><input type="text" id="username" name="username"></td></tr>
-        <tr><td>password</td><td><input type="password" id="password" name="password"></td></tr>
-      </table>
-      <div id="roles-and-scope-selector"></div>
-      <input type="submit" value="Submit">
-    </form>
+  <body>
+
+    <div id="login-container" class="container">
+      <h1>Login</h1>
+      <input id="username-input" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+      <input id="password-input" type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+      <br/>
+      <button type="button" class="btn btn-primary" onclick="submitLogin()">Login</button>
+      <button type="button" class="btn btn-primary" onclick="onStartSignUp()">Sign Up</button>
     </div>
-    <a href="__context-path__/services/authentication/__organization-id__/__project-id__/sign-up">sign up</a>
-    <script src="../../../../login.js"></script>
+
+    <div id="login-error-container" class="container">
+      <br/>
+      <div class="alert alert-danger" role="alert">
+        Login has failed!
+      </div>
+    </div>
+
+    <div id="consent-container" class="container">
+      <h1>Consent</h1>
+      <div id="scopes-selector">
+      </div>
+      <br/>
+      <button type="button" class="btn btn-primary" onclick="submitConsent()">Confirm</button>
+    </div>
+
+    <div id="sign-up-container" class="container">
+      <h1>Sign-up</h1>
+    </div>
+
+    <script>
+      var organization_id = "__organization-id__";
+      var project_id      = "__project-id__";
+      var response_type   = "__response-type__";
+      var client_id       = "__client_id__";
+      var redirect_uri    = "__redirect_uri__";
+      var state           = "__state__";
+      var scope           = "__scope__";
+    </script>
     <script src="../../../../jquery-3.5.1.min.js"></script>
     <script src="../../../../bootstrap.min.js"></script>
+    <script src="../../../../login-form.js"></script>
   </body>
 </html>

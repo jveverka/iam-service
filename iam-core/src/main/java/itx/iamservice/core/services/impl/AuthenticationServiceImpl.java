@@ -12,6 +12,7 @@ import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
+import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
@@ -99,8 +100,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state) {
-        return clientService.login(organizationId, projectId, userId, clientId, password, scope, state);
+    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI) {
+        return clientService.login(organizationId, projectId, userId, clientId, password, scope, state, redirectURI);
+    }
+
+    @Override
+    public Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code) {
+        return clientService.getAuthorizationCodeContext(code);
     }
 
 }

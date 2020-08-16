@@ -224,7 +224,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId,
-                                             ClientId clientId, String password, Scope scope, String state) {
+                                             ClientId clientId, String password, Scope scope, String state, String redirectURI) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> optionalClient = modelCache.getClient(organizationId, projectId, clientId);
@@ -246,7 +246,7 @@ public class ClientServiceImpl implements ClientService {
                 if (valid) {
                     Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
-                    AuthorizationCode authorizationCode = codeCache.issue(organizationId, projectId, clientId, userId, state, filteredScopes, projectOptional.get().getAudience());
+                    AuthorizationCode authorizationCode = codeCache.issue(organizationId, projectId, clientId, userId, state, filteredScopes, projectOptional.get().getAudience(), redirectURI);
                     return Optional.of(authorizationCode);
                 }
             }
@@ -337,6 +337,11 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code) {
+        return codeCache.get(code);
     }
 
 }

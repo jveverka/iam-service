@@ -51,7 +51,7 @@ public class AuthorizationCodeCacheTests {
     @Order(2)
     public void testIssueCode() {
         authorizationCode = authorizationCodeCache.issue(OrganizationId.from("org01"), ProjectId.from("proj01"),
-                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), scope, audience);
+                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), scope, audience, "");
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());
         assertTrue(verifiedAuthorizationCode.isPresent());

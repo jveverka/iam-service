@@ -18,8 +18,10 @@ public class AuthorizationCodeContext {
     private final Date issued;
     private final Scope scope;
     private final Set<String> audience;
+    private final String redirectURI;
 
-    public AuthorizationCodeContext(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Date issued, Scope scope, Set<String> audience) {
+    public AuthorizationCodeContext(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId,
+                                    String state, Date issued, Scope scope, Set<String> audience, String redirectURI) {
         this.organizationId = organizationId;
         this.projectId = projectId;
         this.clientId = clientId;
@@ -28,6 +30,7 @@ public class AuthorizationCodeContext {
         this.issued = issued;
         this.scope = scope;
         this.audience = audience;
+        this.redirectURI = redirectURI;
     }
 
     public OrganizationId getOrganizationId() {
@@ -61,4 +64,9 @@ public class AuthorizationCodeContext {
     public Set<String> getAudience() {
         return audience;
     }
+
+    public String getRedirectURI() {
+        return redirectURI;
+    }
+
 }

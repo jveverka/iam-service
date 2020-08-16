@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
@@ -85,7 +86,7 @@ public class AuthenticationController {
         this.objectMapper = objectMapper;
     }
 
-    // TODO: workaround for insomnia and beowser client
+    // TODO: workaround for insomnia and browser client
     @GetMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
@@ -180,6 +181,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
+    /*
     @GetMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> getConsent(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
@@ -194,7 +196,7 @@ public class AuthenticationController {
         LOG.info("getConsent: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
         Scope scopes = ModelUtils.getScopes(scope);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(username), ClientId.from(clientId), password, scopes, state);
+                UserId.from(username), ClientId.from(clientId), password, scopes, state, redirectUri);
         if (authorizationCode.isPresent()) {
             // Authentication OK: proceed to consent screen
             String code = authorizationCode.get().getCode().getCodeValue();
@@ -251,6 +253,7 @@ public class AuthenticationController {
         result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
         return ResponseEntity.ok(result);
     }
+    */
 
     @PostMapping(path = "/{organization-id}/{project-id}/authorize-programmatic", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorizationCode> authorizeProgrammatically(@PathVariable("organization-id") String organizationId,
@@ -258,7 +261,7 @@ public class AuthenticationController {
                                                       @RequestBody AuthorizationCodeGrantRequest request) {
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(request.getUsername()), ClientId.from(request.getClientId()), request.getPassword(), scopes, request.getState());
+                UserId.from(request.getUsername()), ClientId.from(request.getClientId()), request.getPassword(), scopes, request.getState(), request.getRedirectUri());
         return ResponseEntity.of(authorizationCode);
     }
 

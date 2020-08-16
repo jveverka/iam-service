@@ -14,12 +14,14 @@ import java.util.Set;
 
 public interface AuthorizationCodeCache {
 
-    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience);
+    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI);
 
     int purgeCodes();
 
     boolean setScope(Code code, Scope scope);
 
     Optional<AuthorizationCodeContext> verifyAndRemove(Code code);
+
+    Optional<AuthorizationCodeContext> get(Code code);
 
 }

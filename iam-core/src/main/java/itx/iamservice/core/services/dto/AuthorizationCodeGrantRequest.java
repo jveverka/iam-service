@@ -12,18 +12,21 @@ public class AuthorizationCodeGrantRequest {
     private final String clientId;
     private final Collection<String> scopes;
     private final String state;
+    private final String redirectUri;
 
     @JsonCreator
     public AuthorizationCodeGrantRequest(@JsonProperty("username") String username,
                                          @JsonProperty("password") String password,
                                          @JsonProperty("clientId") String clientId,
                                          @JsonProperty("scopes") Collection<String> scopes,
-                                         @JsonProperty("state") String state) {
+                                         @JsonProperty("state") String state,
+                                         @JsonProperty("redirectUri") String redirectUri) {
         this.username = username;
         this.password = password;
         this.clientId = clientId;
         this.scopes = scopes;
         this.state = state;
+        this.redirectUri = redirectUri;
     }
 
     public String getUsername() {
@@ -46,4 +49,7 @@ public class AuthorizationCodeGrantRequest {
         return state;
     }
 
+    public String getRedirectUri() {
+        return redirectUri;
+    }
 }

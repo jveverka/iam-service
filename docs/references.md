@@ -4,6 +4,7 @@
 * [Okta endpoints](https://developer.okta.com/docs/reference/api/oidc/#endpoints)
 * [OAuth2 Essentials](https://oauth.net/2/)
 * [AWS Cognito endpoints](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-userpools-server-contract-reference.html)
+* [An Illustrated Guide to OAuth and OpenID Connect](https://www.youtube.com/watch?v=t18YB3xDfXI)
 
 ## Spring OAuth2 references
 * [Spring OAuth 2.0 Resource Server](https://docs.spring.io/spring-security/site/docs/5.3.1.BUILD-SNAPSHOT/reference/html5/#oauth2resourceserver)

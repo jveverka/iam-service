@@ -165,7 +165,7 @@ function onScopeSelect(input_element) {
 
 function onConsentOk() {
    console.log("on Consent OK  ...");
-   window.location.href = getBaseUrl() + "/token?state=" + authorization_code_response.state + "&code=" + authorization_code_response.code.code;
+   window.location.href = redirect_uri + "?state=" + authorization_code_response.state + "&code=" + authorization_code_response.code.code;
 };
 
 function onConsentFailed() {

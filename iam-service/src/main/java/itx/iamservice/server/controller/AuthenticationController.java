@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -272,6 +273,25 @@ public class AuthenticationController {
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         if (authenticationService.setScope(request.getCode(), scopes)) {
             return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @GetMapping(path = "/{organization-id}/{project-id}/redirect", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TokenResponse> redirect(@PathVariable("organization-id") String organizationId,
+                                                      @PathVariable("project-id") String projectId,
+                                                      @RequestParam("code") String code,
+                                                      @RequestParam("state") String state,
+                                                      HttpServletRequest request) throws MalformedURLException {
+        LOG.info("redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
+        RestTemplate restTemplate = new RestTemplate();
+        URL url = new URL(request.getRequestURL().toString());
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
+        String tokenUrl = baseUrl + "/" + organizationId + "/" + projectId + "/token" + "?code=" + code + "&state=" + state;
+        ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
+        if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
+            return ResponseEntity.ok(tokenResponseResponseEntity.getBody());
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

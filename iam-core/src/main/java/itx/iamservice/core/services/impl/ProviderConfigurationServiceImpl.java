@@ -23,7 +23,7 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
     private static final String[] responseTypes = { "code", "code id_token","code token","code id_token token" };
     private static final String[] grantTypes = { "authorization_code", "refresh_token", "password", "client_credentials" };
     private static final String[] subjectTypesSupported = { "public","pairwise" };
-    private static final String[] idTokenSigningAlgValuesSupported = {"PS384","ES384","RS384","HS256","HS512","ES256","RS256","HS384","ES512","PS256","PS512","RS512"};
+    private static final String[] idTokenSigningAlgValuesSupported = {"RS256"};
     private static final String[] idTokenEncryptionAlgValuesSupported = { "RSA" };
 
     public static final String KEY_TYPE = "RSA";

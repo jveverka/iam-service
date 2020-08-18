@@ -25,14 +25,14 @@ echo ""
 #0. Check system dependencies.
 which java
 if [ $? = 0  ]; then
-  echo -e "Java          ${GREEN}OK${NOCOLOR}"
+  echo -e "Java           ${GREEN}OK${NOCOLOR}"
 else
   echo -e "${RED}ERROR: java not installed.${NOCOLOR}"
   exit 1
 fi
 which gradle
 if [ $? = 0  ]; then
-  echo -e "Gradle        ${GREEN}OK${NOCOLOR}"
+  echo -e "Gradle         ${GREEN}OK${NOCOLOR}"
 else
   echo -e "${RED}ERROR: gradle not installed.${NOCOLOR}"
   exit 1
@@ -40,7 +40,7 @@ fi
 
 which docker
 if [ $? = 0  ]; then
-  echo -e "Docker        ${GREEN}OK${NOCOLOR}"
+  echo -e "Docker         ${GREEN}OK${NOCOLOR}"
 else
   echo -e "${RED}ERROR: docker not installed.${NOCOLOR}"
   exit 1

@@ -1,6 +1,5 @@
 package itx.iamservice.server.tests;
 
-import itx.iamservice.core.dto.HealthCheckResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getHealthCheckResponse;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getActuatorInfo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -29,14 +28,10 @@ public class HealthCheckTests {
     @Test
     @Order(1)
     public void getHealthCheck() {
-        HealthCheckResponse healthCheckResponse = getHealthCheckResponse(restTemplate, port);
-        assertNotNull(healthCheckResponse);
-        assertNotNull(healthCheckResponse.getId());
-        assertNotNull(healthCheckResponse.getName());
-        assertNotNull(healthCheckResponse.getTimestamp());
-        assertEquals("OK", healthCheckResponse.getStatus());
-        assertEquals("iam-service", healthCheckResponse.getType());
-        assertEquals("1.0.0",  healthCheckResponse.getVersion());
+        ResponseEntity<String> response = getActuatorInfo(restTemplate, port);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
 }

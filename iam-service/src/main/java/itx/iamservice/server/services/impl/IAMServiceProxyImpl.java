@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@Deprecated
 public class IAMServiceProxyImpl implements IAMServiceProxy {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMServiceProxyImpl.class);

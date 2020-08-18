@@ -76,7 +76,7 @@ public class OAuth2AuthorizationCodeGrantTest {
         AuthorizationCodeGrantRequest request = new AuthorizationCodeGrantRequest("admin", "secret", "admin-client", Set.of(), "123", "");
         HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
         ResponseEntity<AuthorizationCode> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize-programmatic",
+                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize",
                 httpEntity, AuthorizationCode.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         authorizationCode = response.getBody();
@@ -89,7 +89,7 @@ public class OAuth2AuthorizationCodeGrantTest {
         ConsentRequest request = new ConsentRequest(authorizationCode.getCode(), authorizationCode.getAvailableScopes().getValues());
         HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
         ResponseEntity<Void> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/consent-programmatic",
+                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/consent",
                 httpEntity, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

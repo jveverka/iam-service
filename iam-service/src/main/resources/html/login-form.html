@@ -10,10 +10,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../../../../login-form.css">
   </head>
-  <body>
+  <body onload="onPageLoad();">
 
     <div id="login-container" class="container">
-      <h1>Login</h1>
+      <h1 id="login-header"></h1>
       <div class="form-group">
       <input id="username-input" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
       </div>

@@ -1,6 +1,5 @@
 package itx.iamservice.client.spring.httpclient;
 
-import itx.iamservice.core.dto.HealthCheckResponse;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
@@ -43,11 +42,11 @@ public final class HttpClientTestUtils {
     private HttpClientTestUtils() {
     }
 
-    public static HealthCheckResponse getHealthCheckResponse(TestRestTemplate restTemplate, int port) {
-        ResponseEntity<HealthCheckResponse> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/health/status", HealthCheckResponse.class);
+    public static ResponseEntity<String> getActuatorInfo(TestRestTemplate restTemplate, int port) {
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/actuator/info", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        return response.getBody();
+        return response;
     }
 
     public static ResponseEntity<IntrospectResponse> getTokenVerificationResponse(TestRestTemplate restTemplate, int port, String token) {

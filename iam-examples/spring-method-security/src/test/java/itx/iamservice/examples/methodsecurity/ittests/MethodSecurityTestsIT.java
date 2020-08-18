@@ -1,7 +1,6 @@
 package itx.iamservice.examples.methodsecurity.ittests;
 
 
-import itx.iamservice.core.dto.HealthCheckResponse;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
@@ -31,7 +30,7 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.create
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createPermissionOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createUserOnProject;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getHealthCheckResponse;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getActuatorInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.setUsernamePasswordCredentialsForProjectAndUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,8 +59,9 @@ public class MethodSecurityTestsIT {
     @Test
     @Order(1)
     public void checkIamServerIsAliveTestsIT() {
-        HealthCheckResponse healthCheckResponse = getHealthCheckResponse(restTemplate, iamServerPort);
-        assertNotNull(healthCheckResponse);
+        ResponseEntity<String> response = getActuatorInfo(restTemplate, iamServerPort);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         adminTokens = getTokenResponseForUserNameAndPassword(restTemplate, iamServerPort);
         assertNotNull(adminTokens);
 

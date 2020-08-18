@@ -1,6 +1,5 @@
 package itx.iamservice.examples.resourceserver.ittests;
 
-import itx.iamservice.core.dto.HealthCheckResponse;
 import itx.iamservice.examples.resourceserver.dto.SystemInfo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -11,7 +10,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getHealthCheckResponse;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getActuatorInfo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -33,8 +32,9 @@ public class ResourceServerTestsIT {
     @Test
     @Order(1)
     public void checkIamServerIsAliveTestsIT() {
-        HealthCheckResponse healthCheckResponse = getHealthCheckResponse(restTemplate, iamServerPort);
-        assertNotNull(healthCheckResponse);
+        ResponseEntity<String> response = getActuatorInfo(restTemplate, iamServerPort);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test

@@ -18,7 +18,7 @@ Estimated release date: __Sep.2020__
 * [x] JWTs issued for authenticated clients and user-agents.
 * [x] Back Channels for JWT verification - backend libraries for resource servers. 
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
-* [x] Small build size - __iam-service__ (single jar: ~33Mb, docker: ~183Mb)
+* [x] Small build size - __iam-service__ (single jar: ~36Mb, docker: ~183Mb)
 * [x] Seamless integrations with [spring framework](https://spring.io/).
 
 ## Supported OAuth2 flows
@@ -53,9 +53,9 @@ gradle clean build jacocoTestReport
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.
 * [__Management APIs__](docs/apis/IAM-management-apis.md) - manage organization / project / users and credentials.
 * [__Back-Channel APIs__](docs/apis/IAM-back-channel-apis.md) - discover organization / project / user configuration, get public keys.
-* [__Health-Check API__](docs/apis/IAM-heath-check.md) - service status and health check.
 * __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v3/api-docs```
 * __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui/index.html```
+* __SpringBoot actuator__ - ``http://localhost:8080/actuator``
 * [__Security Rules__](docs/IAM-service-security.md) - accessing APIs.
 
 ### Technical documentation

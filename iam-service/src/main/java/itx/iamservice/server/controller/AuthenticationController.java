@@ -51,8 +51,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
@@ -85,22 +83,6 @@ public class AuthenticationController {
         this.resourceServerService = resourceServerService;
         this.clientService = clientService;
         this.objectMapper = objectMapper;
-    }
-
-    // TODO: workaround for insomnia and browser client
-    @GetMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TokenResponse> getTokens(@PathVariable("organization-id") String organizationId,
-                                                   @PathVariable("project-id") String projectId,
-                                                   @RequestParam("code") String code,
-                                                   @RequestParam("state") String state,
-                                                   @RequestParam(name = "nonce", required = false) String nonce,
-                                                   HttpServletRequest request) {
-        IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce);
-        LOG.info("getTokens: query={}", request.getRequestURL());
-        LOG.info("getTokens: parameters=[{}]", getParameters(request.getParameterNames()));
-        LOG.info("getTokens: org={} proj={} code={} state={} nonce={}", organizationId, projectId, code, state, nonce);
-        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
-        return ResponseEntity.of(tokensOptional);
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -182,81 +164,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
-    /*
-    @GetMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<String> getConsent(@PathVariable("organization-id") String organizationId,
-                                             @PathVariable("project-id") String projectId,
-                                             @RequestParam("username") String username,
-                                             @RequestParam("password") String password,
-                                             @RequestParam("client_id") String clientId,
-                                             @RequestParam("redirect_uri") String redirectUri,
-                                             @RequestParam("state") String state,
-                                             @RequestParam(name = "scope", required = false) String scope,
-                                             HttpServletRequest request) {
-        LOG.info("getConsent: {}?{}", request.getRequestURL(), request.getQueryString());
-        LOG.info("getConsent: clientId={} redirectUri={} state={} scope={} username={}", clientId, redirectUri, state, scope, username);
-        Scope scopes = ModelUtils.getScopes(scope);
-        Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(username), ClientId.from(clientId), password, scopes, state, redirectUri);
-        if (authorizationCode.isPresent()) {
-            // Authentication OK: proceed to consent screen
-            String code = authorizationCode.get().getCode().getCodeValue();
-            LOG.info("getConsent: code={}", code);
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/consent-form.html");
-            String result = new BufferedReader(new InputStreamReader(is))
-                    .lines().collect(Collectors.joining("\n"));
-            result = result.replace("__context-path__", getContextPath());
-            result = result.replace("__organization-id__", organizationId);
-            result = result.replace("__project-id__", projectId);
-            result = result.replace("__code__", code);
-            result = result.replace("__state__", authorizationCode.get().getState());
-            result = result.replace("\"__available_scopes__\"", renderScopesToJson(authorizationCode.get().getAvailableScopes()));
-            result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
-            return ResponseEntity.ok(result);
-        } else {
-            // Authentication ERROR: show login error !
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-error.html");
-            String result = new BufferedReader(new InputStreamReader(is))
-                    .lines().collect(Collectors.joining("\n"));
-            return ResponseEntity.ok(result);
-        }
-    }
-
-    @PostMapping(path = "/{organization-id}/{project-id}/login-with-scopes", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<Void> getLoginWithScopes(@PathVariable("organization-id") String organizationId,
-                                           @PathVariable("project-id") String projectId,
-                                           @RequestParam("code") String code,
-                                           @RequestParam("state") String state,
-                                           @RequestParam("scope") String scope,
-                                           HttpServletRequest request) throws Exception {
-        LOG.info("getLoginWithScopes: {}?{}", request.getRequestURL(), request.getQueryString());
-        LOG.info("getLoginWithScopes: code={} state={} scope={}", code, state, scope);
-        URL url = new URL(request.getRequestURL().toString());
-        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
-        String redirectUri = baseUrl + "/" + organizationId + "/" + projectId + "/token";
-        URI redirectURI = new URI(redirectUri + "?code=" + code + "&state=" + state);
-        LOG.info("Login OK: redirectURI={}",  redirectURI);
-        authenticationService.setScope(new Code(code), ModelUtils.getScopes(scope));
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectURI).build();
-    }
-
-    @GetMapping(path = "/{organization-id}/{project-id}/sign-up", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<String> getSignUp(@PathVariable("organization-id") String organizationId,
-                                            @PathVariable("project-id") String projectId,
-                                            HttpServletRequest request) {
-        LOG.info("getConsent: {}?{}", request.getRequestURL(), request.getQueryString());
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/signup-form.html");
-        String result = new BufferedReader(new InputStreamReader(is))
-                .lines().collect(Collectors.joining("\n"));
-        result = result.replace("__context-path__", getContextPath());
-        result = result.replace("__organization-id__", organizationId);
-        result = result.replace("__project-id__", projectId);
-        result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
-        return ResponseEntity.ok(result);
-    }
-    */
-
-    @PostMapping(path = "/{organization-id}/{project-id}/authorize-programmatic", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorizationCode> authorizeProgrammatically(@PathVariable("organization-id") String organizationId,
                                                       @PathVariable("project-id") String projectId,
                                                       @RequestBody AuthorizationCodeGrantRequest request) {
@@ -266,7 +174,7 @@ public class AuthenticationController {
         return ResponseEntity.of(authorizationCode);
     }
 
-    @PostMapping(path = "/{organization-id}/{project-id}/consent-programmatic", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
                                                         @RequestBody ConsentRequest request) {
@@ -288,7 +196,7 @@ public class AuthenticationController {
         RestTemplate restTemplate = new RestTemplate();
         URL url = new URL(request.getRequestURL().toString());
         String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
-        String tokenUrl = baseUrl + "/" + organizationId + "/" + projectId + "/token" + "?code=" + code + "&state=" + state;
+        String tokenUrl = baseUrl + "/" + organizationId + "/" + projectId + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
         ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
         if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
             return ResponseEntity.ok(tokenResponseResponseEntity.getBody());

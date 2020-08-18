@@ -10,12 +10,20 @@
 5. User enters login credentials and confirms scope (consent)
 6. Client sends login context and user's credentials ti IAM-service.
 7. IAM-service has now complete authentication and authorization request, claims and after verification, issues authorization code.
-8. Client received authorization code.
-9. Client sends back authorization code.
-10. IAM-service checks authorization code.
-11. Tokens are issues after authorization code verification.
-12. Client confirms successful login to User.
-13. User may access data using access_token issued in #11.    
+8. Client received authorization code and the list of available scopes / permissions - consent screen.
+9. Client sends back list of approved scopes and gets redirected to redirect_uri.
+10. 
+11. 
+12. 
+13.     
+14.
+15.
+
+### Test in Browser
+* Init login flow using web browser.
+  ```
+  http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize?response_type=code&state=123444&client_id=admin-client&scope=&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fservices%2Fauthentication%2Fiam-admins%2Fiam-admins%2Fredirect
+  ``` 
 
 ### Test in Postman
 

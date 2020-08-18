@@ -258,7 +258,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Optional<Tokens> authenticate(Code code, IdTokenRequest idTokenRequest) {
-        Optional<AuthorizationCodeContext> contextOptional = codeCache.verifyAndRemove(code);
+        Optional<AuthorizationCodeContext> contextOptional = codeCache.get(code);
         if (contextOptional.isPresent()) {
             AuthorizationCodeContext context = contextOptional.get();
             Optional<User> optionalUser = modelCache.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());

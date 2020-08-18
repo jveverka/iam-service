@@ -5,6 +5,13 @@ var scopes_selected = [];
 var tokens = null;
 var scope_input_elements = [];
 
+function onPageLoad() {
+    console.log("on page load ...");
+    login_header_element = document.getElementById("login-header");
+    text_node = document.createTextNode(project_id);
+    login_header_element.appendChild(text_node);
+};
+
 function splitScopesToArray(scope_string) {
     scope_string = scope_string.trim();
     if (scope_string === "") {
@@ -36,7 +43,7 @@ function submitLogin() {
           onLoginFailed();
        }
     }
-    xhttp.open("POST", getBaseUrl() + "/authorize-programmatic", true);
+    xhttp.open("POST", getBaseUrl() + "/authorize", true);
     xhttp.setRequestHeader("content-type", "application/json");
     xhttp.send(JSON.stringify(login_request));
 };
@@ -56,7 +63,7 @@ function submitConsent() {
           onConsentFailed();
        }
     }
-    xhttp.open("POST", getBaseUrl() + "/consent-programmatic", true);
+    xhttp.open("POST", getBaseUrl() + "/consent", true);
     xhttp.setRequestHeader("content-type", "application/json");
     xhttp.send(JSON.stringify(consent_request));
 };

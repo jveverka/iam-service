@@ -15,9 +15,6 @@
 * UserInfo verification endpoint as specified in [OIDC core 1.0](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest)   
   __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/userinfo``
 
-* Start Authorization Code Grant flow.   
-  __GET__  ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize``
-
 * Introspect (validate) issued JWTs as specified [here](https://tools.ietf.org/html/rfc7662).  
   __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/introspect``
 
@@ -27,8 +24,12 @@
 * Redirects to *redirect_uri* in Authorization Code Grant flow and issues access_code token.  
   __GET__  ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/login``
 
-* Endpoint to invoke login for Authorization Code Grant flow without UI.    
-  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize-programmatic``
+* Endpoint to invoke login for Authorization Code Grant flow.    
+  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize``
 
-* Endpoint to provide consent for Authorization Code Grant flow without UI.   
-  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/consent-programmatic``
+* Endpoint to provide consent for Authorization Code Grant flow.   
+  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/consent``
+
+* Redirect URI endpoint to test Authorization Code Grant flow for organization/project.   
+  __GET__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/redirect``
+  

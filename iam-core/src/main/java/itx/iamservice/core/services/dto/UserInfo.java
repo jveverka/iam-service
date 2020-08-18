@@ -3,6 +3,7 @@ package itx.iamservice.core.services.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.KeyPairData;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -22,10 +23,11 @@ public class UserInfo {
     private final CertificateInfo projectCertificate;
     private final CertificateInfo userCertificate;
     private final Set<RoleId> roles;
+    private final Set<Permission> permissions;
 
     public UserInfo(UserId id, ProjectId projectId, OrganizationId organizationId, String name,
                     KeyPairData organizationKeyPairData, KeyPairData projectKeyPairData, KeyPairData userKeyPairData,
-                    Set<RoleId> roles) throws CertificateEncodingException {
+                    Set<RoleId> roles, Set<Permission> permissions) throws CertificateEncodingException {
         this.id = id;
         this.projectId = projectId;
         this.organizationId = organizationId;
@@ -37,6 +39,7 @@ public class UserInfo {
         this.userCertificate = new CertificateInfo(userKeyPairData.getId().getId(),
                 Base64.getEncoder().encodeToString(userKeyPairData.getX509Certificate().getEncoded()));
         this.roles = roles;
+        this.permissions = permissions;
     }
 
     @JsonCreator
@@ -47,7 +50,8 @@ public class UserInfo {
                     @JsonProperty("organizationCertificate") CertificateInfo organizationCertificate,
                     @JsonProperty("projectCertificate") CertificateInfo projectCertificate,
                     @JsonProperty("userCertificate") CertificateInfo userCertificate,
-                    @JsonProperty("roles") Set<RoleId> roles) {
+                    @JsonProperty("roles") Set<RoleId> roles,
+                    @JsonProperty("permissions") Set<Permission> permissions) {
         this.id = id;
         this.projectId = projectId;
         this.organizationId = organizationId;
@@ -56,6 +60,7 @@ public class UserInfo {
         this.projectCertificate = projectCertificate;
         this.userCertificate = userCertificate;
         this.roles = roles;
+        this.permissions = permissions;
     }
 
     public UserId getId() {
@@ -88,6 +93,10 @@ public class UserInfo {
 
     public Set<RoleId> getRoles() {
         return roles;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
     }
 
 }

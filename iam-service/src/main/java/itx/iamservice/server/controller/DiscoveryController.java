@@ -1,11 +1,13 @@
 package itx.iamservice.server.controller;
 
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.UserInfo;
@@ -35,13 +37,13 @@ public class DiscoveryController {
         this.resourceServerService = resourceServerService;
     }
 
-    @GetMapping(path = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<OrganizationInfo>> getOrganizationsInfo() throws CertificateEncodingException {
         Collection<OrganizationInfo> info = organizationManagerService.getAllInfo();
         return ResponseEntity.ok(info);
     }
 
-    @GetMapping(path = "/organizations/{organization-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{organization-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrganizationInfo> getOrganizationInfo(@PathVariable("organization-id") String organizationId) throws CertificateEncodingException {
         Optional<OrganizationInfo> info = organizationManagerService.getInfo(OrganizationId.from(organizationId));
         return ResponseEntity.of(info);
@@ -58,14 +60,26 @@ public class DiscoveryController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping(path = "/{organization-id}/{project-id}/{user-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserInfo> getUser(@PathVariable("organization-id") String organizationId,
-                                            @PathVariable("project-id") String projectId,
-                                            @PathVariable("user-id") String userId) throws CertificateEncodingException {
+    @GetMapping(path = "/{organization-id}/{project-id}/users/{user-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserInfo> getUsers(@PathVariable("organization-id") String organizationId,
+                                               @PathVariable("project-id") String projectId,
+                                               @PathVariable("user-id") String userId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<UserInfo> userInfo = resourceServerService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId));
             return ResponseEntity.of(userInfo);
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping(path = "/{organization-id}/{project-id}/clients/{client-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ClientInfo> getClient(@PathVariable("organization-id") String organizationId,
+                                               @PathVariable("project-id") String projectId,
+                                               @PathVariable("client-id") String clientId) throws CertificateEncodingException {
+        Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
+        if(organizationOptional.isPresent()) {
+            Optional<ClientInfo> clientInfo = resourceServerService.getClientInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId));
+            return ResponseEntity.of(clientInfo);
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

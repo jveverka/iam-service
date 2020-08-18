@@ -1,6 +1,7 @@
 package itx.iamservice.server.tests;
 
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.UserInfo;
@@ -15,6 +16,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfos;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getProjectInfo;
@@ -84,6 +86,17 @@ public class DiscoveryAPIsTests {
         assertNotNull(userInfo.getProjectCertificate());
         assertNotNull(userInfo.getUserCertificate());
         assertNotNull(userInfo.getProjectId());
+    }
+
+    @Test
+    @Order(5)
+    public void getClientInfoTest() {
+        ClientInfo clientInfo = getClientInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_ID);
+        assertNotNull(clientInfo);
+        assertNotNull(clientInfo.getId());
+        assertNotNull(clientInfo.getName());
+        assertNotNull(clientInfo.getRoles());
+        assertNotNull(clientInfo.getPermissions());
     }
 
 }

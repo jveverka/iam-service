@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.Organization;
@@ -17,6 +18,7 @@ import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.dto.IntrospectRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import org.slf4j.Logger;
@@ -90,12 +92,30 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = modelCache.getUser(organizationId, projectId, userId);
+                Set<Permission> permissions = modelCache.getPermissions(organizationId, projectId, userId);
                 if (userOptional.isPresent()) {
                     UserInfo userInfo = new UserInfo(userId, projectId, organizationId,
                             userOptional.get().getName(), organizationOptional.get().getKeyPairData(),
                             projectOptional.get().getKeyPairData(), userOptional.get().getKeyPairData(),
-                            userOptional.get().getRoles());
+                            userOptional.get().getRoles(), permissions);
                     return Optional.of(userInfo);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ClientInfo> getClientInfo(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws CertificateEncodingException {
+        Optional<Organization> organizationOptional = modelCache.getOrganization(organizationId);
+        if (organizationOptional.isPresent()) {
+            Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
+            if (projectOptional.isPresent()) {
+                Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientId);
+                Set<Permission> permissions = modelCache.getPermissions(organizationId, projectId, clientId);
+                if (clientOptional.isPresent()) {
+                    ClientInfo clientInfo = new ClientInfo(clientId, clientOptional.get().getName(), clientOptional.get().getRoles(), permissions);
+                    return Optional.of(clientInfo);
                 }
             }
         }

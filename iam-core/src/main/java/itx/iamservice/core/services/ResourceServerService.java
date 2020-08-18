@@ -1,5 +1,7 @@
 package itx.iamservice.core.services;
 
+import itx.iamservice.core.model.Client;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
@@ -8,6 +10,7 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.dto.IntrospectRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.dto.ProjectInfo;
@@ -49,6 +52,16 @@ public interface ResourceServerService {
      * @throws CertificateEncodingException in case certificate serialization to base64 string fails.
      */
     Optional<UserInfo> getUserInfo(OrganizationId organizationId, ProjectId projectId, UserId userId) throws CertificateEncodingException;
+
+    /**
+     * Get public {@link Client} related information.
+     * @param organizationId {@link OrganizationId} - unique id of the organization.
+     * @param projectId {@link ProjectId} - unique id of the project.
+     * @param clientId {@link ClientId} - unique id of the client.
+     * @return Optional of {@link ClientInfo} instance if project, organization and client exists, empty otherwise.
+     * @throws CertificateEncodingException
+     */
+    Optional<ClientInfo> getClientInfo(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws CertificateEncodingException;
 
     /**
      * Get {@link Project} by {@link OrganizationId} and {@link ProjectId}.

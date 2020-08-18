@@ -12,6 +12,7 @@ import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
@@ -84,7 +85,7 @@ public final class HttpClientTestUtils {
     public static ResponseEntity<OrganizationId> createNewOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, CreateOrganizationRequest request) {
         HttpEntity<CreateOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/organizations",
+                "http://localhost:" + port + "/services/management/organizations/",
                 HttpMethod.POST,
                 requestEntity,
                 OrganizationId.class);
@@ -93,7 +94,7 @@ public final class HttpClientTestUtils {
     public static void checkOrganizationCount(String jwt, TestRestTemplate restTemplate, int port, int expectedCount) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<OrganizationInfo[]> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/discovery/organizations",
+                "http://localhost:" + port + "/services/discovery",
                 HttpMethod.GET,
                 requestEntity,
                 OrganizationInfo[].class);
@@ -106,7 +107,7 @@ public final class HttpClientTestUtils {
     public static void checkOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<OrganizationInfo> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/discovery/organizations/" + organizationId.getId(),
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId(),
                 HttpMethod.GET,
                 requestEntity,
                 OrganizationInfo.class);
@@ -134,7 +135,7 @@ public final class HttpClientTestUtils {
     public static void checkRemovedOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<OrganizationInfo> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/discovery/organizations/" + organizationId.getId(),
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId(),
                 HttpMethod.GET,
                 requestEntity,
                 OrganizationInfo.class);
@@ -393,33 +394,40 @@ public final class HttpClientTestUtils {
 
     public static OrganizationInfo[] getOrganizationInfos(TestRestTemplate restTemplate, int port) {
         ResponseEntity<OrganizationInfo[]> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations", OrganizationInfo[].class);
+                "http://localhost:" + port + "/services/discovery/", OrganizationInfo[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
 
     public static OrganizationInfo getOrganizationInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         ResponseEntity<OrganizationInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations/" + organizationId.getId(), OrganizationInfo.class);
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId(), OrganizationInfo.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
 
     public static ResponseEntity<OrganizationInfo> getOrganizationInfoResponse(TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         return restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/organizations/" + organizationId.getId(), OrganizationInfo.class);
-    }
-
-    public static UserInfo getUserInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        ResponseEntity<UserInfo> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/" + userId.getId(), UserInfo.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        return response.getBody();
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId(), OrganizationInfo.class);
     }
 
     public static ProjectInfo getProjectInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
+    }
+
+    public static UserInfo getUserInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId) {
+        ResponseEntity<UserInfo> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId(), UserInfo.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        return response.getBody();
+    }
+
+    public static ClientInfo getClientInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
+        ResponseEntity<ClientInfo> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId(), ClientInfo.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }

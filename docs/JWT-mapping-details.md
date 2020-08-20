@@ -7,7 +7,7 @@
 * __alg__ - RS256 
 
 ### Claims: Access_Token, Refresh_Token
-* __iss__ (issuer) - OrganizationId, string. 
+* __iss__ (issuer) - OrganizationId/ProjectId, string. 
 * __aud__ (audience) - ProjectId or project audience, string array.
 * __sub__ (subject) - UserId or ClientId, string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string
@@ -15,11 +15,10 @@
 * __iat__ (Issued At) = current datetime+timezone, string
 * __jti__ (JWT ID) - unique id, random UUID string.
 * __typ__ - toke type: __Bearer__ | __Refresh__
-* __permissions__ - granted subject permissions, string array of permissionsId(s) for subject. 
-* __scope__ - enumeration of following values: [ openid | permissions ] *TDB 
+* __scope__ - granted subject permissions, string array of permissionsId(s) for subject.
 
 ### Claims: ID_Token
-* __iss__ (issuer) - OrganizationId, string. 
+* __iss__ (issuer) - OrganizationId/ProjectId, string. 
 * __aud__ (audience) - ClientId, string.
 * __sub__ (subject) - Combination of 'OrganizationId/ProjectId/[UserId|ClientId]', string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string

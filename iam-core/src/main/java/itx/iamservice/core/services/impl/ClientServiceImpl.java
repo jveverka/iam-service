@@ -70,10 +70,10 @@ public class ClientServiceImpl implements ClientService {
                     Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
                     KeyPairData keyPairData = project.getKeyPairData();
-                    JWToken accessToken = TokenUtils.issueToken(organizationId, project.getAudience(), client.getId(),
+                    JWToken accessToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
                             client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                    JWToken refreshToken = TokenUtils.issueToken(organizationId, project.getAudience(), client.getId(),
+                    JWToken refreshToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
                             client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                     JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
@@ -120,10 +120,10 @@ public class ClientServiceImpl implements ClientService {
                     Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(userPermissions, authenticationRequest.getScope());
                     KeyPairData keyPairData = user.getKeyPairData();
-                    JWToken accessToken = TokenUtils.issueToken(organizationId, projectOptional.get().getAudience(), user.getId(),
+                    JWToken accessToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
                             user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                    JWToken refreshToken = TokenUtils.issueToken(organizationId, projectOptional.get().getAudience(), user.getId(),
+                    JWToken refreshToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
                             user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                     JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, authenticationRequest.getClientCredentials().getId(),
@@ -170,10 +170,10 @@ public class ClientServiceImpl implements ClientService {
                         Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                         Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
                         KeyPairData keyPairData = user.getKeyPairData();
-                        JWToken accessToken = TokenUtils.issueToken(organizationId, projectOptional.get().getAudience(), user.getId(),
+                        JWToken accessToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
                                 user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                                 null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                        JWToken refreshToken = TokenUtils.issueToken(organizationId, projectOptional.get().getAudience(), user.getId(),
+                        JWToken refreshToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
                                 user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                                 null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                         JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, clientCredentials.getId(), user.getId().getId(),
@@ -196,10 +196,10 @@ public class ClientServiceImpl implements ClientService {
                         Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
                         Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
                         KeyPairData keyPairData = project.getKeyPairData();
-                        JWToken accessToken = TokenUtils.issueToken(organizationId, project.getAudience(), client.getId(),
+                        JWToken accessToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
                                 client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                                 null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                        JWToken refreshToken = TokenUtils.issueToken(organizationId, project.getAudience(), client.getId(),
+                        JWToken refreshToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
                                 client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                                 null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                         JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
@@ -265,10 +265,10 @@ public class ClientServiceImpl implements ClientService {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 KeyPairData keyPairData = user.getKeyPairData();
-                JWToken accessToken = TokenUtils.issueToken(context.getOrganizationId(), context.getAudience(), user.getId(),
+                JWToken accessToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
                         user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, context.getScope(),
                         null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                JWToken refreshToken = TokenUtils.issueToken(context.getOrganizationId(), context.getAudience(), user.getId(),
+                JWToken refreshToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
                         user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, context.getScope(),
                         null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
                 JWToken idToken = TokenUtils.issueIdToken(context.getOrganizationId(), context.getProjectId(), context.getClientId(), user.getId().getId(),

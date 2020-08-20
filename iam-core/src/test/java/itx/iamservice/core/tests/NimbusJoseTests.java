@@ -94,7 +94,7 @@ public class NimbusJoseTests {
         PublicKey publicKeyFromRSAKey = rsaKey.toPublicKey();
         assertNotNull(publicKeyFromRSAKey);
 
-        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), audience, UserId.from("u1"), 10L,
+        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("proj"), audience, UserId.from("u1"), 10L,
                 TimeUnit.HOURS, scope, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
@@ -123,7 +123,7 @@ public class NimbusJoseTests {
                 ProviderConfigurationServiceImpl.getOperations(), keyPairSerialized.getX509Certificate(),
                 modulusBase64String, exponentBase64String);
 
-        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), audience, UserId.from("u1"), 10L,
+        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("proj"), audience, UserId.from("u1"), 10L,
                 TimeUnit.HOURS, scope, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());

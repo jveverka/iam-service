@@ -25,12 +25,14 @@ public class IAMClientImpl implements IAMClient {
     private final OrganizationId organizationId;
     private final ProjectId projectId;
     private final ObjectMapper mapper;
+    private final String issuer;
 
     public IAMClientImpl(IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) {
         this.iamServiceProxy = iamServiceProxy;
         this.organizationId = organizationId;
         this.projectId = projectId;
         this.mapper = new ObjectMapper();
+        this.issuer = organizationId.getId() + "/" + projectId.getId();
     }
 
     @Override
@@ -46,7 +48,7 @@ public class IAMClientImpl implements IAMClient {
                 RSAKey rsaKey = RSAKey.parse(jsonObject);
                 RSASSAVerifier rsassaVerifier = new RSASSAVerifier(rsaKey);
                 if (signedJWT.verify(rsassaVerifier) &&
-                        organizationId.getId().equals(signedJWT.getJWTClaimsSet().getIssuer()) &&
+                        issuer.equals(signedJWT.getJWTClaimsSet().getIssuer()) &&
                         signedJWT.getJWTClaimsSet().getAudience().contains(projectId.getId())) {
                     return Optional.of(signedJWT.getJWTClaimsSet());
                 }

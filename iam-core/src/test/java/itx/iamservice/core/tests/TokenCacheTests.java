@@ -1,6 +1,7 @@
 package itx.iamservice.core.tests;
 
 import itx.iamservice.core.model.KeyId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.OrganizationId;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TokenCacheTests {
 
     private static final OrganizationId ORGANIZATION_ID = OrganizationId.from("unique-organization-id");
+    private static final ProjectId PROJECT_ID = ProjectId.from("unique-project-id");
     private static final UserId USER_ID = UserId.from("unique-user-id");
     private static final Set<String> ROLES = Set.of("role-a", "role-b", "role-c");
     private static final Set<String> AUDIENCE = Set.of("audience");
@@ -57,7 +59,7 @@ public class TokenCacheTests {
         keyId = KeyId.from("key-001");
         Map<String, Set<String>> roleClaims = new HashMap<>();
         roleClaims.put(TokenUtils.ROLES_CLAIM, ROLES);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, SCOPE, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
+        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, SCOPE, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

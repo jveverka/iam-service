@@ -78,13 +78,14 @@ public class ClientUPAuthenticationTests {
     @Order(1)
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
+        String issuerClaim = ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId();
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, clientCredentials);
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
         assertEquals(ModelUtils.IAM_ADMIN_USER.getId(), defaultClaims.getSubject());
-        assertEquals(ModelUtils.IAM_ADMINS_ORG.getId(), defaultClaims.getIssuer());
+        assertEquals(issuerClaim, defaultClaims.getIssuer());
         String scopeClaim = (String)defaultClaims.get(TokenUtils.SCOPE_CLAIM);
         assertNotNull(scopeClaim);
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);

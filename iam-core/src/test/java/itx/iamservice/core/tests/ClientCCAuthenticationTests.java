@@ -71,12 +71,13 @@ public class ClientCCAuthenticationTests {
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
+        String issuerClaim = ModelUtils.IAM_ADMINS_ORG.getId() +  "/" + ModelUtils.IAM_ADMINS_PROJECT.getId();
         Scope scope = new Scope(Set.of("iam-admin-client"));
         Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
         assertEquals(ModelUtils.IAM_ADMIN_CLIENT_ID.getId(), defaultClaims.getSubject());
-        assertEquals(ModelUtils.IAM_ADMINS_ORG.getId(), defaultClaims.getIssuer());
+        assertEquals(issuerClaim, defaultClaims.getIssuer());
         String scopeClaim = (String)defaultClaims.get(TokenUtils.SCOPE_CLAIM);
         assertNotNull(scopeClaim);
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);

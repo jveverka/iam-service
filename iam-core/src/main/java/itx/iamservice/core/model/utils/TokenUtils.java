@@ -120,7 +120,7 @@ public final class TokenUtils {
         JwtBuilder builder = Jwts.builder();
         builder.setHeaderParam(TYP_ID, TYP_VALUE);
         builder.setHeaderParam(KEY_ID, keyId.getId());
-        builder.setIssuer(organizationId.getId());
+        builder.setIssuer(organizationId.getId() + "/" + projectId.getId());
         builder.setSubject(subject);
         builder.setAudience(clientId.getId());
         builder.setExpiration(expiration);

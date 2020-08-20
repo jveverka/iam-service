@@ -1,8 +1,8 @@
 package itx.iamservice.core.services.impl;
 
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.Role;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ProviderConfigurationService;
@@ -22,8 +22,8 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
 
     private static final String[] responseTypes = { "code", "code id_token","code token","code id_token token" };
     private static final String[] grantTypes = { "authorization_code", "refresh_token", "password", "client_credentials" };
-    private static final String[] subjectTypesSupported = { "public","pairwise" };
-    private static final String[] idTokenSigningAlgValuesSupported = {"RS256"};
+    private static final String[] subjectTypesSupported = { "public", "pairwise" };
+    private static final String[] idTokenSigningAlgValuesSupported = { "RS256" };
     private static final String[] idTokenEncryptionAlgValuesSupported = { "RSA" };
 
     public static final String KEY_TYPE = "RSA";
@@ -42,14 +42,15 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
 
     @Override
     public ProviderConfigurationResponse getConfiguration(ProviderConfigurationRequest request) {
-        Collection<Role> roles = projectManagerService.getRoles(request.getOrganizationId(), request.getProjectId());
-        String[] scopesSupported = roles.stream().map(r->r.getId().getId()).toArray(n-> new String[n]);
-        String issuer = request.getBaseURL() + "/" + request.getOrganizationId().getId() + "/" + request.getProjectId();
-        String authorizationEndpoint = issuer + "/authorize";
-        String tokenEndpoint = issuer + "/token";
-        String jwksUri = issuer + "/.well-known/jwks.json";
-        String introspectionEndpoint = issuer + "/introspect";
-        String revocationEndpoint = issuer + "/revoke";
+        Collection<Permission> permissions = projectManagerService.getPermissions(request.getOrganizationId(), request.getProjectId());
+        String[] scopesSupported = permissions.stream().map(p->p.getId().getId()).toArray(n-> new String[n]);
+        String issuer = request.getOrganizationId().getId() + "/" + request.getProjectId().getId();
+        String baseUrl = request.getBaseURL() + "/" + request.getOrganizationId().getId() + "/" + request.getProjectId();
+        String authorizationEndpoint = baseUrl + "/authorize";
+        String tokenEndpoint = baseUrl + "/token";
+        String jwksUri = baseUrl + "/.well-known/jwks.json";
+        String introspectionEndpoint = baseUrl + "/introspect";
+        String revocationEndpoint = baseUrl + "/revoke";
         return new ProviderConfigurationResponse(issuer, authorizationEndpoint, tokenEndpoint, jwksUri,
                 scopesSupported, responseTypes, grantTypes, subjectTypesSupported,
                 idTokenSigningAlgValuesSupported, idTokenEncryptionAlgValuesSupported,

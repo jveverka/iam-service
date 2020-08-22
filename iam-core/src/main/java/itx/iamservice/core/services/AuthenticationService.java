@@ -91,6 +91,4 @@ public interface AuthenticationService {
      */
     Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
 
-    Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code);
-
 }

@@ -104,9 +104,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return clientService.login(organizationId, projectId, userId, clientId, password, scope, state, redirectURI);
     }
 
-    @Override
-    public Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code) {
-        return clientService.getAuthorizationCodeContext(code);
-    }
-
 }

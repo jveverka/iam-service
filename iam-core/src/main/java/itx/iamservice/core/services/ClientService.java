@@ -8,7 +8,6 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.AuthorizationCode;
-import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
@@ -104,12 +103,5 @@ public interface ClientService {
      * @return {@link UserInfoResponse} in case user exists and provided {@link JWToken} is valid.
      */
     Optional<UserInfoResponse> getUserInfo(OrganizationId organizationId, ProjectId projectId, JWToken token);
-
-    /**
-     * Get {@link AuthorizationCodeContext} for {@link Code}.
-     * @param code
-     * @return
-     */
-    Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code);
 
 }

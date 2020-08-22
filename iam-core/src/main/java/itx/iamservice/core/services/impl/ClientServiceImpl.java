@@ -339,9 +339,4 @@ public class ClientServiceImpl implements ClientService {
         return Optional.empty();
     }
 
-    @Override
-    public Optional<AuthorizationCodeContext> getAuthorizationCodeContext(Code code) {
-        return codeCache.get(code);
-    }
-
 }

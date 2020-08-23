@@ -61,7 +61,8 @@ public final class ModelUtils {
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
     public static final UserId IAM_ADMIN_USER = UserId.from("admin");
     public static final ClientId IAM_ADMIN_CLIENT_ID = ClientId.from("admin-client");
-    private static final Collection<String> IAM_AUDIENCE = Arrays.asList(IAM_ADMINS_NAME);
+    public static final Collection<String> IAM_AUDIENCE = Collections.unmodifiableCollection(Arrays.asList(IAM_ADMINS_NAME));
+    public static final long DURATION_10YEARS = 365*10L;
 
     private ModelUtils() {
     }

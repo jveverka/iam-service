@@ -17,6 +17,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static itx.iamservice.core.model.utils.ModelUtils.DURATION_10YEARS;
+
 public class UserImpl implements User {
 
     private final UserId id;
@@ -36,7 +38,7 @@ public class UserImpl implements User {
         this.credentials = new ConcurrentHashMap<>();
         this.roles = new CopyOnWriteArraySet<>();
         this.projectId = projectId;
-        this.keyPairData = TokenUtils.createSignedKeyPairData(projectId.getId(), id.getId(), 365L, TimeUnit.DAYS, projectPrivateKey);
+        this.keyPairData = TokenUtils.createSignedKeyPairData(projectId.getId(), id.getId(), DURATION_10YEARS, TimeUnit.DAYS, projectPrivateKey);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;

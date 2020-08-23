@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static itx.iamservice.core.model.utils.ModelUtils.DURATION_10YEARS;
+
 public class OrganizationImpl implements Organization {
 
     private final OrganizationId id;
@@ -30,7 +32,7 @@ public class OrganizationImpl implements Organization {
         this.id = id;
         this.name = name;
         this.projects = new HashSet<>();
-        this.keyPairData = TokenUtils.createSelfSignedKeyPairData(id.getId(), 365L, TimeUnit.DAYS);
+        this.keyPairData = TokenUtils.createSelfSignedKeyPairData(id.getId(), DURATION_10YEARS, TimeUnit.DAYS);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
         this.properties = new ConcurrentHashMap<>();
     }

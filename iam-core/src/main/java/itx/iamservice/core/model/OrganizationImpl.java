@@ -9,7 +9,6 @@ import itx.iamservice.core.model.utils.TokenUtils;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

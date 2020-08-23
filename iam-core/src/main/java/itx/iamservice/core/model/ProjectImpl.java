@@ -189,7 +189,11 @@ public class ProjectImpl implements Project {
 
     @Override
     public boolean removePermission(PermissionId id) {
-        return this.permissions.remove(id);
+        try {
+            return this.permissions.remove(Permission.from(id));
+        } catch (PermissionParsingException e) {
+            return false;
+        }
     }
 
     @Override

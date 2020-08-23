@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public interface IAMServiceProxy extends AutoCloseable {
 
-    JWKResponse getJWKResponse();
+    JWKResponse getJWKResponse() throws InterruptedException;
 
     IntrospectResponse introspect(JWToken token, TokenType typeHint) throws IOException;
 

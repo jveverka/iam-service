@@ -39,13 +39,14 @@ public class IAMServiceHttpFetchTask implements Runnable {
         LOG.info("Fetching iam-server {}", targetUrl);
         Request request = new Request.Builder()
                 .url(targetUrl)
+                .method("GET", null)
                 .build();
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 JWKResponse jwkResponse = mapper.readValue(response.body().string(), JWKResponse.class);
                 iamServiceHttpProxy.setJwkResponse(jwkResponse);
             } else {
-                LOG.info("HTTP response failed");
+                LOG.info("HTTP response failed {}", response.code());
             }
         } catch (Exception e) {
             LOG.error("Error: ", e);

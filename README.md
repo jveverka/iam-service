@@ -18,7 +18,7 @@ Estimated release date: __EOF Sep.2020__
 * [x] JWTs issued for authenticated clients and user-agents.
 * [x] Back Channels for JWT verification - backend libraries for resource servers. 
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
-* [x] Small build size - __iam-service__ (single jar: ~36Mb, docker: ~183Mb)
+* [x] Small build size - __iam-service__ (single jar: ~33Mb, docker: ~183Mb)
 * [x] Seamless integrations with [spring framework](https://spring.io/).
 
 ## Supported OAuth2 flows

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +28,16 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMServiceHttpProxyImpl.class);
 
+    private static final long INITIAL_DELAY = 1;
+
     private final URL baseUrl;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
     private final ScheduledExecutorService executor;
     private final OkHttpClient client;
     private final ObjectMapper mapper;
+    private final CountDownLatch cl;
+    private final TimeUnit timeUnit;
 
     private JWKResponse jwkResponse;
     private ProviderConfigurationResponse providerConfigurationResponse;
@@ -45,11 +50,14 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         this.executor = Executors.newScheduledThreadPool(1);
         this.client = new OkHttpClient();
         this.mapper = new ObjectMapper();
-        this.executor.scheduleWithFixedDelay(new IAMServiceHttpFetchTask(baseUrl, organizationId, projectId, client, mapper, this), 1, pollingInterval, timeUnit);
+        this.timeUnit = timeUnit;
+        this.cl = new CountDownLatch(1);
+        this.executor.scheduleWithFixedDelay(new IAMServiceHttpFetchTask(baseUrl, organizationId, projectId, client, mapper, this), INITIAL_DELAY, pollingInterval, timeUnit);
     }
 
     @Override
-    public JWKResponse getJWKResponse() {
+    public JWKResponse getJWKResponse() throws InterruptedException {
+        cl.await(2*INITIAL_DELAY, timeUnit);
         return jwkResponse;
     }
 
@@ -85,6 +93,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     protected void setJwkResponse(JWKResponse jwkResponse) {
+        this.cl.countDown();
         this.jwkResponse = jwkResponse;
     }
 

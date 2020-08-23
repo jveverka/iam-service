@@ -15,7 +15,6 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -24,6 +23,8 @@ dependencies {
     implementation 'org.bouncycastle:bcpg-jdk15on:1.65'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.65'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+    testImplementation 'com.nimbusds:nimbus-jose-jwt:8.18.1'
 }
 
 test {

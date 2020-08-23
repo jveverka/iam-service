@@ -46,6 +46,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static itx.iamservice.core.ModelCommons.IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL;
+import static itx.iamservice.core.ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL;
+import static itx.iamservice.core.ModelCommons.IAM_SERVICE_ORGANIZATION_RESOURCE_ACTION_READ;
+import static itx.iamservice.core.ModelCommons.IAM_SERVICE_PROJECTS_RESOURCE_ACTION_ALL;
+import static itx.iamservice.core.ModelCommons.IAM_SERVICE_USERS_RESOURCE_ACTION_ALL;
+
 public final class ModelUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelUtils.class);
@@ -56,19 +62,6 @@ public final class ModelUtils {
     public static final UserId IAM_ADMIN_USER = UserId.from("admin");
     public static final ClientId IAM_ADMIN_CLIENT_ID = ClientId.from("admin-client");
     private static final Collection<String> IAM_AUDIENCE = Arrays.asList(IAM_ADMINS_NAME);
-
-    public static final String IAM_SERVICE = "iam-admin-service";
-    public static final String ACTION_ALL = "all";
-    public static final String ACTION_READ = "read";
-    public static final String ACTION_MODIFY = "modify";
-    public static final String ORGANIZATIONS_RESOURCE = "organizations";
-    public static final String ORGANIZATION_RESOURCE = "organization";
-    public static final String PROJECTS_RESOURCE = "projects";
-    public static final String PROJECT_RESOURCE = "project";
-    public static final String USERS_RESOURCE = "users";
-    public static final String USER_RESOURCE = "user";
-    public static final String CLIENTS_RESOURCE = "clients";
-    public static final String CLIENT_RESOURCE = "client";
 
     private ModelUtils() {
     }
@@ -88,14 +81,14 @@ public final class ModelUtils {
     public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
 
         Role iamAdmin = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin"), "Manage IAM-Service")
-                .addPermission(IAM_SERVICE, ORGANIZATIONS_RESOURCE, ACTION_ALL)
-                .addPermission(IAM_SERVICE, PROJECTS_RESOURCE, ACTION_ALL)
-                .addPermission(IAM_SERVICE, USERS_RESOURCE, ACTION_ALL)
-                .addPermission(IAM_SERVICE, CLIENTS_RESOURCE, ACTION_ALL)
+                .addPermission(IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL)
+                .addPermission(IAM_SERVICE_PROJECTS_RESOURCE_ACTION_ALL)
+                .addPermission(IAM_SERVICE_USERS_RESOURCE_ACTION_ALL)
+                .addPermission(IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL)
                 .build();
 
         Role iamClientRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-client"), "IAM Client role.")
-                .addPermission(IAM_SERVICE, ORGANIZATION_RESOURCE, ACTION_READ)
+                .addPermission(IAM_SERVICE_ORGANIZATION_RESOURCE_ACTION_READ)
                 .build();
 
         ModelId id = ModelId.from("default-model-001");

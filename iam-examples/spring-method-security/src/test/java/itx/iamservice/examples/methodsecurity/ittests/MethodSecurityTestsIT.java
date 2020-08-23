@@ -31,6 +31,7 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.create
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createUserOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getActuatorInfo;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForIAMAdmins;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.setUsernamePasswordCredentialsForProjectAndUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +63,7 @@ public class MethodSecurityTestsIT {
         ResponseEntity<String> response = getActuatorInfo(restTemplate, iamServerPort);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        adminTokens = getTokenResponseForUserNameAndPassword(restTemplate, iamServerPort);
+        adminTokens = getTokenResponseForIAMAdmins(restTemplate, iamServerPort);
         assertNotNull(adminTokens);
 
     }

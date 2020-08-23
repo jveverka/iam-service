@@ -2,6 +2,7 @@ package itx.iamservice.client.spring;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import itx.iamservice.client.IAMClient;
+import itx.iamservice.client.JWTUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,6 @@ public class IAMSecurityFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMSecurityFilter.class);
 
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String SCOPE = "scope";
     private static final String ROLE_PREFIX = "ROLE_";
 
     private final IAMClient iamClient;
@@ -38,13 +37,13 @@ public class IAMSecurityFilter implements Filter {
     @SuppressWarnings("unchecked")
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
-        String authorization = httpServletRequest.getHeader(AUTHORIZATION);
+        String authorization = httpServletRequest.getHeader(JWTUtils.AUTHORIZATION);
         if (authorization != null) {
             Optional<JWTClaimsSet> claimSet = iamClient.validate(JWTUtils.extractJwtToken(authorization));
             if (claimSet.isPresent()) {
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 String userIdFromJWT = claimSet.get().getSubject();
-                String scopeClaim = (String) claimSet.get().getClaim(SCOPE);
+                String scopeClaim = (String) claimSet.get().getClaim(JWTUtils.SCOPE);
                 String[] scopes = scopeClaim.split(" ");
                 Set<String> setOfPermissions = new HashSet<>();
                 for (int i=0; i<scopes.length; i++) {

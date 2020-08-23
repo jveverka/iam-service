@@ -18,7 +18,7 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkO
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkRemovedOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganizationResponse;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForIAMAdmins;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.removeOrganization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,7 +39,7 @@ public class OrganizationManagementTests {
     @Test
     @Order(1)
     public void createFirstOrganizationTest() {
-        jwt = getTokenResponseForUserNameAndPassword(restTemplate, port).getAccessToken();
+        jwt = getTokenResponseForIAMAdmins(restTemplate, port).getAccessToken();
         CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-001"), "organization-001-name");
         organizationId01 = createNewOrganization(jwt, restTemplate, port,request);
         checkOrganizationCount(jwt, restTemplate, port,2);

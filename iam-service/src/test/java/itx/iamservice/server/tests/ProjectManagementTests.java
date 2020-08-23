@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -39,7 +38,6 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addPer
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.addRoleToClientOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.assignRoleToUserOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.checkCreatedProject;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createAuthorization;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createClientOnTheProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createClientOnTheProjectRequest;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createNewOrganization;
@@ -57,6 +55,7 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrg
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getPermissionsForProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getProjectInfoResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getRolesOnTheProject;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForIAMAdmins;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokensForClient;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
@@ -94,7 +93,7 @@ public class ProjectManagementTests {
     @Test
     @Order(1)
     public void initTest() {
-        jwt = getTokenResponseForUserNameAndPassword(restTemplate, port).getAccessToken();
+        jwt = getTokenResponseForIAMAdmins(restTemplate, port).getAccessToken();
         CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-002"), "organization-002-name");
         organizationId = createNewOrganization(jwt, restTemplate, port,request);
     }

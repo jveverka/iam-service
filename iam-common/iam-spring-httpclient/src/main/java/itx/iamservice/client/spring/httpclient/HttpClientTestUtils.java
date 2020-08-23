@@ -142,7 +142,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    public static TokenResponse getTokenResponseForUserNameAndPassword(TestRestTemplate restTemplate, int port) {
+    public static TokenResponse getTokenResponseForIAMAdmins(TestRestTemplate restTemplate, int port) {
         return getTokenResponseForUserNameAndPassword(restTemplate, port, ModelUtils.IAM_ADMIN_USER.getId(), "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret", ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 

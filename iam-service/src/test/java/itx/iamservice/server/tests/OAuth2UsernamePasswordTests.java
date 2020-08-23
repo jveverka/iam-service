@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
+import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForIAMAdmins;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenRevokeResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenVerificationResponse;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
@@ -44,7 +44,7 @@ public class OAuth2UsernamePasswordTests {
     @Test
     @Order(1)
     public void getTokens() {
-        tokenResponse = getTokenResponseForUserNameAndPassword(restTemplate, port);
+        tokenResponse = getTokenResponseForIAMAdmins(restTemplate, port);
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

@@ -62,8 +62,8 @@ public class DiscoveryController {
 
     @GetMapping(path = "/{organization-id}/{project-id}/users/{user-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserInfo> getUsers(@PathVariable("organization-id") String organizationId,
-                                               @PathVariable("project-id") String projectId,
-                                               @PathVariable("user-id") String userId) throws CertificateEncodingException {
+                                             @PathVariable("project-id") String projectId,
+                                             @PathVariable("user-id") String userId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<UserInfo> userInfo = resourceServerService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId));
@@ -74,8 +74,8 @@ public class DiscoveryController {
 
     @GetMapping(path = "/{organization-id}/{project-id}/clients/{client-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientInfo> getClient(@PathVariable("organization-id") String organizationId,
-                                               @PathVariable("project-id") String projectId,
-                                               @PathVariable("client-id") String clientId) throws CertificateEncodingException {
+                                                @PathVariable("project-id") String projectId,
+                                                @PathVariable("client-id") String clientId) throws CertificateEncodingException {
         Optional<Organization> organizationOptional = organizationManagerService.get(OrganizationId.from(organizationId));
         if(organizationOptional.isPresent()) {
             Optional<ClientInfo> clientInfo = resourceServerService.getClientInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId));

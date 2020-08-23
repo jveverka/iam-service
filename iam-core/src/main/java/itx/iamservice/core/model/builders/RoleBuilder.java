@@ -31,6 +31,11 @@ public final class RoleBuilder {
         return this;
     }
 
+    public RoleBuilder addPermission(Permission permission) {
+        permissions.add(permission);
+        return this;
+    }
+
     public Role build() {
         if (id == null) {
             id = RoleId.from(UUID.randomUUID().toString());

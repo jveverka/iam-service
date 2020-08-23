@@ -7,9 +7,9 @@ authentication and authorization server.
   ```
   java -Xms32m -Xms128m -jar iam-service-1.0.0-SNAPSHOT.jar --spring.config.location=file:application.yml
   ```
-* Start as docker container.
+* Start as docker container (x86_64).
   ```
-  docker build -t iam-service:1.0.0-SNAPSHOT --file Dockerfile .
+  docker build -t iam-service:1.0.0-SNAPSHOT --file Dockerfile.x86_64 .
   docker run -d --name iam-service-1.0.0-SNAPSHOT -p 8080:8080 iam-service:1.0.0-SNAPSHOT
   
   # shutdown iam-service docker container and cleanup

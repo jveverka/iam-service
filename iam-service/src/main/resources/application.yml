@@ -8,9 +8,6 @@ spring:
     timeout-per-shutdown-phase: 20s
 
 iam-service:
-  system-config:
-    id: iam-service-001
-    name: 'IAM service'
   authorization-code-cache:
     duration: 10
     timeunit: MINUTES

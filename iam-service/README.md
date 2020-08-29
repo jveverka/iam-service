@@ -16,7 +16,11 @@ docker build -t iam-service:1.0.0-SNAPSHOT .
 docker image list
 docker save --output="build/iam-service:1.0.0-SNAPSHOT.tar" iam-service:1.0.0-SNAPSHOT
 
-docker run -d --name iam-service-1.0.0-SNAPSHOT -e SERVER_PORT=8080 -p 8080:8080 iam-service:1.0.0-SNAPSHOT
+docker run -d --name iam-service-1.0.0-SNAPSHOT \
+  -e SERVER_PORT=8080 \
+  -e ADMIN_PASSWORD=secret \
+  -e ADMIN_SECRET=top-secret \
+  -p 8080:8080 iam-service:1.0.0-SNAPSHOT
 
 docker stop iam-service-1.0.0-SNAPSHOT
 docker rm iam-service-1.0.0-SNAPSHOT

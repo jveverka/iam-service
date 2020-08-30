@@ -31,11 +31,11 @@ public class ModelConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelConfig.class);
 
-    private String adminOrganization;
-    private String adminProject;
+    private String adminOrganization = ModelUtils.IAM_ADMINS_ORG.getId();
+    private String adminProject = ModelUtils.IAM_ADMINS_PROJECT.getId();
 
     private String defaultAdminPassword;
-    private String defaultAdminSecret;
+    private String defaultAdminClientSecret;
     private String persistence;
     private String path;
 
@@ -47,7 +47,7 @@ public class ModelConfig {
         Security.addProvider(new BouncyCastleProvider());
         LOG.info("#CONFIG: BCP initialized.");
         LOG.info("#CONFIG: default admin password initialized={}", !defaultAdminPassword.isEmpty());
-        LOG.info("#CONFIG: default admin client secret initialized={}", !defaultAdminSecret.isEmpty());
+        LOG.info("#CONFIG: default admin client secret initialized={}", !defaultAdminClientSecret.isEmpty());
         LOG.info("#CONFIG: admin organization/project {}/{}", adminOrganization, adminProject);
     }
 
@@ -62,13 +62,13 @@ public class ModelConfig {
             } else {
                 LOG.info("#CONFIG: default ModelCache created");
                 return ModelUtils.createDefaultModelCache(
-                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminSecret, persistenceService);
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, persistenceService);
             }
         } catch (Exception e) {
             LOG.error("Error: {}", e.getMessage());
             LOG.warn("#CONFIG: fallback to default ModelCache");
             return ModelUtils.createDefaultModelCache(OrganizationId.from(adminOrganization), ProjectId.from(adminProject),
-                    defaultAdminPassword, defaultAdminSecret, persistenceService);
+                    defaultAdminPassword, defaultAdminClientSecret, persistenceService);
         }
     }
 
@@ -107,16 +107,8 @@ public class ModelConfig {
         this.defaultAdminPassword = defaultAdminPassword;
     }
 
-    public void setDefaultAdminSecret(String defaultAdminSecret) {
-        this.defaultAdminSecret = defaultAdminSecret;
-    }
-
-    public void setAdminOrganization(String adminOrganization) {
-        this.adminOrganization = adminOrganization;
-    }
-
-    public void setAdminProject(String adminProject) {
-        this.adminProject = adminProject;
+    public void setDefaultAdminClientSecret(String defaultAdminClientSecret) {
+        this.defaultAdminClientSecret = defaultAdminClientSecret;
     }
 
 }

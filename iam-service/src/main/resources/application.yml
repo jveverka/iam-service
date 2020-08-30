@@ -1,19 +1,22 @@
 server:
   port: 8080
   shutdown: graceful
-#  servlet:
-#    context-path: /auth
+  #servlet:
+  #  context-path: /auth
 spring:
   lifecycle:
     timeout-per-shutdown-phase: 20s
 
 iam-service:
+  #Auth. Code duration interval
   authorization-code-cache:
     duration: 10
     timeunit: MINUTES
+  #Caches cleanup interval
   cache-cleanup-interval:
     duration: 1
     timeunit: MINUTES
+  #Default application model parameters
   data-model:
     default-admin-password: secret
     default-admin-client-secret: top-secret

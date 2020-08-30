@@ -23,10 +23,12 @@ docker run -d --name iam-service-1.0.0-SNAPSHOT \
   -e SERVER_PORT=8080 \
   -e ADMIN_PASSWORD=secret \
   -e ADMIN_SECRET=top-secret \
+  -e XMX=128m \
   -p 8080:8080 iam-service:1.0.0-SNAPSHOT
 
 docker run -d --name iam-service-1.0.0-SNAPSHOT \
   -e APP_CONFIG_PATH=/opt/data/application.yml \
+  -e XMX=128m \
   -v /custom/data/dir:/opt/data \
   -p 8080:8080 iam-service:1.0.0-SNAPSHOT
 

@@ -29,6 +29,9 @@ authentication and authorization server.
   curl http://localhost:8080/swagger-ui/index.html
   ```  
 * Check [user's manual](https://github.com/jveverka/iam-service/blob/master/docs/IAM-users-manual.md).
+  * How to create organizations and projects.
+  * How to create users.
+  * How to integrate in microservice environment.
 
 * Cleanup Docker
   ```

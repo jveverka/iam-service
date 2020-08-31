@@ -1,10 +1,14 @@
 #!/bin/bash
 
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+
 ./run-full-test-suite.sh
 if [ $? = 0  ]; then
-  echo "Build OK"
+  echo "Build ${GREEN}OK${NOCOLOR}"
 else
-  echo "ERROR: build failed !"
+  echo "ERROR: ${RED}build failed !${NOCOLOR}"
   exit 1
 fi
 
@@ -22,15 +26,16 @@ cp LICENSE ${RELEASE_DIR}
 cp release/README-release.md ${RELEASE_DIR}/README.md
 cp release/Dockerfile.* ${RELEASE_DIR}
 cp iam-service/src/main/resources/application.yml ${RELEASE_DIR}
+cp iam-service/iam-service-start.sh ${RELEASE_DIR}
 
 cd build
 
 zip -r iam-service-release-${VERSION}.zip iam-service-${VERSION}
 
 if [ $? = 0  ]; then
-  echo "Release OK"
+  echo "Release ${GREEN}OK: build/iam-service-release-${VERSION}.zip${NOCOLOR}"
 else
-  echo "ERROR: release has failed !"
+  echo "ERROR: ${RED}release has failed !${NOCOLOR}"
   exit 1
 fi
 

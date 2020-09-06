@@ -1,5 +1,5 @@
 # IAM Service
-Really simple standalone 
+Really simple standalone OAuth2/OIDC
 [*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service), 
 authentication and authorization server. 
 
@@ -7,11 +7,13 @@ authentication and authorization server.
   ```
   java -Xms32m -Xmx128m -jar iam-service-1.0.0-SNAPSHOT.jar --spring.config.location=file:application.yml
   ```
-* Build Docker Image (x86_64).
+* Build Docker Image for target platform.
   ```
   docker build -t iam-service:1.0.0-SNAPSHOT --file Dockerfile.x86_64 .
+  docker build -t iam-service:1.0.0-SNAPSHOT --file Dockerfile.armv7l .
+  docker build -t iam-service:1.0.0-SNAPSHOT --file Dockerfile.aarch64 .
   ```
-* Start Docker Container (x86_64) - custom configuration.
+* Start Docker Container - custom configuration.
   ```
   docker run -d --name iam-service-1.0.0-SNAPSHOT \
     -e APP_CONFIG_PATH=/opt/data/application.yml \
@@ -28,10 +30,11 @@ authentication and authorization server.
   curl http://localhost:8080/v3/api-docs
   curl http://localhost:8080/swagger-ui/index.html
   ```  
-* Check [user's manual](https://github.com/jveverka/iam-service/blob/master/docs/IAM-users-manual.md).
+* Check [user's manual](https://github.com/jveverka/iam-service/blob/master/docs/IAM-users-manual.md) and learn:
   * How to create organizations and projects.
-  * How to create users.
-  * How to integrate in microservice environment.
+  * How to create and manage users.
+  * How to integrate __iam-service__ in microservice environment.
+  * How to modify __application.yml__ configuration file.
 
 * Cleanup Docker
   ```
@@ -39,3 +42,4 @@ authentication and authorization server.
   docker rm iam-service-1.0.0-SNAPSHOT
   docker image rm -f iam-service:1.0.0-SNAPSHOT
   ```
+  

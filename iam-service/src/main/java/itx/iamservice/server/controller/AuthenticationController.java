@@ -89,10 +89,11 @@ public class AuthenticationController {
                                                    @RequestParam(name = "code", required = false) String code,
                                                    @RequestParam(name = "nonce", required = false) String nonce,
                                                    @RequestParam(name = "audience", required = false) String audience,
-                                                   HttpServletRequest request) {
+                                                   HttpServletRequest request) throws MalformedURLException {
         LOG.info("postGetTokens: query={}", request.getRequestURL());
         LOG.info("postGetTokens: parameters=[{}]", getParameters(request.getParameterNames()));
         LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
+        LOG.info("postGetTokens: IssuerUri={}", getIssuerUri(request, organizationId, projectId));
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
@@ -185,10 +186,8 @@ public class AuthenticationController {
                                                       HttpServletRequest request) throws MalformedURLException {
         LOG.info("redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         RestTemplate restTemplate = new RestTemplate();
-        URL url = new URL(request.getRequestURL().toString());
-        //TODO: invalid context-path handling
-        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
-        String tokenUrl = baseUrl + "/" + organizationId + "/" + projectId + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
+        String issuerUri = getIssuerUri(request, organizationId, projectId);
+        String tokenUrl = issuerUri + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
         ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
         if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
             return ResponseEntity.ok(tokenResponseResponseEntity.getBody());
@@ -203,9 +202,7 @@ public class AuthenticationController {
                                                                           @PathVariable("project-id") String projectId,
                                                                           HttpServletRequest request) throws MalformedURLException {
         LOG.info("getConfiguration: {}", request.getRequestURL());
-        URL url = new URL(request.getRequestURL().toString());
-        //TODO: invalid context-path handling
-        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
+        String baseUrl = getBaseUrl(request);
         ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
         ProviderConfigurationResponse configuration = providerConfigurationService.getConfiguration(providerConfigurationRequest);
         return ResponseEntity.ok(configuration);
@@ -285,6 +282,18 @@ public class AuthenticationController {
         } else {
             return path;
         }
+    }
+
+    private String getBaseUrl(HttpServletRequest request) throws MalformedURLException {
+        String contextPath = getContextPath();
+        URL url = new URL(request.getRequestURL().toString());
+        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication";
+    }
+
+    private String getIssuerUri(HttpServletRequest request, String organizationId, String projectId) throws MalformedURLException {
+        String contextPath = getContextPath();
+        URL url = new URL(request.getRequestURL().toString());
+        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication/" + organizationId + "/" + projectId;
     }
 
 }

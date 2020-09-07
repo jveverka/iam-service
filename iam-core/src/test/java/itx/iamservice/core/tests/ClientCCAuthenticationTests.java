@@ -19,7 +19,6 @@ import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
-import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;

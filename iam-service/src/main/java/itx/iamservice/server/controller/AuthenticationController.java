@@ -1,7 +1,5 @@
 package itx.iamservice.server.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.JWToken;
@@ -69,20 +67,17 @@ public class AuthenticationController {
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
     private final ClientService clientService;
-    private final ObjectMapper objectMapper;
 
     public AuthenticationController(@Autowired ServletContext servletContext,
                                     @Autowired AuthenticationService authenticationService,
                                     @Autowired ProviderConfigurationService providerConfigurationService,
                                     @Autowired ResourceServerService resourceServerService,
-                                    @Autowired ClientService clientService,
-                                    @Autowired ObjectMapper objectMapper) {
+                                    @Autowired ClientService clientService) {
         this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
         this.resourceServerService = resourceServerService;
         this.clientService = clientService;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -291,14 +286,6 @@ public class AuthenticationController {
             return "/" + path;
         } else {
             return path;
-        }
-    }
-
-    private String renderScopesToJson(Scope scopes) {
-        try {
-            return objectMapper.writeValueAsString(scopes.getValues());
-        } catch (JsonProcessingException e) {
-            return "[]";
         }
     }
 

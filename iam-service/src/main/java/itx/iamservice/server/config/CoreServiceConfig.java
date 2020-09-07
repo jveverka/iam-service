@@ -1,16 +1,16 @@
 package itx.iamservice.server.config;
 
+import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.admin.ClientManagementService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
-import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.admin.UserManagerService;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
-import itx.iamservice.core.services.impl.ClientServiceImpl;
+import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import itx.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
@@ -39,8 +39,8 @@ public class CoreServiceConfig {
 
     @Bean
     @Scope("singleton")
-    public ClientService getClientService() {
-        return new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+    public AuthenticationService getAuthenticationService() {
+        return new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
     }
 
     @Bean

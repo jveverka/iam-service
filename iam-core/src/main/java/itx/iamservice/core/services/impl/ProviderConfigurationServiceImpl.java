@@ -44,8 +44,8 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
     public ProviderConfigurationResponse getConfiguration(ProviderConfigurationRequest request) {
         Collection<Permission> permissions = projectManagerService.getPermissions(request.getOrganizationId(), request.getProjectId());
         String[] scopesSupported = permissions.stream().map(p->p.getId().getId()).toArray(n-> new String[n]);
-        String issuer = request.getOrganizationId().getId() + "/" + request.getProjectId().getId();
         String baseUrl = request.getBaseURL() + "/" + request.getOrganizationId().getId() + "/" + request.getProjectId();
+        String issuer = baseUrl;
         String authorizationEndpoint = baseUrl + "/authorize";
         String tokenEndpoint = baseUrl + "/token";
         String jwksUri = baseUrl + "/.well-known/jwks.json";

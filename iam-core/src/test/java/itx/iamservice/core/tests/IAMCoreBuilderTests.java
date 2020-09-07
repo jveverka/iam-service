@@ -19,7 +19,6 @@ public class IAMCoreBuilderTests {
         assertNotNull(iamCore);
         assertNotNull(iamCore.getModel());
         assertNotNull(iamCore.getClientManagementService());
-        assertNotNull(iamCore.getClientService());
         assertNotNull(iamCore.getOrganizationManagerService());
         assertNotNull(iamCore.getPersistenceService());
         assertNotNull(iamCore.getProjectManagerService());
@@ -39,7 +38,6 @@ public class IAMCoreBuilderTests {
         assertNotNull(iamCore);
         assertNotNull(iamCore.getModel());
         assertNotNull(iamCore.getClientManagementService());
-        assertNotNull(iamCore.getClientService());
         assertNotNull(iamCore.getOrganizationManagerService());
         assertNotNull(iamCore.getPersistenceService());
         assertNotNull(iamCore.getProjectManagerService());

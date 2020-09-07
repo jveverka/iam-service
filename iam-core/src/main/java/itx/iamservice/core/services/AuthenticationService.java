@@ -11,8 +11,10 @@ import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.IdTokenRequest;
 import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.core.services.dto.UserInfoResponse;
 
 import java.util.Optional;
 import java.util.Set;
@@ -24,15 +26,14 @@ public interface AuthenticationService {
      * grant_type=password
      * @param organizationId
      * @param projectId
-     * @param clientCredentials
      * @param upAuthenticationRequest
-     * @param scope
      * @param idTokenRequest
      * @return
      */
     Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
-                                         ClientCredentials clientCredentials, UPAuthenticationRequest upAuthenticationRequest,
-                                         Scope scope, IdTokenRequest idTokenRequest);
+                                         ClientCredentials clientCredentials, Scope scope,
+                                         UPAuthenticationRequest upAuthenticationRequest,
+                                         IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate end-user in client credentials flow.
@@ -45,7 +46,8 @@ public interface AuthenticationService {
      * @return
      */
     Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
-                                         ClientCredentials clientCredentials, Scope scope, IdTokenRequest idTokenRequest);
+                                         ClientCredentials clientCredentials, Scope scope,
+                                         IdTokenRequest idTokenRequest);
 
     /**
      * Authenticate end-user authorization code grant.
@@ -90,5 +92,24 @@ public interface AuthenticationService {
      * @return
      */
     Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
+
+    /**
+     * Logout client action revokes validity of issued {@link JWToken}.
+     * In case provided JWToken is still valid, it is blacklisted and considered invalid for further use.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param request issued and valid {@link JWToken}
+     * @return true in case provided {@link JWToken} is valid, false otherwise.
+     */
+    boolean revoke(OrganizationId organizationId, ProjectId projectId, RevokeTokenRequest request);
+
+    /**
+     * Get user info for issued JWT specified in @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest">OIDC core 1.0</a>
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param token issued and valid {@link JWToken}
+     * @return {@link UserInfoResponse} in case user exists and provided {@link JWToken} is valid.
+     */
+    Optional<UserInfoResponse> getUserInfo(OrganizationId organizationId, ProjectId projectId, JWToken token);
 
 }

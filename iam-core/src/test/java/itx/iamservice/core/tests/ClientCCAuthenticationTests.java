@@ -4,6 +4,7 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.IdTokenRequest;
@@ -11,16 +12,16 @@ import itx.iamservice.core.dto.IntrospectRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
+import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.model.Tokens;
-import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.model.JWToken;
-import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.security.Security;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -47,13 +47,13 @@ public class ClientCCAuthenticationTests {
     private static final String adminSecret = "top-secret";
 
     private static ModelCache modelCache;
-    private static ClientService clientService;
     private static ResourceServerService resourceServerService;
     private static TokenCache tokenCache;
     private static AuthorizationCodeCache authorizationCodeCache;
     private static JWToken accessToken;
     private static JWToken refreshToken;
     private static IdTokenRequest idTokenRequest;
+    private static AuthenticationService authenticationService;
 
     @BeforeAll
     private static void init() throws PKIException {
@@ -61,7 +61,7 @@ public class ClientCCAuthenticationTests {
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
         modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret);
         tokenCache = new TokenCacheImpl(modelCache);
-        clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
     }
@@ -73,17 +73,17 @@ public class ClientCCAuthenticationTests {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         String issuerClaim = ModelUtils.IAM_ADMINS_ORG.getId() +  "/" + ModelUtils.IAM_ADMINS_PROJECT.getId();
         Scope scope = new Scope(Set.of("iam-admin-client"));
-        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
+        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
-        DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
+        DefaultClaims defaultClaims = TokenUtils.extractClaims(JWToken.from(tokensOptional.get().getAccessToken()));
         assertEquals(ModelUtils.IAM_ADMIN_CLIENT_ID.getId(), defaultClaims.getSubject());
         assertEquals(issuerClaim, defaultClaims.getIssuer());
         String scopeClaim = (String)defaultClaims.get(TokenUtils.SCOPE_CLAIM);
         assertNotNull(scopeClaim);
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);
         assertEquals(TokenType.BEARER.getType(), type);
-        accessToken = tokensOptional.get().getAccessToken();
-        refreshToken = tokensOptional.get().getRefreshToken();
+        accessToken = JWToken.from(tokensOptional.get().getAccessToken());
+        refreshToken = JWToken.from(tokensOptional.get().getRefreshToken());
     }
 
     @Test
@@ -102,9 +102,9 @@ public class ClientCCAuthenticationTests {
     public void logoutTest() {
         RevokeTokenRequest revokeAccessTokenRequest = new RevokeTokenRequest(accessToken, TokenType.BEARER);
         RevokeTokenRequest revokeRefreshTokenRequest = new RevokeTokenRequest(refreshToken, TokenType.REFRESH);
-        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
+        boolean result = authenticationService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
         assertTrue(result);
-        result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeRefreshTokenRequest);
+        result = authenticationService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeRefreshTokenRequest);
         assertTrue(result);
     }
 

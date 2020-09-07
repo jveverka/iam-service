@@ -10,7 +10,6 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
-import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.dto.AuthorizationCode;
@@ -66,18 +65,15 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
-    private final ClientService clientService;
 
     public AuthenticationController(@Autowired ServletContext servletContext,
                                     @Autowired AuthenticationService authenticationService,
                                     @Autowired ProviderConfigurationService providerConfigurationService,
-                                    @Autowired ResourceServerService resourceServerService,
-                                    @Autowired ClientService clientService) {
+                                    @Autowired ResourceServerService resourceServerService) {
         this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
         this.resourceServerService = resourceServerService;
-        this.clientService = clientService;
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,7 +106,7 @@ public class AuthenticationController {
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Scope scopes = ModelUtils.getScopes(scope);
             UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, upAuthenticationRequest, scopes, idTokenRequest);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
             LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
@@ -190,6 +186,7 @@ public class AuthenticationController {
         LOG.info("redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         RestTemplate restTemplate = new RestTemplate();
         URL url = new URL(request.getRequestURL().toString());
+        //TODO: invalid context-path handling
         String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
         String tokenUrl = baseUrl + "/" + organizationId + "/" + projectId + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
         ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
@@ -207,6 +204,7 @@ public class AuthenticationController {
                                                                           HttpServletRequest request) throws MalformedURLException {
         LOG.info("getConfiguration: {}", request.getRequestURL());
         URL url = new URL(request.getRequestURL().toString());
+        //TODO: invalid context-path handling
         String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/services/authentication";
         ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
         ProviderConfigurationResponse configuration = providerConfigurationService.getConfiguration(providerConfigurationRequest);
@@ -240,7 +238,7 @@ public class AuthenticationController {
                                        @RequestParam("token") String token,
                                        @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
         RevokeTokenRequest request = new RevokeTokenRequest(JWToken.from(token), getTokenType(tokenTypeHint));
-        clientService.revoke(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
+        authenticationService.revoke(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         return ResponseEntity.ok().build();
     }
 
@@ -252,7 +250,7 @@ public class AuthenticationController {
         String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring("Bearer ".length());
-            Optional<UserInfoResponse> response = clientService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), JWToken.from(token));
+            Optional<UserInfoResponse> response = authenticationService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), JWToken.from(token));
             return ResponseEntity.of(response);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

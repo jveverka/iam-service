@@ -9,6 +9,7 @@ import itx.iamservice.core.model.Project;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.services.AuthenticationService;
 import itx.iamservice.core.services.caches.AuthorizationCodeCache;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.dto.IdTokenRequest;
@@ -16,6 +17,8 @@ import itx.iamservice.core.dto.IntrospectRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
+import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
 import itx.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -23,10 +26,8 @@ import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.model.Tokens;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
-import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.model.JWToken;
-import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.security.Security;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +55,7 @@ public class ClientUPAuthenticationTests {
     private static final Scope scope = new Scope(Set.of("manage-organizations", "manage-projects", "not-existing-role"));
 
     private static ModelCache modelCache;
-    private static ClientService clientService;
+    private static AuthenticationService authenticationService;
     private static ResourceServerService resourceServerService;
     private static TokenCache tokenCache;
     private static AuthorizationCodeCache authorizationCodeCache;
@@ -69,7 +69,7 @@ public class ClientUPAuthenticationTests {
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
         modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret);
         tokenCache = new TokenCacheImpl(modelCache);
-        clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
     }
@@ -81,17 +81,17 @@ public class ClientUPAuthenticationTests {
         String issuerClaim = ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId();
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, clientCredentials);
-        Optional<Tokens> tokensOptional = clientService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, authenticationRequest, idTokenRequest);
+        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, new Scope(Set.of()), authenticationRequest, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
-        DefaultClaims defaultClaims = TokenUtils.extractClaims(tokensOptional.get().getAccessToken());
+        DefaultClaims defaultClaims = TokenUtils.extractClaims(JWToken.from(tokensOptional.get().getAccessToken()));
         assertEquals(ModelUtils.IAM_ADMIN_USER.getId(), defaultClaims.getSubject());
         assertEquals(issuerClaim, defaultClaims.getIssuer());
         String scopeClaim = (String)defaultClaims.get(TokenUtils.SCOPE_CLAIM);
         assertNotNull(scopeClaim);
         String type = (String)defaultClaims.get(TokenUtils.TYPE_CLAIM);
         assertEquals(TokenType.BEARER.getType(), type);
-        accessToken = tokensOptional.get().getAccessToken();
-        refreshToken = tokensOptional.get().getRefreshToken();
+        accessToken = JWToken.from(tokensOptional.get().getAccessToken());
+        refreshToken = JWToken.from(tokensOptional.get().getRefreshToken());
     }
 
     @Test
@@ -109,10 +109,10 @@ public class ClientUPAuthenticationTests {
     @Order(3)
     public void refreshTokenTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
-        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, refreshToken, scope, idTokenRequest);
+        Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         assertFalse(accessToken.equals(tokensOptional.get().getAccessToken()));
-        accessToken = tokensOptional.get().getAccessToken();
+        accessToken = JWToken.from(tokensOptional.get().getAccessToken());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class ClientUPAuthenticationTests {
     @Order(5)
     public void logoutTest() {
         RevokeTokenRequest revokeAccessTokenRequest = new RevokeTokenRequest(accessToken, TokenType.BEARER);
-        boolean result = clientService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
+        boolean result = authenticationService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
         assertTrue(result);
     }
 
@@ -143,7 +143,7 @@ public class ClientUPAuthenticationTests {
     @Order(7)
     public void verifyInvalidTokenRenewTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
-        Optional<Tokens> tokensOptional = clientService.refresh(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, accessToken, scope, idTokenRequest);
+        Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isEmpty());
     }
 

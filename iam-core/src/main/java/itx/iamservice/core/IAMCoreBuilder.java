@@ -4,7 +4,6 @@ import itx.iamservice.core.model.Model;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.AuthenticationService;
-import itx.iamservice.core.services.ClientService;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.core.services.ResourceServerService;
 import itx.iamservice.core.services.admin.ClientManagementService;
@@ -16,7 +15,6 @@ import itx.iamservice.core.services.caches.CacheCleanupScheduler;
 import itx.iamservice.core.services.caches.ModelCache;
 import itx.iamservice.core.services.caches.TokenCache;
 import itx.iamservice.core.services.impl.AuthenticationServiceImpl;
-import itx.iamservice.core.services.impl.ClientServiceImpl;
 import itx.iamservice.core.services.impl.caches.ModelCacheImpl;
 import itx.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import itx.iamservice.core.services.impl.ResourceServerServiceImpl;
@@ -43,7 +41,6 @@ public class IAMCoreBuilder {
     private AuthorizationCodeCache authorizationCodeCache;
     private TokenCache tokenCache;
     private AuthenticationService authenticationService;
-    private ClientService clientService;
     private ResourceServerService resourceServerService;
     private ClientManagementService clientManagementService;
     private OrganizationManagerService organizationManagerService;
@@ -111,8 +108,7 @@ public class IAMCoreBuilder {
         }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();
-        clientService = new ClientServiceImpl(modelCache, tokenCache, authorizationCodeCache);
-        authenticationService = new AuthenticationServiceImpl(clientService);
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         clientManagementService = new ClientManagementServiceImpl(modelCache);
         organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
@@ -141,10 +137,6 @@ public class IAMCoreBuilder {
 
         public AuthenticationService getAuthenticationService() {
             return authenticationService;
-        }
-
-        public ClientService getClientService() {
-            return clientService;
         }
 
         public ResourceServerService getResourceServerService() {

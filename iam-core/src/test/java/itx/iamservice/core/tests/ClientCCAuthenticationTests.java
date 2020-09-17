@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Security;
 import java.util.Optional;
 import java.util.Set;
@@ -53,9 +55,10 @@ public class ClientCCAuthenticationTests {
     private static JWToken refreshToken;
     private static IdTokenRequest idTokenRequest;
     private static AuthenticationService authenticationService;
+    private static URI issuerUri;
 
     @BeforeAll
-    private static void init() throws PKIException {
+    private static void init() throws PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
         modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret);
@@ -63,6 +66,7 @@ public class ClientCCAuthenticationTests {
         authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
+        issuerUri = new URI("http://localhost:8080/issuer");
     }
 
     @Test
@@ -70,9 +74,9 @@ public class ClientCCAuthenticationTests {
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
-        String issuerClaim = ModelUtils.IAM_ADMINS_ORG.getId() +  "/" + ModelUtils.IAM_ADMINS_PROJECT.getId();
+        String issuerClaim = issuerUri.toString();
         Scope scope = new Scope(Set.of("iam-admin-client"));
-        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
+        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(JWToken.from(tokensOptional.get().getAccessToken()));
         assertEquals(ModelUtils.IAM_ADMIN_CLIENT_ID.getId(), defaultClaims.getSubject());

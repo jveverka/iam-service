@@ -185,6 +185,18 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public synchronized Collection<User> getUsers(OrganizationId organizationId) {
+        List<User> result = new ArrayList<>();
+        ModelKey<Organization> organizationKey = organizationKey(organizationId);
+        users.keySet().forEach(k -> {
+            if (k.startsWith(organizationKey)) {
+                result.add(users.get(k));
+            }
+        });
+        return result;
+    }
+
+    @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         Project project = projects.get(projectKey);

@@ -9,12 +9,13 @@ import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.Scope;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
 
 public interface AuthorizationCodeCache {
 
-    AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI);
+    AuthorizationCode issue(URI issuerUri, OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI);
 
     int purgeCodes();
 

@@ -26,33 +26,44 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
 import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
+import static itx.iamservice.server.controller.ControllerUtils.getIssuerUri;
 
 @RestController
 @RequestMapping(path = "/services/management")
 public class UserManagementController {
 
+    private final ServletContext servletContext;
     private final UserManagerService userManagerService;
     private final IAMSecurityValidator iamSecurityValidator;
 
     public UserManagementController(@Autowired UserManagerService userManagerService,
-                                    @Autowired IAMSecurityValidator iamSecurityValidator) {
+                                    @Autowired IAMSecurityValidator iamSecurityValidator,
+                                    @Autowired ServletContext servletContext) {
         this.userManagerService = userManagerService;
         this.iamSecurityValidator = iamSecurityValidator;
+        this.servletContext = servletContext;
     }
 
     @PostMapping(path = "/{organization-id}/projects/{project-id}/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserId> createUser(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
                                              @RequestBody CreateUserRequest createUserRequest,
-                                             @RequestHeader("Authorization") String authorization) throws PKIException {
+                                             @RequestHeader("Authorization") String authorization,
+                                             HttpServletRequest request) throws PKIException, MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Optional<User> user = userManagerService.create(OrganizationId.from(organizationId), ProjectId.from(projectId), createUserRequest);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get().getId());
@@ -65,9 +76,11 @@ public class UserManagementController {
     public ResponseEntity<Void> deleteUser(@PathVariable("organization-id") String organizationId,
                                            @PathVariable("project-id") String projectId,
                                            @PathVariable("user-id") String userId,
-                                           @RequestHeader("Authorization") String authorization) {
+                                           @RequestHeader("Authorization") String authorization,
+                                           HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         boolean result = userManagerService.remove(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId));
         if (result) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -81,9 +94,11 @@ public class UserManagementController {
                                                  @PathVariable("project-id") String projectId,
                                                  @PathVariable("user-id") String userId,
                                                  @PathVariable("role-id") String roleId,
-                                                 @RequestHeader("Authorization") String authorization) {
+                                                 @RequestHeader("Authorization") String authorization,
+                                                 HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         boolean result = userManagerService.assignRole(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId), RoleId.from(roleId));
         if (result) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -96,9 +111,11 @@ public class UserManagementController {
     public ResponseEntity<Collection<RoleId>> getRolesForUser(@PathVariable("organization-id") String organizationId,
                                                               @PathVariable("project-id") String projectId,
                                                               @PathVariable("user-id") String userId,
-                                                              @RequestHeader("Authorization") String authorization) {
+                                                              @RequestHeader("Authorization") String authorization,
+                                                              HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Set<RoleId> roles = userManagerService.getRoles(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId));
         return ResponseEntity.ok(roles);
     }
@@ -108,9 +125,11 @@ public class UserManagementController {
                                                    @PathVariable("project-id") String projectId,
                                                    @PathVariable("user-id") String userId,
                                                    @PathVariable("role-id") String roleId,
-                                                   @RequestHeader("Authorization") String authorization) {
+                                                   @RequestHeader("Authorization") String authorization,
+                                                   HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         boolean result = userManagerService.removeRole(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId), RoleId.from(roleId));
         if (result) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -124,9 +143,11 @@ public class UserManagementController {
                                                                @PathVariable("project-id") String projectId,
                                                                @PathVariable("user-id") String userId,
                                                                @RequestBody SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest,
-                                                               @RequestHeader("Authorization") String authorization) throws PKIException {
+                                                               @RequestHeader("Authorization") String authorization,
+                                                               HttpServletRequest request) throws PKIException, MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         UserId id = UserId.from(setUserNamePasswordCredentialsRequest.getUserName());
         UPCredentials credentials = new UPCredentials(id, setUserNamePasswordCredentialsRequest.getPassword());
         boolean result = userManagerService.setCredentials(OrganizationId.from(organizationId), ProjectId.from(projectId), UserId.from(userId), credentials);

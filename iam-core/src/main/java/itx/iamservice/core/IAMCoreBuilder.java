@@ -114,7 +114,7 @@ public class IAMCoreBuilder {
         organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
         projectManagerService = new ProjectManagerServiceImpl(modelCache);
         userManagerService = new UserManagerServiceImpl(modelCache);
-        providerConfigurationService = new ProviderConfigurationServiceImpl(projectManagerService);
+        providerConfigurationService = new ProviderConfigurationServiceImpl(organizationManagerService, projectManagerService);
         return new IAMCore();
     }
 

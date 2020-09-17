@@ -20,6 +20,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
@@ -64,11 +65,12 @@ public class IAMServiceClientTests {
 
     @Test
     @Order(1)
-    public void createIamClient() throws MalformedURLException {
+    public void createIamClient() throws MalformedURLException, URISyntaxException {
         iamClient = IAMClientBuilder.builder()
+                .setBaseUrl(new URL("http://localhost:" + port + "/services/authentication"))
                 .setOrganizationId(IAM_ADMINS_ORG.getId())
                 .setProjectId(IAM_ADMINS_PROJECT.getId())
-                .withHttpProxy(new URL("http://localhost:" + port + "/services/authentication"), 10L, TimeUnit.SECONDS)
+                .withHttpProxy(10L, TimeUnit.SECONDS)
                 .build();
     }
 

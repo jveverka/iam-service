@@ -75,8 +75,9 @@ public class CoreServiceConfig {
 
     @Bean
     @Scope("singleton")
-    public ProviderConfigurationService getProviderConfigurationService(@Autowired ProjectManagerService projectManagerService) {
-        return new ProviderConfigurationServiceImpl(projectManagerService);
+    public ProviderConfigurationService getProviderConfigurationService(@Autowired OrganizationManagerService organizationManagerService,
+                                                                        @Autowired ProjectManagerService projectManagerService) {
+        return new ProviderConfigurationServiceImpl(organizationManagerService, projectManagerService);
     }
 
 }

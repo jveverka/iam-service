@@ -5,7 +5,6 @@ import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import itx.iamservice.core.model.utils.ModelUtils;
@@ -48,12 +47,16 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static itx.iamservice.server.controller.ControllerUtils.getBaseUrl;
+import static itx.iamservice.server.controller.ControllerUtils.getContextPath;
+import static itx.iamservice.server.controller.ControllerUtils.getIssuerUri;
 
 @RestController
 @RequestMapping(path = "/services/authentication")
@@ -89,11 +92,12 @@ public class AuthenticationController {
                                                    @RequestParam(name = "code", required = false) String code,
                                                    @RequestParam(name = "nonce", required = false) String nonce,
                                                    @RequestParam(name = "audience", required = false) String audience,
-                                                   HttpServletRequest request) throws MalformedURLException {
+                                                   HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         LOG.info("postGetTokens: query={}", request.getRequestURL());
-        LOG.info("postGetTokens: parameters=[{}]", getParameters(request.getParameterNames()));
+        LOG.info("postGetTokens: parameters=[{}]", ControllerUtils.getParameters(request.getParameterNames()));
         LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
-        LOG.info("postGetTokens: IssuerUri={}", getIssuerUri(request, organizationId, projectId));
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        LOG.info("postGetTokens: IssuerUri={}", issuerUri);
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
@@ -107,13 +111,13 @@ public class AuthenticationController {
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Scope scopes = ModelUtils.getScopes(scope);
             UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
             LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
             ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
             Scope scopes = ModelUtils.getScopes(scope);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(orgId, projId, clientCredentials, scopes, idTokenRequest);
+            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
             LOG.info("postGetTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
@@ -144,7 +148,7 @@ public class AuthenticationController {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");
         String result = new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
-        result = result.replace("__context-path__", getContextPath());
+        result = result.replace("__context-path__", getContextPath(servletContext));
         result = result.replace("__organization-id__", organizationId);
         result = result.replace("__project-id__", projectId);
         result = result.replace("__response-type__", responseType);
@@ -158,11 +162,15 @@ public class AuthenticationController {
 
     @PostMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorizationCode> authorizeProgrammatically(@PathVariable("organization-id") String organizationId,
-                                                      @PathVariable("project-id") String projectId,
-                                                      @RequestBody AuthorizationCodeGrantRequest request) {
-        Scope scopes = new Scope(Set.copyOf(request.getScopes()));
-        Optional<AuthorizationCode> authorizationCode = authenticationService.login(OrganizationId.from(organizationId), ProjectId.from(projectId),
-                UserId.from(request.getUsername()), ClientId.from(request.getClientId()), request.getPassword(), scopes, request.getState(), request.getRedirectUri());
+                                                                       @PathVariable("project-id") String projectId,
+                                                                       @RequestBody AuthorizationCodeGrantRequest authorizationCodeGrantRequest,
+                                                                       HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+        Scope scopes = new Scope(Set.copyOf(authorizationCodeGrantRequest.getScopes()));
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        Optional<AuthorizationCode> authorizationCode = authenticationService.login(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId),
+                UserId.from(authorizationCodeGrantRequest.getUsername()), ClientId.from(authorizationCodeGrantRequest.getClientId()),
+                authorizationCodeGrantRequest.getPassword(), scopes, authorizationCodeGrantRequest.getState(),
+                authorizationCodeGrantRequest.getRedirectUri());
         return ResponseEntity.of(authorizationCode);
     }
 
@@ -183,11 +191,11 @@ public class AuthenticationController {
                                                       @PathVariable("project-id") String projectId,
                                                       @RequestParam("code") String code,
                                                       @RequestParam("state") String state,
-                                                      HttpServletRequest request) throws MalformedURLException {
+                                                      HttpServletRequest request) throws URISyntaxException, MalformedURLException {
         LOG.info("redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         RestTemplate restTemplate = new RestTemplate();
-        String issuerUri = getIssuerUri(request, organizationId, projectId);
-        String tokenUrl = issuerUri + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
         ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
         if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
             return ResponseEntity.ok(tokenResponseResponseEntity.getBody());
@@ -202,7 +210,7 @@ public class AuthenticationController {
                                                                           @PathVariable("project-id") String projectId,
                                                                           HttpServletRequest request) throws MalformedURLException {
         LOG.info("getConfiguration: {}", request.getRequestURL());
-        String baseUrl = getBaseUrl(request);
+        String baseUrl = getBaseUrl(servletContext, request);
         ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
         ProviderConfigurationResponse configuration = providerConfigurationService.getConfiguration(providerConfigurationRequest);
         return ResponseEntity.ok(configuration);
@@ -224,7 +232,7 @@ public class AuthenticationController {
                                                               @RequestParam("token") String token,
                                                               @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
         LOG.info("introspectToken: token={} token_type_hint={}", token, tokenTypeHint);
-        IntrospectRequest request = new IntrospectRequest(JWToken.from(token), getTokenType(tokenTypeHint));
+        IntrospectRequest request = new IntrospectRequest(JWToken.from(token), ControllerUtils.getTokenType(tokenTypeHint));
         IntrospectResponse response = resourceServerService.introspect(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         return ResponseEntity.ok(response);
     }
@@ -234,7 +242,7 @@ public class AuthenticationController {
                                        @PathVariable("project-id") String projectId,
                                        @RequestParam("token") String token,
                                        @RequestParam(name = "token_type_hint", required = false) String tokenTypeHint) {
-        RevokeTokenRequest request = new RevokeTokenRequest(JWToken.from(token), getTokenType(tokenTypeHint));
+        RevokeTokenRequest request = new RevokeTokenRequest(JWToken.from(token), ControllerUtils.getTokenType(tokenTypeHint));
         authenticationService.revoke(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         return ResponseEntity.ok().build();
     }
@@ -252,48 +260,6 @@ public class AuthenticationController {
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-    }
-
-    private TokenType getTokenType(String tokenTypeHint) {
-        if (tokenTypeHint == null) {
-            return null;
-        } else {
-            return TokenType.getTokenType(tokenTypeHint);
-        }
-    }
-
-    private String getParameters(Enumeration<String> parameters) {
-        StringBuilder sb = new StringBuilder();
-        while (parameters.hasMoreElements()) {
-            sb.append(parameters.nextElement());
-            sb.append(" ");
-        }
-        return sb.toString().trim();
-    }
-
-    private String getContextPath() {
-        String path = servletContext.getContextPath();
-        if (path == null || path.isEmpty())  {
-            return "";
-        } else if ("/".equals(path)) {
-            return "";
-        } else if (!path.isEmpty() && !path.startsWith("/")) {
-            return "/" + path;
-        } else {
-            return path;
-        }
-    }
-
-    private String getBaseUrl(HttpServletRequest request) throws MalformedURLException {
-        String contextPath = getContextPath();
-        URL url = new URL(request.getRequestURL().toString());
-        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication";
-    }
-
-    private String getIssuerUri(HttpServletRequest request, String organizationId, String projectId) throws MalformedURLException {
-        String contextPath = getContextPath();
-        URL url = new URL(request.getRequestURL().toString());
-        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication/" + organizationId + "/" + projectId;
     }
 
 }

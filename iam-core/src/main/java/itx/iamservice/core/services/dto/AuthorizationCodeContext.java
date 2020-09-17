@@ -5,11 +5,13 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.Set;
 
 public class AuthorizationCodeContext {
 
+    private final URI issuerUri;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
     private final UserId userId;
@@ -20,8 +22,9 @@ public class AuthorizationCodeContext {
     private final Set<String> audience;
     private final String redirectURI;
 
-    public AuthorizationCodeContext(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId,
+    public AuthorizationCodeContext(URI issuerUri, OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId,
                                     String state, Date issued, Scope scope, Set<String> audience, String redirectURI) {
+        this.issuerUri = issuerUri;
         this.organizationId = organizationId;
         this.projectId = projectId;
         this.clientId = clientId;
@@ -31,6 +34,10 @@ public class AuthorizationCodeContext {
         this.scope = scope;
         this.audience = audience;
         this.redirectURI = redirectURI;
+    }
+
+    public URI getIssuerUri() {
+        return issuerUri;
     }
 
     public OrganizationId getOrganizationId() {

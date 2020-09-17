@@ -64,6 +64,8 @@ public interface ModelCache {
 
     Collection<User> getUsers(OrganizationId organizationId, ProjectId projectId);
 
+    Collection<User> getUsers(OrganizationId organizationId);
+
     boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId);
 
     boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId);

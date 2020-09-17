@@ -6,15 +6,22 @@ import itx.iamservice.client.impl.IAMServiceProxy;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class IAMClientBuilder {
 
+    private URL baseUrl;
     private IAMServiceProxy iamServiceProxy;
     private OrganizationId organizationId;
     private ProjectId projectId;
+
+    public IAMClientBuilder setBaseUrl(URL baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
+    }
 
     public IAMClientBuilder setOrganizationId(String organizationId) {
         this.organizationId = OrganizationId.from(organizationId);
@@ -26,7 +33,8 @@ public class IAMClientBuilder {
         return this;
     }
 
-    public IAMClientBuilder withHttpProxy(URL baseUrl, Long pollingInterval, TimeUnit timeUnit) {
+    public IAMClientBuilder withHttpProxy(Long pollingInterval, TimeUnit timeUnit) {
+        Objects.nonNull(baseUrl);
         Objects.nonNull(organizationId);
         Objects.nonNull(projectId);
         this.iamServiceProxy = new IAMServiceHttpProxyImpl(baseUrl, organizationId, projectId,
@@ -39,8 +47,12 @@ public class IAMClientBuilder {
         return this;
     }
 
-    public IAMClient build() {
-        return new IAMClientImpl(iamServiceProxy, organizationId, projectId);
+    public IAMClient build() throws URISyntaxException {
+        Objects.nonNull(baseUrl);
+        Objects.nonNull(organizationId);
+        Objects.nonNull(projectId);
+        Objects.nonNull(iamServiceProxy);
+        return new IAMClientImpl(baseUrl, iamServiceProxy, organizationId, projectId);
     }
 
     public static IAMClientBuilder builder() {

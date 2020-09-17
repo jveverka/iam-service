@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -34,10 +36,12 @@ public class AuthorizationCodeCacheTests {
     private static final Scope scope = new Scope(Set.of("manage-organizations", "manage-projects", "not-existing-role"));
 
     private static AuthorizationCode authorizationCode;
+    private static URI issuerUri;
 
     @BeforeAll
-    private static void init() {
+    private static void init() throws URISyntaxException {
         authorizationCodeCache = new AuthorizationCodeCacheImpl(maxDuration, timeUnit);
+        issuerUri = new URI("http://localhost:8080/issuer");
     }
 
     @Test
@@ -50,7 +54,7 @@ public class AuthorizationCodeCacheTests {
     @Test
     @Order(2)
     public void testIssueCode() {
-        authorizationCode = authorizationCodeCache.issue(OrganizationId.from("org01"), ProjectId.from("proj01"),
+        authorizationCode = authorizationCodeCache.issue(issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),
                 ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), scope, audience, "");
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());

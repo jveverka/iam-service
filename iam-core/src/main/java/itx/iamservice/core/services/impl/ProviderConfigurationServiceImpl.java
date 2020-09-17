@@ -6,17 +6,21 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.TokenUtils;
 import itx.iamservice.core.services.ProviderConfigurationService;
+import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.dto.JWKData;
 import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.dto.ProviderConfigurationResponse;
 
+import java.security.PublicKey;
+import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class ProviderConfigurationServiceImpl implements ProviderConfigurationService {
 
@@ -34,9 +38,12 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
         return new String[] { "verify" };
     }
 
+    private final OrganizationManagerService organizationManagerService;
     private final ProjectManagerService projectManagerService;
 
-    public ProviderConfigurationServiceImpl(ProjectManagerService projectManagerService) {
+    public ProviderConfigurationServiceImpl(OrganizationManagerService organizationManagerService,
+                                            ProjectManagerService projectManagerService) {
+        this.organizationManagerService = organizationManagerService;
         this.projectManagerService = projectManagerService;
     }
 
@@ -70,6 +77,27 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
             keys.add(jwkData);
         });
         return new JWKResponse(keys);
+    }
+
+    @Override
+    public Optional<RSAKey> getKeyById(OrganizationId organizationId, ProjectId projectId, String kid) {
+        Collection<User> users = projectManagerService.getUsers(organizationId, projectId);
+        return filterKeys(users, kid);
+    }
+
+    @Override
+    public Optional<RSAKey> getKeyById(OrganizationId organizationId, String kid) {
+        Collection<User> users = organizationManagerService.getAllUsers(organizationId);
+        return filterKeys(users, kid);
+    }
+
+    private Optional<RSAKey> filterKeys(Collection<User> users, String kid) {
+        Optional<User> optionalUser = users.stream().filter(u -> u.getKeyPairData().getId().getId().equals(kid)).findFirst();
+        if (optionalUser.isPresent()) {
+            PublicKey publicKey = optionalUser.get().getKeyPairData().getPublicKey();
+            return Optional.of((RSAKey) publicKey);
+        }
+        return Optional.empty();
     }
 
 }

@@ -24,22 +24,31 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
 import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
+import static itx.iamservice.server.controller.ControllerUtils.getIssuerUri;
 
 @RestController
 @RequestMapping(path = "/services/management")
 public class ClientManagementController {
 
+    private final ServletContext servletContext;
     private final ClientManagementService clientManagementService;
     private final IAMSecurityValidator iamSecurityValidator;
 
-    public ClientManagementController(@Autowired ClientManagementService clientManagementService,
+    public ClientManagementController(@Autowired ServletContext servletContext,
+                                      @Autowired ClientManagementService clientManagementService,
                                       @Autowired IAMSecurityValidator iamSecurityValidator) {
+        this.servletContext = servletContext;
         this.clientManagementService = clientManagementService;
         this.iamSecurityValidator = iamSecurityValidator;
     }
@@ -48,9 +57,11 @@ public class ClientManagementController {
     public ResponseEntity<ClientCredentials> createClient(@PathVariable("organization-id") String organizationId,
                                                           @PathVariable("project-id") String projectId,
                                                           @RequestBody CreateClientRequest createClientRequest,
-                                                          @RequestHeader("Authorization") String authorization) {
+                                                          @RequestHeader("Authorization") String authorization,
+                                                          HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Optional<ClientCredentials> client = clientManagementService.createClient(OrganizationId.from(organizationId), ProjectId.from(projectId), createClientRequest);
         if (client.isPresent()) {
             return ResponseEntity.ok(client.get());
@@ -63,9 +74,11 @@ public class ClientManagementController {
     public ResponseEntity<Client> getClient(@PathVariable("organization-id") String organizationId,
                                             @PathVariable("project-id") String projectId,
                                             @PathVariable("client-id") String clientId,
-                                            @RequestHeader("Authorization") String authorization) {
+                                            @RequestHeader("Authorization") String authorization,
+                                            HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Optional<Client> client = clientManagementService.getClient(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId));
         return ResponseEntity.of(client);
     }
@@ -73,9 +86,11 @@ public class ClientManagementController {
     @GetMapping(path = "/{organization-id}/projects/{project-id}/clients", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<Client>> getClients(@PathVariable("organization-id") String organizationId,
                                                          @PathVariable("project-id") String projectId,
-                                                         @RequestHeader("Authorization") String authorization) {
+                                                         @RequestHeader("Authorization") String authorization,
+                                                         HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Collection<Client> clients = clientManagementService.getClients(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(clients);
     }
@@ -84,9 +99,11 @@ public class ClientManagementController {
     public ResponseEntity<Void> deleteClient(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
                                              @PathVariable("client-id") String clientId,
-                                             @RequestHeader("Authorization") String authorization) {
+                                             @RequestHeader("Authorization") String authorization,
+                                             HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         boolean result = clientManagementService.removeClient(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId));
         if (result) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -100,9 +117,11 @@ public class ClientManagementController {
                                                    @PathVariable("project-id") String projectId,
                                                    @PathVariable("client-id") String clientId,
                                                    @PathVariable("role-id") String roleId,
-                                                   @RequestHeader("Authorization") String authorization) {
+                                                   @RequestHeader("Authorization") String authorization,
+                                                   HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         boolean result = clientManagementService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId), RoleId.from(roleId));
         if (result) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -116,9 +135,11 @@ public class ClientManagementController {
                                                      @PathVariable("project-id") String projectId,
                                                      @PathVariable("client-id") String clientId,
                                                      @PathVariable("role-id") String roleId,
-                                                     @RequestHeader("Authorization") String authorization) {
+                                                     @RequestHeader("Authorization") String authorization,
+                                                     HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
         boolean result = clientManagementService.removeRole(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId), RoleId.from(roleId));
         if (result) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

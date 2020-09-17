@@ -35,6 +35,8 @@ import itx.iamservice.core.services.dto.UserInfoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.PublicKey;
 import java.util.Optional;
 import java.util.Set;
@@ -57,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
+    public Optional<TokenResponse> authenticate(URI issuerUri, OrganizationId organizationId, ProjectId projectId,
                                                 ClientCredentials cc, Scope scope,
                                                 UPAuthenticationRequest authenticationRequest,
                                                 IdTokenRequest idTokenRequest) {
@@ -83,13 +85,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(userPermissions, authenticationRequest.getScope());
                     KeyPairData keyPairData = user.getKeyPairData();
-                    JWToken accessToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
+                    JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
                             user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                    JWToken refreshToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
+                    JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
                             user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                    JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, authenticationRequest.getClientCredentials().getId(),
+                    JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, authenticationRequest.getClientCredentials().getId(),
                             user.getId().getId(), user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
                             keyPairData.getId(), keyPairData.getPrivateKey());
                     Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
@@ -104,7 +106,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials,
+    public Optional<TokenResponse> authenticate(URI issuerUri, OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials,
                                                 Scope scope, IdTokenRequest idTokenRequest) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
@@ -117,13 +119,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
                     KeyPairData keyPairData = project.getKeyPairData();
-                    JWToken accessToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
+                    JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
                             client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                    JWToken refreshToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
+                    JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
                             client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
                             null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                    JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
+                    JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, client.getId(), client.getId().getId(),
                             client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
                             keyPairData.getId(), keyPairData.getPrivateKey());
                     Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
@@ -164,50 +166,69 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, user.getCertificate().getPublicKey());
                 LOG.info("JWT verified={}", claimsOptional.isPresent());
                 if (claimsOptional.isPresent()) {
-                    Claims claims = claimsOptional.get().getBody();
-                    String tokenType = (String)claims.get(TYPE_CLAIM);
-                    if (TokenType.REFRESH.getType().equals(tokenType)) {
-                        Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
-                        Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
-                        KeyPairData keyPairData = user.getKeyPairData();
-                        JWToken accessToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
-                                user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                        JWToken refreshToken = TokenUtils.issueToken(organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
-                                user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                        JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, clientCredentials.getId(), user.getId().getId(),
-                                user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                                keyPairData.getId(), keyPairData.getPrivateKey());
-                        Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                                user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L, idToken);
-                        return Optional.of(getTokenResponse(tokens));
-                    } else {
-                        LOG.info("Invalid JWT type {}, expected type {}", tokenType, TokenType.BEARER.getType());
+                    try {
+                        Claims claims = claimsOptional.get().getBody();
+                        String tokenType = (String) claims.get(TYPE_CLAIM);
+                        URI issuerUri = new URI(claims.getIssuer());
+                        if (TokenType.REFRESH.getType().equals(tokenType)) {
+                            Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
+                            Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
+                            KeyPairData keyPairData = user.getKeyPairData();
+                            JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
+                                    user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
+                                    null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
+                            JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
+                                    user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
+                                    null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
+                            JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, clientCredentials.getId(), user.getId().getId(),
+                                    user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                                    keyPairData.getId(), keyPairData.getPrivateKey());
+                            Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
+                                    user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L, idToken);
+                            return Optional.of(getTokenResponse(tokens));
+                        } else {
+                            LOG.info("Invalid JWT type {}, expected type {}", tokenType, TokenType.BEARER.getType());
+                        }
+                    } catch (Exception e) {
+                        LOG.warn("Exception: ", e.getMessage());
                     }
+                } else {
+                    LOG.warn("JWT is invalid !");
                 }
             } else {
                 Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientCredentials.getId());
                 if (clientOptional.isPresent()) {
                     boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
                     if (validationResult) {
-                        Client client = clientOptional.get();
-                        Project project = projectOptional.get();
-                        Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
-                        Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
-                        KeyPairData keyPairData = project.getKeyPairData();
-                        JWToken accessToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
-                                client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                        JWToken refreshToken = TokenUtils.issueToken(organizationId, project.getId(), project.getAudience(), client.getId(),
-                                client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                        JWToken idToken = TokenUtils.issueIdToken(organizationId, projectId, client.getId(), client.getId().getId(),
-                                client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                                keyPairData.getId(), keyPairData.getPrivateKey());
-                        Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                                client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L, idToken);
-                        return Optional.of(getTokenResponse(tokens));
+                        try {
+                            Client client = clientOptional.get();
+                            Project project = projectOptional.get();
+                            Optional<Jws<Claims>> claimsOptional = TokenUtils.verify(token, projectOptional.get().getCertificate().getPublicKey());
+                            LOG.info("JWT verified={}", claimsOptional.isPresent());
+                            if (claimsOptional.isPresent()) {
+                                Claims claims = claimsOptional.get().getBody();
+                                URI issuerUri = new URI(claims.getIssuer());
+                                Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
+                                Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
+                                KeyPairData keyPairData = project.getKeyPairData();
+                                JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
+                                        client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
+                                        null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
+                                JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
+                                        client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
+                                        null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
+                                JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, client.getId(), client.getId().getId(),
+                                        client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
+                                        keyPairData.getId(), keyPairData.getPrivateKey());
+                                Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
+                                        client.getDefaultAccessTokenDuration() / 1000L, client.getDefaultRefreshTokenDuration() / 1000L, idToken);
+                                return Optional.of(getTokenResponse(tokens));
+                            } else {
+                                LOG.warn("JWT is invalid !");
+                            }
+                        } catch (Exception e) {
+                            LOG.warn("Exception: ", e.getMessage());
+                        }
                     } else {
                         LOG.info("Client {} credentials invalid !", clientCredentials.getId());
                     }
@@ -231,13 +252,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 KeyPairData keyPairData = user.getKeyPairData();
-                JWToken accessToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
+                JWToken accessToken = TokenUtils.issueToken(context.getIssuerUri(), context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
                         user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, context.getScope(),
                         null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                JWToken refreshToken = TokenUtils.issueToken(context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
+                JWToken refreshToken = TokenUtils.issueToken(context.getIssuerUri(), context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
                         user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, context.getScope(),
                         null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                JWToken idToken = TokenUtils.issueIdToken(context.getOrganizationId(), context.getProjectId(), context.getClientId(), user.getId().getId(),
+                JWToken idToken = TokenUtils.issueIdToken(context.getIssuerUri(), context.getOrganizationId(), context.getProjectId(), context.getClientId(), user.getId().getId(),
                         user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
                         keyPairData.getId(), keyPairData.getPrivateKey());
                 Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
@@ -256,7 +277,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI) {
+    public Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> optionalClient = modelCache.getClient(organizationId, projectId, clientId);
@@ -278,7 +299,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 if (valid) {
                     Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
-                    AuthorizationCode authorizationCode = codeCache.issue(organizationId, projectId, clientId, userId, state, filteredScopes, projectOptional.get().getAudience(), redirectURI);
+                    AuthorizationCode authorizationCode = codeCache.issue(issuerUri, organizationId, projectId, clientId, userId, state, filteredScopes, projectOptional.get().getAudience(), redirectURI);
                     return Optional.of(authorizationCode);
                 }
             }

@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -49,17 +51,19 @@ public class TokenCacheTests {
     private static ModelCache modelCache;
     private static TokenCache tokenCache;
     private static JWToken jwToken;
+    private static URI issuerUri;
 
     @BeforeAll
-    private static void init() throws NoSuchAlgorithmException, NoSuchProviderException, PKIException {
+    private static void init() throws NoSuchAlgorithmException, NoSuchProviderException, PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
         modelCache = ModelUtils.createDefaultModelCache("top-secret", "top-secret");
         tokenCache = new TokenCacheImpl(modelCache);
         keyId = KeyId.from("key-001");
+        issuerUri = new URI("http://localhost:8080/" + ORGANIZATION_ID.getId() + "/" + PROJECT_ID.getId());
         Map<String, Set<String>> roleClaims = new HashMap<>();
         roleClaims.put(TokenUtils.ROLES_CLAIM, ROLES);
-        jwToken = TokenUtils.issueToken(ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, SCOPE, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
+        jwToken = TokenUtils.issueToken(issuerUri, ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, SCOPE, roleClaims, keyId, keyPair.getPrivate(), TokenType.BEARER);
     }
 
     @Test

@@ -28,6 +28,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -98,29 +99,29 @@ public final class TokenUtils {
         return claims;
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, Set<String> audience, ClientId clientId, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, audience, clientId.getId(), duration, timeUnit, scope, customClaims, keyId, privateKey, type);
+    public static JWToken issueToken(URI issuerUri, OrganizationId organizationId, ProjectId projectId, Set<String> audience, ClientId clientId, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(issuerUri, organizationId, projectId, audience, clientId.getId(), duration, timeUnit, scope, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, Set<String> audience, UserId userId, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
-        return issueToken(organizationId, projectId, audience, userId.getId(), duration, timeUnit, scope, customClaims, keyId, privateKey, type);
+    public static JWToken issueToken(URI issuerUri, OrganizationId organizationId, ProjectId projectId, Set<String> audience, UserId userId, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+        return issueToken(issuerUri, organizationId, projectId, audience, userId.getId(), duration, timeUnit, scope, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, Set<String> audience, String subject, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(URI issuerUri, OrganizationId organizationId, ProjectId projectId, Set<String> audience, String subject, Long duration, TimeUnit timeUnit, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
         Date expirationTime = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
-        return issueToken(organizationId, projectId, subject, audience, expirationTime, notBefore, issuedAt, scope, customClaims, keyId, privateKey, type);
+        return issueToken(issuerUri, organizationId, projectId, subject, audience, expirationTime, notBefore, issuedAt, scope, customClaims, keyId, privateKey, type);
     }
 
-    public static JWToken issueIdToken(OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
+    public static JWToken issueIdToken(URI issuerUri, OrganizationId organizationId, ProjectId projectId, ClientId clientId, String clientOrUserId, Long duration, TimeUnit timeUnit, IdTokenRequest idTokenRequest, KeyId keyId, PrivateKey privateKey) {
         String subject = organizationId.getId() + "/" + projectId.getId() + "/" + clientOrUserId;
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + timeUnit.toMillis(duration));
         JwtBuilder builder = Jwts.builder();
         builder.setHeaderParam(TYP_ID, TYP_VALUE);
         builder.setHeaderParam(KEY_ID, keyId.getId());
-        builder.setIssuer(organizationId.getId() + "/" + projectId.getId());
+        builder.setIssuer(issuerUri.toString());
         builder.setSubject(subject);
         builder.setAudience(clientId.getId());
         builder.setExpiration(expiration);
@@ -133,14 +134,14 @@ public final class TokenUtils {
         return JWToken.from(builder.compact());
     }
 
-    public static JWToken issueToken(OrganizationId organizationId, ProjectId projectId, String subject, Set<String> audience, Date expirationTime, Date notBefore, Date issuedAt, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
+    public static JWToken issueToken(URI issuerUri, OrganizationId organizationId, ProjectId projectId, String subject, Set<String> audience, Date expirationTime, Date notBefore, Date issuedAt, Scope scope, Map<String, Set<String>> customClaims, KeyId keyId, PrivateKey privateKey, TokenType type) {
         JwtBuilder builder = Jwts.builder();
         builder.setHeaderParam(TYP_ID, TYP_VALUE);
         builder.setHeaderParam(KEY_ID, keyId.getId());
         builder.setSubject(subject);
         builder.signWith(privateKey);
         builder.setExpiration(expirationTime);
-        builder.setIssuer(organizationId.getId() + "/" + projectId.getId());
+        builder.setIssuer(issuerUri.toString());
         builder.setIssuedAt(issuedAt);
         builder.setNotBefore(notBefore);
         builder.claim(AUDIENCE_CLAIM, audience);

@@ -32,6 +32,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
@@ -56,10 +58,12 @@ public class NimbusJoseTests {
 
     private static Set<String> audience = Set.of("aud1", "aud2");
     private static final Scope scope = Scope.empty();
+    private static URI issuerUri;
 
     @BeforeAll
-    private static void init() throws PKIException {
+    private static void init() throws PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
+        issuerUri = new URI("http://localhost:8080/issuer");
     }
 
     @Test
@@ -67,7 +71,7 @@ public class NimbusJoseTests {
     public void testRSAKeyParse() throws Exception {
         KeyId keyId = KeyId.from(UUID.randomUUID().toString());
         KeyPair keyPair = TokenUtils.generateKeyPair();
-        X509Certificate x509Certificate = TokenUtils.createSelfSignedCertificate("issuer", 24L, TimeUnit.HOURS, keyPair);
+        X509Certificate x509Certificate = TokenUtils.createSelfSignedCertificate(issuerUri.toString(), 24L, TimeUnit.HOURS, keyPair);
         KeyPairData keyPairData = new KeyPairData(keyId, keyPair.getPrivate(), x509Certificate);
         KeyPairSerialized keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
 
@@ -94,7 +98,7 @@ public class NimbusJoseTests {
         PublicKey publicKeyFromRSAKey = rsaKey.toPublicKey();
         assertNotNull(publicKeyFromRSAKey);
 
-        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("proj"), audience, UserId.from("u1"), 10L,
+        JWToken jwToken = TokenUtils.issueToken(issuerUri, OrganizationId.from("org"), ProjectId.from("proj"), audience, UserId.from("u1"), 10L,
                 TimeUnit.HOURS, scope, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());
@@ -123,7 +127,7 @@ public class NimbusJoseTests {
                 ProviderConfigurationServiceImpl.getOperations(), keyPairSerialized.getX509Certificate(),
                 modulusBase64String, exponentBase64String);
 
-        JWToken jwToken = TokenUtils.issueToken(OrganizationId.from("org"), ProjectId.from("proj"), audience, UserId.from("u1"), 10L,
+        JWToken jwToken = TokenUtils.issueToken(issuerUri, OrganizationId.from("org"), ProjectId.from("proj"), audience, UserId.from("u1"), 10L,
                 TimeUnit.HOURS, scope, createRoleClaims(), keyId, keyPair.getPrivate(), TokenType.BEARER);
 
         SignedJWT signedJWT = SignedJWT.parse(jwToken.getToken());

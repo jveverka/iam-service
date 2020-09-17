@@ -3,6 +3,7 @@ package itx.iamservice.core.services.admin;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 
@@ -27,5 +28,7 @@ public interface OrganizationManagerService {
     void setProperty(OrganizationId id, String key, String value);
 
     void removeProperty(OrganizationId id, String key);
+
+    Collection<User> getAllUsers(OrganizationId id);
 
 }

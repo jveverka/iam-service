@@ -4,6 +4,7 @@ import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.OrganizationImpl;
 import itx.iamservice.core.model.PKIException;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.caches.ModelCache;
@@ -70,6 +71,11 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     @Override
     public void removeProperty(OrganizationId id, String key) {
         modelCache.removeProperty(id, key);
+    }
+
+    @Override
+    public Collection<User> getAllUsers(OrganizationId id) {
+        return modelCache.getUsers(id);
     }
 
 }

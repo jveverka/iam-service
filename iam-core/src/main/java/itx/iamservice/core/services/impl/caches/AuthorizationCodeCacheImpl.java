@@ -10,6 +10,7 @@ import itx.iamservice.core.services.dto.AuthorizationCodeContext;
 import itx.iamservice.core.services.dto.Code;
 import itx.iamservice.core.services.dto.Scope;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,10 +34,10 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public AuthorizationCode issue(OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI) {
+    public AuthorizationCode issue(URI issuerUri, OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI) {
         Code code = Code.from(UUID.randomUUID().toString());
         AuthorizationCode authorizationCode = new AuthorizationCode(code, state, scope);
-        codes.put(code, new AuthorizationCodeContext(organizationId, projectId, clientId, userId, state, new Date(), scope, audience, redirectURI));
+        codes.put(code, new AuthorizationCodeContext(issuerUri, organizationId, projectId, clientId, userId, state, new Date(), scope, audience, redirectURI));
         return authorizationCode;
     }
 
@@ -64,7 +65,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
                     filteredScopes.add(s);
                 }
             });
-            AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(
+            AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(context.getIssuerUri(),
                     context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
                     context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience(), context.getRedirectURI());
             codes.put(code, updatedContext);

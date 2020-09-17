@@ -16,6 +16,7 @@ import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.core.services.dto.UserInfoResponse;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public interface AuthenticationService {
      * @param idTokenRequest
      * @return
      */
-    Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
+    Optional<TokenResponse> authenticate(URI issuerUri, OrganizationId organizationId, ProjectId projectId,
                                          ClientCredentials clientCredentials, Scope scope,
                                          UPAuthenticationRequest upAuthenticationRequest,
                                          IdTokenRequest idTokenRequest);
@@ -45,7 +46,7 @@ public interface AuthenticationService {
      * @param idTokenRequest
      * @return
      */
-    Optional<TokenResponse> authenticate(OrganizationId organizationId, ProjectId projectId,
+    Optional<TokenResponse> authenticate(URI issuerUri, OrganizationId organizationId, ProjectId projectId,
                                          ClientCredentials clientCredentials, Scope scope,
                                          IdTokenRequest idTokenRequest);
 
@@ -91,7 +92,7 @@ public interface AuthenticationService {
      * @param state
      * @return
      */
-    Optional<AuthorizationCode> login(OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
+    Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

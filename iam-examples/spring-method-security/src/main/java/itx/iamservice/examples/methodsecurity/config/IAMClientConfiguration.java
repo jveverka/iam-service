@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -37,12 +38,13 @@ public class IAMClientConfiguration {
 
     @Bean
     @Scope("singleton")
-    public IAMClient createIAMClient() throws MalformedURLException {
+    public IAMClient createIAMClient() throws MalformedURLException, URISyntaxException {
         LOG.info("createIAMClient");
         return IAMClientBuilder.builder()
+                .setBaseUrl(new URL(baseUrl))
                 .setOrganizationId(organizationId)
                 .setProjectId(projectId)
-                .withHttpProxy(new URL(baseUrl), pollingInterval, timeUnit)
+                .withHttpProxy(pollingInterval, timeUnit)
                 .build();
     }
 

@@ -7,7 +7,7 @@
 * __alg__ - RS256 
 
 ### Claims: Access_Token, Refresh_Token
-* __iss__ (issuer) - OrganizationId/ProjectId, string. 
+* __iss__ (issuer) - issuer URI ``http(s)://server:port/baseurl/{organization-id}/{project-id}``, string. 
 * __aud__ (audience) - ProjectId or project audience, string array.
 * __sub__ (subject) - UserId or ClientId, string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string
@@ -18,7 +18,7 @@
 * __scope__ - granted subject permissions, string array of permissionsId(s) for subject.
 
 ### Claims: ID_Token
-* __iss__ (issuer) - OrganizationId/ProjectId, string. 
+* __iss__ (issuer) - issuer URI ``http(s)://server:port/baseurl/{organization-id}/{project-id}``, string. 
 * __aud__ (audience) - ClientId, string.
 * __sub__ (subject) - Combination of 'OrganizationId/ProjectId/[UserId|ClientId]', string.
 * __exp__ (Expiration Time) = iat + session duration, datetime+timezone, string

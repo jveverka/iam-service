@@ -1,4 +1,4 @@
-## IAM Management REST APIs
+## IAM Admin REST APIs
 
 ### Organization management
 

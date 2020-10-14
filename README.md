@@ -52,7 +52,7 @@ gradle clean build jacocoTestReport
 ```
 ## REST endpoints 
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.
-* [__Management APIs__](docs/apis/IAM-management-apis.md) - manage organization / project / users and credentials.
+* [__Admin APIs__](docs/apis/IAM-admin-apis.md) - manage organization / project / users and credentials.
 * [__Back-Channel APIs__](docs/apis/IAM-back-channel-apis.md) - discover organization / project / user configuration, get public keys.
 * __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v3/api-docs```
 * __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui/index.html```

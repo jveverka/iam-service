@@ -1,7 +1,7 @@
 package itx.iamservice.server.tests;
 
+import itx.iamservice.core.dto.CreateOrganization;
 import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OrganizationManagementTests {
 
-    private static String jwt;
+    private static String jwt_admin;
     private static OrganizationId organizationId01;
     private static OrganizationId organizationId02;
 
@@ -39,46 +39,46 @@ public class OrganizationManagementTests {
     @Test
     @Order(1)
     public void createFirstOrganizationTest() {
-        jwt = getTokenResponseForIAMAdmins(restTemplate, port).getAccessToken();
-        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-001"), "organization-001-name");
-        organizationId01 = createNewOrganization(jwt, restTemplate, port,request);
-        checkOrganizationCount(jwt, restTemplate, port,2);
-        checkOrganization(jwt, restTemplate, port, organizationId01);
+        jwt_admin = getTokenResponseForIAMAdmins(restTemplate, port).getAccessToken();
+        CreateOrganization request = new CreateOrganization("organization-001", "organization-001-name");
+        organizationId01 = createNewOrganization(jwt_admin, restTemplate, port,request);
+        checkOrganizationCount(jwt_admin, restTemplate, port,2);
+        checkOrganization(jwt_admin, restTemplate, port, organizationId01);
     }
 
     @Test
     @Order(2)
     public void createSecondOrganizationTest() {
-        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-002"), "organization-002-name");
-        organizationId02 = createNewOrganization(jwt, restTemplate, port,request);
-        checkOrganizationCount(jwt, restTemplate, port, 3);
-        checkOrganization(jwt, restTemplate, port, organizationId02);
+        CreateOrganization request = new CreateOrganization("organization-002", "organization-002-name");
+        organizationId02 = createNewOrganization(jwt_admin, restTemplate, port,request);
+        checkOrganizationCount(jwt_admin, restTemplate, port, 3);
+        checkOrganization(jwt_admin, restTemplate, port, organizationId02);
     }
 
     @Test
     @Order(3)
     public void createExistingOrganizationTest() {
-        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("organization-002"), "organization-002-name");
-        ResponseEntity<OrganizationId> response = createNewOrganizationResponse(jwt, restTemplate, port, request);
+        CreateOrganization request = new CreateOrganization("organization-002", "organization-002-name");
+        ResponseEntity<OrganizationId> response = createNewOrganizationResponse(jwt_admin, restTemplate, port, request);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 
     @Test
     @Order(4)
     public void removeFirstOrganizationTest() {
-        removeOrganization(jwt, restTemplate, port, organizationId01);
-        checkOrganizationCount(jwt, restTemplate, port, 2);
-        checkOrganization(jwt, restTemplate, port, organizationId02);
-        checkRemovedOrganization(jwt, restTemplate, port, organizationId01);
+        removeOrganization(jwt_admin, restTemplate, port, organizationId01);
+        checkOrganizationCount(jwt_admin, restTemplate, port, 2);
+        checkOrganization(jwt_admin, restTemplate, port, organizationId02);
+        checkRemovedOrganization(jwt_admin, restTemplate, port, organizationId01);
     }
 
     @Test
     @Order(5)
     public void removeSecondOrganizationTest() {
-        removeOrganization(jwt, restTemplate, port,  organizationId02);
-        checkOrganizationCount(jwt, restTemplate, port,1);
-        checkRemovedOrganization(jwt, restTemplate, port, organizationId01);
-        checkRemovedOrganization(jwt, restTemplate, port, organizationId02);
+        removeOrganization(jwt_admin, restTemplate, port,  organizationId02);
+        checkOrganizationCount(jwt_admin, restTemplate, port,1);
+        checkRemovedOrganization(jwt_admin, restTemplate, port, organizationId01);
+        checkRemovedOrganization(jwt_admin, restTemplate, port, organizationId02);
     }
 
 }

@@ -3,43 +3,43 @@
 ### Organization management
 
 * Create new organization using provided name and return unique __organization-id__.  
-  __POST__   ``http://localhost:8080/services/management/organizations``
+  __POST__   ``http://localhost:8080/services/admin/organizations``
   ```
   { "name": "organization name" }
   ```
 
 * Delete organization including projects and users related to this organization.  
-  __DELETE__ ``http://localhost:8080/services/management/organizations/{organization-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/organizations/{organization-id}``
 
 ### Project Management
 
 * Create new project under organization and return unique __project-id__.  
-  __POST__   ``http://localhost:8080/services/management/{organization-id}/projects``
+  __POST__   ``http://localhost:8080/services/admin/{organization-id}/projects``
   ```
   { "name": "project name" }
   ```
 
 * Delete project under organization.  
-  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}``
 
 #### Project Role Management
 
 * Create role on project and return unique __role-id__.  
-  __POST__   ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``
+  __POST__   ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/permissions``
   ```
   { "name": "role name" }
   ```
 
 * Get roles on project.  
-  __GET__    ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``
+  __GET__    ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/permissions``
 
 * Delete role from project.  
-  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions/{role-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/permissions/{role-id}``
 
 #### Project Permission Management
 
 * Create permission om project and return unique __permission-id__.  
-  __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``
+  __POST__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/permissions``
   ```
   { 
     "service": "service-value", 
@@ -50,24 +50,24 @@
 
 
 * Get permissions on project.  
-  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions``  
+  __GET__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/permissions``  
 
 * Delete permission from project.  
-  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/permissions/{permission-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/permissions/{permission-id}``
 
 #### Project Role-Permission Assignment
 
 * Add permission to role on project.   
-  __PUT__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/roles-permissions/{role-id}/{permission-id}``
+  __PUT__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/roles-permissions/{role-id}/{permission-id}``
 
 * Remove permission from role on project.  
-  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/roles-permissions/{role-id}/{permission-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/roles-permissions/{role-id}/{permission-id}``
 
 
 #### Project Clients Management 
 
 * Create client and return unique __client-id__.   
-  __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients``
+  __POST__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/clients``
   ```
   { 
     "name": "client-name", 
@@ -77,41 +77,41 @@
   ```
 
 * Get client by it's unique ID.  
-  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}``
+  __GET__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/clients/{client-id}``
 
 * Get  all clients for this project.  
-  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients``
+  __GET__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/clients``
 
 * Delete client by ID.  
-  __GET__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}``
+  __GET__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/clients/{client-id}``
 
 #### Client Role Management
 
 * Assign role to client.  
-  __PUT__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}/roles/{role-id}``
+  __PUT__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/clients/{client-id}/roles/{role-id}``
 
 * Remove role from client.  
-  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/clients/{client-id}/roles/{role-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/clients/{client-id}/roles/{role-id}``
 
 
 ### User Management
 
 * Create user on project.   
-  __POST__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/users``
+  __POST__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/users``
   
 * Delete user on project by __user-id__.  
-  __DELETE__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/users/{user-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/users/{user-id}``
 
 * Set  username-password credentials for user.  
-  __PUT__ ``http://localhost:8080/services/management/{organization-id}/projects/{project-id}/users/{user-id}/credentials-username-password``
+  __PUT__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/users/{user-id}/credentials-username-password``
 
 #### User Role Management
 * Assign role to user.  
-  __PUT__ ``http://localhost:8080/services/{organization-id}/projects/{project-id}/users/{user-id}/roles/{role-id}``
+  __PUT__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/users/{user-id}/roles/{role-id}``
   
 * Get user's roles.  
-  __GET__ ``http://localhost:8080/services/{organization-id}/projects/{project-id}/users/{user-id}/roles``
+  __GET__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/users/{user-id}/roles``
   
 * Remove role from user.  
-  __DELETE__ ``http://localhost:8080/services/{organization-id}/projects/{project-id}/users/{user-id}/roles/{role-id}``
+  __DELETE__ ``http://localhost:8080/services/admin/{organization-id}/projects/{project-id}/users/{user-id}/roles/{role-id}``
   

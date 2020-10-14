@@ -45,23 +45,27 @@ public class ResourceServerServiceImpl implements ResourceServerService {
     public IntrospectResponse introspect(OrganizationId organizationId, ProjectId projectId, IntrospectRequest request) {
         boolean isRevoked = this.tokenCache.isRevoked(request.getToken());
         if (!isRevoked) {
-            DefaultClaims defaultClaims = TokenUtils.extractClaims(request.getToken());
-            UserId userId = UserId.from(defaultClaims.getSubject());
-            Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
-            if (userOptional.isPresent()) {
-                Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), userOptional.get().getCertificate().getPublicKey());
-                LOG.info("JWT verified={}", claimsJws.isPresent());
-                return new IntrospectResponse(claimsJws.isPresent());
-            } else {
-                ClientId clientId = ClientId.from(defaultClaims.getSubject());
-                Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
-                Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
-                if (projectOptional.isPresent() && clientOptional.isPresent()) {
-                    Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), projectOptional.get().getCertificate().getPublicKey());
+            try {
+                DefaultClaims defaultClaims = TokenUtils.extractClaims(request.getToken());
+                UserId userId = UserId.from(defaultClaims.getSubject());
+                Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
+                if (userOptional.isPresent()) {
+                    Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), userOptional.get().getCertificate().getPublicKey());
                     LOG.info("JWT verified={}", claimsJws.isPresent());
                     return new IntrospectResponse(claimsJws.isPresent());
+                } else {
+                    ClientId clientId = ClientId.from(defaultClaims.getSubject());
+                    Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
+                    Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
+                    if (projectOptional.isPresent() && clientOptional.isPresent()) {
+                        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), projectOptional.get().getCertificate().getPublicKey());
+                        LOG.info("JWT verified={}", claimsJws.isPresent());
+                        return new IntrospectResponse(claimsJws.isPresent());
+                    }
+                    LOG.info("JWT subject {} not found", userId);
                 }
-                LOG.info("JWT subject {} not found", userId);
+            } catch (Exception e) {
+                LOG.error("JWT introspection failed: ", e);
             }
         } else {
             LOG.info("JWT is revoked: {}", request.getToken());

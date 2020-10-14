@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import itx.iamservice.core.dto.CreateProject;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.model.Permission;
@@ -41,7 +42,7 @@ import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 import static itx.iamservice.server.controller.ControllerUtils.getIssuerUri;
 
 @RestController
-@RequestMapping(path = "/services/management")
+@RequestMapping(path = "/services/admin")
 public class ProjectManagementController {
 
     private final ServletContext servletContext;
@@ -58,16 +59,15 @@ public class ProjectManagementController {
 
     @PostMapping(path = "/{organization-id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectId> createProject(@PathVariable("organization-id") String organizationId,
-                                                   @RequestBody CreateProjectRequest createProjectRequest,
-                                                   @RequestHeader("Authorization") String authorization,
-                                                   HttpServletRequest request) throws PKIException, MalformedURLException, URISyntaxException {
+                                                   @RequestBody CreateProject createProject,
+                                                   @RequestHeader("Authorization") String authorization) throws PKIException {
+        CreateProjectRequest createProjectRequest = CreateProjectRequest.from(createProject.getId(), createProject.getName(), createProject.getAudience());
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), createProjectRequest.getId());
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, createProjectRequest.getId().getId());
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), createProjectRequest.getId(), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         OrganizationId id = OrganizationId.from(organizationId);
-        Optional<Project> projectId = projectManagerService.create(id, createProjectRequest);
-        if (projectId.isPresent()) {
-            return ResponseEntity.ok(projectId.get().getId());
+        Optional<Project> project = projectManagerService.create(id, createProjectRequest);
+        if (project.isPresent()) {
+            return ResponseEntity.ok(project.get().getId());
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -79,8 +79,9 @@ public class ProjectManagementController {
                                               @RequestHeader("Authorization") String authorization,
                                               HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         projectManagerService.remove(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -96,8 +97,9 @@ public class ProjectManagementController {
                                              @RequestHeader("Authorization") String authorization,
                                              HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Optional<RoleId> roleId = projectManagerService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), createRoleRequest);
         if (roleId.isPresent()) {
             return ResponseEntity.ok(roleId.get());
@@ -112,8 +114,9 @@ public class ProjectManagementController {
                                                      @RequestHeader("Authorization") String authorization,
                                                      HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Collection<Role> roles = projectManagerService.getRoles(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(roles);
     }
@@ -125,8 +128,9 @@ public class ProjectManagementController {
                                            @RequestHeader("Authorization") String authorization,
                                            HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         projectManagerService.removeRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -142,8 +146,9 @@ public class ProjectManagementController {
                                                          @RequestHeader("Authorization") String authorization,
                                                          HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Permission permission = new Permission(createPermissionRequest.getService(), createPermissionRequest.getResource(), createPermissionRequest.getAction());
         projectManagerService.addPermission(OrganizationId.from(organizationId), ProjectId.from(projectId), permission);
         return ResponseEntity.ok(permission.getId());
@@ -155,8 +160,9 @@ public class ProjectManagementController {
                                                                  @RequestHeader("Authorization") String authorization,
                                                                  HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         Collection<Permission> permissions = projectManagerService.getPermissions(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(permissions);
     }
@@ -168,8 +174,9 @@ public class ProjectManagementController {
                                                  @RequestHeader("Authorization") String authorization,
                                                  HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         projectManagerService.removePermission(OrganizationId.from(organizationId), ProjectId.from(projectId), PermissionId.from(permissionId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -186,8 +193,9 @@ public class ProjectManagementController {
                                                     @RequestHeader("Authorization") String authorization,
                                                     HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         projectManagerService.addPermissionToRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId), PermissionId.from(permissionId));
         return ResponseEntity.ok().build();
     }
@@ -200,8 +208,9 @@ public class ProjectManagementController {
                                                          @RequestHeader("Authorization") String authorization,
                                                          HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        //URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        //iamSecurityValidator.validate(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId), ADMIN_PROJECT_SET, applicationPermissions, authorization);
+        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         projectManagerService.removePermissionFromRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId), PermissionId.from(permissionId));
         return ResponseEntity.ok().build();
     }

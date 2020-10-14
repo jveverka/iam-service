@@ -47,4 +47,8 @@ public class CreateProjectRequest {
         return new CreateProjectRequest(id, name, Arrays.asList(audience));
     }
 
+    public static CreateProjectRequest from(String id, String name, Set<String> audience) {
+        return new CreateProjectRequest(ProjectId.from(id), name, audience);
+    }
+
 }

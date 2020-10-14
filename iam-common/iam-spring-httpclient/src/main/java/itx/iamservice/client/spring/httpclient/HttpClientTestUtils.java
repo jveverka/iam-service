@@ -1,5 +1,7 @@
 package itx.iamservice.client.spring.httpclient;
 
+import itx.iamservice.core.dto.CreateOrganization;
+import itx.iamservice.core.dto.CreateProject;
 import itx.iamservice.core.dto.IntrospectResponse;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
@@ -14,9 +16,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.CreateClientRequest;
-import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
-import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
 import itx.iamservice.core.services.dto.OrganizationInfo;
@@ -73,7 +73,7 @@ public final class HttpClientTestUtils {
         return requestHeaders;
     }
 
-    public static OrganizationId createNewOrganization(String jwt, TestRestTemplate restTemplate, int port, CreateOrganizationRequest request) {
+    public static OrganizationId createNewOrganization(String jwt, TestRestTemplate restTemplate, int port, CreateOrganization request) {
         ResponseEntity<OrganizationId> response = createNewOrganizationResponse(jwt, restTemplate, port, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         OrganizationId organizationId = response.getBody();
@@ -82,10 +82,10 @@ public final class HttpClientTestUtils {
         return organizationId;
     }
 
-    public static ResponseEntity<OrganizationId> createNewOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, CreateOrganizationRequest request) {
-        HttpEntity<CreateOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+    public static ResponseEntity<OrganizationId> createNewOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, CreateOrganization request) {
+        HttpEntity<CreateOrganization> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/organizations/",
+                "http://localhost:" + port + "/services/admin/organizations/",
                 HttpMethod.POST,
                 requestEntity,
                 OrganizationId.class);
@@ -124,7 +124,7 @@ public final class HttpClientTestUtils {
     public static void removeOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/organizations/" + organizationId.getId(),
+                "http://localhost:" + port + "/services/admin/organizations/" + organizationId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -181,16 +181,16 @@ public final class HttpClientTestUtils {
     }
 
 
-    public static ResponseEntity<ProjectId> createProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProjectRequest request) {
-        HttpEntity<CreateProjectRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+    public static ResponseEntity<ProjectId> createProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProject request) {
+        HttpEntity<CreateProject> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects",
                 HttpMethod.POST,
                 requestEntity,
                 ProjectId.class);
     }
 
-    public static ProjectId createProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProjectRequest request) {
+    public static ProjectId createProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProject request) {
         ResponseEntity<ProjectId> response = createProjectRequest(jwt, restTemplate, port, organizationId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
@@ -212,7 +212,7 @@ public final class HttpClientTestUtils {
     public static ResponseEntity<RoleId> createRoleOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest request) {
         HttpEntity<CreateRoleRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
                 HttpMethod.POST,
                 requestEntity,
                 RoleId.class);
@@ -227,7 +227,7 @@ public final class HttpClientTestUtils {
     public static Role[] getRolesOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Role[]> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles",
                 HttpMethod.GET,
                 requestEntity,
                 Role[].class);
@@ -238,7 +238,7 @@ public final class HttpClientTestUtils {
     public static PermissionId createPermissionOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreatePermissionRequest createPermissionRequest) {
         HttpEntity<CreatePermissionRequest> requestEntity = new HttpEntity<>(createPermissionRequest, createAuthorization(jwt));
         ResponseEntity<PermissionId> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
                 HttpMethod.POST,
                 requestEntity,
                 PermissionId.class);
@@ -249,7 +249,7 @@ public final class HttpClientTestUtils {
     public static Permission[] getPermissionsForProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Permission[]> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions",
                 HttpMethod.GET,
                 requestEntity,
                 Permission[].class);
@@ -260,7 +260,7 @@ public final class HttpClientTestUtils {
     public static void addPermissionToRoleForProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
                 HttpMethod.PUT,
                 requestEntity,
                 Void.class);
@@ -270,7 +270,7 @@ public final class HttpClientTestUtils {
     public static ResponseEntity<ClientCredentials> createClientOnTheProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
         HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
                 HttpMethod.POST,
                 requestEntity,
                 ClientCredentials.class);
@@ -285,7 +285,7 @@ public final class HttpClientTestUtils {
     public static Client getClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId  clientId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Client> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
                 HttpMethod.GET,
                 requestEntity,
                 Client.class);
@@ -296,7 +296,7 @@ public final class HttpClientTestUtils {
     public static Client[] getClientsOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Client[]> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients",
                 HttpMethod.GET,
                 requestEntity,
                 Client[].class);
@@ -307,7 +307,7 @@ public final class HttpClientTestUtils {
     public static void addRoleToClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
                 HttpMethod.PUT,
                 requestEntity,
                 Void.class);
@@ -317,7 +317,7 @@ public final class HttpClientTestUtils {
     public static void removeRoleFromClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -328,7 +328,7 @@ public final class HttpClientTestUtils {
     public static void removeClientFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/clients/" + clientId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -339,7 +339,7 @@ public final class HttpClientTestUtils {
     public static ResponseEntity<UserId> createUserOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) {
         HttpEntity<CreateUserRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users",
                 HttpMethod.POST,
                 requestEntity,
                 UserId.class);
@@ -354,7 +354,7 @@ public final class HttpClientTestUtils {
     public static void removeUserFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -365,7 +365,7 @@ public final class HttpClientTestUtils {
     public static void setUsernamePasswordCredentialsForProjectAndUser(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId, SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest) {
         HttpEntity<SetUserNamePasswordCredentialsRequest> requestEntity = new HttpEntity<>(setUserNamePasswordCredentialsRequest, createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId() + "/credentials-username-password/",
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId() + "/credentials-username-password/",
                 HttpMethod.PUT,
                 requestEntity,
                 Void.class);
@@ -375,7 +375,7 @@ public final class HttpClientTestUtils {
     public static void assignRoleToUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId(),
                 HttpMethod.PUT,
                 requestEntity,
                 Void.class);
@@ -385,7 +385,7 @@ public final class HttpClientTestUtils {
     public static void removeRoleFromUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class);
@@ -440,7 +440,7 @@ public final class HttpClientTestUtils {
     public static void removePermissionFromRoleOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles-permissions/" + roleId.getId() + "/" + permissionId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -451,7 +451,7 @@ public final class HttpClientTestUtils {
     public static void removePermissionFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/permissions/" + permissionId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -462,7 +462,7 @@ public final class HttpClientTestUtils {
     public static void deleteRoleFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId() + "/roles/" + roleId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class
@@ -478,7 +478,7 @@ public final class HttpClientTestUtils {
     public static ResponseEntity<Void> removeProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         return restTemplate.exchange(
-                "http://localhost:" + port + "/services/management/" + organizationId.getId() + "/projects/" + projectId.getId(),
+                "http://localhost:" + port + "/services/admin/" + organizationId.getId() + "/projects/" + projectId.getId(),
                 HttpMethod.DELETE,
                 requestEntity,
                 Void.class

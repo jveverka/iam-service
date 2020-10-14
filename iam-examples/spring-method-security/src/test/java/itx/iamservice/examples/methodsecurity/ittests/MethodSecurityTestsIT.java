@@ -1,6 +1,8 @@
 package itx.iamservice.examples.methodsecurity.ittests;
 
 
+import itx.iamservice.core.dto.CreateOrganization;
+import itx.iamservice.core.dto.CreateProject;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
@@ -79,9 +81,9 @@ public class MethodSecurityTestsIT {
     @Test
     @Order(3)
     public void createOrganizationProjectAndUsers() {
-        CreateOrganizationRequest request = new CreateOrganizationRequest(OrganizationId.from("it-testing-001"), "IT Testing");
+        CreateOrganization request = new CreateOrganization("it-testing-001", "IT Testing");
         organizationId = createNewOrganization(adminTokens.getAccessToken(), restTemplate, iamServerPort, request);
-        CreateProjectRequest createProjectRequest = new CreateProjectRequest(ProjectId.from("spring-method-security"), "Method Security Project", Set.of("methodsecurity"));
+        CreateProject createProjectRequest = new CreateProject("spring-method-security", "Method Security Project", Set.of("methodsecurity"));
         projectId = createProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, createProjectRequest);
         createPermissionOnProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, projectId, new CreatePermissionRequest("methodsecurity", "data", "read"));
         createPermissionOnProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, projectId, new CreatePermissionRequest("methodsecurity", "data", "modify"));

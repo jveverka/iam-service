@@ -65,8 +65,10 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
         if (keyById.isPresent()) {
             boolean result = JWTUtils.validateToken(keyById.get(), issuerUri, projectId, requiredAdminScopes, requiredApplicationScopes, token);
             if (!result) {
-                throw new IAMSecurityException("Authorization token validation has failed.");
+                throw new IAMSecurityException("Authorization token validation has failed: token is invalid!");
             }
+        } else {
+            throw new IAMSecurityException("Authorization token validation has failed: key not found !");
         }
     }
 

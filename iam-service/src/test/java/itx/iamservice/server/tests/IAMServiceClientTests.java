@@ -14,6 +14,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -41,6 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IAMServiceClientTests {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IAMServiceClientTests.class);
 
     private static TokenResponse tokenResponse;
     private static IAMClient iamClient;
@@ -84,6 +88,8 @@ public class IAMServiceClientTests {
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
         assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        LOG.info("AccessToken : {}", tokenResponse.getAccessToken());
+        LOG.info("RefreshToken: {}", tokenResponse.getRefreshToken());
     }
 
     @Test

@@ -100,6 +100,7 @@ public class IAMClientImpl implements IAMClient {
         } catch (Exception e) {
             LOG.info("Exception: ", e);
         }
+        LOG.debug("token validation has failed.");
         return Optional.empty();
     }
 

@@ -23,6 +23,6 @@ jobs:
       - name: Check Gradle version
         run: gradle -version
       - name: Run Gradle Build and tests
-        run: gradle clean build jacocoTestReport
-      - name: Run full test suite
-        run: ./run-full-test-suite.sh
+        run: gradle clean build test
+#      - name: Run full test suite
+#        run: ./run-full-test-suite.sh

@@ -33,13 +33,13 @@ import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 
 @RestController
 @RequestMapping(path = "/services/admin")
-public class ClientManagementController {
+public class AdminClientController {
 
     private final ClientManagementService clientManagementService;
     private final IAMSecurityValidator iamSecurityValidator;
 
-    public ClientManagementController(@Autowired ClientManagementService clientManagementService,
-                                      @Autowired IAMSecurityValidator iamSecurityValidator) {
+    public AdminClientController(@Autowired ClientManagementService clientManagementService,
+                                 @Autowired IAMSecurityValidator iamSecurityValidator) {
         this.clientManagementService = clientManagementService;
         this.iamSecurityValidator = iamSecurityValidator;
     }

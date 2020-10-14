@@ -25,13 +25,13 @@ import static itx.iamservice.core.ModelCommons.ADMIN_ORGANIZATION_SET;
 
 @RestController
 @RequestMapping(path = "/services/admin")
-public class OrganizationManagementController {
+public class AdminOrganizationController {
 
     private final OrganizationManagerService organizationManagerService;
     private final IAMSecurityValidator iamSecurityValidator;
 
-    public OrganizationManagementController(@Autowired OrganizationManagerService organizationManagerService,
-                                            @Autowired IAMSecurityValidator iamSecurityValidator) {
+    public AdminOrganizationController(@Autowired OrganizationManagerService organizationManagerService,
+                                       @Autowired IAMSecurityValidator iamSecurityValidator) {
         this.organizationManagerService = organizationManagerService;
         this.iamSecurityValidator = iamSecurityValidator;
     }

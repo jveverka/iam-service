@@ -28,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -40,13 +37,13 @@ import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 
 @RestController
 @RequestMapping(path = "/services/admin")
-public class ProjectManagementController {
+public class AdminProjectController {
 
     private final ProjectManagerService projectManagerService;
     private final IAMSecurityValidator iamSecurityValidator;
 
-    public ProjectManagementController(@Autowired ProjectManagerService projectManagerService,
-                                       @Autowired IAMSecurityValidator iamSecurityValidator) {
+    public AdminProjectController(@Autowired ProjectManagerService projectManagerService,
+                                  @Autowired IAMSecurityValidator iamSecurityValidator) {
         this.projectManagerService = projectManagerService;
         this.iamSecurityValidator = iamSecurityValidator;
     }

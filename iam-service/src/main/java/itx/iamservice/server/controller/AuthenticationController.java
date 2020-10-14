@@ -26,6 +26,7 @@ import itx.iamservice.core.services.dto.RevokeTokenRequest;
 import itx.iamservice.core.services.dto.Scope;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.core.services.dto.UserInfoResponse;
+import itx.iamservice.server.utils.ControllerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static itx.iamservice.server.controller.ControllerUtils.getBaseUrl;
-import static itx.iamservice.server.controller.ControllerUtils.getContextPath;
-import static itx.iamservice.server.controller.ControllerUtils.getIssuerUri;
+import static itx.iamservice.server.utils.ControllerUtils.getBaseUrl;
+import static itx.iamservice.server.utils.ControllerUtils.getContextPath;
+import static itx.iamservice.server.utils.ControllerUtils.getIssuerUri;
 
 @RestController
 @RequestMapping(path = "/services/authentication")

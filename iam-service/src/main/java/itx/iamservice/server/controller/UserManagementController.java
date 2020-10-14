@@ -26,18 +26,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
 import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
-import static itx.iamservice.server.controller.ControllerUtils.getIssuerUri;
 
 @RestController
 @RequestMapping(path = "/services/admin")

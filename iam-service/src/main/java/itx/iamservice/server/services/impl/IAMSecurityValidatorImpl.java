@@ -34,29 +34,6 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     }
 
     @Override
-    public void validate(URI issuerUri, OrganizationId organizationId, ProjectId projectId, Set<Permission> requiredAdminScopes, Set<Permission> requiredApplicationScopes, String authorization) throws IAMSecurityException {
-        JWToken token = JWTUtils.extractJwtToken(authorization);
-        Optional<StandardTokenClaims> tokenClaimsOptional = JWTUtils.getClaimsFromToken(token);
-        if (tokenClaimsOptional.isPresent()) {
-            validatePermissions(issuerUri, organizationId, projectId, requiredAdminScopes, requiredApplicationScopes, tokenClaimsOptional.get(), token);
-        } else {
-            throw new IAMSecurityException("Authorization token validation has failed.");
-        }
-    }
-
-    @Override
-    public void validate(Set<Permission> requiredAdminScopes, Set<Permission> requiredApplicationScopes, String authorization) throws IAMSecurityException {
-        JWToken token = JWTUtils.extractJwtToken(authorization);
-        Optional<StandardTokenClaims> tokenClaimsOptional = JWTUtils.getClaimsFromToken(token);
-        if (tokenClaimsOptional.isPresent()) {
-            StandardTokenClaims standardTokenClaims = tokenClaimsOptional.get();
-            validatePermissions(standardTokenClaims.getIssuerUri(), standardTokenClaims.getOrganizationId(), standardTokenClaims.getProjectId(), requiredAdminScopes, requiredApplicationScopes, standardTokenClaims, token);
-        } else {
-            throw new IAMSecurityException("Authorization token validation has failed.");
-        }
-    }
-
-    @Override
     public void validate(String authorization) throws IAMSecurityException {
         JWToken token = JWTUtils.extractJwtToken(authorization);
         Optional<StandardTokenClaims> tokenClaimsOptional = JWTUtils.getClaimsFromToken(token);

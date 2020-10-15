@@ -58,6 +58,9 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     @Override
     public JWKResponse getJWKResponse() throws InterruptedException {
         cl.await(2*INITIAL_DELAY, timeUnit);
+        if (jwkResponse == null) {
+            LOG.error("jwkResponse is NULL !");
+        }
         return jwkResponse;
     }
 

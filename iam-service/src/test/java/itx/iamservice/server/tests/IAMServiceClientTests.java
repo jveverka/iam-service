@@ -74,7 +74,7 @@ public class IAMServiceClientTests {
                 .setBaseUrl(new URL("http://localhost:" + port + "/services/authentication"))
                 .setOrganizationId(IAM_ADMINS_ORG.getId())
                 .setProjectId(IAM_ADMINS_PROJECT.getId())
-                .withHttpProxy(10L, TimeUnit.SECONDS)
+                .withHttpProxy(40L, TimeUnit.SECONDS)
                 .build();
     }
 

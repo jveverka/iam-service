@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.model.Client;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
@@ -33,6 +34,7 @@ import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 
 @RestController
 @RequestMapping(path = "/services/admin")
+@Tag(name = "Admin Client Management", description = "APIs for privileged admin users to manage clients.")
 public class AdminClientController {
 
     private final ClientManagementService clientManagementService;

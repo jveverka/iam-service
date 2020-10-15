@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
@@ -26,6 +27,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/services/discovery")
+@Tag(name = "Discovery", description = "APIs providing public data about Organizations and Projects.")
 public class DiscoveryController {
 
     private final OrganizationManagerService organizationManagerService;

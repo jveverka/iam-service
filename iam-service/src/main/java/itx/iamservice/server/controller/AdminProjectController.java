@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.dto.CreateProject;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
@@ -37,6 +38,7 @@ import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 
 @RestController
 @RequestMapping(path = "/services/admin")
+@Tag(name = "Admin Project Management", description = "APIs for privileged admin users to manage organizations.")
 public class AdminProjectController {
 
     private final ProjectManagerService projectManagerService;

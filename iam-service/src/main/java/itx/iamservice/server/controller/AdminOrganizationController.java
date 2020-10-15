@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
@@ -25,6 +26,7 @@ import static itx.iamservice.core.ModelCommons.ADMIN_ORGANIZATION_SET;
 
 @RestController
 @RequestMapping(path = "/services/admin")
+@Tag(name = "Admin Organization Management", description = "APIs for privileged admin users to manage organizations.")
 public class AdminOrganizationController {
 
     private final OrganizationManagerService organizationManagerService;

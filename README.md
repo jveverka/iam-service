@@ -54,8 +54,9 @@ gradle clean build jacocoTestReport
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.
 * [__Admin APIs__](docs/apis/IAM-admin-apis.md) - manage organization / project / users and credentials.
 * [__Back-Channel APIs__](docs/apis/IAM-back-channel-apis.md) - discover organization / project / user configuration, get public keys.
-* __OpenAPI / Swagger2 JSON__ - ```http://localhost:8080/v3/api-docs```
-* __OpenAPI / Swagger2 UI__ - ```http://localhost:8080/swagger-ui/index.html```
+* __OpenAPI / Swagger JSON__ - ```http://localhost:8080/v3/api-docs```
+* __OpenAPI / Swagger YAML__ - ```http://localhost:8080/v3/api-docs.yaml```
+* __OpenAPI / Swagger UI__ - ```http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs```
 * __SpringBoot actuator__ - ``http://localhost:8080/actuator``
 * [__Security Rules__](docs/IAM-service-security.md) - accessing APIs.
 

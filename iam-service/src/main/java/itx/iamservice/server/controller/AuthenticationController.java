@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.JWToken;
@@ -61,6 +62,7 @@ import static itx.iamservice.server.utils.ControllerUtils.getIssuerUri;
 
 @RestController
 @RequestMapping(path = "/services/authentication")
+@Tag(name = "Authentication", description = "APIs providing OAuth2 authentication flows.")
 public class AuthenticationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);

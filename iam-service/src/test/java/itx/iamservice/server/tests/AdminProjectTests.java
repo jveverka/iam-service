@@ -354,4 +354,12 @@ public class AdminProjectTests {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    @Test
+    @Order(34)
+    public void createProjectNoTokenTest() {
+        CreateProject createProject = new CreateProject("project-002", "project-002-name", Set.of("project-002"));
+        ResponseEntity<ProjectId> response = createProjectRequest(null, restTemplate, port, organizationId, createProject);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
 }

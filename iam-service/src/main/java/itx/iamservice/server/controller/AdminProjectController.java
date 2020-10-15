@@ -14,7 +14,6 @@ import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
-import itx.iamservice.server.services.IAMSecurityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,16 +24,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
-
-import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
-import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 
 @RestController
 @RequestMapping(path = "/services/admin")
@@ -42,21 +36,15 @@ import static itx.iamservice.core.ModelCommons.getProjectAdminPermissionSet;
 public class AdminProjectController {
 
     private final ProjectManagerService projectManagerService;
-    private final IAMSecurityValidator iamSecurityValidator;
 
-    public AdminProjectController(@Autowired ProjectManagerService projectManagerService,
-                                  @Autowired IAMSecurityValidator iamSecurityValidator) {
+    public AdminProjectController(@Autowired ProjectManagerService projectManagerService) {
         this.projectManagerService = projectManagerService;
-        this.iamSecurityValidator = iamSecurityValidator;
     }
 
     @PostMapping(path = "/{organization-id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectId> createProject(@PathVariable("organization-id") String organizationId,
-                                                   @RequestBody CreateProject createProject,
-                                                   @RequestHeader("Authorization") String authorization) throws PKIException {
+                                                   @RequestBody CreateProject createProject) throws PKIException {
         CreateProjectRequest createProjectRequest = CreateProjectRequest.from(createProject.getId(), createProject.getName(), createProject.getAudience());
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), createProjectRequest.getId());
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
         OrganizationId id = OrganizationId.from(organizationId);
         Optional<Project> project = projectManagerService.create(id, createProjectRequest);
         if (project.isPresent()) {
@@ -68,10 +56,7 @@ public class AdminProjectController {
 
     @DeleteMapping(path = "/{organization-id}/projects/{project-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteProject(@PathVariable("organization-id") String organizationId,
-                                              @PathVariable("project-id") String projectId,
-                                              @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                              @PathVariable("project-id") String projectId) {
         projectManagerService.remove(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -83,10 +68,7 @@ public class AdminProjectController {
     @PostMapping(path = "/{organization-id}/projects/{project-id}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RoleId> createRole(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
-                                             @RequestBody CreateRoleRequest createRoleRequest,
-                                             @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                             @RequestBody CreateRoleRequest createRoleRequest) {
         Optional<RoleId> roleId = projectManagerService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), createRoleRequest);
         if (roleId.isPresent()) {
             return ResponseEntity.ok(roleId.get());
@@ -97,10 +79,7 @@ public class AdminProjectController {
 
     @GetMapping(path = "/{organization-id}/projects/{project-id}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<Role>> getRoles(@PathVariable("organization-id") String organizationId,
-                                                     @PathVariable("project-id") String projectId,
-                                                     @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                                     @PathVariable("project-id") String projectId) {
         Collection<Role> roles = projectManagerService.getRoles(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(roles);
     }
@@ -108,10 +87,7 @@ public class AdminProjectController {
     @DeleteMapping(path = "/{organization-id}/projects/{project-id}/roles/{role-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteRole(@PathVariable("organization-id") String organizationId,
                                            @PathVariable("project-id") String projectId,
-                                           @PathVariable("role-id") String roleId,
-                                           @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                           @PathVariable("role-id") String roleId) {
         projectManagerService.removeRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -123,10 +99,7 @@ public class AdminProjectController {
     @PostMapping(path = "/{organization-id}/projects/{project-id}/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PermissionId> createPermission(@PathVariable("organization-id") String organizationId,
                                                          @PathVariable("project-id") String projectId,
-                                                         @RequestBody CreatePermissionRequest createPermissionRequest,
-                                                         @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                                         @RequestBody CreatePermissionRequest createPermissionRequest) {
         Permission permission = new Permission(createPermissionRequest.getService(), createPermissionRequest.getResource(), createPermissionRequest.getAction());
         projectManagerService.addPermission(OrganizationId.from(organizationId), ProjectId.from(projectId), permission);
         return ResponseEntity.ok(permission.getId());
@@ -134,10 +107,7 @@ public class AdminProjectController {
 
     @GetMapping(path = "/{organization-id}/projects/{project-id}/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<Permission>> getPermissions(@PathVariable("organization-id") String organizationId,
-                                                                 @PathVariable("project-id") String projectId,
-                                                                 @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                                                 @PathVariable("project-id") String projectId) {
         Collection<Permission> permissions = projectManagerService.getPermissions(OrganizationId.from(organizationId), ProjectId.from(projectId));
         return ResponseEntity.ok(permissions);
     }
@@ -145,10 +115,7 @@ public class AdminProjectController {
     @DeleteMapping(path = "/{organization-id}/projects/{project-id}/permissions/{permission-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deletePermission(@PathVariable("organization-id") String organizationId,
                                                  @PathVariable("project-id") String projectId,
-                                                 @PathVariable("permission-id") String permissionId,
-                                                 @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                                 @PathVariable("permission-id") String permissionId) {
         projectManagerService.removePermission(OrganizationId.from(organizationId), ProjectId.from(projectId), PermissionId.from(permissionId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -161,10 +128,7 @@ public class AdminProjectController {
     public ResponseEntity<Void> addPermissionToRole(@PathVariable("organization-id") String organizationId,
                                                     @PathVariable("project-id") String projectId,
                                                     @PathVariable("role-id") String roleId,
-                                                    @PathVariable("permission-id") String permissionId,
-                                                    @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                                    @PathVariable("permission-id") String permissionId) {
         projectManagerService.addPermissionToRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId), PermissionId.from(permissionId));
         return ResponseEntity.ok().build();
     }
@@ -173,10 +137,7 @@ public class AdminProjectController {
     public ResponseEntity<Void> removePermissionFromRole(@PathVariable("organization-id") String organizationId,
                                                          @PathVariable("project-id") String projectId,
                                                          @PathVariable("role-id") String roleId,
-                                                         @PathVariable("permission-id") String permissionId,
-                                                         @RequestHeader("Authorization") String authorization) {
-        Set<Permission> applicationPermissions = getProjectAdminPermissionSet(OrganizationId.from(organizationId), ProjectId.from(projectId));
-        iamSecurityValidator.validate(ADMIN_PROJECT_SET, applicationPermissions, authorization);
+                                                         @PathVariable("permission-id") String permissionId) {
         projectManagerService.removePermissionFromRole(OrganizationId.from(organizationId), ProjectId.from(projectId), RoleId.from(roleId), PermissionId.from(permissionId));
         return ResponseEntity.ok().build();
     }

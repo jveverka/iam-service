@@ -73,7 +73,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProjectManagementTests {
+public class AdminProjectTests {
 
     private static String jwt_admin;
     private static OrganizationId organizationId;

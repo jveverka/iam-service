@@ -1,4 +1,4 @@
-package itx.iamservice.server.controller;
+package itx.iamservice.server.controller.support;
 
 import itx.iamservice.server.dto.ApiError;
 import itx.iamservice.server.services.IAMSecurityException;

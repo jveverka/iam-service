@@ -1,4 +1,4 @@
-package itx.iamservice.server.utils;
+package itx.iamservice.server.controller.support;
 
 import itx.iamservice.core.model.TokenType;
 

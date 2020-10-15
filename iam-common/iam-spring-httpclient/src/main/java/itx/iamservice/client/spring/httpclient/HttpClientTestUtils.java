@@ -67,9 +67,11 @@ public final class HttpClientTestUtils {
     }
 
     public static HttpHeaders createAuthorization(String jwt) {
-        String authorizationHeader = "Bearer " + jwt;
         HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("Authorization", authorizationHeader);
+        if (jwt != null) {
+            String authorizationHeader = "Bearer " + jwt;
+            requestHeaders.add("Authorization", authorizationHeader);
+        }
         return requestHeaders;
     }
 
@@ -119,6 +121,16 @@ public final class HttpClientTestUtils {
         assertNotNull(organizationInfo.getOrganizationId());
         assertNotNull(organizationInfo.getProjects());
         assertNotNull(organizationInfo.getX509Certificate());
+    }
+
+    public static ResponseEntity<Void> removeOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        return restTemplate.exchange(
+                "http://localhost:" + port + "/services/admin/organizations/" + organizationId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class
+        );
     }
 
     public static void removeOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {

@@ -1,5 +1,6 @@
 package itx.iamservice.server.config.security;
 
+import itx.iamservice.server.services.IAMSecurityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,8 +12,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    public SecurityConfiguration() {
+    private final IAMSecurityValidator iamSecurityValidator;
+
+    public SecurityConfiguration(@Autowired IAMSecurityValidator iamSecurityValidator) {
+        this.iamSecurityValidator = iamSecurityValidator;
     }
 
     @Override
@@ -20,7 +23,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .addFilterBefore(new ManagementSecurityFilter(), BasicAuthenticationFilter.class)
                 .antMatcher("/services/management/**")
-                .addFilterBefore(new AdminSecurityFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new AdminSecurityFilter(iamSecurityValidator), BasicAuthenticationFilter.class)
                 .antMatcher("/services/admin/**")
                 .csrf()
                 .disable();

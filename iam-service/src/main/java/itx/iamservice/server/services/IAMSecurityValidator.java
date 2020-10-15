@@ -9,8 +9,17 @@ import java.util.Set;
 
 public interface IAMSecurityValidator {
 
-    void validate(URI issuerUri, OrganizationId organizationId, ProjectId projectId, Set<Permission> requiredAdminScopes, Set<Permission> requiredApplicationScopes, String authentication) throws IAMSecurityException;
+    @Deprecated
+    void validate(URI issuerUri, OrganizationId organizationId, ProjectId projectId, Set<Permission> requiredAdminScopes, Set<Permission> requiredApplicationScopes, String authorization) throws IAMSecurityException;
 
-    void validate(Set<Permission> requiredAdminScopes, Set<Permission> requiredApplicationScopes, String authentication) throws IAMSecurityException;
+    @Deprecated
+    void validate(Set<Permission> requiredAdminScopes, Set<Permission> requiredApplicationScopes, String authorization) throws IAMSecurityException;
+
+    /**
+     * Validate Admin's authentication.
+     * @param authorization - http 'Authentication' header. Expected format: "Bearer [JWT]".
+     * @throws IAMSecurityException
+     */
+    void validate(String authorization) throws IAMSecurityException;
 
 }

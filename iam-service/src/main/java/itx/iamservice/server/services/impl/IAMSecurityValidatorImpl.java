@@ -19,6 +19,8 @@ import java.security.interfaces.RSAKey;
 import java.util.Optional;
 import java.util.Set;
 
+import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
+
 
 @Service
 public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
@@ -49,6 +51,18 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
         if (tokenClaimsOptional.isPresent()) {
             StandardTokenClaims standardTokenClaims = tokenClaimsOptional.get();
             validatePermissions(standardTokenClaims.getIssuerUri(), standardTokenClaims.getOrganizationId(), standardTokenClaims.getProjectId(), requiredAdminScopes, requiredApplicationScopes, standardTokenClaims, token);
+        } else {
+            throw new IAMSecurityException("Authorization token validation has failed.");
+        }
+    }
+
+    @Override
+    public void validate(String authorization) throws IAMSecurityException {
+        JWToken token = JWTUtils.extractJwtToken(authorization);
+        Optional<StandardTokenClaims> tokenClaimsOptional = JWTUtils.getClaimsFromToken(token);
+        if (tokenClaimsOptional.isPresent()) {
+            StandardTokenClaims standardTokenClaims = tokenClaimsOptional.get();
+            validatePermissions(standardTokenClaims.getIssuerUri(), standardTokenClaims.getOrganizationId(), standardTokenClaims.getProjectId(), ADMIN_PROJECT_SET, Set.of(), standardTokenClaims, token);
         } else {
             throw new IAMSecurityException("Authorization token validation has failed.");
         }

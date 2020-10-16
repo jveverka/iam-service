@@ -1,15 +1,18 @@
 # IAM User's Manual
+This chapter shows how to setup iam-service as OAuth2 server.
 
 ## OAuth2 Server setup
-This chapter shows how to setup iam-service as OAuth2 server.
 *  Start iam-service as standalone server.
 *  Start iam-service as docker container.
 
 ## OAuth2 Server Admin guidelines
-* Create organizations
-* Create project within organization
-* Create client for project
-* Create user for organization 
+* Get Admin access_token.
+* Create organization with Admin user.
+* Manage your Organization / Projects.
+
+## Self-service features for projects
+* Users self-registration using email.
+* Change user's credentials.
 
 ## Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](oauth2/131_authorization-code-flow.md).
@@ -20,3 +23,4 @@ This chapter shows how to setup iam-service as OAuth2 server.
 ## Integration Examples
 * [Spring method security example](../iam-examples/spring-method-security)
 * [Spring resource server example](../iam-examples/spring-resource-server)
+* [IAM-Client java library](../iam-common/iam-client)

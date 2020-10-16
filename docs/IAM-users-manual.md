@@ -4,8 +4,9 @@ authentication and authorization OAuth2 server.
 
 ## 1. OAuth2 Server setup
 * [Download](https://github.com/jveverka/iam-service/releases/) latest release, Follow release instructions. 
-* Start iam-service as standalone server.
-* Start iam-service as docker container.
+* Create custom __application.yml__ configuration.
+* Start *iam-service* as standalone server.
+* Start *iam-service* as docker container.
 
 ## 2. OAuth2 Server administration
 * Get Admin access_token.

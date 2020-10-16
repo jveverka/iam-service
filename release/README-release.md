@@ -28,11 +28,11 @@ authentication and authorization server.
   ```
   curl http://localhost:8080/actuator
   curl http://localhost:8080/v3/api-docs
-  curl http://localhost:8080/swagger-ui/index.html
+  curl http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs
   ```  
-* Check [user's manual](https://github.com/jveverka/iam-service/blob/master/docs/IAM-users-manual.md) and learn:
-  * How to create organizations and projects.
-  * How to create and manage users.
+* Check [user's manual](https://github.com/jveverka/iam-service/blob/master/docs/IAM-users-manual.md) for next steps:
+  * How to create/manage organizations and projects.
+  * How to create/manage and manage clients and users.
   * How to integrate __iam-service__ in microservice environment.
   * How to modify __application.yml__ configuration file.
 

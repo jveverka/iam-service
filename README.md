@@ -41,15 +41,6 @@ Estimated release date: __EOF Nov.2020__
 * [__iam-examples__](iam-examples) - examples how to use and integrate with IAM-service.
 * [__iam-common__](iam-common) - libraries for backend services.
 
-### Build and Run
-Please  check [system requirements](docs/system-requirements.md) before. 
-```
-# compile and run JUnit test suite
-gradle clean build jacocoTestReport
-
-# test-deploy and run integration test suite.
-./run-full-test-suite.sh
-```
 ## REST endpoints 
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.
 * [__Admin APIs__](docs/apis/IAM-admin-apis.md) - manage organization / project / users and credentials.
@@ -63,6 +54,7 @@ gradle clean build jacocoTestReport
 ### Technical documentation
 * [Internal Data Model](docs/IAM-data-model.md) - internal data model description and glossary.
 * [JWT mappings](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
+* [Project build & test instructions](docs/IAM-build-test.md) - how to build this project locally.
 
 #### Related RFCs and Specifications
 * [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0

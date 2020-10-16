@@ -26,6 +26,8 @@ This client library makes JWT verification easier for clients and micro-services
    ```
 3. Verify and validate incoming JWT(s).
    ```
+   while(iamClient.waitForInit(10L, TimeUnit.SECONDS)) {
+   }
    HttpServletRequest httpServletRequest = ...;
    String jwt = httpServletRequest.getHeader("Authorization").split(" ")[1];
    iamClient.validate(jwt);

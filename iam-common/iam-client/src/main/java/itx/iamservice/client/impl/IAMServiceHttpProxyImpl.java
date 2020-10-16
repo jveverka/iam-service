@@ -37,7 +37,6 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     private final OkHttpClient client;
     private final ObjectMapper mapper;
     private final CountDownLatch cl;
-    private final TimeUnit timeUnit;
 
     private JWKResponse jwkResponse;
     private ProviderConfigurationResponse providerConfigurationResponse;
@@ -50,17 +49,18 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         this.executor = Executors.newScheduledThreadPool(1);
         this.client = new OkHttpClient();
         this.mapper = new ObjectMapper();
-        this.timeUnit = timeUnit;
         this.cl = new CountDownLatch(1);
         this.executor.scheduleWithFixedDelay(new IAMServiceHttpFetchTask(baseUrl, organizationId, projectId, client, mapper, this), INITIAL_DELAY, pollingInterval, timeUnit);
     }
 
     @Override
+    public boolean waitForInit(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        return cl.await(timeout, timeUnit);
+    }
+
+    @Override
     public JWKResponse getJWKResponse() throws InterruptedException {
-        cl.await(2*INITIAL_DELAY, timeUnit);
-        if (jwkResponse == null) {
-            LOG.error("jwkResponse is NULL !");
-        }
+        LOG.error("jwkResponse == NULL ? {}", (jwkResponse == null));
         return jwkResponse;
     }
 
@@ -96,8 +96,8 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     protected void setJwkResponse(JWKResponse jwkResponse) {
-        this.cl.countDown();
         this.jwkResponse = jwkResponse;
+        this.cl.countDown();
     }
 
     @Override

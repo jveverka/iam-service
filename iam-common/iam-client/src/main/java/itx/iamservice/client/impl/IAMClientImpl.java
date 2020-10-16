@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static itx.iamservice.client.JWTUtils.convert;
 import static itx.iamservice.client.JWTUtils.validateToken;
@@ -41,6 +42,11 @@ public class IAMClientImpl implements IAMClient {
         this.projectId = projectId;
         this.mapper = new ObjectMapper();
         this.issuer = new URI(baseUrl.toString() + "/" + getServiceId(organizationId, projectId));
+    }
+
+    @Override
+    public boolean waitForInit(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        return iamServiceProxy.waitForInit(timeout, timeUnit);
     }
 
     @Override

@@ -69,13 +69,16 @@ public class IAMServiceClientTests {
 
     @Test
     @Order(1)
-    public void createIamClient() throws MalformedURLException, URISyntaxException {
+    public void createIamClient() throws MalformedURLException, URISyntaxException, InterruptedException {
         iamClient = IAMClientBuilder.builder()
                 .setBaseUrl(new URL("http://localhost:" + port + "/services/authentication"))
                 .setOrganizationId(IAM_ADMINS_ORG.getId())
                 .setProjectId(IAM_ADMINS_PROJECT.getId())
-                .withHttpProxy(40L, TimeUnit.SECONDS)
+                .withHttpProxy(10L, TimeUnit.SECONDS)
                 .build();
+        while(!iamClient.waitForInit(15L, TimeUnit.SECONDS)) {
+            LOG.info("waiting for iam-client initialization ...");
+        }
     }
 
     @Test

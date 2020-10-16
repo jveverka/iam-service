@@ -8,11 +8,20 @@ import itx.iamservice.core.model.ProjectId;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * IAM-Service remote client.
  */
 public interface IAMClient extends AutoCloseable {
+
+    /**
+     * Wait until IAMClient is fully initialized.
+     * @param timeout - timeout wait interval duration.
+     * @param timeUnit - timeout unit.
+     * @return - true, if initialization  has succeeded in given time interval, false otherwise.
+     */
+    boolean waitForInit(long timeout, TimeUnit timeUnit) throws InterruptedException;
 
     /**
      * Validate JWT. This method validates:

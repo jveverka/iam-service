@@ -41,6 +41,7 @@ public class AdminServicesController {
 
     @PostMapping("/organization")
     public ResponseEntity<SetupOrganizationResponse> setUpOrganization(@RequestBody SetupOrganizationRequest request) throws PKIException {
+        /*
         OrganizationId organizationId = OrganizationId.from(request.getOrganizationId());
         CreateOrganizationRequest createOrganizationRequest = new CreateOrganizationRequest(organizationId, request.getOrganizationName());
         Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(createOrganizationRequest);
@@ -49,6 +50,7 @@ public class AdminServicesController {
             projectManagerService.create(organizationId, createProjectRequest);
             return ResponseEntity.ok().body(new SetupOrganizationResponse());
         }
+        */
         return ResponseEntity.badRequest().build();
     }
 

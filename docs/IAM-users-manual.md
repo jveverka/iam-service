@@ -2,8 +2,9 @@
 This chapter shows how to setup iam-service as OAuth2 server.
 
 ## OAuth2 Server setup
-*  Start iam-service as standalone server.
-*  Start iam-service as docker container.
+* [Download](https://github.com/jveverka/iam-service/releases/) latest release, Follow release instructions. 
+* Start iam-service as standalone server.
+* Start iam-service as docker container.
 
 ## OAuth2 Server Admin guidelines
 * Get Admin access_token.

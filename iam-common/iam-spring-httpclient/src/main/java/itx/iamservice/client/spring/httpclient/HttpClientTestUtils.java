@@ -22,6 +22,8 @@ import itx.iamservice.core.services.dto.CreateUserRequest;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetUserNamePasswordCredentialsRequest;
+import itx.iamservice.core.services.dto.SetupOrganizationRequest;
+import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.core.services.dto.UserInfoResponse;
@@ -156,6 +158,33 @@ public final class HttpClientTestUtils {
 
     public static TokenResponse getTokenResponseForIAMAdmins(TestRestTemplate restTemplate, int port) {
         return getTokenResponseForUserNameAndPassword(restTemplate, port, ModelUtils.IAM_ADMIN_USER.getId(), "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret", ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
+    }
+
+    public static ResponseEntity<SetupOrganizationResponse> setupOrganization(TestRestTemplate restTemplate, int port, String jwt, SetupOrganizationRequest request) {
+        HttpEntity<SetupOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
+        return restTemplate.exchange(
+                "http://localhost:" + port + "/services/admin/organization/setup",
+                HttpMethod.POST,
+                requestEntity,
+                SetupOrganizationResponse.class);
+    }
+
+    public static ResponseEntity<Void> deleteOrganizationRecursively(TestRestTemplate restTemplate, int port, String jwt, OrganizationId organizationId) {
+        HttpEntity<SetupOrganizationRequest> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        return restTemplate.exchange(
+                "http://localhost:" + port + "/services/admin/organization/" + organizationId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class);
+    }
+
+    public static ResponseEntity<Void> deleteProjectRecursively(TestRestTemplate restTemplate, int port, String jwt, OrganizationId organizationId, ProjectId projectId) {
+        HttpEntity<SetupOrganizationRequest> requestEntity = new HttpEntity<>(createAuthorization(jwt));
+        return restTemplate.exchange(
+                "http://localhost:" + port + "/services/admin/organization/" + organizationId.getId() + "/" + projectId.getId(),
+                HttpMethod.DELETE,
+                requestEntity,
+                Void.class);
     }
 
     public static TokenResponse getTokenResponseForUserNameAndPassword(TestRestTemplate restTemplate, int port, String userName, String password, ClientId clientId, String clientSecret, OrganizationId organizationId, ProjectId projectId) {

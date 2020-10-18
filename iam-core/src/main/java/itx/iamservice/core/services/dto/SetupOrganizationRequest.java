@@ -1,7 +1,9 @@
-package itx.iamservice.server.dto;
+package itx.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Set;
 
 public class SetupOrganizationRequest {
 
@@ -13,6 +15,7 @@ public class SetupOrganizationRequest {
     private final String adminClientSecret;
     private final String adminUserId;
     private final String adminUserPassword;
+    private final Set<String> projectAudience;
 
     @JsonCreator
     public SetupOrganizationRequest(@JsonProperty("organizationId") String organizationId,
@@ -22,7 +25,8 @@ public class SetupOrganizationRequest {
                                     @JsonProperty("adminClientId") String adminClientId,
                                     @JsonProperty("adminClientSecret") String adminClientSecret,
                                     @JsonProperty("adminUserId") String adminUserId,
-                                    @JsonProperty("adminUserPassword") String adminUserPassword) {
+                                    @JsonProperty("adminUserPassword") String adminUserPassword,
+                                    @JsonProperty("projectAudience") Set<String> projectAudience) {
         this.organizationId = organizationId;
         this.organizationName = organizationName;
         this.adminProjectId = adminProjectId;
@@ -31,6 +35,7 @@ public class SetupOrganizationRequest {
         this.adminClientSecret = adminClientSecret;
         this.adminUserId = adminUserId;
         this.adminUserPassword = adminUserPassword;
+        this.projectAudience = projectAudience;
     }
 
     public String getOrganizationId() {
@@ -65,4 +70,7 @@ public class SetupOrganizationRequest {
         return adminUserPassword;
     }
 
+    public Set<String> getProjectAudience() {
+        return projectAudience;
+    }
 }

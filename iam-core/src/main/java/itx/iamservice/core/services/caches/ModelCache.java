@@ -40,6 +40,8 @@ public interface ModelCache {
 
     boolean remove(OrganizationId organizationId);
 
+    boolean removeWithDependencies(OrganizationId organizationId);
+
     void setProperty(OrganizationId id, String key, String value);
 
     void removeProperty(OrganizationId id, String key);
@@ -52,6 +54,8 @@ public interface ModelCache {
     Collection<Project> getProjects(OrganizationId organizationId);
 
     boolean remove(OrganizationId organizationId, ProjectId projectId);
+
+    boolean removeWithDependencies(OrganizationId organizationId, ProjectId projectId);
 
     void setProperty(OrganizationId id, ProjectId projectId, String key, String value);
 

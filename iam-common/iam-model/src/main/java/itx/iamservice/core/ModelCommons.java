@@ -3,7 +3,9 @@ package itx.iamservice.core;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.RoleId;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public final class ModelCommons {
@@ -72,6 +74,25 @@ public final class ModelCommons {
         } else {
             return organizationId.getId() + "/" + projectId.getId();
         }
+    }
+
+    /**
+     * Create set of admin permissions for organization and project.
+     * @param organizationId
+     * @param projectId
+     * @return
+     */
+    public static Set<Permission> createAdminPermissions(OrganizationId organizationId, ProjectId projectId) {
+        Set<Permission> adminPermissions = new HashSet<>();
+        adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), ORGANIZATIONS_RESOURCE, ACTION_ALL));
+        adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), PROJECTS_RESOURCE, ACTION_ALL));
+        adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), USERS_RESOURCE, ACTION_ALL));
+        adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), CLIENTS_RESOURCE, ACTION_ALL));
+        return adminPermissions;
+    }
+
+    public static RoleId createAdminRoleId(OrganizationId organizationId, ProjectId projectId) {
+        return RoleId.from(organizationId.getId() + "-" + projectId.getId() + "-admin");
     }
 
 }

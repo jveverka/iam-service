@@ -86,6 +86,15 @@ public final class JWTUtils {
     public static Optional<StandardTokenClaims> getClaimsFromToken(JWToken token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token.getToken());
+            return getClaimsFromToken(signedJWT);
+        } catch (Exception e) {
+            LOG.info("Exception: ", e);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<StandardTokenClaims> getClaimsFromToken(SignedJWT signedJWT) {
+        try {
             String kid = signedJWT.getHeader().getKeyID();
             String iss = signedJWT.getJWTClaimsSet().getIssuer();
             String sub = signedJWT.getJWTClaimsSet().getSubject();

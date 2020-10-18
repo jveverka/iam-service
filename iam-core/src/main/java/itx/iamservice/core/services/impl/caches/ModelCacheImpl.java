@@ -140,6 +140,17 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public boolean removeWithDependencies(OrganizationId organizationId) {
+        ModelKey<Organization> organizationKey = organizationKey(organizationId);
+        for (ModelKey<Project> key: projects.keySet()) {
+            if (key.startsWith(organizationKey)) {
+                removeWithDependencies(organizationId, ProjectId.from(key.getIds()[1].getId()));
+            }
+        }
+        return remove(organizationId);
+    }
+
+    @Override
     public synchronized void setProperty(OrganizationId id, String key, String value) {
         ModelKey<Organization> organizationKey = organizationKey(id);
         Organization organization = organizations.get(organizationKey);
@@ -277,18 +288,48 @@ public class ModelCacheImpl implements ModelCache {
         if (!checkProjectReferences(organizationId, projectId)) {
             ModelKey<Organization> organizationKey = organizationKey(organizationId);
             ModelKey<Project> key = projectKey(organizationId, projectId);
+            Project removed = projects.remove(key);
+            if (removed != null) {
+                persistenceService.onNodeDeleted(key, removed);
+            }
             Organization organization = organizations.get(organizationKey);
             if (organization != null) {
                 organization.removeProject(projectId);
                 persistenceService.onNodeUpdated(organizationKey, organization);
             }
-            Project removed = projects.remove(key);
-            if (removed != null) {
-                persistenceService.onNodeDeleted(key, removed);
-            }
             return removed != null;
         }
         return false;
+    }
+
+    @Override
+    public synchronized boolean removeWithDependencies(OrganizationId organizationId, ProjectId projectId) {
+        ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
+        for (ModelKey<User> key: users.keySet()) {
+            if (key.startsWith(projectKey)) {
+                User removed = users.remove(key);
+                if (removed != null) {
+                    persistenceService.onNodeDeleted(key, removed);
+                }
+            }
+        }
+        for (ModelKey<Client> key: clients.keySet()) {
+            if (key.startsWith(projectKey)) {
+                Client removed = clients.remove(key);
+                if (removed != null) {
+                    persistenceService.onNodeDeleted(key, removed);
+                }
+            }
+        }
+        for (ModelKey<Role> key: roles.keySet()) {
+            if (key.startsWith(projectKey)) {
+                Role removed = roles.remove(key);
+                if (removed != null) {
+                    persistenceService.onNodeDeleted(key, removed);
+                }
+            }
+        }
+        return remove(organizationId, projectId);
     }
 
     @Override

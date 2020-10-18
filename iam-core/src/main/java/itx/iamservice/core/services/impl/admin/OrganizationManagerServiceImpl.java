@@ -64,6 +64,11 @@ public class OrganizationManagerServiceImpl implements OrganizationManagerServic
     }
 
     @Override
+    public boolean removeWithDependencies(OrganizationId organizationId) {
+        return modelCache.removeWithDependencies(organizationId);
+    }
+
+    @Override
     public void setProperty(OrganizationId id, String key, String value) {
         modelCache.setProperty(id, key, value);
     }

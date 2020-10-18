@@ -1,8 +1,8 @@
 package itx.iamservice.server.tests;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import itx.iamservice.client.IAMClient;
 import itx.iamservice.client.IAMClientBuilder;
+import itx.iamservice.client.dto.StandardTokenClaims;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
@@ -98,7 +98,7 @@ public class IAMServiceClientTests {
     @Test
     @Order(3)
     public void testValidateTokens() {
-        Optional<JWTClaimsSet> claimsSet = iamClient.validate(JWToken.from(tokenResponse.getAccessToken()));
+        Optional<StandardTokenClaims> claimsSet = iamClient.validate(JWToken.from(tokenResponse.getAccessToken()));
         assertNotNull(claimsSet);
         assertTrue(claimsSet.isPresent());
         claimsSet = iamClient.validate(JWToken.from(tokenResponse.getRefreshToken()));
@@ -109,7 +109,7 @@ public class IAMServiceClientTests {
     @Test
     @Order(4)
     public void testValidateTokensForOrganizationAndProjectOK() {
-        Optional<JWTClaimsSet> claimsSet = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, JWToken.from(tokenResponse.getAccessToken()));
+        Optional<StandardTokenClaims> claimsSet = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, JWToken.from(tokenResponse.getAccessToken()));
         assertNotNull(claimsSet);
         assertTrue(claimsSet.isPresent());
         claimsSet = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, JWToken.from(tokenResponse.getRefreshToken()));
@@ -120,7 +120,7 @@ public class IAMServiceClientTests {
     @Test
     @Order(5)
     public void testValidateTokensForOrganizationAndProjectInvalid() {
-        Optional<JWTClaimsSet> claimsSet = iamClient.validate(IAM_ADMINS_ORG, ProjectId.from("unknown-project"), JWToken.from(tokenResponse.getAccessToken()));
+        Optional<StandardTokenClaims> claimsSet = iamClient.validate(IAM_ADMINS_ORG, ProjectId.from("unknown-project"), JWToken.from(tokenResponse.getAccessToken()));
         assertNotNull(claimsSet);
         assertTrue(claimsSet.isEmpty());
         claimsSet = iamClient.validate(OrganizationId.from("unknown-organiation"), IAM_ADMINS_PROJECT, JWToken.from(tokenResponse.getAccessToken()));

@@ -52,6 +52,11 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     }
 
     @Override
+    public boolean removeWithDependencies(OrganizationId id, ProjectId projectId) {
+        return modelCache.removeWithDependencies(id, projectId);
+    }
+
+    @Override
     public Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest request) {
         Role role = new RoleImpl(request.getId(), request.getName());
         return modelCache.add(id, projectId, role);

@@ -4,6 +4,7 @@ import itx.iamservice.server.services.IAMSecurityException;
 import itx.iamservice.server.services.IAMSecurityValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,8 @@ public class AdminSecurityFilter implements Filter {
         if (authorization != null) {
             try {
                 iamSecurityValidator.validate(authorization);
+                //TODO: populate security context
+                SecurityContextHolder.getContext();
                 chain.doFilter(request, response);
             } catch (IAMSecurityException iamSecurityException) {
                 LOG.info("Unauthorized: invalid Authorization token !");

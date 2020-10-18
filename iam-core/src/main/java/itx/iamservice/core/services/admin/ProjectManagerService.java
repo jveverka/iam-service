@@ -27,6 +27,8 @@ public interface ProjectManagerService {
 
     boolean remove(OrganizationId id, ProjectId projectId);
 
+    boolean removeWithDependencies(OrganizationId id, ProjectId projectId);
+
     Optional<RoleId> addRole(OrganizationId id, ProjectId projectId, CreateRoleRequest createRoleRequest);
 
     boolean removeRole(OrganizationId id, ProjectId projectId, RoleId roleId);

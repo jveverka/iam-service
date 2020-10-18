@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import itx.iamservice.client.IAMClient;
+import itx.iamservice.client.dto.StandardTokenClaims;
 import itx.iamservice.core.dto.JWKData;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static itx.iamservice.client.JWTUtils.convert;
+import static itx.iamservice.client.JWTUtils.getClaimsFromToken;
 import static itx.iamservice.client.JWTUtils.validateToken;
 import static itx.iamservice.core.ModelCommons.getServiceId;
 
@@ -50,12 +52,12 @@ public class IAMClientImpl implements IAMClient {
     }
 
     @Override
-    public Optional<JWTClaimsSet> validate(JWToken token) {
+    public Optional<StandardTokenClaims> validate(JWToken token) {
         return validate(issuer.toString(), token);
     }
 
     @Override
-    public Optional<JWTClaimsSet> validate(OrganizationId organizationId, ProjectId projectId, JWToken token) {
+    public Optional<StandardTokenClaims> validate(OrganizationId organizationId, ProjectId projectId, JWToken token) {
         String issuerValue = baseUrl.toString() + "/" + getServiceId(organizationId, projectId);
         return validate(issuerValue, token);
     }
@@ -91,7 +93,7 @@ public class IAMClientImpl implements IAMClient {
         iamServiceProxy.close();
     }
 
-    private Optional<JWTClaimsSet> validate(String issuerValue, JWToken token) {
+    private Optional<StandardTokenClaims> validate(String issuerValue, JWToken token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token.getToken());
             String keyId = signedJWT.getHeader().getKeyID();
@@ -101,7 +103,10 @@ public class IAMClientImpl implements IAMClient {
                 String jsonString = mapper.writeValueAsString(first.get());
                 JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
                 RSAKey rsaKey = RSAKey.parse(jsonObject);
-                return validateToken(convert(rsaKey), projectId, issuerValue, token);
+                Optional<JWTClaimsSet> jwtClaimsSet = validateToken(convert(rsaKey), projectId, issuerValue, token);
+                if (jwtClaimsSet.isPresent()) {
+                    return getClaimsFromToken(signedJWT);
+                }
             }
         } catch (Exception e) {
             LOG.info("Exception: ", e);

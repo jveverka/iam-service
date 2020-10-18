@@ -1,6 +1,6 @@
 package itx.iamservice.client;
 
-import com.nimbusds.jwt.JWTClaimsSet;
+import itx.iamservice.client.dto.StandardTokenClaims;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
@@ -28,9 +28,9 @@ public interface IAMClient extends AutoCloseable {
      * - token's expiration time.
      * - token's signature, using public key identified by "kid".
      * @param token - a JWT token to validate.
-     * @return {@link Optional} of {@link JWTClaimsSet} - empty only if token validation fails, present if token validation is ok.
+     * @return {@link Optional} of {@link StandardTokenClaims} - empty only if token validation fails, present if token validation is ok.
      */
-    Optional<JWTClaimsSet> validate(JWToken token);
+    Optional<StandardTokenClaims> validate(JWToken token);
 
     /**
      * Validate JWT. This method validates:
@@ -40,9 +40,9 @@ public interface IAMClient extends AutoCloseable {
      * @param organizationId - valid/existing {@link OrganizationId}
      * @param projectId - valid/existing {@link ProjectId}
      * @param token - a JWT token to validate.
-     * @return {@link Optional} of {@link JWTClaimsSet} - empty only if token validation fails, present if token validation is ok.
+     * @return {@link Optional} of {@link StandardTokenClaims} - empty only if token validation fails, present if token validation is ok.
      */
-    Optional<JWTClaimsSet> validate(OrganizationId organizationId, ProjectId projectId, JWToken token);
+    Optional<StandardTokenClaims> validate(OrganizationId organizationId, ProjectId projectId, JWToken token);
 
     /**
      * Validate JWT. This method validates:

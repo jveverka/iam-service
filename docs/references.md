@@ -7,6 +7,7 @@
 * [An Illustrated Guide to OAuth and OpenID Connect](https://www.youtube.com/watch?v=t18YB3xDfXI)
 
 ## Spring OAuth2 references
+* [OAuth 2.0 Integration Sample](https://github.com/spring-projects-experimental/spring-authorization-server/tree/master/samples/boot/oauth2-integration)
 * [Spring OAuth 2.0 Resource Server](https://docs.spring.io/spring-security/site/docs/5.3.1.BUILD-SNAPSHOT/reference/html5/#oauth2resourceserver)
 * [Spring Security OAuth2](https://projects.spring.io/spring-security-oauth/docs/oauth2.html)
 * [SpringBoot + SpringSecurity + JWT](https://www.youtube.com/watch?v=X80nJ5T7YpE)

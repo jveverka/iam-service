@@ -9,7 +9,7 @@ Project is compliant with subset of [OAuth2](https://tools.ietf.org/html/rfc6749
 and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) specifications. 
 Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519). 
 
-Please check [__user's manual__ and __guidelines__](docs/IAM-users-manual.md) for more details.
+Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/IAM-users-manual.md) for more details.
 
 This project is __WIP__, stay tuned !   
 Estimated release date: __EOF Nov.2020__ 

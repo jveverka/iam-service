@@ -13,6 +13,7 @@ public class AuthenticationImpl implements Authentication {
 
     private final String name;
     private final Collection<GrantedAuthorityImpl> grantedAuthorities;
+    private final StandardTokenClaims standardTokenClaims;
 
     private boolean isAuthenticated;
 
@@ -24,6 +25,7 @@ public class AuthenticationImpl implements Authentication {
         );
         this.grantedAuthorities = Collections.unmodifiableCollection(authorities);
         this.isAuthenticated = true;
+        this.standardTokenClaims = standardTokenClaims;
     }
 
 
@@ -39,7 +41,7 @@ public class AuthenticationImpl implements Authentication {
 
     @Override
     public Object getDetails() {
-        return null;
+        return standardTokenClaims;
     }
 
     @Override

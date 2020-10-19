@@ -69,7 +69,6 @@ public class AdminServicesTests {
         assertEquals(HttpStatus.OK, setupOrganizationResponseResponseEntity.getStatusCode());
     }
 
-    /**
     @Test
     @Order(3)
     public void getTokenOrganizationForAdminUser() {
@@ -77,7 +76,6 @@ public class AdminServicesTests {
                 adminClientId, adminClientSecret, organizationId, projectId).getAccessToken();
         assertNotNull(jwt_organization_admin_token);
     }
-    */
 
     @Test
     @Order(10)

@@ -11,6 +11,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import itx.iamservice.core.services.admin.ClientManagementService;
 import itx.iamservice.core.services.admin.OrganizationManagerService;
 import itx.iamservice.core.services.admin.ProjectManagerService;
@@ -93,6 +94,8 @@ public class AdminServicesController {
 
         CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L);
         Optional<User> userOptional = userManagerService.create(organizationId, projectId, createUserRequest);
+        UPCredentials credentials = new UPCredentials(userId, request.getAdminUserPassword());
+        userManagerService.setCredentials(organizationId, projectId, userId, credentials);
         if (userOptional.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }

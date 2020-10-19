@@ -16,12 +16,15 @@ public class StandardTokenClaims {
     private final OrganizationId organizationId;
     private final ProjectId projectId;
     private final URI issuerUri;
+    private final List<String> scope;
 
-    public StandardTokenClaims(String keyId, String issuer, String subject, List<String> audience, OrganizationId organizationId, ProjectId projectId) throws URISyntaxException {
+    public StandardTokenClaims(String keyId, String issuer, String subject, List<String> audience, List<String> scope,
+                               OrganizationId organizationId, ProjectId projectId) throws URISyntaxException {
         this.keyId = keyId;
         this.issuer = issuer;
         this.subject = subject;
         this.audience = audience;
+        this.scope = scope;
         this.organizationId = organizationId;
         this.projectId = projectId;
         this.issuerUri = new URI(issuer);
@@ -41,6 +44,10 @@ public class StandardTokenClaims {
 
     public List<String> getAudience() {
         return audience;
+    }
+
+    public List<String> getScope() {
+        return scope;
     }
 
     public OrganizationId getOrganizationId() {

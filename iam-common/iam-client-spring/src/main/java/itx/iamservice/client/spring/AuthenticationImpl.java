@@ -1,5 +1,6 @@
 package itx.iamservice.client.spring;
 
+import itx.iamservice.client.dto.StandardTokenClaims;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -7,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class AuthenticationImpl implements Authentication {
 
@@ -16,10 +16,10 @@ public class AuthenticationImpl implements Authentication {
 
     private boolean isAuthenticated;
 
-    public AuthenticationImpl(String name, Set<String> roles) {
-        this.name = name;
+    public AuthenticationImpl(StandardTokenClaims standardTokenClaims) {
+        this.name = standardTokenClaims.getIssuer();
         List<GrantedAuthorityImpl> authorities = new ArrayList<>();
-        roles.forEach(r->
+        standardTokenClaims.getScope().forEach(r->
             authorities.add(new GrantedAuthorityImpl(r))
         );
         this.grantedAuthorities = Collections.unmodifiableCollection(authorities);

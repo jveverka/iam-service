@@ -99,10 +99,12 @@ public final class JWTUtils {
             String iss = signedJWT.getJWTClaimsSet().getIssuer();
             String sub = signedJWT.getJWTClaimsSet().getSubject();
             List<String> aud = signedJWT.getJWTClaimsSet().getAudience();
+            String scope = (String)signedJWT.getJWTClaimsSet().getClaim("scope");
+            List<String> scopes = Arrays.asList(scope.split(" "));
             String[] split = iss.split("/");
             int organizationIndex = split.length - 2;
             int projectIndex = split.length - 1;
-            return Optional.of(new StandardTokenClaims(kid, iss, sub, aud,
+            return Optional.of(new StandardTokenClaims(kid, iss, sub, aud, scopes,
                     OrganizationId.from(split[organizationIndex]),
                     ProjectId.from(split[projectIndex])));
         } catch (Exception e) {

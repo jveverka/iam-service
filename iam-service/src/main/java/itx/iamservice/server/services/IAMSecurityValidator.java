@@ -1,12 +1,15 @@
 package itx.iamservice.server.services;
 
+import itx.iamservice.client.dto.StandardTokenClaims;
+
 public interface IAMSecurityValidator {
 
     /**
      * Validate Admin's authentication.
      * @param authorization - http 'Authentication' header. Expected format: "Bearer [JWT]".
-     * @throws IAMSecurityException
+     * @return {@link StandardTokenClaims} - decoded JWT token claims.
+     * @throws IAMSecurityException - thrown in case that token validation fails.
      */
-    void validate(String authorization) throws IAMSecurityException;
+    StandardTokenClaims validate(String authorization) throws IAMSecurityException;
 
 }

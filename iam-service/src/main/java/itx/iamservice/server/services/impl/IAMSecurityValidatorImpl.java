@@ -34,12 +34,13 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     }
 
     @Override
-    public void validate(String authorization) throws IAMSecurityException {
+    public StandardTokenClaims validate(String authorization) throws IAMSecurityException {
         JWToken token = JWTUtils.extractJwtToken(authorization);
         Optional<StandardTokenClaims> tokenClaimsOptional = JWTUtils.getClaimsFromToken(token);
         if (tokenClaimsOptional.isPresent()) {
             StandardTokenClaims standardTokenClaims = tokenClaimsOptional.get();
             validatePermissions(standardTokenClaims.getIssuerUri(), standardTokenClaims.getOrganizationId(), standardTokenClaims.getProjectId(), ADMIN_PROJECT_SET, Set.of(), standardTokenClaims, token);
+            return standardTokenClaims;
         } else {
             throw new IAMSecurityException("Authorization token validation has failed.");
         }

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -31,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AdminServicesTests {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AdminServicesTests.class);
+
     private static String jwt_admin_token;
     private static OrganizationId organizationId = OrganizationId.from("my-org-001");
     private static ProjectId projectId = ProjectId.from("project-001");
@@ -50,6 +54,7 @@ public class AdminServicesTests {
     @Order(1)
     public void initTest() {
         jwt_admin_token = getTokenResponseForIAMAdmins(restTemplate, port).getAccessToken();
+        LOG.info("JSW  access_token: {}", jwt_admin_token);
     }
 
     @Test

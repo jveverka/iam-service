@@ -17,15 +17,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
+
 
 public class IAMSecurityFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMSecurityFilter.class);
-
-    private static final String ROLE_PREFIX = "ROLE_";
 
     private final IAMClient iamClient;
 
@@ -43,12 +40,7 @@ public class IAMSecurityFilter implements Filter {
             if (claimSetOptional.isPresent()) {
                 StandardTokenClaims standardTokenClaims = claimSetOptional.get();
                 SecurityContext securityContext = SecurityContextHolder.getContext();
-                String userIdFromJWT = standardTokenClaims.getSubject();
-                Set<String> setOfPermissions = new HashSet<>();
-                for (String scope: standardTokenClaims.getAudience()) {
-                    setOfPermissions.add(ROLE_PREFIX + scope);
-                }
-                securityContext.setAuthentication(new AuthenticationImpl(userIdFromJWT, setOfPermissions));
+                securityContext.setAuthentication(new AuthenticationImpl(standardTokenClaims));
                 chain.doFilter(request, response);
                 return;
             }

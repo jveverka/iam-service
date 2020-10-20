@@ -5,6 +5,7 @@ authentication and authorization OAuth2 server.
 ## 1. OAuth2 Server setup
 * [Download](https://github.com/jveverka/iam-service/releases/) latest release, Follow release instructions. 
 * [Customize __application.yml__ configuration and start IAM server](01a-standalone-server-config.md).
+* [Setup persistence Layer](01b_setup-persitence-later.md)
 
 ## 2. OAuth2 Server administration
 * [Get Admin access_token](02a-get-admin-access-token.md).

@@ -2,7 +2,13 @@
 
 * Create custom __application.yml__ configuration before you start.
   Default configuration is fully operational, however it is recommended 
-  to set 
+  to override default admin user's password and client secret.
+  ```
+  iam-service:
+    data-model:
+      default-admin-password: s3Cr3T
+      default-admin-client-secret: S3cR3t 
+  ```
 * Start __iam-service__ as standalone server.
   ```
   java -Xms32m -Xmx128m -jar iam-service-1.0.0-SNAPSHOT.jar --spring.config.location=file:application.yml

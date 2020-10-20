@@ -114,8 +114,8 @@ public final class ModelUtils {
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {
-        Set<ProjectId> projects = organization.getProjects().stream().collect(Collectors.toSet());
-        return new OrganizationInfo(organization.getId(), organization.getName(), projects, organization.getKeyPairData());
+        Set<String> projects = organization.getProjects().stream().map(p -> p.getId()).collect(Collectors.toSet());
+        return new OrganizationInfo(organization.getId().getId(), organization.getName(), projects, organization.getKeyPairData());
     }
 
     public static KeyPairSerialized serializeKeyPair(KeyPairData keyPairData) throws PKIException {

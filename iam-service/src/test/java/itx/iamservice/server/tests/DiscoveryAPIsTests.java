@@ -43,7 +43,7 @@ public class DiscoveryAPIsTests {
         assertTrue(organizationInfo.length > 0);
         assertNotNull(organizationInfo[0]);
         assertNotNull(organizationInfo[0].getName());
-        assertNotNull(organizationInfo[0].getOrganizationId());
+        assertNotNull(organizationInfo[0].getId());
         assertNotNull(organizationInfo[0].getProjects());
         assertNotNull(organizationInfo[0].getX509Certificate());
     }
@@ -54,7 +54,7 @@ public class DiscoveryAPIsTests {
         OrganizationInfo organizationInfo = getOrganizationInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG);
         assertNotNull(organizationInfo);
         assertNotNull(organizationInfo.getName());
-        assertNotNull(organizationInfo.getOrganizationId());
+        assertNotNull(organizationInfo.getId());
         assertNotNull(organizationInfo.getProjects());
         assertNotNull(organizationInfo.getX509Certificate());
     }

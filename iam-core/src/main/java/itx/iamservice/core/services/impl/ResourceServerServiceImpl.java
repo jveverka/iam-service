@@ -80,9 +80,10 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Project project = projectOptional.get();
-                Set<UserId> userIds = modelCache.getUsers(organizationId, projectId).stream().map(user -> user.getId()).collect(Collectors.toSet());
-                ProjectInfo projectInfo = new ProjectInfo(project.getId(), project.getOrganizationId(),
-                        project.getName(), organizationOptional.get().getKeyPairData(), project.getKeyPairData(), project.getClients(), userIds);
+                Set<String> userIds = modelCache.getUsers(organizationId, projectId).stream().map(user -> user.getId().getId()).collect(Collectors.toSet());
+                Set<String> clientIds = project.getClients().stream().map(c -> c.getId()).collect(Collectors.toSet());
+                ProjectInfo projectInfo = new ProjectInfo(project.getId().getId(), project.getOrganizationId().getId(),
+                        project.getName(), organizationOptional.get().getKeyPairData(), project.getKeyPairData(), clientIds, userIds);
                 return Optional.of(projectInfo);
             }
         }
@@ -96,12 +97,13 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = modelCache.getUser(organizationId, projectId, userId);
-                Set<Permission> permissions = modelCache.getPermissions(organizationId, projectId, userId);
+                Set<String> permissions = modelCache.getPermissions(organizationId, projectId, userId).stream().map(p->p.asStringValue()).collect(Collectors.toSet());
                 if (userOptional.isPresent()) {
-                    UserInfo userInfo = new UserInfo(userId, projectId, organizationId,
+                    Set<String> roles = userOptional.get().getRoles().stream().map(r->r.getId()).collect(Collectors.toSet());
+                    UserInfo userInfo = new UserInfo(userId.getId(), projectId.getId(), organizationId.getId(),
                             userOptional.get().getName(), organizationOptional.get().getKeyPairData(),
                             projectOptional.get().getKeyPairData(), userOptional.get().getKeyPairData(),
-                            userOptional.get().getRoles(), permissions);
+                            roles, permissions);
                     return Optional.of(userInfo);
                 }
             }
@@ -116,9 +118,10 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientId);
-                Set<Permission> permissions = modelCache.getPermissions(organizationId, projectId, clientId);
+                Set<String> permissions = modelCache.getPermissions(organizationId, projectId, clientId).stream().map(p->p.asStringValue()).collect(Collectors.toSet());
                 if (clientOptional.isPresent()) {
-                    ClientInfo clientInfo = new ClientInfo(clientId, clientOptional.get().getName(), clientOptional.get().getRoles(), permissions);
+                    Set<String> roles = clientOptional.get().getRoles().stream().map(r->r.getId()).collect(Collectors.toSet());
+                    ClientInfo clientInfo = new ClientInfo(clientId.getId(), clientOptional.get().getName(), roles, permissions);
                     return Optional.of(clientInfo);
                 }
             }

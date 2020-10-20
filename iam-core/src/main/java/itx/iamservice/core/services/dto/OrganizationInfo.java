@@ -12,14 +12,14 @@ import java.util.Set;
 
 public class OrganizationInfo {
 
-    private final OrganizationId organizationId;
+    private final String id;
     private final String name;
-    private final Set<ProjectId> projects;
+    private final Set<String> projects;
     private final CertificateInfo x509Certificate;
 
-    public OrganizationInfo(OrganizationId organizationId, String name, Set<ProjectId> projects,
+    public OrganizationInfo(String id, String name, Set<String> projects,
                             KeyPairData keyPairData) throws CertificateEncodingException {
-        this.organizationId = organizationId;
+        this.id = id;
         this.name = name;
         this.projects = projects;
         this.x509Certificate = new CertificateInfo(keyPairData.getId().getId(),
@@ -27,25 +27,25 @@ public class OrganizationInfo {
     }
 
     @JsonCreator
-    public OrganizationInfo(@JsonProperty("organizationId") OrganizationId organizationId,
+    public OrganizationInfo(@JsonProperty("id") String id,
                             @JsonProperty("name") String name,
-                            @JsonProperty("projects") Set<ProjectId> projects,
+                            @JsonProperty("projects") Set<String> projects,
                             @JsonProperty("x509Certificate") CertificateInfo x509Certificate) {
-        this.organizationId = organizationId;
+        this.id = id;
         this.name = name;
         this.projects = projects;
         this.x509Certificate = x509Certificate;
     }
 
-    public OrganizationId getOrganizationId() {
-        return organizationId;
+    public String getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public Set<ProjectId> getProjects() {
+    public Set<String> getProjects() {
         return projects;
     }
 

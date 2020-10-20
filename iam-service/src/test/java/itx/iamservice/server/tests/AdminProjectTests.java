@@ -262,7 +262,7 @@ public class AdminProjectTests {
     public void checkUserTest() {
         UserInfo userInfo = getUserInfo(restTemplate, port, organizationId, projectId, userId);
         assertNotNull(userInfo);
-        assertEquals(userId, userInfo.getId());
+        assertEquals(userId.getId(), userInfo.getId());
     }
 
     @Test

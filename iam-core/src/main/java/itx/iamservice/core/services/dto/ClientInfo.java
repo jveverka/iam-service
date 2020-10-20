@@ -2,31 +2,28 @@ package itx.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import itx.iamservice.core.model.ClientId;
-import itx.iamservice.core.model.Permission;
-import itx.iamservice.core.model.RoleId;
 
 import java.util.Set;
 
 public class ClientInfo {
 
-    private final ClientId id;
+    private final String id;
     private final String name;
-    private final Set<RoleId> roles;
-    private final Set<Permission> permissions;
+    private final Set<String> roles;
+    private final Set<String> permissions;
 
     @JsonCreator
-    public ClientInfo(@JsonProperty("id") ClientId id,
+    public ClientInfo(@JsonProperty("id") String id,
                       @JsonProperty("name") String name,
-                      @JsonProperty("roles") Set<RoleId> roles,
-                      @JsonProperty("permissions") Set<Permission> permissions) {
+                      @JsonProperty("roles") Set<String> roles,
+                      @JsonProperty("permissions") Set<String> permissions) {
         this.id = id;
         this.name = name;
         this.roles = roles;
         this.permissions = permissions;
     }
 
-    public ClientId getId() {
+    public String getId() {
         return id;
     }
 
@@ -34,11 +31,11 @@ public class ClientInfo {
         return name;
     }
 
-    public Set<RoleId> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
 
-    public Set<Permission> getPermissions() {
+    public Set<String> getPermissions() {
         return permissions;
     }
 

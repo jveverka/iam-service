@@ -2,31 +2,25 @@ package itx.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import itx.iamservice.core.model.Client;
-import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.KeyPairData;
-import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.UserId;
 
 import java.security.cert.CertificateEncodingException;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Set;
 
 public class ProjectInfo {
 
-    private final ProjectId id;
-    private final OrganizationId organizationId;
+    private final String id;
+    private final String organizationId;
     private final String name;
     private final CertificateInfo organizationCertificate;
     private final CertificateInfo projectCertificate;
-    private final Collection<ClientId> clients;
-    private final Set<UserId> users;
+    private final Set<String> clients;
+    private final Set<String> users;
 
-    public ProjectInfo(ProjectId id, OrganizationId organizationId, String name,
+    public ProjectInfo(String id, String organizationId, String name,
                        KeyPairData organizationKeyPairData, KeyPairData projectKeyPairData,
-                       Collection<ClientId> clients, Set<UserId> users) throws CertificateEncodingException {
+                       Set<String> clients, Set<String> users) throws CertificateEncodingException {
         this.id = id;
         this.organizationId = organizationId;
         this.name = name;
@@ -39,13 +33,13 @@ public class ProjectInfo {
     }
 
     @JsonCreator
-    public ProjectInfo(@JsonProperty("id") ProjectId id,
-                       @JsonProperty("organizationId") OrganizationId organizationId,
+    public ProjectInfo(@JsonProperty("id") String id,
+                       @JsonProperty("organizationId") String organizationId,
                        @JsonProperty("name") String name,
                        @JsonProperty("organizationCertificate") CertificateInfo organizationCertificate,
                        @JsonProperty("projectCertificate") CertificateInfo projectCertificate,
-                       @JsonProperty("clients") Collection<ClientId> clients,
-                       @JsonProperty("users") Set<UserId> users) {
+                       @JsonProperty("clients") Set<String> clients,
+                       @JsonProperty("users") Set<String> users) {
         this.id = id;
         this.organizationId = organizationId;
         this.name = name;
@@ -55,11 +49,11 @@ public class ProjectInfo {
         this.users = users;
     }
 
-    public ProjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public OrganizationId getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
@@ -75,11 +69,11 @@ public class ProjectInfo {
         return projectCertificate;
     }
 
-    public Collection<ClientId> getClients() {
+    public Set<String> getClients() {
         return clients;
     }
 
-    public Set<UserId> getUsers() {
+    public Set<String> getUsers() {
         return users;
     }
 

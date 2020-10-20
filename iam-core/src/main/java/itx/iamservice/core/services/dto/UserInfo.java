@@ -3,11 +3,6 @@ package itx.iamservice.core.services.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import itx.iamservice.core.model.KeyPairData;
-import itx.iamservice.core.model.Permission;
-import itx.iamservice.core.model.UserId;
-import itx.iamservice.core.model.OrganizationId;
-import itx.iamservice.core.model.ProjectId;
-import itx.iamservice.core.model.RoleId;
 
 import java.security.cert.CertificateEncodingException;
 import java.util.Base64;
@@ -15,19 +10,19 @@ import java.util.Set;
 
 public class UserInfo {
 
-    private final UserId id;
-    private final ProjectId projectId;
-    private final OrganizationId organizationId;
+    private final String id;
+    private final String organizationId;
+    private final String projectId;
     private final String name;
     private final CertificateInfo organizationCertificate;
     private final CertificateInfo projectCertificate;
     private final CertificateInfo userCertificate;
-    private final Set<RoleId> roles;
-    private final Set<Permission> permissions;
+    private final Set<String> roles;
+    private final Set<String> permissions;
 
-    public UserInfo(UserId id, ProjectId projectId, OrganizationId organizationId, String name,
+    public UserInfo(String id, String projectId, String organizationId, String name,
                     KeyPairData organizationKeyPairData, KeyPairData projectKeyPairData, KeyPairData userKeyPairData,
-                    Set<RoleId> roles, Set<Permission> permissions) throws CertificateEncodingException {
+                    Set<String> roles, Set<String> permissions) throws CertificateEncodingException {
         this.id = id;
         this.projectId = projectId;
         this.organizationId = organizationId;
@@ -43,15 +38,15 @@ public class UserInfo {
     }
 
     @JsonCreator
-    public UserInfo(@JsonProperty("id") UserId id,
-                    @JsonProperty("projectId") ProjectId projectId,
-                    @JsonProperty("organizationId") OrganizationId organizationId,
+    public UserInfo(@JsonProperty("id") String id,
+                    @JsonProperty("projectId") String projectId,
+                    @JsonProperty("organizationId") String organizationId,
                     @JsonProperty("name") String name,
                     @JsonProperty("organizationCertificate") CertificateInfo organizationCertificate,
                     @JsonProperty("projectCertificate") CertificateInfo projectCertificate,
                     @JsonProperty("userCertificate") CertificateInfo userCertificate,
-                    @JsonProperty("roles") Set<RoleId> roles,
-                    @JsonProperty("permissions") Set<Permission> permissions) {
+                    @JsonProperty("roles") Set<String> roles,
+                    @JsonProperty("permissions") Set<String> permissions) {
         this.id = id;
         this.projectId = projectId;
         this.organizationId = organizationId;
@@ -63,15 +58,15 @@ public class UserInfo {
         this.permissions = permissions;
     }
 
-    public UserId getId() {
+    public String getId() {
         return id;
     }
 
-    public ProjectId getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
-    public OrganizationId getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
@@ -91,11 +86,11 @@ public class UserInfo {
         return projectCertificate;
     }
 
-    public Set<RoleId> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
 
-    public Set<Permission> getPermissions() {
+    public Set<String> getPermissions() {
         return permissions;
     }
 

@@ -118,9 +118,9 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         OrganizationInfo organizationInfo = response.getBody();
         assertNotNull(organizationInfo);
-        assertEquals(organizationId, organizationInfo.getOrganizationId());
+        assertEquals(organizationId.getId(), organizationInfo.getId());
         assertNotNull(organizationInfo.getName());
-        assertNotNull(organizationInfo.getOrganizationId());
+        assertNotNull(organizationInfo.getId());
         assertNotNull(organizationInfo.getProjects());
         assertNotNull(organizationInfo.getX509Certificate());
     }
@@ -247,7 +247,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ProjectInfo projectInfo = response.getBody();
         assertNotNull(projectInfo);
-        assertEquals(projectId, projectInfo.getId());
+        assertEquals(projectId.getId(), projectInfo.getId());
     }
 
     public static ResponseEntity<RoleId> createRoleOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest request) {

@@ -1,13 +1,13 @@
 ## Manage your new Organization / Projects
 
-### Create Permissions
+### Manage Permissions
 TODO
 
-### Create Roles
+### Manage Roles
 TODO
 
-### Create Clients
+### Manage Clients
 TODO
 
-### Create Users
+### Manage Users
 TODO

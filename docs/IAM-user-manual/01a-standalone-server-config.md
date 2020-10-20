@@ -22,9 +22,9 @@
 * Start __iam-service__ as Docker Container with custom configuration.
   ```
   docker run -d --name iam-service-1.0.0-SNAPSHOT \
-    -e APP_CONFIG_PATH=/opt/data/application.yml \
+    -e APP_CONFIG_PATH=/opt/iam-service/application.yml \
     -e XMX=128m \
-    -v `pwd`:/opt/data \
+    -v `pwd`:/opt/iam-service \
     -p 8080:8080 iam-service:1.0.0-SNAPSHOT  
   
   docker attach iam-service-1.0.0-SNAPSHOT

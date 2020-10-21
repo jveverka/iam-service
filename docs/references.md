@@ -19,3 +19,6 @@ Some stan-alone (on-premises) IAM servers.
 * [connect2id](https://connect2id.com/downloads)
 * [keycloak](https://www.keycloak.org/)
 * [wso2](https://wso2.com/identity-and-access-management/)
+
+## OAuth2 Proxies
+* [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)

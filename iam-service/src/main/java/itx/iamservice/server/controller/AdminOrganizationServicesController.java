@@ -1,6 +1,7 @@
 package itx.iamservice.server.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import itx.iamservice.core.dto.CreateOrganization;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
@@ -21,10 +22,13 @@ import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateRoleRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
+import itx.iamservice.core.services.dto.IdHolder;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,27 +46,39 @@ import static itx.iamservice.core.ModelCommons.createAdminRoleId;
 
 @RestController
 @RequestMapping(path = "/services/admin")
-@Tag(name = "Admin Services", description = "APIs for privileged admin users to perform aggregated actions.")
-public class AdminServicesController {
+@Tag(name = "Admin Services", description = "APIs for privileged admin users to perform basic Organization and Project actions.")
+public class AdminOrganizationServicesController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminServicesController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminOrganizationServicesController.class);
 
     private final OrganizationManagerService organizationManagerService;
     private final ProjectManagerService projectManagerService;
     private final ClientManagementService clientManagementService;
     private final UserManagerService userManagerService;
 
-    public AdminServicesController(OrganizationManagerService organizationManagerService,
-                                   ProjectManagerService projectManagerService,
-                                   ClientManagementService clientManagementService,
-                                   UserManagerService userManagerService) {
+    public AdminOrganizationServicesController(OrganizationManagerService organizationManagerService,
+                                               ProjectManagerService projectManagerService,
+                                               ClientManagementService clientManagementService,
+                                               UserManagerService userManagerService) {
         this.organizationManagerService = organizationManagerService;
         this.projectManagerService = projectManagerService;
         this.clientManagementService = clientManagementService;
         this.userManagerService = userManagerService;
     }
 
+    @PostMapping(path = "/organization", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Tag(name = "Create new organization.")
+    public ResponseEntity<IdHolder> createOrganization(@RequestBody CreateOrganization request) throws PKIException {
+        Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(CreateOrganizationRequest.from(request.getId(), request.getName()));
+        if (organizationIdOptional.isPresent()) {
+            return ResponseEntity.ok(IdHolder.from(organizationIdOptional.get().getId()));
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
     @PostMapping("/organization/setup")
+    @Tag(name = "Create new project within an organization, with default project admin user.")
     public ResponseEntity<SetupOrganizationResponse> setUpOrganization(@RequestBody SetupOrganizationRequest request) throws PKIException {
         OrganizationId organizationId = OrganizationId.from(request.getOrganizationId());
         ProjectId projectId = ProjectId.from(request.getAdminProjectId());
@@ -117,6 +133,7 @@ public class AdminServicesController {
     }
 
     @DeleteMapping("/organization/{organization-id}")
+    @Tag(name = "Delete organization by ID with all projects, users and clients.")
     public ResponseEntity<Void> deleteOrganizationRecursively(@PathVariable("organization-id") String organizationId) {
         boolean result = organizationManagerService.removeWithDependencies(OrganizationId.from(organizationId));
         if (result) {
@@ -127,6 +144,7 @@ public class AdminServicesController {
     }
 
     @DeleteMapping("/organization/{organization-id}/{project-id}")
+    @Tag(name = "Delete project in organization by ID with users and clients.")
     public ResponseEntity<Void> deleteProjectRecursively(@PathVariable("organization-id") String organizationId,
                                                          @PathVariable("project-id") String projectId) {
         boolean result = projectManagerService.removeWithDependencies(OrganizationId.from(organizationId), ProjectId.from(projectId));

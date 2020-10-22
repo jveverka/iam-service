@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+@Deprecated
 @RestController
 @RequestMapping(path = "/services/admin")
 @Tag(name = "Admin Organization Management", description = "APIs for privileged admin users to manage organizations.")

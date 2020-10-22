@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/services/management")
 @Tag(name = "Management", description = "APIs providing self-service user management.")
-public class ManagementController {
+public class ProjectManagementController {
 
     @PostMapping("/{organization-id}/{project-id}/clients")
     public ResponseEntity<Void> createClient(@PathVariable("organization-id") String organizationId,

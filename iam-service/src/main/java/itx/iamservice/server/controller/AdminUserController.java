@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-
+@Deprecated
 @RestController
 @RequestMapping(path = "/services/admin")
 @Tag(name = "Admin User Management", description = "APIs for privileged admin users to manage users.")

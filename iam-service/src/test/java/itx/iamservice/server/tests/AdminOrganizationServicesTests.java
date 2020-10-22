@@ -31,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AdminServicesTests {
+public class AdminOrganizationServicesTests {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminServicesTests.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminOrganizationServicesTests.class);
 
     private static String jwt_admin_token;
     private static OrganizationId organizationId = OrganizationId.from("my-org-001");

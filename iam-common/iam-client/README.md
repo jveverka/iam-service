@@ -29,7 +29,7 @@ This client library makes JWT verification easier for clients and micro-services
    while(iamClient.waitForInit(10L, TimeUnit.SECONDS)) {
    }
    HttpServletRequest httpServletRequest = ...;
-   String jwt = httpServletRequest.getHeader("Authorization").split(" ")[1];
+   JWToken jwt = JWTUtils.extractJwtToken(httpServletRequest.getHeader("Authorization"));
    iamClient.validate(jwt);
    ```
 4. Check [AIMClient API](src/main/java/itx/iamservice/client/IAMClient.java) for other validation options.   

@@ -8,11 +8,14 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.User;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
+import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.serviceclient.IAMServiceClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
 import itx.iamservice.serviceclient.IAMServiceProject;
@@ -148,6 +151,22 @@ public class AdminOrganizationServicesTests {
         ProjectInfo projectInfo = iamServiceProject.getInfo();
         assertNotNull(projectInfo);
         assertEquals(projectId.getId(), projectInfo.getId());
+    }
+
+    @Test
+    @Order(10)
+    public void getUserInfo() throws IOException {
+        UserInfo userInfo = iamServiceProject.getUserInfo(adminUserId);
+        assertNotNull(userInfo);
+        assertEquals(userInfo.getId(), adminUserId.getId());
+    }
+
+    @Test
+    @Order(11)
+    public void getClientInfo() throws IOException {
+        ClientInfo clientInfo = iamServiceProject.getClientInfo(adminClientId);
+        assertNotNull(clientInfo);
+        assertEquals(clientInfo.getId(), adminClientId.getId());
     }
 
     @Test

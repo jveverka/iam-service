@@ -3,9 +3,13 @@ package itx.iamservice.serviceclient;
 import itx.iamservice.core.dto.CreateRole;
 import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
+import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.serviceclient.impl.AuthenticationException;
 
 import java.io.IOException;
@@ -25,5 +29,9 @@ public interface IAMServiceProject {
     void deleteRole(RoleId roleId) throws AuthenticationException;
 
     ProjectInfo getInfo() throws IOException;
+
+    UserInfo getUserInfo(UserId userId) throws IOException;
+
+    ClientInfo getClientInfo(ClientId clientId) throws IOException;
 
 }

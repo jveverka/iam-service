@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itx.iamservice.core.dto.CreateRole;
 import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
+import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
+import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.serviceclient.IAMServiceProject;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -137,15 +141,41 @@ public class IAMServiceProjectImpl implements IAMServiceProject {
 
     @Override
     public ProjectInfo getInfo() throws IOException {
-            Request request = new Request.Builder()
-                    .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId())
-                    .get()
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), ProjectInfo.class);
-            }
-            throw new IOException();
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), ProjectInfo.class);
+        }
+        throw new IOException();
+    }
+
+    @Override
+    public UserInfo getUserInfo(UserId userId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), UserInfo.class);
+        }
+        throw new IOException();
+    }
+
+    @Override
+    public ClientInfo getClientInfo(ClientId clientId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), ClientInfo.class);
+        }
+        throw new IOException();
     }
 
 }

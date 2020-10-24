@@ -1,10 +1,13 @@
 package itx.iamservice.server.tests;
 
+import itx.iamservice.core.dto.CreateRole;
 import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
@@ -92,6 +95,40 @@ public class AdminOrganizationServicesTests {
         assertEquals(4, permissions.size());
         Collection<RoleInfo> roles = iamServiceProject.getRoles();
         assertEquals(1, roles.size());
+    }
+
+    @Test
+    @Order(5)
+    public void createRoleWithPermissionsTest() throws AuthenticationException {
+        Set<PermissionInfo> permissionInfos = new HashSet<>();
+        permissionInfos.add(new PermissionInfo(organizationId.getId() + "-" + projectId.getId() , "data", "read"));
+        permissionInfos.add(new PermissionInfo(organizationId.getId() + "-" + projectId.getId() , "users", "read"));
+        CreateRole createRole = new CreateRole("reader", "Read only user", permissionInfos);
+        iamServiceProject.createRole(createRole);
+        Set<PermissionInfo> permissions = iamServiceProject.getPermissions();
+        assertNotNull(permissions);
+        assertEquals(6, permissions.size());
+        Collection<RoleInfo> roles = iamServiceProject.getRoles();
+        assertEquals(2, roles.size());
+    }
+
+    @Test
+    @Order(6)
+    public void deleteRole() throws AuthenticationException {
+        iamServiceProject.deleteRole(RoleId.from("reader"));
+        Collection<RoleInfo> roles = iamServiceProject.getRoles();
+        assertEquals(1, roles.size());
+    }
+
+    @Test
+    @Order(7)
+    public void deletePermissions() throws AuthenticationException {
+        iamServiceProject.deletePermission(PermissionId.from(organizationId.getId() + "-" + projectId.getId() + ".data" + ".read"));
+        Set<PermissionInfo> permissions = iamServiceProject.getPermissions();
+        assertEquals(5, permissions.size());
+        iamServiceProject.deletePermission(PermissionId.from(organizationId.getId() + "-" + projectId.getId() + ".users" + ".read"));
+        permissions = iamServiceProject.getPermissions();
+        assertEquals(4, permissions.size());
     }
 
     @Test

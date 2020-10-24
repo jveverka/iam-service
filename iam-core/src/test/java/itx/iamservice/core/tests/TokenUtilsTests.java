@@ -23,12 +23,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.Security;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -197,6 +204,32 @@ public class TokenUtilsTests {
         Scope result = ModelUtils.getScopes(scopes);
         assertNotNull(result);
         assertEquals(result, expectedResult);
+    }
+
+    @Test
+    public void testBigIntegerConversion() {
+        BigInteger bigInteger = BigInteger.valueOf(System.currentTimeMillis());
+        byte[] bytes = TokenUtils.toBytesUnsigned(bigInteger);
+        BigInteger deserialized =  new BigInteger(bytes);
+        assertEquals(bigInteger, deserialized);
+    }
+
+    @Test
+    public void testPublicKeySerializationAndDeserialization() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException {
+        KeyPair keyPair = TokenUtils.generateKeyPair();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
+        BigInteger exponent = rsaPublicKey.getPublicExponent();
+        BigInteger modulus = rsaPublicKey.getModulus();
+        byte[] exponentBytes = TokenUtils.toBytesUnsigned(exponent);
+        byte[] modulusBytes = TokenUtils.toBytesUnsigned(modulus);
+
+        BigInteger modulusDecoded = new BigInteger(modulusBytes);
+        BigInteger exponentDecoded = new BigInteger(exponentBytes);
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
+        PublicKey generated = keyFactory.generatePublic(new RSAPublicKeySpec(modulusDecoded, exponentDecoded));
+        assertNotNull(generated);
+        assertEquals(keyPair.getPublic(), generated);
     }
 
 }

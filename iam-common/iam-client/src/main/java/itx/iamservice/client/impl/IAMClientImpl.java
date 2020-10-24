@@ -1,32 +1,20 @@
 package itx.iamservice.client.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import itx.iamservice.client.IAMClient;
 import itx.iamservice.client.dto.StandardTokenClaims;
-import itx.iamservice.core.dto.JWKData;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static itx.iamservice.client.JWTUtils.convert;
-import static itx.iamservice.client.JWTUtils.getClaimsFromToken;
 import static itx.iamservice.client.JWTUtils.validateToken;
-import static itx.iamservice.core.ModelCommons.getServiceId;
 
 public class IAMClientImpl implements IAMClient {
 
@@ -34,16 +22,14 @@ public class IAMClientImpl implements IAMClient {
 
     private final URL baseUrl;
     private final IAMServiceProxy iamServiceProxy;
+    private final OrganizationId organizationId;
     private final ProjectId projectId;
-    private final ObjectMapper mapper;
-    private final URI issuer;
 
-    public IAMClientImpl(URL baseUrl, IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) throws URISyntaxException {
+    public IAMClientImpl(URL baseUrl, IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) {
         this.baseUrl = baseUrl;
         this.iamServiceProxy = iamServiceProxy;
+        this.organizationId = organizationId;
         this.projectId = projectId;
-        this.mapper = new ObjectMapper();
-        this.issuer = new URI(baseUrl.toString() + "/" + getServiceId(organizationId, projectId));
     }
 
     @Override
@@ -53,13 +39,18 @@ public class IAMClientImpl implements IAMClient {
 
     @Override
     public Optional<StandardTokenClaims> validate(JWToken token) {
-        return validate(issuer.toString(), token);
+        return validate(organizationId, projectId, token);
     }
 
     @Override
     public Optional<StandardTokenClaims> validate(OrganizationId organizationId, ProjectId projectId, JWToken token) {
-        String issuerValue = baseUrl.toString() + "/" + getServiceId(organizationId, projectId);
-        return validate(issuerValue, token);
+        try {
+            return validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), token);
+        } catch (Exception e) {
+            LOG.info("Exception: ", e);
+        }
+        LOG.debug("token validation has failed.");
+        return Optional.empty();
     }
 
     @Override
@@ -67,16 +58,7 @@ public class IAMClientImpl implements IAMClient {
                             Set<Permission> requiredAdminPermissions, Set<Permission> requiredApplicationPermissions,
                             JWToken token) {
         try {
-            SignedJWT signedJWT = SignedJWT.parse(token.getToken());
-            String keyId = signedJWT.getHeader().getKeyID();
-            Optional<JWKData> first = iamServiceProxy.getJWKResponse().getKeys().stream().filter(jwkData -> keyId.equals(jwkData.getKeyId())).findFirst();
-            if (first.isPresent()) {
-                JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-                String jsonString = mapper.writeValueAsString(first.get());
-                JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
-                RSAKey rsaKey = RSAKey.parse(jsonObject);
-                return validateToken(convert(rsaKey), issuer, projectId, requiredAdminPermissions, requiredApplicationPermissions, token);
-            }
+            return validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), requiredAdminPermissions, requiredApplicationPermissions, token);
         } catch (Exception e) {
             LOG.info("Exception: ", e);
         }
@@ -91,28 +73,6 @@ public class IAMClientImpl implements IAMClient {
     @Override
     public void close() throws Exception {
         iamServiceProxy.close();
-    }
-
-    private Optional<StandardTokenClaims> validate(String issuerValue, JWToken token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token.getToken());
-            String keyId = signedJWT.getHeader().getKeyID();
-            Optional<JWKData> first = iamServiceProxy.getJWKResponse().getKeys().stream().filter(jwkData -> keyId.equals(jwkData.getKeyId())).findFirst();
-            if (first.isPresent()) {
-                JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-                String jsonString = mapper.writeValueAsString(first.get());
-                JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
-                RSAKey rsaKey = RSAKey.parse(jsonObject);
-                Optional<JWTClaimsSet> jwtClaimsSet = validateToken(convert(rsaKey), projectId, issuerValue, token);
-                if (jwtClaimsSet.isPresent()) {
-                    return getClaimsFromToken(signedJWT);
-                }
-            }
-        } catch (Exception e) {
-            LOG.info("Exception: ", e);
-        }
-        LOG.debug("token validation has failed.");
-        return Optional.empty();
     }
 
 }

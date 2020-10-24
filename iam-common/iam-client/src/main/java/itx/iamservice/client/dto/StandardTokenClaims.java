@@ -6,19 +6,20 @@ import itx.iamservice.core.model.ProjectId;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 
 public class StandardTokenClaims {
 
     private final String keyId;
     private final String issuer;
     private final String subject;
-    private final List<String> audience;
+    private final Set<String> audience;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
     private final URI issuerUri;
-    private final List<String> scope;
+    private final Set<String> scope;
 
-    public StandardTokenClaims(String keyId, String issuer, String subject, List<String> audience, List<String> scope,
+    public StandardTokenClaims(String keyId, String issuer, String subject, Set<String> audience, Set<String> scope,
                                OrganizationId organizationId, ProjectId projectId) throws URISyntaxException {
         this.keyId = keyId;
         this.issuer = issuer;
@@ -42,11 +43,11 @@ public class StandardTokenClaims {
         return subject;
     }
 
-    public List<String> getAudience() {
+    public Set<String> getAudience() {
         return audience;
     }
 
-    public List<String> getScope() {
+    public Set<String> getScope() {
         return scope;
     }
 

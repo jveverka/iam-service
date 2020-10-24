@@ -6,7 +6,7 @@ import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.dto.ProviderConfigurationResponse;
 
-import java.security.interfaces.RSAKey;
+import java.security.PublicKey;
 import java.util.Optional;
 
 public interface ProviderConfigurationService {
@@ -36,7 +36,7 @@ public interface ProviderConfigurationService {
      * @param kid
      * @return
      */
-    Optional<RSAKey> getKeyById(OrganizationId organizationId, ProjectId projectId, String kid);
+    Optional<PublicKey> getKeyById(OrganizationId organizationId, ProjectId projectId, String kid);
 
     /**
      * Search for key by Key-ID.
@@ -44,6 +44,13 @@ public interface ProviderConfigurationService {
      * @param kid
      * @return
      */
-    Optional<RSAKey> getKeyById(OrganizationId organizationId, String kid);
+    Optional<PublicKey> getKeyById(OrganizationId organizationId, String kid);
+
+    /**
+     * Search for key by Key-ID.
+     * @param kid
+     * @return
+     */
+    Optional<PublicKey> getKeyById(String kid);
 
 }

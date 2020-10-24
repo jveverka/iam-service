@@ -1,5 +1,6 @@
 package itx.iamservice.core.services.impl;
 
+import itx.iamservice.core.model.Organization;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
@@ -14,7 +15,6 @@ import itx.iamservice.core.services.dto.ProviderConfigurationRequest;
 import itx.iamservice.core.dto.ProviderConfigurationResponse;
 
 import java.security.PublicKey;
-import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -80,22 +80,33 @@ public class ProviderConfigurationServiceImpl implements ProviderConfigurationSe
     }
 
     @Override
-    public Optional<RSAKey> getKeyById(OrganizationId organizationId, ProjectId projectId, String kid) {
+    public Optional<PublicKey> getKeyById(OrganizationId organizationId, ProjectId projectId, String kid) {
         Collection<User> users = projectManagerService.getUsers(organizationId, projectId);
         return filterKeys(users, kid);
     }
 
     @Override
-    public Optional<RSAKey> getKeyById(OrganizationId organizationId, String kid) {
+    public Optional<PublicKey> getKeyById(OrganizationId organizationId, String kid) {
         Collection<User> users = organizationManagerService.getAllUsers(organizationId);
         return filterKeys(users, kid);
     }
 
-    private Optional<RSAKey> filterKeys(Collection<User> users, String kid) {
+    @Override
+    public Optional<PublicKey> getKeyById(String kid) {
+        for (Organization organization: organizationManagerService.getAll()) {
+            Optional<PublicKey> key = getKeyById(organization.getId(), kid);
+            if (key.isPresent()) {
+                return key;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<PublicKey> filterKeys(Collection<User> users, String kid) {
         Optional<User> optionalUser = users.stream().filter(u -> u.getKeyPairData().getId().getId().equals(kid)).findFirst();
         if (optionalUser.isPresent()) {
             PublicKey publicKey = optionalUser.get().getKeyPairData().getPublicKey();
-            return Optional.of((RSAKey) publicKey);
+            return Optional.of(publicKey);
         }
         return Optional.empty();
     }

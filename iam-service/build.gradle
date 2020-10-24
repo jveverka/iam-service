@@ -24,7 +24,7 @@ dependencies {
     implementation 'org.bouncycastle:bcpg-jdk15on:1.66'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.66'
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
-    implementation('com.nimbusds:nimbus-jose-jwt:8.19')
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
 }
 
 test {

@@ -1,11 +1,15 @@
 package itx.iamservice.client;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolver;
+import io.jsonwebtoken.impl.DefaultClaims;
 import itx.iamservice.client.dto.StandardTokenClaims;
+import itx.iamservice.client.impl.JWKSigningKeyResolver;
+import itx.iamservice.client.impl.KeyProvider;
+import itx.iamservice.client.impl.ProviderSigningKeyResolver;
+import itx.iamservice.core.dto.JWKData;
+import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
@@ -13,11 +17,15 @@ import itx.iamservice.core.model.ProjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.math.BigInteger;
+import java.net.URISyntaxException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,6 +33,9 @@ import java.util.Set;
 public final class JWTUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(JWTUtils.class);
+
+    public static final String ALGORITHM =  "RSA";
+    public static final String BC_PROVIDER =  "BC";
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
@@ -42,84 +53,82 @@ public final class JWTUtils {
         return new JWToken(authorization.substring(BEARER_PREFIX.length(), authorization.length()).trim());
     }
 
-    public static boolean validateToken(java.security.interfaces.RSAKey rsaKey, URI issuerUri, ProjectId projectId, Set<Permission> requiredAdminPermissions, Set<Permission> requiredApplicationPermissions, JWToken token) {
-        String issuerValue = issuerUri.toString();
-        Optional<JWTClaimsSet> claimSet = validateToken(rsaKey, projectId, issuerValue, token);
-        if (claimSet.isPresent()) {
-            String scopeClaim = (String) claimSet.get().getClaim(JWTUtils.SCOPE);
-            String[] scopes = scopeClaim.trim().split(" ");
-            Set<String> scopeSet = new HashSet<>(Arrays.asList(scopes));
-            if (!requiredAdminPermissions.isEmpty()) {
-                for (Permission scope : requiredAdminPermissions) {
-                    if (!scopeSet.contains(scope.asStringValue())) {
-                        return false;
-                    }
+    public static boolean validatePermissions(StandardTokenClaims tokenClaims, Set<Permission> requiredAdminPermissions, Set<Permission> requiredApplicationPermissions) {
+        Set<String> scopeSet = tokenClaims.getScope();
+        if (!requiredAdminPermissions.isEmpty()) {
+            for (Permission scope : requiredAdminPermissions) {
+                if (!scopeSet.contains(scope.asStringValue())) {
+                    return false;
                 }
-                return true;
-            } else {
-                for (Permission scope : requiredApplicationPermissions) {
-                    if (!scopeSet.contains(scope.asStringValue())) {
-                        return false;
-                    }
-                }
-                return true;
             }
+            return true;
+        } else {
+            for (Permission scope : requiredApplicationPermissions) {
+                if (!scopeSet.contains(scope.asStringValue())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    public static Optional<StandardTokenClaims> validateToken(KeyProvider keyProvider, JWToken token) {
+        try {
+            ProviderSigningKeyResolver providerSigningKeyResolver = new ProviderSigningKeyResolver(keyProvider);
+            return Optional.of(getStandardTokenClaims(providerSigningKeyResolver, token));
+        } catch (Exception e) {
+            LOG.info("Exception: ", e);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<StandardTokenClaims> validateToken(OrganizationId organizationId, ProjectId projectId, JWKResponse response, JWToken token) {
+        try {
+            JWKSigningKeyResolver resolver = new JWKSigningKeyResolver(response);
+            StandardTokenClaims claims = getStandardTokenClaims(resolver, token);
+            if (organizationId.equals(claims.getOrganizationId()) && projectId.equals(claims.getProjectId())) {
+                return Optional.of(claims);
+            } else {
+                LOG.warn("Invalid organization ID or project ID.");
+            }
+        } catch (Exception e) {
+            LOG.info("Exception: ", e);
+        }
+        return Optional.empty();
+    }
+
+    public static boolean validateToken(OrganizationId organizationId, ProjectId projectId, JWKResponse response, Set<Permission> requiredAdminPermissions, Set<Permission> requiredApplicationPermissions, JWToken token) {
+        Optional<StandardTokenClaims> standardTokenClaims = validateToken(organizationId, projectId, response, token);
+        if (standardTokenClaims.isPresent()){
+            return validatePermissions(standardTokenClaims.get(), requiredAdminPermissions, requiredApplicationPermissions);
         }
         return false;
     }
 
-    public static Optional<JWTClaimsSet> validateToken(java.security.interfaces.RSAKey rsaKey, ProjectId projectId, String issuerValue, JWToken token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token.getToken());
-            RSASSAVerifier rsassaVerifier = new RSASSAVerifier(convert(rsaKey));
-            if (signedJWT.verify(rsassaVerifier) &&
-                issuerValue.equals(signedJWT.getJWTClaimsSet().getIssuer()) &&
-                signedJWT.getJWTClaimsSet().getAudience().contains(projectId.getId())) {
-                return Optional.of(signedJWT.getJWTClaimsSet());
-            }
-        } catch (Exception e) {
-            LOG.info("Exception: ", e);
-        }
-        return Optional.empty();
+    public static PublicKey createPublicKey(JWKData jwkData) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        BigInteger modulus = new BigInteger(Base64.getDecoder().decode(jwkData.getModulusValue()));
+        BigInteger exponent = new BigInteger(Base64.getDecoder().decode(jwkData.getExponentValue()));
+        KeyFactory factory = KeyFactory.getInstance(ALGORITHM, BC_PROVIDER);
+        return factory.generatePublic(new RSAPublicKeySpec(modulus, exponent));
     }
 
-    public static Optional<StandardTokenClaims> getClaimsFromToken(JWToken token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token.getToken());
-            return getClaimsFromToken(signedJWT);
-        } catch (Exception e) {
-            LOG.info("Exception: ", e);
-        }
-        return Optional.empty();
-    }
-
-    public static Optional<StandardTokenClaims> getClaimsFromToken(SignedJWT signedJWT) {
-        try {
-            String kid = signedJWT.getHeader().getKeyID();
-            String iss = signedJWT.getJWTClaimsSet().getIssuer();
-            String sub = signedJWT.getJWTClaimsSet().getSubject();
-            List<String> aud = signedJWT.getJWTClaimsSet().getAudience();
-            String scope = (String)signedJWT.getJWTClaimsSet().getClaim("scope");
-            List<String> scopes = Arrays.asList(scope.split(" "));
-            String[] split = iss.split("/");
-            int organizationIndex = split.length - 2;
-            int projectIndex = split.length - 1;
-            return Optional.of(new StandardTokenClaims(kid, iss, sub, aud, scopes,
-                    OrganizationId.from(split[organizationIndex]),
-                    ProjectId.from(split[projectIndex])));
-        } catch (Exception e) {
-            LOG.info("Exception: ", e);
-        }
-        return Optional.empty();
-    }
-
-    public static java.security.interfaces.RSAKey convert(RSAKey rsaKey) throws JOSEException {
-        return rsaKey.toRSAPublicKey();
-    }
-
-    public static RSAKey convert(java.security.interfaces.RSAKey rsaKey) {
-        return new RSAKey.Builder((RSAPublicKey) rsaKey)
-                .build();
+    private static StandardTokenClaims getStandardTokenClaims(SigningKeyResolver signingKeyResolver, JWToken token) throws URISyntaxException {
+        Jwt jwt = Jwts.parserBuilder()
+                .setSigningKeyResolver(signingKeyResolver)
+                .build()
+                .parse(token.getToken());
+        String kid = (String)jwt.getHeader().get("kid");
+        DefaultClaims claims = (DefaultClaims)jwt.getBody();
+        String iss = claims.getIssuer();
+        String sub = claims.getSubject();
+        Set<String> aud = Set.of(claims.getAudience().split(" "));
+        Set<String> scopes = Set.of(((String)claims.get(SCOPE)).split(" "));
+        String[] split = iss.split("/");
+        int organizationIndex = split.length - 2;
+        int projectIndex = split.length - 1;
+        OrganizationId issOrganizationId = OrganizationId.from(split[organizationIndex]);
+        ProjectId issProjectId = ProjectId.from(split[projectIndex]);
+        return new StandardTokenClaims(kid, iss, sub, aud, scopes, issOrganizationId, issProjectId);
     }
 
 }

@@ -9,6 +9,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.serviceclient.IAMServiceProject;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -132,6 +133,19 @@ public class IAMServiceProjectImpl implements IAMServiceProject {
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
+    }
+
+    @Override
+    public ProjectInfo getInfo() throws IOException {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId())
+                    .get()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return mapper.readValue(response.body().string(), ProjectInfo.class);
+            }
+            throw new IOException();
     }
 
 }

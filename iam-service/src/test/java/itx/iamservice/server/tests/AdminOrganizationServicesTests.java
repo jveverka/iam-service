@@ -10,6 +10,7 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.OrganizationInfo;
+import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.serviceclient.IAMServiceClient;
@@ -139,6 +140,14 @@ public class AdminOrganizationServicesTests {
         iamServiceProject.deletePermission(PermissionId.from(organizationId.getId() + "-" + projectId.getId() + ".users" + ".read"));
         permissions = iamServiceProject.getPermissions();
         assertEquals(4, permissions.size());
+    }
+
+    @Test
+    @Order(9)
+    public void getProjectInfo() throws IOException {
+        ProjectInfo projectInfo = iamServiceProject.getInfo();
+        assertNotNull(projectInfo);
+        assertEquals(projectId.getId(), projectInfo.getId());
     }
 
     @Test

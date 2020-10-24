@@ -5,8 +5,10 @@ import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.RoleId;
+import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.serviceclient.impl.AuthenticationException;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -21,5 +23,7 @@ public interface IAMServiceProject {
     void deletePermission(PermissionId permissionId) throws AuthenticationException;
 
     void deleteRole(RoleId roleId) throws AuthenticationException;
+
+    ProjectInfo getInfo() throws IOException;
 
 }

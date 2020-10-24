@@ -21,7 +21,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .addFilterBefore(new ManagementSecurityFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new ProjectManagementSecurityFilter(), BasicAuthenticationFilter.class)
                 .antMatcher("/services/management/**")
                 .addFilterBefore(new AdminSecurityFilter(iamSecurityValidator), BasicAuthenticationFilter.class)
                 .antMatcher("/services/admin/**")

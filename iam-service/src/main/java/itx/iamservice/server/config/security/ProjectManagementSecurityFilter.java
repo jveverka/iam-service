@@ -7,9 +7,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-public class ManagementSecurityFilter implements Filter {
+public class ProjectManagementSecurityFilter implements Filter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ManagementSecurityFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProjectManagementSecurityFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

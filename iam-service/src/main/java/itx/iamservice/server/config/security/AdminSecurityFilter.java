@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * This filter validates authorization header (Bearer JWT token) and validate IAM Admin permission set.
+ * If token validation is successful, content of JWT token is mapped to Security Context {@link AuthenticationImpl}.
+ */
 public class AdminSecurityFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AdminSecurityFilter.class);

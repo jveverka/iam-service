@@ -29,6 +29,6 @@ public interface IAMSecurityValidator {
      * @param organizationId
      * @param projectId
      */
-    void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId);
+    void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) throws IAMSecurityException;
 
 }

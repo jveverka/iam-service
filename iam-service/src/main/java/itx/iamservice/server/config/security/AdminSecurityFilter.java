@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
 /**
  * This filter validates authorization header (Bearer JWT token) and validate IAM Admin permission set.
  * If token validation is successful, content of JWT token is mapped to Security Context {@link AuthenticationImpl}.
@@ -35,12 +36,11 @@ public class AdminSecurityFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
         HttpServletResponse httpServletResponse = (HttpServletResponse)response;
-        String contextPath = httpServletRequest.getContextPath();
         String requestUrl = httpServletRequest.getRequestURL().toString();
         String authorization = httpServletRequest.getHeader("Authorization");
         if (authorization != null) {
             try {
-                LOG.info("doFilter: {} {} {}", contextPath, requestUrl, authorization);
+                LOG.info("doFilter: {} {}", requestUrl, authorization);
                 StandardTokenClaims standardTokenClaims = iamSecurityValidator.verifyAdminAccess(authorization);
                 SecurityContextHolder.getContext().setAuthentication(new AuthenticationImpl(standardTokenClaims));
                 chain.doFilter(request, response);

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -21,9 +21,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .addFilterBefore(new ProjectManagementSecurityFilter(iamSecurityValidator), BasicAuthenticationFilter.class)
+                .addFilterAfter(new ProjectManagementSecurityFilter(iamSecurityValidator), SecurityContextPersistenceFilter.class)
+                //.addFilterBefore(new ProjectManagementSecurityFilter(iamSecurityValidator), BasicAuthenticationFilter.class)
                 .antMatcher("/services/management/**")
-                .addFilterBefore(new AdminSecurityFilter(iamSecurityValidator), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AdminSecurityFilter(iamSecurityValidator), SecurityContextPersistenceFilter.class)
                 .antMatcher("/services/admin/**")
                 .csrf()
                 .disable();

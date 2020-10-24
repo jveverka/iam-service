@@ -18,4 +18,6 @@ public interface IAMServiceClient {
 
     void deleteOrganizationRecursively(String accessToken, OrganizationId organizationId) throws AuthenticationException;
 
+    IAMServiceProject getIAMServiceProject(String accessToken, OrganizationId organizationId, ProjectId projectId);
+
 }

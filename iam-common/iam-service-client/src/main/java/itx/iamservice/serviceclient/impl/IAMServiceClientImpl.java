@@ -9,6 +9,7 @@ import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceProject;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,21 +17,24 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 
 public class IAMServiceClientImpl implements IAMServiceClient {
 
-    private static final String BEARER_PREFIX = "Bearer ";
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String APPLICATION_JSON = "application/json";
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String APPLICATION_JSON = "application/json";
 
     private final String baseURL;
     private final OkHttpClient client;
     private final ObjectMapper mapper;
 
-    public IAMServiceClientImpl(String baseURL) {
+    public IAMServiceClientImpl(String baseURL, Long timeoutDuration,  TimeUnit timeUnit) {
         this.baseURL = baseURL;
-        this.client = new OkHttpClient();
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(timeoutDuration, timeUnit)
+                .build();
         this.mapper = new ObjectMapper();
     }
 
@@ -95,6 +99,11 @@ public class IAMServiceClientImpl implements IAMServiceClient {
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
+    }
+
+    @Override
+    public IAMServiceProject getIAMServiceProject(String accessToken, OrganizationId organizationId, ProjectId projectId) {
+        return new IAMServiceProjectImpl(accessToken, baseURL, client, mapper, organizationId, projectId);
     }
 
 }

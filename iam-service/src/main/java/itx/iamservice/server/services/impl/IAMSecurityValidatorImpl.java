@@ -10,6 +10,8 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.server.services.IAMSecurityException;
 import itx.iamservice.server.services.IAMSecurityValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
 
 @Service
 public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IAMSecurityValidatorImpl.class);
 
     private final ProviderConfigurationService providerConfigurationService;
 
@@ -60,10 +64,10 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     }
 
     @Override
-    public void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) {
+    public void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) throws IAMSecurityException {
         AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
-        StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
-        //TODO:
+        //StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
+        //LOG.info("JWT iss:", standardTokenClaims.getIssuer());
     }
 
 }

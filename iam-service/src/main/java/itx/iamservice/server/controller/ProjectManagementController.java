@@ -46,7 +46,8 @@ public class ProjectManagementController {
 
     @PostMapping("/{organization-id}/{project-id}/roles")
     public ResponseEntity<Void> createRole(@PathVariable("organization-id") String organizationId,
-                                           @PathVariable("project-id") String projectId, @RequestBody CreateRole createRole) {
+                                           @PathVariable("project-id") String projectId,
+                                           @RequestBody CreateRole createRole) {
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
         RoleId roleId = RoleId.from(createRole.getId());
@@ -79,7 +80,7 @@ public class ProjectManagementController {
 
     @GetMapping("/{organization-id}/{project-id}/permissions")
     public ResponseEntity<Set<PermissionInfo>> getPermissions(@PathVariable("organization-id") String organizationId,
-                               @PathVariable("project-id") String projectId) {
+                                                              @PathVariable("project-id") String projectId) {
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
         iamSecurityValidator.verifyProjectAdminAccess(orgId, projId);

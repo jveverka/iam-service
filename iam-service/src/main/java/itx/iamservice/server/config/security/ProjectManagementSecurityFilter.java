@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
 public class ProjectManagementSecurityFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProjectManagementSecurityFilter.class);
@@ -31,12 +32,11 @@ public class ProjectManagementSecurityFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
         HttpServletResponse httpServletResponse = (HttpServletResponse)response;
-        String contextPath = httpServletRequest.getContextPath();
         String requestUrl = httpServletRequest.getRequestURL().toString();
         String authorization = httpServletRequest.getHeader("Authorization");
         if (authorization != null) {
             try {
-                LOG.info("doFilter: {}/{} {}", contextPath, requestUrl, authorization);
+                LOG.info("doFilter: {} {}", requestUrl, authorization);
                 StandardTokenClaims standardTokenClaims = iamSecurityValidator.verifyToken(authorization);
                 SecurityContextHolder.getContext().setAuthentication(new AuthenticationImpl(standardTokenClaims));
                 chain.doFilter(request, response);

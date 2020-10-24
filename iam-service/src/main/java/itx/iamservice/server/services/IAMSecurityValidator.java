@@ -1,6 +1,8 @@
 package itx.iamservice.server.services;
 
 import itx.iamservice.client.dto.StandardTokenClaims;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 
 public interface IAMSecurityValidator {
 
@@ -21,5 +23,12 @@ public interface IAMSecurityValidator {
      * @throws IAMSecurityException - thrown in case that token validation fails.
      */
     StandardTokenClaims verifyToken(String authorization) throws IAMSecurityException;
+
+    /**
+     * Verify access for project Administrator. Security context is checked.
+     * @param organizationId
+     * @param projectId
+     */
+    void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId);
 
 }

@@ -3,11 +3,15 @@ package itx.iamservice.server.services.impl;
 import itx.iamservice.client.JWTUtils;
 import itx.iamservice.client.dto.StandardTokenClaims;
 import itx.iamservice.client.impl.KeyProvider;
+import itx.iamservice.client.spring.AuthenticationImpl;
 import itx.iamservice.core.model.JWToken;
+import itx.iamservice.core.model.OrganizationId;
+import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.server.services.IAMSecurityException;
 import itx.iamservice.server.services.IAMSecurityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
@@ -53,6 +57,13 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
         } else {
             throw new IAMSecurityException("Authorization token validation has failed.");
         }
+    }
+
+    @Override
+    public void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) {
+        AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
+        StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
+        //TODO:
     }
 
 }

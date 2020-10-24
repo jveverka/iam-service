@@ -1,5 +1,7 @@
 package itx.iamservice.server.controller;
 
+import itx.iamservice.core.services.admin.UserManagerService;
+import itx.iamservice.server.services.IAMSecurityValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/services/management")
 public class ProjectUserManagementController {
+
+    private final UserManagerService userManagerService;
+    private final IAMSecurityValidator iamSecurityValidator;
+
+    public ProjectUserManagementController(UserManagerService userManagerService,
+                                           IAMSecurityValidator iamSecurityValidator) {
+        this.userManagerService = userManagerService;
+        this.iamSecurityValidator = iamSecurityValidator;
+    }
 
     @PostMapping("/{organization-id}/{project-id}/users")
     public ResponseEntity<Void> createUser(@PathVariable("organization-id") String organizationId,

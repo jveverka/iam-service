@@ -7,6 +7,8 @@ include "iam-client-spring"
 project(":iam-client-spring").projectDir = new File("iam-common/iam-client-spring")
 include "iam-spring-httpclient"
 project(":iam-spring-httpclient").projectDir = new File("iam-common/iam-spring-httpclient")
+include "iam-service-client"
+project(":iam-service-client").projectDir = new File("iam-common/iam-service-client")
 
 include "iam-core"
 include "iam-service"

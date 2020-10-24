@@ -45,6 +45,7 @@ public final class HttpClientTestUtils {
     private HttpClientTestUtils() {
     }
 
+    @Deprecated
     public static ResponseEntity<String> getActuatorInfo(TestRestTemplate restTemplate, int port) {
         ResponseEntity<String> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/actuator/info", String.class);
@@ -52,6 +53,7 @@ public final class HttpClientTestUtils {
         return response;
     }
 
+    @Deprecated
     public static ResponseEntity<IntrospectResponse> getTokenVerificationResponse(TestRestTemplate restTemplate, int port, String token) {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("token", token);
@@ -60,6 +62,7 @@ public final class HttpClientTestUtils {
                 null, IntrospectResponse.class, urlVariables);
     }
 
+    @Deprecated
     public static ResponseEntity<Void> getTokenRevokeResponse(TestRestTemplate restTemplate, int port, String token) {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("token", token);
@@ -68,6 +71,7 @@ public final class HttpClientTestUtils {
                 null, Void.class, urlVariables);
     }
 
+    @Deprecated
     public static HttpHeaders createAuthorization(String jwt) {
         HttpHeaders requestHeaders = new HttpHeaders();
         if (jwt != null) {
@@ -77,6 +81,7 @@ public final class HttpClientTestUtils {
         return requestHeaders;
     }
 
+    @Deprecated
     public static OrganizationId createNewOrganization(String jwt, TestRestTemplate restTemplate, int port, CreateOrganization request) {
         ResponseEntity<OrganizationId> response = createNewOrganizationResponse(jwt, restTemplate, port, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -86,6 +91,7 @@ public final class HttpClientTestUtils {
         return organizationId;
     }
 
+    @Deprecated
     public static ResponseEntity<OrganizationId> createNewOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, CreateOrganization request) {
         HttpEntity<CreateOrganization> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
@@ -95,6 +101,7 @@ public final class HttpClientTestUtils {
                 OrganizationId.class);
     }
 
+    @Deprecated
     public static void checkOrganizationCount(String jwt, TestRestTemplate restTemplate, int port, int expectedCount) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<OrganizationInfo[]> response = restTemplate.exchange(
@@ -108,6 +115,7 @@ public final class HttpClientTestUtils {
         assertEquals(expectedCount, organizationInfos.length);
     }
 
+    @Deprecated
     public static void checkOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<OrganizationInfo> response = restTemplate.exchange(
@@ -125,6 +133,7 @@ public final class HttpClientTestUtils {
         assertNotNull(organizationInfo.getX509Certificate());
     }
 
+    @Deprecated
     public static ResponseEntity<Void> removeOrganizationResponse(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         return restTemplate.exchange(
@@ -135,6 +144,7 @@ public final class HttpClientTestUtils {
         );
     }
 
+    @Deprecated
     public static void removeOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -146,6 +156,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void checkRemovedOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<OrganizationInfo> response = restTemplate.exchange(
@@ -156,10 +167,12 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    @Deprecated
     public static TokenResponse getTokenResponseForIAMAdmins(TestRestTemplate restTemplate, int port) {
         return getTokenResponseForUserNameAndPassword(restTemplate, port, ModelUtils.IAM_ADMIN_USER.getId(), "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret", ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 
+    @Deprecated
     public static ResponseEntity<SetupOrganizationResponse> setupOrganization(TestRestTemplate restTemplate, int port, String jwt, SetupOrganizationRequest request) {
         HttpEntity<SetupOrganizationRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
@@ -169,6 +182,7 @@ public final class HttpClientTestUtils {
                 SetupOrganizationResponse.class);
     }
 
+    @Deprecated
     public static ResponseEntity<Void> deleteOrganizationRecursively(TestRestTemplate restTemplate, int port, String jwt, OrganizationId organizationId) {
         HttpEntity<SetupOrganizationRequest> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         return restTemplate.exchange(
@@ -178,6 +192,7 @@ public final class HttpClientTestUtils {
                 Void.class);
     }
 
+    @Deprecated
     public static ResponseEntity<Void> deleteProjectRecursively(TestRestTemplate restTemplate, int port, String jwt, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<SetupOrganizationRequest> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         return restTemplate.exchange(
@@ -187,6 +202,7 @@ public final class HttpClientTestUtils {
                 Void.class);
     }
 
+    @Deprecated
     public static TokenResponse getTokenResponseForUserNameAndPassword(TestRestTemplate restTemplate, int port, String userName, String password, ClientId clientId, String clientSecret, OrganizationId organizationId, ProjectId projectId) {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "password");
@@ -203,11 +219,13 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static TokenResponse getTokensForClient(TestRestTemplate restTemplate, int port) {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         return getTokensForClient(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials);
     }
 
+    @Deprecated
     public static TokenResponse getTokensForClient(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientCredentials credentials) {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("grant_type", "client_credentials");
@@ -221,7 +239,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
-
+    @Deprecated
     public static ResponseEntity<ProjectId> createProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProject request) {
         HttpEntity<CreateProject> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
@@ -231,12 +249,14 @@ public final class HttpClientTestUtils {
                 ProjectId.class);
     }
 
+    @Deprecated
     public static ProjectId createProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, CreateProject request) {
         ResponseEntity<ProjectId> response = createProjectRequest(jwt, restTemplate, port, organizationId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
 
+    @Deprecated
     public static void checkCreatedProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<ProjectInfo> response = restTemplate.exchange(
@@ -250,6 +270,7 @@ public final class HttpClientTestUtils {
         assertEquals(projectId.getId(), projectInfo.getId());
     }
 
+    @Deprecated
     public static ResponseEntity<RoleId> createRoleOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest request) {
         HttpEntity<CreateRoleRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
@@ -259,12 +280,14 @@ public final class HttpClientTestUtils {
                 RoleId.class);
     }
 
+    @Deprecated
     public static RoleId createRoleOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateRoleRequest request) {
         ResponseEntity<RoleId> response = createRoleOnProjectRequest(jwt,  restTemplate,  port,  organizationId,  projectId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
 
+    @Deprecated
     public static Role[] getRolesOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Role[]> response = restTemplate.exchange(
@@ -276,6 +299,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static PermissionId createPermissionOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreatePermissionRequest createPermissionRequest) {
         HttpEntity<CreatePermissionRequest> requestEntity = new HttpEntity<>(createPermissionRequest, createAuthorization(jwt));
         ResponseEntity<PermissionId> response = restTemplate.exchange(
@@ -287,6 +311,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static Permission[] getPermissionsForProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Permission[]> response = restTemplate.exchange(
@@ -298,6 +323,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static void addPermissionToRoleForProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -308,6 +334,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Deprecated
     public static ResponseEntity<ClientCredentials> createClientOnTheProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
         HttpEntity<CreateClientRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
@@ -317,12 +344,14 @@ public final class HttpClientTestUtils {
                 ClientCredentials.class);
     }
 
+    @Deprecated
     public static ClientCredentials createClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
         ResponseEntity<ClientCredentials> response = createClientOnTheProjectRequest(jwt, restTemplate, port, organizationId, projectId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
 
+    @Deprecated
     public static Client getClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId  clientId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Client> response = restTemplate.exchange(
@@ -334,6 +363,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static Client[] getClientsOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Client[]> response = restTemplate.exchange(
@@ -345,6 +375,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static void addRoleToClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -355,6 +386,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void removeRoleFromClientOnTheProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -366,6 +398,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void removeClientFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -377,6 +410,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static ResponseEntity<UserId> createUserOnProjectRequest(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) {
         HttpEntity<CreateUserRequest> requestEntity = new HttpEntity<>(request, createAuthorization(jwt));
         return restTemplate.exchange(
@@ -386,12 +420,14 @@ public final class HttpClientTestUtils {
                 UserId.class);
     }
 
+    @Deprecated
     public static UserId createUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) {
         ResponseEntity<UserId> response = createUserOnProjectRequest(jwt, restTemplate, port, organizationId, projectId, request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         return response.getBody();
     }
 
+    @Deprecated
     public static void removeUserFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -403,6 +439,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void setUsernamePasswordCredentialsForProjectAndUser(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId, SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest) {
         HttpEntity<SetUserNamePasswordCredentialsRequest> requestEntity = new HttpEntity<>(setUserNamePasswordCredentialsRequest, createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -413,6 +450,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void assignRoleToUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -423,6 +461,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void removeRoleFromUserOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -433,6 +472,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static OrganizationInfo[] getOrganizationInfos(TestRestTemplate restTemplate, int port) {
         ResponseEntity<OrganizationInfo[]> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/", OrganizationInfo[].class);
@@ -440,6 +480,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static OrganizationInfo getOrganizationInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         ResponseEntity<OrganizationInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId(), OrganizationInfo.class);
@@ -447,11 +488,13 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static ResponseEntity<OrganizationInfo> getOrganizationInfoResponse(TestRestTemplate restTemplate, int port, OrganizationId organizationId) {
         return restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId(), OrganizationInfo.class);
     }
 
+    @Deprecated
     public static ProjectInfo getProjectInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         ResponseEntity<ProjectInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
@@ -459,6 +502,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static UserInfo getUserInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, UserId userId) {
         ResponseEntity<UserInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId(), UserInfo.class);
@@ -466,6 +510,7 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static ClientInfo getClientInfo(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         ResponseEntity<ClientInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId(), ClientInfo.class);
@@ -473,11 +518,13 @@ public final class HttpClientTestUtils {
         return response.getBody();
     }
 
+    @Deprecated
     public static ResponseEntity<ProjectInfo> getProjectInfoResponse(TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         return restTemplate.getForEntity(
                 "http://localhost:" + port + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId(), ProjectInfo.class);
     }
 
+    @Deprecated
     public static void removePermissionFromRoleOnProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -489,6 +536,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Deprecated
     public static void removePermissionFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -500,6 +548,7 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void deleteRoleFromProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -511,11 +560,13 @@ public final class HttpClientTestUtils {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static void removeProjectFromOrganization(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         ResponseEntity<Void> response = removeProject(jwt, restTemplate, port, organizationId, projectId);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Deprecated
     public static ResponseEntity<Void> removeProject(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         return restTemplate.exchange(
@@ -526,6 +577,7 @@ public final class HttpClientTestUtils {
         );
     }
 
+    @Deprecated
     public static ResponseEntity<UserInfoResponse> getUserInfo(String jwt, TestRestTemplate restTemplate, int port, OrganizationId organizationId, ProjectId projectId) {
         HttpEntity<UserInfoResponse> requestEntity = new HttpEntity<>(createAuthorization(jwt));
         return restTemplate.exchange(

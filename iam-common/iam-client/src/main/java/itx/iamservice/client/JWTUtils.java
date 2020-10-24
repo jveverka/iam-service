@@ -34,7 +34,7 @@ public final class JWTUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(JWTUtils.class);
 
-    public static final String ALGORITHM =  "RSA";
+    public static final String ALGORITHM   =  "RSA";
     public static final String BC_PROVIDER =  "BC";
 
     public static final String AUTHORIZATION = "Authorization";

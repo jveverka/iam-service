@@ -9,6 +9,7 @@ import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.serviceclient.IAMServiceClient;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -89,6 +91,14 @@ public class AdminOrganizationServicesTests {
 
     @Test
     @Order(4)
+    public void checkOrganizations() throws IOException {
+        Collection<OrganizationInfo> organizations = iamServiceClient.getOrganizations();
+        assertNotNull(organizations);
+        assertEquals(2, organizations.size());
+    }
+
+    @Test
+    @Order(5)
     public void checkNewProjectRolesAndPermissions() throws AuthenticationException {
         Set<PermissionInfo> permissions = iamServiceProject.getPermissions();
         assertNotNull(permissions);
@@ -98,7 +108,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void createRoleWithPermissionsTest() throws AuthenticationException {
         Set<PermissionInfo> permissionInfos = new HashSet<>();
         permissionInfos.add(new PermissionInfo(organizationId.getId() + "-" + projectId.getId() , "data", "read"));
@@ -113,7 +123,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void deleteRole() throws AuthenticationException {
         iamServiceProject.deleteRole(RoleId.from("reader"));
         Collection<RoleInfo> roles = iamServiceProject.getRoles();
@@ -121,7 +131,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void deletePermissions() throws AuthenticationException {
         iamServiceProject.deletePermission(PermissionId.from(organizationId.getId() + "-" + projectId.getId() + ".data" + ".read"));
         Set<PermissionInfo> permissions = iamServiceProject.getPermissions();

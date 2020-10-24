@@ -1,10 +1,13 @@
 package itx.iamservice.serviceclient.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import itx.iamservice.core.dto.RoleInfo;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.utils.ModelUtils;
+import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
@@ -17,6 +20,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -104,6 +110,20 @@ public class IAMServiceClientImpl implements IAMServiceClient {
     @Override
     public IAMServiceProject getIAMServiceProject(String accessToken, OrganizationId organizationId, ProjectId projectId) {
         return new IAMServiceProjectImpl(accessToken, baseURL, client, mapper, organizationId, projectId);
+    }
+
+    @Override
+    public Collection<OrganizationInfo> getOrganizations() throws IOException {
+         Request request = new Request.Builder()
+                 .url(baseURL + "/services/discovery")
+                 .get()
+                 .build();
+         Response response = client.newCall(request).execute();
+         if (response.code() == 200) {
+             return mapper.readValue(response.body().string(), new TypeReference<List<OrganizationInfo>>(){});
+         } else {
+             return Collections.emptyList();
+         }
     }
 
 }

@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -93,9 +94,16 @@ public class AdminOrganizationServicesTests {
         assertEquals(1, roles.size());
     }
 
+    @Test
+    @Order(90)
+    public void cleanupProjectInvalidTokenTest() {
+        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
+            iamServiceClient.deleteOrganizationRecursively(jwt_organization_admin_token, organizationId);
+        });
+    }
 
     @Test
-    @Order(10)
+    @Order(91)
     public void cleanupProjectTest() throws AuthenticationException {
         iamServiceClient.deleteOrganizationRecursively(jwt_admin_token, organizationId);
     }

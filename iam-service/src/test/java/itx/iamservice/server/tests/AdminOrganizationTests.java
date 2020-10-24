@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Deprecated
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AdminOrganizationTests {

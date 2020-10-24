@@ -66,8 +66,8 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     @Override
     public void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) throws IAMSecurityException {
         AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
-        //StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
-        //LOG.info("JWT iss:", standardTokenClaims.getIssuer());
+        StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
+        LOG.info("JWT iss: {}", standardTokenClaims.getIssuer());
     }
 
 }

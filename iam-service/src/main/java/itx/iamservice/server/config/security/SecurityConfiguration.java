@@ -21,11 +21,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .addFilterAfter(new ProjectManagementSecurityFilter(iamSecurityValidator), SecurityContextPersistenceFilter.class)
-                //.addFilterBefore(new ProjectManagementSecurityFilter(iamSecurityValidator), BasicAuthenticationFilter.class)
-                .antMatcher("/services/management/**")
-                .addFilterAfter(new AdminSecurityFilter(iamSecurityValidator), SecurityContextPersistenceFilter.class)
-                .antMatcher("/services/admin/**")
+                .addFilterAfter(new IAMSecurityFilter(iamSecurityValidator), SecurityContextPersistenceFilter.class)
+                .antMatcher("/services/**")
                 .csrf()
                 .disable();
     }

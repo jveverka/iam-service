@@ -2,8 +2,6 @@ package itx.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import itx.iamservice.core.dto.JWKResponse;
-import itx.iamservice.core.dto.ProviderConfigurationResponse;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -12,8 +10,9 @@ import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
-import itx.iamservice.serviceclient.IAMServiceClient;
-import itx.iamservice.serviceclient.IAMServiceProject;
+import itx.iamservice.serviceclient.IAMServiceManagerClient;
+import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
+import itx.iamservice.serviceclient.IAMServiceStatusClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-public class IAMServiceClientImpl implements IAMServiceClient {
+public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
 
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String AUTHORIZATION = "Authorization";
@@ -37,7 +36,7 @@ public class IAMServiceClientImpl implements IAMServiceClient {
     private final OkHttpClient client;
     private final ObjectMapper mapper;
 
-    public IAMServiceClientImpl(String baseURL, Long timeoutDuration,  TimeUnit timeUnit) {
+    public IAMServiceManagerClientImpl(String baseURL, Long timeoutDuration, TimeUnit timeUnit) {
         this.baseURL = baseURL;
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(timeoutDuration, timeUnit)
@@ -109,8 +108,13 @@ public class IAMServiceClientImpl implements IAMServiceClient {
     }
 
     @Override
-    public IAMServiceProject getIAMServiceProject(String accessToken, OrganizationId organizationId, ProjectId projectId) {
-        return new IAMServiceProjectImpl(accessToken, baseURL, client, mapper, organizationId, projectId);
+    public IAMServiceProjectManagerClient getIAMServiceProject(String accessToken, OrganizationId organizationId, ProjectId projectId) {
+        return new IAMServiceProjectManagerClientImpl(accessToken, baseURL, client, mapper, organizationId, projectId);
+    }
+
+    @Override
+    public IAMServiceStatusClient getIAMServiceStatusClient(OrganizationId organizationId, ProjectId projectId) {
+        return new IAMServiceStatusClientImpl(baseURL, client, mapper, organizationId, projectId);
     }
 
     @Override
@@ -149,32 +153,6 @@ public class IAMServiceClientImpl implements IAMServiceClient {
         Response response = client.newCall(request).execute();
         if (response.code() == 200) {
             return response.body().string();
-        }
-        throw new IOException();
-    }
-
-    @Override
-    public ProviderConfigurationResponse getProviderConfiguration(OrganizationId organizationId, ProjectId projectId) throws IOException {
-        Request request = new Request.Builder()
-                .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
-                .get()
-                .build();
-        Response response = client.newCall(request).execute();
-        if (response.code() == 200) {
-            return mapper.readValue(response.body().string(), ProviderConfigurationResponse.class);
-        }
-        throw new IOException();
-    }
-
-    @Override
-    public JWKResponse getJWK(OrganizationId organizationId, ProjectId projectId) throws IOException {
-        Request request = new Request.Builder()
-                .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json")
-                .get()
-                .build();
-        Response response = client.newCall(request).execute();
-        if (response.code() == 200) {
-            return mapper.readValue(response.body().string(), JWKResponse.class);
         }
         throw new IOException();
     }

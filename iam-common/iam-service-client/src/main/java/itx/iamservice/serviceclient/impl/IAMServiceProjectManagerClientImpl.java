@@ -15,7 +15,7 @@ import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.UserInfo;
-import itx.iamservice.serviceclient.IAMServiceProject;
+import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,11 +27,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static itx.iamservice.serviceclient.impl.IAMServiceClientImpl.APPLICATION_JSON;
-import static itx.iamservice.serviceclient.impl.IAMServiceClientImpl.AUTHORIZATION;
-import static itx.iamservice.serviceclient.impl.IAMServiceClientImpl.BEARER_PREFIX;
+import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.APPLICATION_JSON;
+import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.AUTHORIZATION;
+import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.BEARER_PREFIX;
 
-public class IAMServiceProjectImpl implements IAMServiceProject {
+public class IAMServiceProjectManagerClientImpl implements IAMServiceProjectManagerClient {
 
     private final String accessToken;
     private final String baseURL;
@@ -40,7 +40,7 @@ public class IAMServiceProjectImpl implements IAMServiceProject {
     private final OrganizationId organizationId;
     private final ProjectId projectId;
 
-    public IAMServiceProjectImpl(String accessToken, String baseURL, OkHttpClient client, ObjectMapper mapper, OrganizationId organizationId, ProjectId projectId) {
+    public IAMServiceProjectManagerClientImpl(String accessToken, String baseURL, OkHttpClient client, ObjectMapper mapper, OrganizationId organizationId, ProjectId projectId) {
         this.accessToken = accessToken;
         this.baseURL = baseURL;
         this.client = client;
@@ -249,6 +249,16 @@ public class IAMServiceProjectImpl implements IAMServiceProject {
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
+    }
+
+    @Override
+    public OrganizationId getOrganizationId() {
+        return organizationId;
+    }
+
+    @Override
+    public ProjectId getProjectId() {
+        return projectId;
     }
 
 }

@@ -12,12 +12,13 @@ import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.serviceclient.impl.AuthenticationException;
+import itx.iamservice.serviceclient.impl.ProjectInfoProvider;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
-public interface IAMServiceProject {
+public interface IAMServiceProjectManagerClient extends ProjectInfoProvider {
 
     void createRole(CreateRole createRole) throws AuthenticationException;
 

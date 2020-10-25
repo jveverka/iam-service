@@ -9,7 +9,7 @@ import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.services.dto.TokenResponse;
-import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
 import itx.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,13 +42,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class IAMServiceClientTests {
+public class IAMServiceManagerClientTests {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IAMServiceClientTests.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IAMServiceManagerClientTests.class);
 
     private static TokenResponse tokenResponse;
     private static IAMClient iamClient;
-    private static IAMServiceClient iamServiceClient;
+    private static IAMServiceManagerClient iamServiceManagerClient;
 
     public static final Set<Permission> NEW_ADMIN_ORGANIZATION_SET = Set.of(
             new Permission("service", "resource", "all"),
@@ -68,7 +68,7 @@ public class IAMServiceClientTests {
     @Test
     @Order(1)
     public void createIamClient() throws MalformedURLException, URISyntaxException, InterruptedException {
-        iamServiceClient = IAMServiceClientBuilder.builder()
+        iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl("http://localhost:" + port)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
@@ -86,7 +86,7 @@ public class IAMServiceClientTests {
     @Test
     @Order(2)
     public void getTokens() throws AuthenticationException {
-        tokenResponse = iamServiceClient.getAccessTokensForIAMAdmin("secret", "top-secret");
+        tokenResponse = iamServiceManagerClient.getAccessTokensForIAMAdmin("secret", "top-secret");
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

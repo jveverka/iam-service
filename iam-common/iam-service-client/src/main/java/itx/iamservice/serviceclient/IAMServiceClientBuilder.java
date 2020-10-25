@@ -1,6 +1,6 @@
 package itx.iamservice.serviceclient;
 
-import itx.iamservice.serviceclient.impl.IAMServiceClientImpl;
+import itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,8 +25,8 @@ public class IAMServiceClientBuilder {
         return new IAMServiceClientBuilder();
     }
 
-    public IAMServiceClient build() {
-        return new IAMServiceClientImpl(baseURL, timeoutDuration, timeUnit);
+    public IAMServiceManagerClient build() {
+        return new IAMServiceManagerClientImpl(baseURL, timeoutDuration, timeUnit);
     }
 
 }

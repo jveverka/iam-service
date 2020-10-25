@@ -1,6 +1,6 @@
 package itx.iamservice.server.tests;
 
-import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -21,13 +21,13 @@ public class HealthCheckTests {
     @LocalServerPort
     private int port;
 
-    private static IAMServiceClient iamServiceClient;
+    private static IAMServiceManagerClient iamServiceManagerClient;
 
     @Test
     @Order(1)
     public void initTest() {
         String baseUrl = "http://localhost:" + port;
-        iamServiceClient = IAMServiceClientBuilder.builder()
+        iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
@@ -36,7 +36,7 @@ public class HealthCheckTests {
     @Test
     @Order(2)
     public void getHealthCheck() throws IOException {
-        String response = iamServiceClient.getActuatorInfo();
+        String response = iamServiceManagerClient.getActuatorInfo();
         assertNotNull(response);
     }
 

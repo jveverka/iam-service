@@ -5,8 +5,9 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.dto.ProviderConfigurationResponse;
-import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
+import itx.iamservice.serviceclient.IAMServiceStatusClient;
 import itx.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -28,7 +29,8 @@ public class ProviderConfigurationTests {
 
     private static OrganizationId organizationId;
     private static ProjectId projectId;
-    private static IAMServiceClient iamServiceClient;
+    private static IAMServiceManagerClient iamServiceManagerClient;
+    private static IAMServiceStatusClient iamServiceStatusClient;
 
     @LocalServerPort
     private int port;
@@ -43,16 +45,17 @@ public class ProviderConfigurationTests {
     @Order(1)
     public void initTest() throws AuthenticationException {
         String baseUrl = "http://localhost:" + port;
-        iamServiceClient = IAMServiceClientBuilder.builder()
+        iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
+        iamServiceStatusClient = iamServiceManagerClient.getIAMServiceStatusClient(organizationId, projectId);
     }
 
     @Test
     @Order(2)
     public void checkCreatedProjectTest() throws IOException {
-        ProviderConfigurationResponse providerConfigurationResponse = iamServiceClient.getProviderConfiguration(organizationId, projectId);
+        ProviderConfigurationResponse providerConfigurationResponse = iamServiceStatusClient.getProviderConfiguration();
         assertNotNull(providerConfigurationResponse);
         assertNotNull(providerConfigurationResponse.getIssuer());
         assertNotNull(providerConfigurationResponse.getAuthorizationEndpoint());
@@ -66,7 +69,7 @@ public class ProviderConfigurationTests {
     @Test
     @Order(3)
     public void checkGetJsonWebKeysTest() throws IOException {
-        JWKResponse jwkResponse = iamServiceClient.getJWK(organizationId, projectId);
+        JWKResponse jwkResponse = iamServiceStatusClient.getJWK();
         assertNotNull(jwkResponse);
         assertNotNull(jwkResponse.getKeys());
         assertFalse(jwkResponse.getKeys().isEmpty());

@@ -5,9 +5,9 @@ import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.UserInfo;
-import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
-import itx.iamservice.serviceclient.IAMServiceProject;
+import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DiscoveryAPIsTests {
 
-    private static IAMServiceClient iamServiceClient;
-    private static IAMServiceProject iamServiceProject;
+    private static IAMServiceManagerClient iamServiceManagerClient;
+    private static IAMServiceProjectManagerClient iamServiceProjectManagerClient;
 
     @LocalServerPort
     private int port;
@@ -37,17 +37,17 @@ public class DiscoveryAPIsTests {
     @Order(1)
     public void initTest() {
         String baseUrl = "http://localhost:" + port;
-        iamServiceClient = IAMServiceClientBuilder.builder()
+        iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
-        iamServiceProject = iamServiceClient.getIAMServiceProject(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
+        iamServiceProjectManagerClient = iamServiceManagerClient.getIAMServiceProject(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 
     @Test
     @Order(2)
     public void getOrganizationsInfoTest() throws IOException {
-        Collection<OrganizationInfo> organizationInfo = iamServiceClient.getOrganizations();
+        Collection<OrganizationInfo> organizationInfo = iamServiceManagerClient.getOrganizations();
         assertNotNull(organizationInfo);
         assertTrue(organizationInfo.size() > 0);
         assertNotNull(organizationInfo);
@@ -61,7 +61,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(3)
     public void getOrganizationInfoTest() throws IOException {
-        OrganizationInfo organizationInfo = iamServiceClient.getOrganization(ModelUtils.IAM_ADMINS_ORG);
+        OrganizationInfo organizationInfo = iamServiceManagerClient.getOrganization(ModelUtils.IAM_ADMINS_ORG);
         assertNotNull(organizationInfo);
         assertNotNull(organizationInfo.getName());
         assertNotNull(organizationInfo.getId());
@@ -72,7 +72,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(4)
     public void getProjectInfoTest() throws IOException {
-        ProjectInfo projectInfo = iamServiceProject.getInfo();
+        ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         assertNotNull(projectInfo);
         assertNotNull(projectInfo.getId());
         assertNotNull(projectInfo.getName());
@@ -86,7 +86,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(5)
     public void getUserInfoTest() throws IOException {
-        UserInfo userInfo = iamServiceProject.getUserInfo(ModelUtils.IAM_ADMIN_USER);
+        UserInfo userInfo = iamServiceProjectManagerClient.getUserInfo(ModelUtils.IAM_ADMIN_USER);
         assertNotNull(userInfo);
         assertNotNull(userInfo.getId());
         assertNotNull(userInfo.getName());
@@ -101,7 +101,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(6)
     public void getClientInfoTest() throws IOException {
-        ClientInfo clientInfo = iamServiceProject.getClientInfo(ModelUtils.IAM_ADMIN_CLIENT_ID);
+        ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(ModelUtils.IAM_ADMIN_CLIENT_ID);
         assertNotNull(clientInfo);
         assertNotNull(clientInfo.getId());
         assertNotNull(clientInfo.getName());

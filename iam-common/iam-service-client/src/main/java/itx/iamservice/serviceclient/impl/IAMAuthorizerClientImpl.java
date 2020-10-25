@@ -61,11 +61,11 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     }
 
     @Override
-    public AuthorizationCode getAuthorizationCodeOAuth2AuthorizationCodeGrant(String userName, String password, ClientId clientId, URL redirectUri, String state) throws AuthenticationException {
+    public AuthorizationCode getAuthorizationCodeOAuth2AuthorizationCodeGrant(String userName, String password, ClientId clientId, Set<String> scopes, URL redirectUri, String state) throws AuthenticationException {
         try {
             //1. Get AuthorizationCode
             AuthorizationCodeGrantRequest authorizationCodeGrantRequest =
-                    new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), Set.of(), state, redirectUri.toString());
+                    new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString());
             Request request = new Request.Builder()
                     .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/authorize")
                     .post(RequestBody.create(mapper.writeValueAsString(authorizationCodeGrantRequest), MediaType.parse(APPLICATION_JSON)))

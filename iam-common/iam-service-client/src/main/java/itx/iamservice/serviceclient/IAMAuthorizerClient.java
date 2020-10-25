@@ -8,6 +8,7 @@ import itx.iamservice.serviceclient.impl.AuthenticationException;
 import itx.iamservice.serviceclient.impl.ProjectInfoProvider;
 
 import java.net.URL;
+import java.util.Set;
 
 public interface IAMAuthorizerClient extends ProjectInfoProvider  {
 
@@ -21,7 +22,7 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider  {
      * @return
      * @throws AuthenticationException
      */
-    AuthorizationCode getAuthorizationCodeOAuth2AuthorizationCodeGrant(String userName, String password, ClientId clientId, URL redirectUri, String state) throws AuthenticationException;
+    AuthorizationCode getAuthorizationCodeOAuth2AuthorizationCodeGrant(String userName, String password, ClientId clientId, Set<String> scopes, URL redirectUri, String state) throws AuthenticationException;
 
     /**
      * 2. OAuth2AuthorizationCodeGrant - set scopes (consent screen feedback)

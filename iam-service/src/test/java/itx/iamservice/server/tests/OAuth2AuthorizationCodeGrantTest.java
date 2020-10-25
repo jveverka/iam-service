@@ -3,9 +3,7 @@ package itx.iamservice.server.tests;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.dto.AuthorizationCode;
-import itx.iamservice.core.services.dto.AuthorizationCodeGrantRequest;
 import itx.iamservice.core.dto.IntrospectResponse;
-import itx.iamservice.core.services.dto.ConsentRequest;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.core.services.dto.UserInfoResponse;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
@@ -20,12 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -84,39 +82,27 @@ public class OAuth2AuthorizationCodeGrantTest {
 
     @Test
     @Order(2)
-    public void getAuthorizationCodeTest() {
-        AuthorizationCodeGrantRequest request = new AuthorizationCodeGrantRequest("admin", "secret", "admin-client", Set.of(), "123", "");
-        HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
-        ResponseEntity<AuthorizationCode> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize",
-                httpEntity, AuthorizationCode.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        authorizationCode = response.getBody();
+    public void getAuthorizationCodeTest() throws MalformedURLException, AuthenticationException {
+        authorizationCode = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAuthorizationCodeOAuth2AuthorizationCodeGrant("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, Set.of(), new URL("http://localhost:8080"), "123");
         assertNotNull(authorizationCode);
     }
 
     @Test
     @Order(3)
-    public void getProvideConsentTest() {
-        ConsentRequest request = new ConsentRequest(authorizationCode.getCode(), authorizationCode.getAvailableScopes().getValues());
-        HttpEntity<AuthorizationCodeGrantRequest> httpEntity = new HttpEntity(request);
-        ResponseEntity<Void> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/consent",
-                httpEntity, Void.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    public void getProvideConsentTest() throws AuthenticationException {
+        iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .setOAuth2AuthorizationCodeGrantConsent(authorizationCode);
     }
 
     @Test
     @Order(4)
-    public void getTokensTest() {
-        Map<String, String> urlVariables = new HashMap<>();
-        urlVariables.put("grant_type", "authorization_code");
-        urlVariables.put("code", authorizationCode.getCode().getCodeValue());
-        ResponseEntity<TokenResponse> response = restTemplate.exchange(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token?grant_type={grant_type}&code={code}",
-                HttpMethod.POST,null, TokenResponse.class, urlVariables);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        tokenResponse = response.getBody();
+    public void getTokensTest() throws AuthenticationException {
+        tokenResponse = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2AuthorizationCodeGrant(authorizationCode.getCode());
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

@@ -2,6 +2,7 @@ package itx.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import itx.iamservice.core.dto.CreateClient;
 import itx.iamservice.core.dto.CreateRole;
 import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
@@ -176,6 +177,78 @@ public class IAMServiceProjectImpl implements IAMServiceProject {
             return mapper.readValue(response.body().string(), ClientInfo.class);
         }
         throw new IOException();
+    }
+
+    @Override
+    public void createClient(CreateClient createClient) throws AuthenticationException {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/clients")
+                    .addHeader(AUTHORIZATION, BEARER_PREFIX + accessToken)
+                    .post(RequestBody.create(mapper.writeValueAsString(createClient), MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return;
+            }
+            throw new AuthenticationException("Authentication failed: " + response.code());
+        } catch (IOException e) {
+            throw new AuthenticationException(e);
+        }
+    }
+
+    @Override
+    public void addRoleToClient(ClientId clientId, RoleId roleId) throws AuthenticationException {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId())
+                    .addHeader(AUTHORIZATION, BEARER_PREFIX + accessToken)
+                    .put(RequestBody.create("{}", MediaType.parse(APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return;
+            }
+            throw new AuthenticationException("Authentication failed: " + response.code());
+        } catch (IOException e) {
+            throw new AuthenticationException(e);
+        }
+    }
+
+    @Override
+    public void removeRoleFromClient(ClientId clientId, RoleId roleId) throws AuthenticationException {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId() + "/roles/" + roleId.getId())
+                    .addHeader(AUTHORIZATION, BEARER_PREFIX + accessToken)
+                    .delete()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return;
+            }
+            throw new AuthenticationException("Authentication failed: " + response.code());
+        } catch (IOException e) {
+            throw new AuthenticationException(e);
+        }
+    }
+
+    @Override
+    public void deleteClient(ClientId clientId) throws AuthenticationException {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId())
+                    .addHeader(AUTHORIZATION, BEARER_PREFIX + accessToken)
+                    .delete()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return;
+            }
+            throw new AuthenticationException("Authentication failed: " + response.code());
+        } catch (IOException e) {
+            throw new AuthenticationException(e);
+        }
     }
 
 }

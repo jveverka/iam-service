@@ -1,5 +1,6 @@
 package itx.iamservice.serviceclient;
 
+import itx.iamservice.core.dto.CreateClient;
 import itx.iamservice.core.dto.CreateRole;
 import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
@@ -33,5 +34,13 @@ public interface IAMServiceProject {
     UserInfo getUserInfo(UserId userId) throws IOException;
 
     ClientInfo getClientInfo(ClientId clientId) throws IOException;
+
+    void createClient(CreateClient createClient) throws AuthenticationException;
+
+    void addRoleToClient(ClientId clientId, RoleId roleId) throws AuthenticationException;
+
+    void removeRoleFromClient(ClientId clientId, RoleId roleId) throws AuthenticationException;
+
+    void deleteClient(ClientId clientId) throws AuthenticationException;
 
 }

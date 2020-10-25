@@ -9,9 +9,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.CreateClientRequest;
-import itx.iamservice.core.services.dto.CreateOrganizationRequest;
 import itx.iamservice.core.services.dto.CreatePermissionRequest;
-import itx.iamservice.core.services.dto.CreateProjectRequest;
 import itx.iamservice.core.services.dto.CreateUserRequest;
 import itx.iamservice.core.services.dto.SetUserNamePasswordCredentialsRequest;
 import itx.iamservice.core.services.dto.TokenResponse;
@@ -32,7 +30,6 @@ import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.create
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createPermissionOnProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createProject;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.createUserOnProject;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getActuatorInfo;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForIAMAdmins;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForUserNameAndPassword;
 import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.setUsernamePasswordCredentialsForProjectAndUser;
@@ -62,12 +59,10 @@ public class MethodSecurityTestsIT {
     @Test
     @Order(1)
     public void checkIamServerIsAliveTestsIT() {
-        ResponseEntity<String> response = getActuatorInfo(restTemplate, iamServerPort);
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:" + iamServerPort + "/actuator/info", String.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        adminTokens = getTokenResponseForIAMAdmins(restTemplate, iamServerPort);
-        assertNotNull(adminTokens);
-
     }
 
     @Test
@@ -80,6 +75,13 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(3)
+    public void getAdminAccessTokens() {
+        adminTokens = getTokenResponseForIAMAdmins(restTemplate, iamServerPort);
+        assertNotNull(adminTokens);
+    }
+
+    @Test
+    @Order(4)
     public void createOrganizationProjectAndUsers() {
         CreateOrganization request = new CreateOrganization("it-testing-001", "IT Testing");
         organizationId = createNewOrganization(adminTokens.getAccessToken(), restTemplate, iamServerPort, request);

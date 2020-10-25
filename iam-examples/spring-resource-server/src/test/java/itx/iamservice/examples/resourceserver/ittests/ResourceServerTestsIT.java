@@ -10,7 +10,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getActuatorInfo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -32,7 +31,8 @@ public class ResourceServerTestsIT {
     @Test
     @Order(1)
     public void checkIamServerIsAliveTestsIT() {
-        ResponseEntity<String> response = getActuatorInfo(restTemplate, iamServerPort);
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:" + iamServerPort + "/actuator/info", String.class);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

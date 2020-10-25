@@ -67,7 +67,7 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
         Request request = new Request.Builder()
                 .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/userinfo")
                 .addHeader(AUTHORIZATION, BEARER_PREFIX + accessToken)
-                .post(RequestBody.create("", MediaType.parse(APPLICATION_JSON)))
+                .get()
                 .build();
         Response response = client.newCall(request).execute();
         if (response.code() == 200) {
@@ -94,6 +94,11 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
     }
 
     @Override
+    public void revokeToken(String accessToken) throws IOException {
+        revokeToken(accessToken, null);
+    }
+
+    @Override
     public IntrospectResponse tokenIntrospection(String accessToken, String tokenTypeHint) throws IOException {
         String url = "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/introspect?token=" + accessToken;
         if (tokenTypeHint != null) {
@@ -108,6 +113,11 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
             return mapper.readValue(response.body().string(), IntrospectResponse.class);
         }
         throw new IOException();
+    }
+
+    @Override
+    public IntrospectResponse tokenIntrospection(String accessToken) throws IOException {
+        return tokenIntrospection(accessToken, null);
     }
 
     @Override

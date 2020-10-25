@@ -1,5 +1,7 @@
 package itx.iamservice.serviceclient;
 
+import itx.iamservice.core.dto.JWKResponse;
+import itx.iamservice.core.dto.ProviderConfigurationResponse;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -29,5 +31,9 @@ public interface IAMServiceClient {
     OrganizationInfo getOrganization(OrganizationId organizationId) throws IOException;
 
     String getActuatorInfo() throws IOException;
+
+    ProviderConfigurationResponse getProviderConfiguration(OrganizationId organizationId, ProjectId projectId) throws IOException;
+
+    JWKResponse getJWK(OrganizationId organizationId, ProjectId projectId) throws IOException;
 
 }

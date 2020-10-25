@@ -5,19 +5,21 @@ import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.dto.JWKResponse;
 import itx.iamservice.core.dto.ProviderConfigurationResponse;
+import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceClientBuilder;
+import itx.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -26,12 +28,10 @@ public class ProviderConfigurationTests {
 
     private static OrganizationId organizationId;
     private static ProjectId projectId;
+    private static IAMServiceClient iamServiceClient;
 
     @LocalServerPort
     private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     @BeforeAll
     private static void init() {
@@ -41,11 +41,18 @@ public class ProviderConfigurationTests {
 
     @Test
     @Order(1)
-    public void checkCreatedProjectTest() {
-        ResponseEntity<ProviderConfigurationResponse> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration", ProviderConfigurationResponse.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ProviderConfigurationResponse providerConfigurationResponse = response.getBody();
+    public void initTest() throws AuthenticationException {
+        String baseUrl = "http://localhost:" + port;
+        iamServiceClient = IAMServiceClientBuilder.builder()
+                .withBaseUrl(baseUrl)
+                .withConnectionTimeout(60L, TimeUnit.SECONDS)
+                .build();
+    }
+
+    @Test
+    @Order(2)
+    public void checkCreatedProjectTest() throws IOException {
+        ProviderConfigurationResponse providerConfigurationResponse = iamServiceClient.getProviderConfiguration(organizationId, projectId);
         assertNotNull(providerConfigurationResponse);
         assertNotNull(providerConfigurationResponse.getIssuer());
         assertNotNull(providerConfigurationResponse.getAuthorizationEndpoint());
@@ -57,14 +64,12 @@ public class ProviderConfigurationTests {
     }
 
     @Test
-    @Order(2)
-    public void checkGetJsonWebKeysTest() {
-        ResponseEntity<JWKResponse> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json", JWKResponse.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        JWKResponse jwkResponse = response.getBody();
+    @Order(3)
+    public void checkGetJsonWebKeysTest() throws IOException {
+        JWKResponse jwkResponse = iamServiceClient.getJWK(organizationId, projectId);
         assertNotNull(jwkResponse);
         assertNotNull(jwkResponse.getKeys());
+        assertFalse(jwkResponse.getKeys().isEmpty());
     }
 
 }

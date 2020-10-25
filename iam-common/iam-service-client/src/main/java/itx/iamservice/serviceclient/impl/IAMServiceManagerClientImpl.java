@@ -10,6 +10,7 @@ import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
 import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.serviceclient.IAMAuthorizerClient;
 import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
 import itx.iamservice.serviceclient.IAMServiceStatusClient;
@@ -44,6 +45,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
         this.mapper = new ObjectMapper();
     }
 
+    /**
     @Override
     public TokenResponse getAccessTokens(OrganizationId organizationId, ProjectId projectId, String userName, String password, ClientId clientId, String clientSecret) throws AuthenticationException {
         try {
@@ -70,6 +72,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     public TokenResponse getAccessTokensForIAMAdmin(String password, String clientSecret) throws AuthenticationException {
         return getAccessTokens(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER.getId(), password, ModelUtils.IAM_ADMIN_CLIENT_ID, clientSecret);
     }
+    */
 
     @Override
     public SetupOrganizationResponse setupOrganization(String accessToken, SetupOrganizationRequest setupOrganizationRequest) throws AuthenticationException {
@@ -115,6 +118,16 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     @Override
     public IAMServiceStatusClient getIAMServiceStatusClient(OrganizationId organizationId, ProjectId projectId) {
         return new IAMServiceStatusClientImpl(baseURL, client, mapper, organizationId, projectId);
+    }
+
+    @Override
+    public IAMAuthorizerClient getIAMAuthorizerClient(OrganizationId organizationId, ProjectId projectId) {
+        return new IAMAuthorizerClientImpl(baseURL, client, mapper, organizationId, projectId);
+    }
+
+    @Override
+    public IAMAuthorizerClient getIAMAdminAuthorizerClient() {
+        return new IAMAuthorizerClientImpl(baseURL, client, mapper, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 
     @Override

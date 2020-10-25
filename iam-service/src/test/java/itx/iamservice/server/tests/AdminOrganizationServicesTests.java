@@ -9,6 +9,7 @@ import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.model.UserId;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
@@ -66,7 +67,9 @@ public class AdminOrganizationServicesTests {
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
-        jwt_admin_token = iamServiceManagerClient.getAccessTokensForIAMAdmin("secret", "top-secret").getAccessToken();
+        jwt_admin_token = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret").getAccessToken();
         LOG.info("JSW  access_token: {}", jwt_admin_token);
     }
 
@@ -86,7 +89,7 @@ public class AdminOrganizationServicesTests {
     @Test
     @Order(3)
     public void getTokenOrganizationForAdminUser() throws AuthenticationException {
-        jwt_organization_admin_token = iamServiceManagerClient.getAccessTokens(organizationId, projectId, adminUserId.getId(), adminPassword,
+        jwt_organization_admin_token = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId).getAccessTokensOAuth2UsernamePassword(adminUserId.getId(), adminPassword,
                 adminClientId, adminClientSecret).getAccessToken();
         assertNotNull(jwt_organization_admin_token);
         iamServiceProjectManagerClient = iamServiceManagerClient.getIAMServiceProject(jwt_organization_admin_token, organizationId, projectId);

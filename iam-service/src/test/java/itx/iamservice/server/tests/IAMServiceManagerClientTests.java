@@ -8,6 +8,7 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenType;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
@@ -86,7 +87,9 @@ public class IAMServiceManagerClientTests {
     @Test
     @Order(2)
     public void getTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient.getAccessTokensForIAMAdmin("secret", "top-secret");
+        tokenResponse = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

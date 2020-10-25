@@ -26,3 +26,4 @@ authentication and authorization OAuth2 server.
 * [Spring method security example](../../iam-examples/spring-method-security)
 * [Spring resource server example](../../iam-examples/spring-resource-server)
 * [IAM-Client java library](../../iam-common/iam-client)
+* [IAM-Service-Client java library](../../iam-common/iam-service-client)

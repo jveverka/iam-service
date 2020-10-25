@@ -2,25 +2,21 @@ package itx.iamservice.server.tests;
 
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.dto.IntrospectResponse;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.serviceclient.IAMServiceClientBuilder;
+import itx.iamservice.serviceclient.IAMServiceManagerClient;
+import itx.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenRevokeResponse;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenVerificationResponse;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokensForClient;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,18 +25,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OAuth2ClientCredentialsTests {
 
+    private static IAMServiceManagerClient iamServiceManagerClient;
     private static TokenResponse tokenResponse;
 
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+    @Test
+    @Order(0)
+    public void initTests() {
+        String baseUrl = "http://localhost:" + port;
+        iamServiceManagerClient = IAMServiceClientBuilder.builder()
+                .withBaseUrl(baseUrl)
+                .withConnectionTimeout(60L, TimeUnit.SECONDS)
+                .build();
+    }
 
     @Test
     @Order(1)
-    public void getTokens() {
-        tokenResponse = getTokensForClient(restTemplate, port);
+    public void getTokens() throws AuthenticationException {
+        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());
@@ -51,30 +56,24 @@ public class OAuth2ClientCredentialsTests {
 
     @Test
     @Order(2)
-    public void verifyTokens() {
-        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().getActive());
-        response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().getActive());
+    public void verifyTokens() throws IOException {
+        IntrospectResponse response = iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .tokenIntrospection(tokenResponse.getAccessToken());
+        assertNotNull(response);
+        assertTrue(response.getActive());
+        response = iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .tokenIntrospection(tokenResponse.getRefreshToken());
+        assertNotNull(response);
+        assertTrue(response.getActive());
     }
 
     @Test
     @Order(3)
-    public void getRefreshTokens() {
-        Map<String, String> urlVariables = new HashMap<>();
-        urlVariables.put("grant_type", "refresh_token");
-        urlVariables.put("refresh_token", tokenResponse.getRefreshToken());
-        urlVariables.put("scope", "");
-        urlVariables.put("client_id", "admin-client");
-        urlVariables.put("client_secret", "top-secret");
-        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token" +
-                        "?grant_type={grant_type}&refresh_token={refresh_token}&scope={scope}&client_id={client_id}&client_secret={client_secret}",
-                null, TokenResponse.class, urlVariables);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        tokenResponse = response.getBody();
+    public void getRefreshTokens() throws AuthenticationException {
+        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+                .refreshTokens(tokenResponse.getRefreshToken(), ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());
@@ -85,33 +84,43 @@ public class OAuth2ClientCredentialsTests {
 
     @Test
     @Order(4)
-    public void verifyRefreshedTokens() {
-        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().getActive());
-        response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().getActive());
+    public void verifyRefreshedTokens() throws IOException {
+        IntrospectResponse response = iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .tokenIntrospection(tokenResponse.getAccessToken());
+        assertNotNull(response);
+        assertTrue(response.getActive());
+        response = iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .tokenIntrospection(tokenResponse.getRefreshToken());
+        assertNotNull(response);
+        assertTrue(response.getActive());
     }
 
     @Test
     @Order(5)
-    public void revokeTokens() {
-        ResponseEntity<Void> response = getTokenRevokeResponse(restTemplate, port, tokenResponse.getRefreshToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        response = getTokenRevokeResponse(restTemplate, port, tokenResponse.getAccessToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    public void revokeTokens() throws IOException {
+        iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .revokeToken(tokenResponse.getRefreshToken());
+        iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .revokeToken(tokenResponse.getAccessToken());
     }
 
     @Test
     @Order(6)
-    public void verifyRevokedTokens() {
-        ResponseEntity<IntrospectResponse> response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getRefreshToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getBody().getActive());
-        response = getTokenVerificationResponse(restTemplate, port, tokenResponse.getAccessToken());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getBody().getActive());
+    public void verifyRevokedTokens() throws IOException {
+        IntrospectResponse response = iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .tokenIntrospection(tokenResponse.getAccessToken());
+        assertNotNull(response);
+        assertFalse(response.getActive());
+        response = iamServiceManagerClient
+                .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
+                .tokenIntrospection(tokenResponse.getRefreshToken());
+        assertNotNull(response);
+        assertFalse(response.getActive());
     }
 
 }

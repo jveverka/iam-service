@@ -26,4 +26,8 @@ public interface IAMServiceClient {
 
     Collection<OrganizationInfo> getOrganizations() throws IOException;
 
+    OrganizationInfo getOrganization(OrganizationId organizationId) throws IOException;
+
+    String getActuatorInfo() throws IOException;
+
 }

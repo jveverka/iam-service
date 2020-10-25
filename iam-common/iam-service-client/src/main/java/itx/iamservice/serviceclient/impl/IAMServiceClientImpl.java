@@ -2,7 +2,6 @@ package itx.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import itx.iamservice.core.dto.RoleInfo;
 import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
@@ -124,6 +123,32 @@ public class IAMServiceClientImpl implements IAMServiceClient {
          } else {
              return Collections.emptyList();
          }
+    }
+
+    @Override
+    public OrganizationInfo getOrganization(OrganizationId organizationId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), OrganizationInfo.class);
+        }
+        throw new IOException();
+    }
+
+    @Override
+    public String getActuatorInfo() throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/actuator/info")
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return response.body().string();
+        }
+        throw new IOException();
     }
 
 }

@@ -5,23 +5,21 @@ import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.UserInfo;
+import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceClientBuilder;
+import itx.iamservice.serviceclient.IAMServiceProject;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getClientInfo;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfo;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getOrganizationInfos;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getProjectInfo;
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getUserInfo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,29 +27,41 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DiscoveryAPIsTests {
 
+    private static IAMServiceClient iamServiceClient;
+    private static IAMServiceProject iamServiceProject;
+
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     @Test
     @Order(1)
-    public void getOrganizationsInfoTest() {
-        OrganizationInfo[] organizationInfo = getOrganizationInfos(restTemplate, port);
-        assertNotNull(organizationInfo);
-        assertTrue(organizationInfo.length > 0);
-        assertNotNull(organizationInfo[0]);
-        assertNotNull(organizationInfo[0].getName());
-        assertNotNull(organizationInfo[0].getId());
-        assertNotNull(organizationInfo[0].getProjects());
-        assertNotNull(organizationInfo[0].getX509Certificate());
+    public void initTest() {
+        String baseUrl = "http://localhost:" + port;
+        iamServiceClient = IAMServiceClientBuilder.builder()
+                .withBaseUrl(baseUrl)
+                .withConnectionTimeout(60L, TimeUnit.SECONDS)
+                .build();
+        iamServiceProject = iamServiceClient.getIAMServiceProject(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 
     @Test
     @Order(2)
-    public void getOrganizationInfoTest() {
-        OrganizationInfo organizationInfo = getOrganizationInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG);
+    public void getOrganizationsInfoTest() throws IOException {
+        Collection<OrganizationInfo> organizationInfo = iamServiceClient.getOrganizations();
+        assertNotNull(organizationInfo);
+        assertTrue(organizationInfo.size() > 0);
+        assertNotNull(organizationInfo);
+        Optional<OrganizationInfo> first = organizationInfo.stream().findFirst();
+        assertNotNull(first.get().getName());
+        assertNotNull(first.get().getId());
+        assertNotNull(first.get().getProjects());
+        assertNotNull(first.get().getX509Certificate());
+    }
+
+    @Test
+    @Order(3)
+    public void getOrganizationInfoTest() throws IOException {
+        OrganizationInfo organizationInfo = iamServiceClient.getOrganization(ModelUtils.IAM_ADMINS_ORG);
         assertNotNull(organizationInfo);
         assertNotNull(organizationInfo.getName());
         assertNotNull(organizationInfo.getId());
@@ -60,9 +70,9 @@ public class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(3)
-    public void getProjectInfoTest() {
-        ProjectInfo projectInfo = getProjectInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
+    @Order(4)
+    public void getProjectInfoTest() throws IOException {
+        ProjectInfo projectInfo = iamServiceProject.getInfo();
         assertNotNull(projectInfo);
         assertNotNull(projectInfo.getId());
         assertNotNull(projectInfo.getName());
@@ -74,9 +84,9 @@ public class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(4)
-    public void getUserInfoTest() {
-        UserInfo userInfo = getUserInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
+    @Order(5)
+    public void getUserInfoTest() throws IOException {
+        UserInfo userInfo = iamServiceProject.getUserInfo(ModelUtils.IAM_ADMIN_USER);
         assertNotNull(userInfo);
         assertNotNull(userInfo.getId());
         assertNotNull(userInfo.getName());
@@ -89,9 +99,9 @@ public class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(5)
-    public void getClientInfoTest() {
-        ClientInfo clientInfo = getClientInfo(restTemplate, port, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_CLIENT_ID);
+    @Order(6)
+    public void getClientInfoTest() throws IOException {
+        ClientInfo clientInfo = iamServiceProject.getClientInfo(ModelUtils.IAM_ADMIN_CLIENT_ID);
         assertNotNull(clientInfo);
         assertNotNull(clientInfo.getId());
         assertNotNull(clientInfo.getName());

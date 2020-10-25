@@ -9,6 +9,9 @@ import itx.iamservice.core.model.Permission;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.TokenType;
 import itx.iamservice.core.services.dto.TokenResponse;
+import itx.iamservice.serviceclient.IAMServiceClient;
+import itx.iamservice.serviceclient.IAMServiceClientBuilder;
+import itx.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -16,9 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.net.MalformedURLException;
@@ -28,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static itx.iamservice.client.spring.httpclient.HttpClientTestUtils.getTokenResponseForIAMAdmins;
 import static itx.iamservice.core.ModelCommons.ADMIN_ORGANIZATION_SET;
 import static itx.iamservice.core.ModelCommons.IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL;
 import static itx.iamservice.core.ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL;
@@ -48,6 +48,7 @@ public class IAMServiceClientTests {
 
     private static TokenResponse tokenResponse;
     private static IAMClient iamClient;
+    private static IAMServiceClient iamServiceClient;
 
     public static final Set<Permission> NEW_ADMIN_ORGANIZATION_SET = Set.of(
             new Permission("service", "resource", "all"),
@@ -60,9 +61,6 @@ public class IAMServiceClientTests {
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     @BeforeAll
     public static void init() {
     }
@@ -70,6 +68,10 @@ public class IAMServiceClientTests {
     @Test
     @Order(1)
     public void createIamClient() throws MalformedURLException, URISyntaxException, InterruptedException {
+        iamServiceClient = IAMServiceClientBuilder.builder()
+                .withBaseUrl("http://localhost:" + port)
+                .withConnectionTimeout(60L, TimeUnit.SECONDS)
+                .build();
         iamClient = IAMClientBuilder.builder()
                 .setBaseUrl(new URL("http://localhost:" + port + "/services/authentication"))
                 .setOrganizationId(IAM_ADMINS_ORG.getId())
@@ -83,8 +85,8 @@ public class IAMServiceClientTests {
 
     @Test
     @Order(2)
-    public void getTokens() {
-        tokenResponse = getTokenResponseForIAMAdmins(restTemplate, port);
+    public void getTokens() throws AuthenticationException {
+        tokenResponse = iamServiceClient.getAccessTokensForIAMAdmin("secret", "top-secret");
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

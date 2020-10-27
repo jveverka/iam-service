@@ -40,7 +40,7 @@ public class FileSystemPersistenceTests {
     @Test
     public void testPersistenceSerializationAndLoading() throws Exception {
         FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(sharedTempDir, false);
-        ModelUtils.createDefaultModelCache("secret", "top-secret", persistenceService);
+        ModelUtils.createDefaultModelCache("secret", "top-secret", "admin@email.com", persistenceService);
         String serializedModel = persistenceService.flushToString();
         assertNotNull(serializedModel);
 

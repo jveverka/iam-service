@@ -15,6 +15,7 @@ public class SetupOrganizationRequest {
     private final String adminClientSecret;
     private final String adminUserId;
     private final String adminUserPassword;
+    private final String adminUserEmail;
     private final Set<String> projectAudience;
 
     @JsonCreator
@@ -26,6 +27,7 @@ public class SetupOrganizationRequest {
                                     @JsonProperty("adminClientSecret") String adminClientSecret,
                                     @JsonProperty("adminUserId") String adminUserId,
                                     @JsonProperty("adminUserPassword") String adminUserPassword,
+                                    @JsonProperty("adminUserEmail") String adminUserEmail,
                                     @JsonProperty("projectAudience") Set<String> projectAudience) {
         this.organizationId = organizationId;
         this.organizationName = organizationName;
@@ -35,6 +37,7 @@ public class SetupOrganizationRequest {
         this.adminClientSecret = adminClientSecret;
         this.adminUserId = adminUserId;
         this.adminUserPassword = adminUserPassword;
+        this.adminUserEmail = adminUserEmail;
         this.projectAudience = projectAudience;
     }
 
@@ -68,6 +71,10 @@ public class SetupOrganizationRequest {
 
     public String getAdminUserPassword() {
         return adminUserPassword;
+    }
+
+    public String getAdminUserEmail() {
+        return adminUserEmail;
     }
 
     public Set<String> getProjectAudience() {

@@ -46,6 +46,7 @@ public class ClientCCAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
     private static final String adminSecret = "top-secret";
+    private static final String adminEmail = "admin@email.com";
 
     private static ModelCache modelCache;
     private static ResourceServerService resourceServerService;
@@ -61,7 +62,7 @@ public class ClientCCAuthenticationTests {
     private static void init() throws PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
-        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret);
+        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail);
         tokenCache = new TokenCacheImpl(modelCache);
         authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);

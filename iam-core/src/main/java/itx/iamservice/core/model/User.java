@@ -44,4 +44,6 @@ public interface User {
 
     boolean removeRole(RoleId roleId);
 
+    String getEmail();
+
 }

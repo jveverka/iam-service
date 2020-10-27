@@ -42,7 +42,7 @@ public class ProjectUserManagementController {
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
         iamSecurityValidator.verifyProjectAdminAccess(orgId, projId);
-        CreateUserRequest request = new CreateUserRequest(UserId.from(createUser.getId()), createUser.getName(), createUser.getDefaultAccessTokenDuration(), createUser.getDefaultRefreshTokenDuration());
+        CreateUserRequest request = new CreateUserRequest(UserId.from(createUser.getId()), createUser.getName(), createUser.getDefaultAccessTokenDuration(), createUser.getDefaultRefreshTokenDuration(), createUser.getEmail());
         Optional<User> userOptional = userManagerService.create(orgId, projId, request);
         if (userOptional.isPresent()) {
             return ResponseEntity.ok().build();

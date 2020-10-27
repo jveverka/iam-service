@@ -239,7 +239,7 @@ public class AdminProjectTests {
     @Test
     @Order(17)
     public void createUserTest() {
-        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "user-001-name", 3600L, 3600L);
+        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "user-001-name", 3600L, 3600L, "user1@email.com");
         userId = createUserOnProject(jwt_admin, restTemplate, port, organizationId, projectId, createUserRequest);
         assertNotNull(userId);
     }
@@ -247,7 +247,7 @@ public class AdminProjectTests {
     @Test
     @Order(18)
     public void createExistingUserTest() {
-        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "user-001-name", 3600L, 3600L);
+        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "user-001-name", 3600L, 3600L, "user2@email.com");
         ResponseEntity<UserId> response = createUserOnProjectRequest(jwt_admin, restTemplate, port, organizationId, projectId, createUserRequest);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }

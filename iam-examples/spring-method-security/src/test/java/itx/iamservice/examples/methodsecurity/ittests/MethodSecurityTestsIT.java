@@ -89,7 +89,7 @@ public class MethodSecurityTestsIT {
         projectId = createProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, createProjectRequest);
         createPermissionOnProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, projectId, new CreatePermissionRequest("methodsecurity", "data", "read"));
         createPermissionOnProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, projectId, new CreatePermissionRequest("methodsecurity", "data", "modify"));
-        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "name",  3600*1000L, 3600*1000L);
+        CreateUserRequest createUserRequest = new CreateUserRequest(UserId.from("user-001"), "name",  3600*1000L, 3600*1000L, "admin@email.com");
         userId = createUserOnProject(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, projectId, createUserRequest);
         SetUserNamePasswordCredentialsRequest setUserNamePasswordCredentialsRequest = new SetUserNamePasswordCredentialsRequest(userId.getId(), "top-secret");
         setUsernamePasswordCredentialsForProjectAndUser(adminTokens.getAccessToken(), restTemplate, iamServerPort, organizationId, projectId, userId, setUserNamePasswordCredentialsRequest);

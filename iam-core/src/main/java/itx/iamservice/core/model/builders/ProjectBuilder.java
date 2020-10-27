@@ -27,13 +27,13 @@ public final class ProjectBuilder {
         this.project = project;
     }
 
-    public UserBuilder addUser(String name) throws PKIException {
+    public UserBuilder addUser(String name, String email) throws PKIException {
         UserId id = UserId.from(UUID.randomUUID().toString());
-        return addUser(id, name);
+        return addUser(id, name, email);
     }
 
-    public UserBuilder addUser(UserId id, String name) throws PKIException {
-        CreateUserRequest request = new CreateUserRequest(id, name, 3600*1000L, 24*3600*1000L);
+    public UserBuilder addUser(UserId id, String name, String email) throws PKIException {
+        CreateUserRequest request = new CreateUserRequest(id, name, 3600*1000L, 24*3600*1000L, email);
         Optional<User> user = modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), request);
         if (user.isPresent()) {
             return new UserBuilder(this, user.get());

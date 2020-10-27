@@ -108,7 +108,7 @@ public class AdminOrganizationServicesController {
             return ResponseEntity.badRequest().build();
         }
 
-        CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L);
+        CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L, request.getAdminUserEmail());
         Optional<User> userOptional = userManagerService.create(organizationId, projectId, createUserRequest);
         UPCredentials credentials = new UPCredentials(userId, request.getAdminUserPassword());
         userManagerService.setCredentials(organizationId, projectId, userId, credentials);

@@ -57,7 +57,7 @@ public class TokenCacheTests {
     private static void init() throws NoSuchAlgorithmException, NoSuchProviderException, PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
-        modelCache = ModelUtils.createDefaultModelCache("top-secret", "top-secret");
+        modelCache = ModelUtils.createDefaultModelCache("top-secret", "top-secret", "admin@email.com");
         tokenCache = new TokenCacheImpl(modelCache);
         keyId = KeyId.from("key-001");
         issuerUri = new URI("http://localhost:8080/" + ORGANIZATION_ID.getId() + "/" + PROJECT_ID.getId());

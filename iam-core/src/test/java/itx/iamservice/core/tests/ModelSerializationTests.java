@@ -130,7 +130,7 @@ public class ModelSerializationTests {
         credentialsList.add(credentials);
         User user = new UserImpl(UserId.from("user-001"), "name",
                 ProjectId.from("project-001"), 10L, 10L,
-                Collections.emptyList(), credentialsList, keyPairSerialized);
+                Collections.emptyList(), credentialsList, keyPairSerialized, "admin@email.com");
         String serialized = mapper.writeValueAsString(user);
         User userDeserialized = mapper.readValue(serialized, User.class);
         assertNotNull(userDeserialized);

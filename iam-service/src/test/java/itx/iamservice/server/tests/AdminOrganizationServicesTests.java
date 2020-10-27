@@ -80,7 +80,7 @@ public class AdminOrganizationServicesTests {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
                 projectId.getId(), "My Project 001",
                 adminClientId.getId(), adminClientSecret,
-                adminUserId.getId(), adminPassword, projectAudience);
+                adminUserId.getId(), adminPassword, "user1@email.com", projectAudience);
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(jwt_admin_token, setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
         assertEquals(organizationId.getId(), setupOrganizationResponse.getOrganizationId());

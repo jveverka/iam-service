@@ -31,7 +31,7 @@ public class InMemoryPersistenceTests {
     @Test
     public void testPersistenceSerializationAndLoading() throws Exception {
         InMemoryPersistenceServiceImpl persistenceService = new InMemoryPersistenceServiceImpl();
-        ModelUtils.createDefaultModelCache("secret", "top-secret", persistenceService);
+        ModelUtils.createDefaultModelCache("secret", "top-secret", "admin@email.com", persistenceService);
         String serializedModel = persistenceService.flushToString();
         assertNotNull(serializedModel);
 

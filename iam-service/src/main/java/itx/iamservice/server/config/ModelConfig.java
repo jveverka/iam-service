@@ -36,6 +36,7 @@ public class ModelConfig {
 
     private String defaultAdminPassword;
     private String defaultAdminClientSecret;
+    private String defaultAdminEmail;
     private String persistence;
     private String path;
 
@@ -62,13 +63,13 @@ public class ModelConfig {
             } else {
                 LOG.info("#CONFIG: default ModelCache created");
                 return ModelUtils.createDefaultModelCache(
-                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, persistenceService);
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, persistenceService);
             }
         } catch (Exception e) {
             LOG.error("Error: {}", e.getMessage());
             LOG.warn("#CONFIG: fallback to default ModelCache");
             return ModelUtils.createDefaultModelCache(OrganizationId.from(adminOrganization), ProjectId.from(adminProject),
-                    defaultAdminPassword, defaultAdminClientSecret, persistenceService);
+                    defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, persistenceService);
         }
     }
 

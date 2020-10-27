@@ -10,16 +10,19 @@ public class CreateUserRequest {
     private final String name;
     private final Long defaultAccessTokenDuration;
     private final Long defaultRefreshTokenDuration;
+    private final String email;
 
     @JsonCreator
     public CreateUserRequest(@JsonProperty("id") UserId id,
                              @JsonProperty("name") String name,
                              @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
-                             @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration) {
+                             @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
+                             @JsonProperty("email") String email) {
         this.id = id;
         this.name = name;
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
+        this.email = email;
     }
 
     public UserId getId() {
@@ -38,4 +41,7 @@ public class CreateUserRequest {
         return defaultRefreshTokenDuration;
     }
 
+    public String getEmail() {
+        return email;
+    }
 }

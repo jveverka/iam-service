@@ -30,9 +30,10 @@ public class UserImpl implements User {
     private final KeyPairSerialized keyPairSerialized;
     private final Long defaultAccessTokenDuration;
     private final Long defaultRefreshTokenDuration;
+    private final String email;
 
     public UserImpl(UserId id, String name, ProjectId projectId,
-                    Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration, PrivateKey projectPrivateKey) throws PKIException {
+                    Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration, PrivateKey projectPrivateKey, String email) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
@@ -42,6 +43,7 @@ public class UserImpl implements User {
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
+        this.email = email;
     }
 
     @JsonCreator
@@ -52,7 +54,8 @@ public class UserImpl implements User {
                     @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
                     @JsonProperty("roles") Collection<RoleId> roles,
                     @JsonProperty("credentials") Collection<Credentials> credentials,
-                    @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized) throws PKIException {
+                    @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized,
+                    @JsonProperty("email") String email) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
@@ -66,6 +69,7 @@ public class UserImpl implements User {
         credentials.forEach(c->
             this.credentials.put(c.getType(), c)
         );
+        this.email = email;
     }
 
     @Override
@@ -144,6 +148,11 @@ public class UserImpl implements User {
     @Override
     public boolean removeRole(RoleId roleId) {
         return roles.remove(roleId);
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
     }
 
 }

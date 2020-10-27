@@ -2,12 +2,13 @@
 
 * Create custom __application.yml__ configuration before you start.
   Default configuration is fully operational, however it is recommended 
-  to override default admin user's password and client secret.
+  to override default admin user's password, email and client secret.
   ```
   iam-service:
     data-model:
       default-admin-password: s3Cr3T
       default-admin-client-secret: S3cR3t 
+      default-admin-email: admin@email.com 
   ```
 * Start __iam-service__ as standalone server.
   ```

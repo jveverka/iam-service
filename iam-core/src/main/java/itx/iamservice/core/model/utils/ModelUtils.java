@@ -71,15 +71,15 @@ public final class ModelUtils {
         Model model = new ModelImpl(id, modelName);
         return new ModelCacheImpl(model, persistenceService);
     }
-    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret) throws PKIException {
-        return createDefaultModelCache(iamAdminPassword, iamClientSecret, new LoggingPersistenceServiceImpl());
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail) throws PKIException {
+        return createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail, new LoggingPersistenceServiceImpl());
     }
 
-    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
-        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, persistenceService);
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, PersistenceService persistenceService) throws PKIException {
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, persistenceService);
     }
 
-    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, PersistenceService persistenceService) throws PKIException {
+    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, PersistenceService persistenceService) throws PKIException {
 
         Role iamAdmin = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin"), "Manage IAM-Service")
                 .addPermission(IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL)
@@ -107,7 +107,7 @@ public final class ModelUtils {
                     .addClient(IAM_ADMIN_CLIENT_ID, "client-1", iamClientSecret)
                         .addRole(iamClientRole.getId())
                     .and()
-                    .addUser(IAM_ADMIN_USER, "iam-admin")
+                    .addUser(IAM_ADMIN_USER, "iam-admin", iamAdminEmail)
                         .addUserNamePasswordCredentials(IAM_ADMIN_USER, iamAdminPassword)
                         .addRole(iamAdmin.getId())
                 .build();
@@ -202,7 +202,7 @@ public final class ModelUtils {
                 }
                 for (int userIndex=0; userIndex<users; userIndex++) {
                     UserId userId = UserId.from(userPrefix + userIndex);
-                    UserBuilder builder = projectBuilder.addUser(userId, "name");
+                    UserBuilder builder = projectBuilder.addUser(userId, "name", "user@email.com");
                     projectRoles.forEach(r->builder.addRole(r.getId()));
                     builder.addUserNamePasswordCredentials(userId, "secret");
                 }

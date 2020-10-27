@@ -60,7 +60,7 @@ public class AdminOrganizationServicesTests {
     private int port;
 
     @Test
-    @Order(1)
+    @Order(101)
     public void initTest() throws AuthenticationException {
         String baseUrl = "http://localhost:" + port;
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
@@ -74,7 +74,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(2)
+    @Order(102)
     public void createNewOrganizationWithAdminUser() throws AuthenticationException {
         Set<String> projectAudience = new HashSet<>();
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
@@ -87,7 +87,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(3)
+    @Order(103)
     public void getTokenOrganizationForAdminUser() throws AuthenticationException {
         jwt_organization_admin_token = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId).getAccessTokensOAuth2UsernamePassword(adminUserId.getId(), adminPassword,
                 adminClientId, adminClientSecret).getAccessToken();
@@ -96,7 +96,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(4)
+    @Order(104)
     public void checkOrganizations() throws IOException {
         Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();
         assertNotNull(organizations);
@@ -104,7 +104,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(5)
+    @Order(105)
     public void checkNewProjectRolesAndPermissions() throws AuthenticationException {
         Set<PermissionInfo> permissions = iamServiceProjectManagerClient.getPermissions();
         assertNotNull(permissions);
@@ -114,7 +114,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(6)
+    @Order(106)
     public void createRoleWithPermissionsTest() throws AuthenticationException {
         Set<PermissionInfo> permissionInfos = new HashSet<>();
         permissionInfos.add(new PermissionInfo(organizationId.getId() + "-" + projectId.getId() , "data", "read"));
@@ -129,7 +129,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(7)
+    @Order(807)
     public void deleteRole() throws AuthenticationException {
         iamServiceProjectManagerClient.deleteRole(RoleId.from("reader"));
         Collection<RoleInfo> roles = iamServiceProjectManagerClient.getRoles();
@@ -137,7 +137,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(8)
+    @Order(808)
     public void deletePermissions() throws AuthenticationException {
         iamServiceProjectManagerClient.deletePermission(PermissionId.from(organizationId.getId() + "-" + projectId.getId() + ".data" + ".read"));
         Set<PermissionInfo> permissions = iamServiceProjectManagerClient.getPermissions();
@@ -148,7 +148,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(9)
+    @Order(809)
     public void getProjectInfo() throws IOException {
         ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         assertNotNull(projectInfo);
@@ -156,7 +156,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(10)
+    @Order(810)
     public void getUserInfo() throws IOException {
         UserInfo userInfo = iamServiceProjectManagerClient.getUserInfo(adminUserId);
         assertNotNull(userInfo);
@@ -164,7 +164,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(11)
+    @Order(811)
     public void getClientInfo() throws IOException {
         ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(adminClientId);
         assertNotNull(clientInfo);
@@ -172,7 +172,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(90)
+    @Order(990)
     public void cleanupProjectInvalidTokenTest() {
         AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
             iamServiceManagerClient.deleteOrganizationRecursively(jwt_organization_admin_token, organizationId);
@@ -180,7 +180,7 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(91)
+    @Order(991)
     public void cleanupProjectTest() throws AuthenticationException {
         iamServiceManagerClient.deleteOrganizationRecursively(jwt_admin_token, organizationId);
     }

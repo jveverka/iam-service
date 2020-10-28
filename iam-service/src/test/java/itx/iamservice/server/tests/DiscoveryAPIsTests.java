@@ -8,6 +8,7 @@ import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
 import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
+import itx.iamservice.serviceclient.IAMServiceUserManagerClient;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ public class DiscoveryAPIsTests {
 
     private static IAMServiceManagerClient iamServiceManagerClient;
     private static IAMServiceProjectManagerClient iamServiceProjectManagerClient;
+    private static IAMServiceUserManagerClient iamServiceUserManagerClient;
 
     @LocalServerPort
     private int port;
@@ -42,6 +44,7 @@ public class DiscoveryAPIsTests {
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
         iamServiceProjectManagerClient = iamServiceManagerClient.getIAMServiceProject(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
+        iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 
     @Test
@@ -86,7 +89,7 @@ public class DiscoveryAPIsTests {
     @Test
     @Order(5)
     public void getUserInfoTest() throws IOException {
-        UserInfo userInfo = iamServiceProjectManagerClient.getUserInfo(ModelUtils.IAM_ADMIN_USER);
+        UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(ModelUtils.IAM_ADMIN_USER);
         assertNotNull(userInfo);
         assertNotNull(userInfo.getId());
         assertNotNull(userInfo.getName());

@@ -11,10 +11,8 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
-import itx.iamservice.core.model.UserId;
 import itx.iamservice.core.services.dto.ClientInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
-import itx.iamservice.core.services.dto.UserInfo;
 import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -149,19 +147,6 @@ public class IAMServiceProjectManagerClientImpl implements IAMServiceProjectMana
         Response response = client.newCall(request).execute();
         if (response.code() == 200) {
             return mapper.readValue(response.body().string(), ProjectInfo.class);
-        }
-        throw new IOException();
-    }
-
-    @Override
-    public UserInfo getUserInfo(UserId userId) throws IOException {
-        Request request = new Request.Builder()
-                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
-                .get()
-                .build();
-        Response response = client.newCall(request).execute();
-        if (response.code() == 200) {
-            return mapper.readValue(response.body().string(), UserInfo.class);
         }
         throw new IOException();
     }

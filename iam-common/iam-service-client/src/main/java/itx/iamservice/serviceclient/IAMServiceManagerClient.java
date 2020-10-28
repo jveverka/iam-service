@@ -30,4 +30,6 @@ public interface IAMServiceManagerClient {
 
     IAMAuthorizerClient getIAMAdminAuthorizerClient();
 
+    IAMServiceUserManagerClient getIAMServiceUserManagerClient(String accessToken, OrganizationId organizationId, ProjectId projectId);
+
 }

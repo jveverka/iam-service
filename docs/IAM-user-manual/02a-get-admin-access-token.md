@@ -21,4 +21,10 @@ To get 'admin' access tokens, please [use one of supported](IAM-users-manual.md)
 Once you get access tokens for privileged 'admin' user, you can use iam-service to 
 create your own organizations and projects with users and clients.
 
+* Get Admin Access tokens  
+  ```
+  curl --location --request POST 'http://localhost:8080/services/authentication/iam-admins/iam-admins/token?grant_type=password&username=admin&password=secret&scope=&client_id=admin-client&client_secret=top-secret'
+  ```
+
+
 * [next step: Create new Organizations and Projects](02b-create-organization-with-admin.md)  

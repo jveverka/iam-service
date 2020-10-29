@@ -1,2 +1,24 @@
-## Get Admin access_token
-TODO
+## Getting Admin Access
+
+In order to start using *iam-service* you have to get access as priviledged 
+"admin" user which belongs to dedicated *iam-admins* organization *and iam-admins* project.
+This special project will be called  __iam-admins__ project. Default login credentials and settings:
+
+| Parameter              | Value                                                                         | 
+|------------------------|-------------------------------------------------------------------------------|
+| Organization name      | iam-admins                                                                    |
+| Project name           | iam-admins                                                                    |
+| admin username         | admin                                                                         |
+| admin password         | [see config manual](01a-standalone-server-config.md)                          |
+| admin client id        | admin-client                                                                  |
+| admin client secret    | [see config manual](01a-standalone-server-config.md)                          |
+| Supported OAuth2 flows | Authorization Code, Password Credentials, Client Credentials                  |
+| Authorization url      | http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize |
+| Access token url       | http://localhost:8080/services/authentication/iam-admins/iam-admins/token     |
+| Redirect URL           | http://localhost:8080/services/authentication/iam-admins/iam-admins/redirect  |
+
+To get 'admin' access tokens, please [use one of supported](IAM-users-manual.md) OAuth2 flows. 
+Once you get access tokens for privileged 'admin' user, you can use iam-service to 
+create your own organizations and projects with users and clients.
+
+* [next step: Create new Organizations and Projects](02b-create-organization-with-admin.md)  

@@ -8,13 +8,10 @@ authentication and authorization OAuth2 server.
 * [Setup persistence Layer](01b_setup-persitence-later.md)
 
 ## 2. OAuth2 Server administration
-* [Get Admin access_token](02a-get-admin-access-token.md).
-* [Create new organization / project with Admin user](02b-create-organization-with-admin.md).
-* [Manage your new Organization / Projects](02c-manage-organization-and-projects.md).
-
-## 3. Self-service features for projects
-* [ ] TODO: Users self-registration using email.
-* [ ] TODO: Change user's credentials.
+* [Getting Admin Access](02a-get-admin-access-token.md).
+* [Create new Organizations and Projects](02b-create-organization-with-admin.md).
+* [Manage your new Organization and Projects](02c-manage-organization-and-projects.md).
+* [Get Access_Tokens for new users](02d-getting-access-tokens-for-new-users.md)
 
 ### Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](../oauth2/131_authorization-code-flow.md).

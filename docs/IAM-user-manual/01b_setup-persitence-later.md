@@ -15,4 +15,4 @@
       persistence: file-system
       path: /path/to/model-storage.json
   ``` 
-* [next step: Getting Admin access](02d-getting-access-tokens-for-new-users.md)
+* [next step: Getting Admin access](02a-get-admin-access-token.md)

@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.dto.CreateOrganization;
 import itx.iamservice.core.model.ClientCredentials;
@@ -66,8 +67,8 @@ public class AdminOrganizationServicesController {
         this.userManagerService = userManagerService;
     }
 
+    @Operation(summary = "Create new organization.")
     @PostMapping(path = "/organization", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Tag(name = "Create new organization.")
     public ResponseEntity<IdHolder> createOrganization(@RequestBody CreateOrganization request) throws PKIException {
         Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(CreateOrganizationRequest.from(request.getId(), request.getName()));
         if (organizationIdOptional.isPresent()) {
@@ -77,8 +78,8 @@ public class AdminOrganizationServicesController {
         }
     }
 
+    @Operation(summary = "Create new project within an organization, with default project admin user.")
     @PostMapping("/organization/setup")
-    @Tag(name = "Create new project within an organization, with default project admin user.")
     public ResponseEntity<SetupOrganizationResponse> setUpOrganization(@RequestBody SetupOrganizationRequest request) throws PKIException {
         OrganizationId organizationId = OrganizationId.from(request.getOrganizationId());
         ProjectId projectId = ProjectId.from(request.getAdminProjectId());
@@ -132,8 +133,8 @@ public class AdminOrganizationServicesController {
         return ResponseEntity.ok().body(new SetupOrganizationResponse(request, adminRoleId.getId(), adminPermissions));
     }
 
+    @Operation(summary = "Delete organization by ID with all projects, users and clients.")
     @DeleteMapping("/organization/{organization-id}")
-    @Tag(name = "Delete organization by ID with all projects, users and clients.")
     public ResponseEntity<Void> deleteOrganizationRecursively(@PathVariable("organization-id") String organizationId) {
         boolean result = organizationManagerService.removeWithDependencies(OrganizationId.from(organizationId));
         if (result) {
@@ -143,8 +144,8 @@ public class AdminOrganizationServicesController {
         }
     }
 
+    @Operation(summary = "Delete project in organization by ID with users and clients.")
     @DeleteMapping("/organization/{organization-id}/{project-id}")
-    @Tag(name = "Delete project in organization by ID with users and clients.")
     public ResponseEntity<Void> deleteProjectRecursively(@PathVariable("organization-id") String organizationId,
                                                          @PathVariable("project-id") String projectId) {
         boolean result = projectManagerService.removeWithDependencies(OrganizationId.from(organizationId), ProjectId.from(projectId));

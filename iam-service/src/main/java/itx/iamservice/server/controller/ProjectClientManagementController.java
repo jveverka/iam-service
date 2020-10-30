@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.dto.CreateClient;
 import itx.iamservice.core.model.ClientCredentials;
 import itx.iamservice.core.model.ClientId;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/services/management")
+@Tag(name = "Project Client Management", description = "APIs for managing Project's Clients.")
 public class ProjectClientManagementController {
 
     private final ClientManagementService clientManagementService;

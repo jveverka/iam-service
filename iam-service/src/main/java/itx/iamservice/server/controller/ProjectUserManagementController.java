@@ -1,5 +1,6 @@
 package itx.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itx.iamservice.core.dto.CreateUser;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PKIException;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/services/management")
+@Tag(name = "Project User Management", description = "APIs for managing Project's Users.")
 public class ProjectUserManagementController {
 
     private final UserManagerService userManagerService;

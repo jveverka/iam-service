@@ -29,6 +29,10 @@ dependencies {
     testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
 
+springBoot {
+    buildInfo()
+}
+
 test {
     useJUnitPlatform()
     testLogging {

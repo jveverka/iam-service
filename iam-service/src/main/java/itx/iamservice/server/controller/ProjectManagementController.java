@@ -32,7 +32,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/services/management")
-@Tag(name = "Management", description = "APIs providing self-service user management.")
+@Tag(name = "Project Management", description = "APIs for managing Project setup.")
 public class ProjectManagementController {
 
     private final ProjectManagerService projectManagerService;

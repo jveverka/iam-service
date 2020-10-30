@@ -5,7 +5,6 @@ import itx.iamservice.core.model.ProjectId;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Set;
 
 public class StandardTokenClaims {

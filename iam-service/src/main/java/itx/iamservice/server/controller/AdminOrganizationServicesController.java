@@ -42,8 +42,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static itx.iamservice.core.ModelCommons.createAdminPermissions;
-import static itx.iamservice.core.ModelCommons.createAdminRoleId;
+import static itx.iamservice.core.ModelCommons.createProjectAdminPermissions;
+import static itx.iamservice.core.ModelCommons.createProjectAdminRoleId;
 
 @RestController
 @RequestMapping(path = "/services/admin")
@@ -85,7 +85,7 @@ public class AdminOrganizationServicesController {
         ProjectId projectId = ProjectId.from(request.getAdminProjectId());
         ClientId clientId = ClientId.from(request.getAdminClientId());
         UserId userId = UserId.from(request.getAdminUserId());
-        RoleId adminRoleId = createAdminRoleId(organizationId, projectId);
+        RoleId adminRoleId = createProjectAdminRoleId(organizationId, projectId);
         LOG.info("Organization setup {}/{}", organizationId.getId(), projectId.getId());
         //Data Check Actions
         if (clientManagementService.getClient(organizationId, projectId, clientId).isEmpty()) {
@@ -125,7 +125,7 @@ public class AdminOrganizationServicesController {
         clientManagementService.addRole(organizationId, projectId, clientId, adminRoleId);
         userManagerService.assignRole(organizationId, projectId, userId, adminRoleId);
         Set<String> adminPermissions = new HashSet<>();
-        for (Permission permission: createAdminPermissions(organizationId, projectId)) {
+        for (Permission permission: createProjectAdminPermissions(organizationId, projectId)) {
             projectManagerService.addPermission(organizationId, projectId, permission);
             projectManagerService.addPermissionToRole(organizationId, projectId, adminRoleId, permission.getId());
             adminPermissions.add(permission.asStringValue());

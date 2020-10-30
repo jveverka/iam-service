@@ -7,6 +7,7 @@ import itx.iamservice.client.spring.AuthenticationImpl;
 import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
+import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.ProviderConfigurationService;
 import itx.iamservice.server.services.IAMSecurityException;
 import itx.iamservice.server.services.IAMSecurityValidator;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static itx.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
+import static itx.iamservice.core.ModelCommons.verifyProjectAdminPermissions;
 
 
 @Service
@@ -68,6 +70,9 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
         AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
         StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
         LOG.info("JWT iss: {}", standardTokenClaims.getIssuer());
+        if (!verifyProjectAdminPermissions(organizationId, projectId, standardTokenClaims.getScope())) {
+            throw new IAMSecurityException("Authorization token validation has failed.");
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import itx.iamservice.core.model.RoleId;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class ModelCommons {
 
@@ -82,17 +83,30 @@ public final class ModelCommons {
      * @param projectId
      * @return
      */
-    public static Set<Permission> createAdminPermissions(OrganizationId organizationId, ProjectId projectId) {
-        Set<Permission> adminPermissions = new HashSet<>();
+    public static Set<Permission> createProjectAdminPermissions(OrganizationId organizationId, ProjectId projectId) {
+        final Set<Permission> adminPermissions = new HashSet<>();
         adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), ORGANIZATIONS_RESOURCE, ACTION_ALL));
         adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), PROJECTS_RESOURCE, ACTION_ALL));
         adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), USERS_RESOURCE, ACTION_ALL));
         adminPermissions.add(new Permission(organizationId.getId() + "-" + projectId.getId(), CLIENTS_RESOURCE, ACTION_ALL));
-        return adminPermissions;
+        return adminPermissions.stream().collect(Collectors.toUnmodifiableSet());
     }
 
-    public static RoleId createAdminRoleId(OrganizationId organizationId, ProjectId projectId) {
+    public static RoleId createProjectAdminRoleId(OrganizationId organizationId, ProjectId projectId) {
         return RoleId.from(organizationId.getId() + "-" + projectId.getId() + "-admin");
+    }
+
+    public static boolean verifyProjectAdminPermissions(OrganizationId organizationId, ProjectId projectId, Set<String> scopes) {
+        try {
+            final Set<Permission> minimalScopeSet = createProjectAdminPermissions(organizationId, projectId);
+            final Set<Permission> availableScopes = new HashSet<>();
+            for (String scope : scopes) {
+                availableScopes.add(Permission.from(scope));
+            }
+            return availableScopes.containsAll(minimalScopeSet);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

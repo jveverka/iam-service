@@ -2,15 +2,12 @@ package itx.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import itx.iamservice.core.model.ClientId;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.utils.ModelUtils;
 import itx.iamservice.core.services.dto.OrganizationInfo;
-import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
-import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.serviceclient.IAMAuthorizerClient;
 import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
@@ -23,6 +20,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +33,11 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     public static final String AUTHORIZATION = "Authorization";
     public static final String APPLICATION_JSON = "application/json";
 
-    private final String baseURL;
+    private final URL baseURL;
     private final OkHttpClient client;
     private final ObjectMapper mapper;
 
-    public IAMServiceManagerClientImpl(String baseURL, Long timeoutDuration, TimeUnit timeUnit) {
+    public IAMServiceManagerClientImpl(URL baseURL, Long timeoutDuration, TimeUnit timeUnit) {
         this.baseURL = baseURL;
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(timeoutDuration, timeUnit)

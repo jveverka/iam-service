@@ -68,13 +68,14 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(1)
-    public void createIamClient() throws MalformedURLException, URISyntaxException, InterruptedException {
+    public void createIamClient() throws MalformedURLException, InterruptedException {
+        URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
-                .withBaseUrl("http://localhost:" + port)
+                .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
         iamClient = IAMClientBuilder.builder()
-                .setBaseUrl(new URL("http://localhost:" + port + "/services/authentication"))
+                .setBaseUrl(baseUrl)
                 .setOrganizationId(IAM_ADMINS_ORG.getId())
                 .setProjectId(IAM_ADMINS_PROJECT.getId())
                 .withHttpProxy(10L, TimeUnit.SECONDS)

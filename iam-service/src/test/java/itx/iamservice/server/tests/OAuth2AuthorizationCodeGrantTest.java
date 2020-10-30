@@ -55,8 +55,8 @@ public class OAuth2AuthorizationCodeGrantTest {
 
     @Test
     @Order(0)
-    public void initTests() {
-        String baseUrl = "http://localhost:" + port;
+    public void initTests() throws MalformedURLException {
+        URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)

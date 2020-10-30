@@ -24,13 +24,13 @@ import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.APPL
 
 public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
 
-    private final String baseURL;
+    private final URL baseURL;
     private final OkHttpClient client;
     private final ObjectMapper mapper;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
 
-    public IAMAuthorizerClientImpl(String baseURL, OkHttpClient client, ObjectMapper mapper, OrganizationId organizationId, ProjectId projectId) {
+    public IAMAuthorizerClientImpl(URL baseURL, OkHttpClient client, ObjectMapper mapper, OrganizationId organizationId, ProjectId projectId) {
         this.baseURL = baseURL;
         this.client = client;
         this.mapper = mapper;

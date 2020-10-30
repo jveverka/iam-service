@@ -15,6 +15,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.net.URL;
 
 import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.APPLICATION_JSON;
 import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.AUTHORIZATION;
@@ -23,13 +24,13 @@ import static itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.BEAR
 public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerClient {
 
     private final String accessToken;
-    private final String baseURL;
+    private final URL baseURL;
     private final OkHttpClient client;
     private final ObjectMapper mapper;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
 
-    public IAMServiceUserManagerClientImpl(String accessToken, String baseURL, OkHttpClient client, ObjectMapper mapper, OrganizationId organizationId, ProjectId projectId) {
+    public IAMServiceUserManagerClientImpl(String accessToken, URL baseURL, OkHttpClient client, ObjectMapper mapper, OrganizationId organizationId, ProjectId projectId) {
         this.accessToken = accessToken;
         this.baseURL = baseURL;
         this.client = client;

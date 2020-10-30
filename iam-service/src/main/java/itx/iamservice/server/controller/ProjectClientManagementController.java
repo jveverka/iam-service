@@ -7,7 +7,6 @@ import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.ProjectId;
 import itx.iamservice.core.model.RoleId;
 import itx.iamservice.core.services.admin.ClientManagementService;
-import itx.iamservice.core.services.admin.ProjectManagerService;
 import itx.iamservice.core.services.dto.CreateClientRequest;
 import itx.iamservice.server.services.IAMSecurityValidator;
 import org.springframework.http.HttpStatus;
@@ -53,7 +52,7 @@ public class ProjectClientManagementController {
     @PutMapping("/{organization-id}/{project-id}/clients/{client-id}/roles/{role-id}")
     public ResponseEntity<Void> addRoleToClient(@PathVariable("organization-id") String organizationId,
                                                 @PathVariable("project-id") String projectId,
-                                                @PathVariable("cient-id") String clientId,
+                                                @PathVariable("client-id") String clientId,
                                                 @PathVariable("role-id") String roleId) {
         iamSecurityValidator.verifyProjectAdminAccess(OrganizationId.from(organizationId), ProjectId.from(projectId));
         if (clientManagementService.addRole(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId), RoleId.from(roleId))) {
@@ -66,7 +65,7 @@ public class ProjectClientManagementController {
     @DeleteMapping("/{organization-id}/{project-id}/clients/{client-id}/roles/{role-id}")
     public ResponseEntity<Void> removeRoleFromClient(@PathVariable("organization-id") String organizationId,
                                                      @PathVariable("project-id") String projectId,
-                                                     @PathVariable("cient-id") String clientId,
+                                                     @PathVariable("client-id") String clientId,
                                                      @PathVariable("role-id") String roleId) {
         iamSecurityValidator.verifyProjectAdminAccess(OrganizationId.from(organizationId), ProjectId.from(projectId));
         if (clientManagementService.removeRole(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId), RoleId.from(roleId))) {
@@ -79,7 +78,7 @@ public class ProjectClientManagementController {
     @DeleteMapping("/{organization-id}/{project-id}/clients/{client-id}")
     public ResponseEntity<Void> deleteClient(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
-                                             @PathVariable("cient-id") String clientId) {
+                                             @PathVariable("client-id") String clientId) {
         iamSecurityValidator.verifyProjectAdminAccess(OrganizationId.from(organizationId), ProjectId.from(projectId));
         if (clientManagementService.removeClient(OrganizationId.from(organizationId), ProjectId.from(projectId), ClientId.from(clientId))) {
             return ResponseEntity.ok().build();

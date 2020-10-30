@@ -9,7 +9,6 @@ import itx.iamservice.core.model.ProjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -20,13 +19,11 @@ public class IAMClientImpl implements IAMClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMClientImpl.class);
 
-    private final URL baseUrl;
     private final IAMServiceProxy iamServiceProxy;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
 
-    public IAMClientImpl(URL baseUrl, IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) {
-        this.baseUrl = baseUrl;
+    public IAMClientImpl(IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) {
         this.iamServiceProxy = iamServiceProxy;
         this.organizationId = organizationId;
         this.projectId = projectId;
@@ -68,6 +65,11 @@ public class IAMClientImpl implements IAMClient {
     @Override
     public boolean validate(OrganizationId organizationId, ProjectId projectId, Set<Permission> requiredApplicationPermissions, JWToken token) {
         return validate(organizationId, projectId, Set.of(), requiredApplicationPermissions, token);
+    }
+
+    @Override
+    public void updateKeyCache() {
+        iamServiceProxy.updateKeyCache();
     }
 
     @Override

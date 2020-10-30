@@ -19,4 +19,6 @@ public interface IAMServiceProxy extends AutoCloseable {
 
     ProviderConfigurationResponse getConfiguration();
 
+    void updateKeyCache();
+
 }

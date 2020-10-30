@@ -59,7 +59,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     @Override
-    public JWKResponse getJWKResponse() throws InterruptedException {
+    public JWKResponse getJWKResponse() {
         LOG.error("jwkResponse == NULL ? {}", (jwkResponse == null));
         return jwkResponse;
     }
@@ -69,7 +69,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         IntrospectRequest introspectRequest = new IntrospectRequest(token, typeHint);
         String postBody = mapper.writeValueAsString(introspectRequest);
         Request request = new Request.Builder()
-                .url(baseUrl.toString() + "/" + organizationId.getId() + "/" + projectId.getId() + "/introspect")
+                .url(baseUrl.toString() + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/introspect")
                 .post(RequestBody.create(postBody, MediaType.parse("application/json")))
                 .build();
         Response response = client.newCall(request).execute();
@@ -80,7 +80,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     public ProviderConfigurationResponse getConfiguration() {
         if (providerConfigurationResponse == null) {
             Request request = new Request.Builder()
-                    .url(baseUrl.toString() + "/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
+                    .url(baseUrl.toString() + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
@@ -95,7 +95,13 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         return providerConfigurationResponse;
     }
 
-    protected void setJwkResponse(JWKResponse jwkResponse) {
+    @Override
+    public void updateKeyCache() {
+        IAMServiceHttpFetchTask task = new IAMServiceHttpFetchTask(baseUrl, organizationId, projectId, client, mapper, this);
+        task.run();
+    }
+
+    protected synchronized void setJwkResponse(JWKResponse jwkResponse) {
         this.jwkResponse = jwkResponse;
         this.cl.countDown();
     }

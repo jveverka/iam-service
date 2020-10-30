@@ -2,15 +2,17 @@ package itx.iamservice.serviceclient;
 
 import itx.iamservice.serviceclient.impl.IAMServiceManagerClientImpl;
 
+import java.net.URL;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class IAMServiceClientBuilder {
 
-    private String baseURL;
+    private URL baseURL;
     private Long timeoutDuration = 5L;
     private TimeUnit timeUnit = TimeUnit.SECONDS;
 
-    public IAMServiceClientBuilder withBaseUrl(String baseURL) {
+    public IAMServiceClientBuilder withBaseUrl(URL baseURL) {
         this.baseURL = baseURL;
         return this;
     }
@@ -26,6 +28,7 @@ public class IAMServiceClientBuilder {
     }
 
     public IAMServiceManagerClient build() {
+        Objects.requireNonNull(baseURL);
         return new IAMServiceManagerClientImpl(baseURL, timeoutDuration, timeUnit);
     }
 

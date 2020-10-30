@@ -1,10 +1,15 @@
 package itx.iamservice.server.tests;
 
+import itx.iamservice.client.IAMClient;
+import itx.iamservice.client.IAMClientBuilder;
+import itx.iamservice.client.dto.StandardTokenClaims;
+import itx.iamservice.core.dto.CreateClient;
 import itx.iamservice.core.dto.CreateRole;
 import itx.iamservice.core.dto.CreateUser;
 import itx.iamservice.core.dto.PermissionInfo;
 import itx.iamservice.core.dto.RoleInfo;
 import itx.iamservice.core.model.ClientId;
+import itx.iamservice.core.model.JWToken;
 import itx.iamservice.core.model.OrganizationId;
 import itx.iamservice.core.model.PermissionId;
 import itx.iamservice.core.model.ProjectId;
@@ -16,7 +21,9 @@ import itx.iamservice.core.services.dto.OrganizationInfo;
 import itx.iamservice.core.services.dto.ProjectInfo;
 import itx.iamservice.core.services.dto.SetupOrganizationRequest;
 import itx.iamservice.core.services.dto.SetupOrganizationResponse;
+import itx.iamservice.core.services.dto.TokenResponse;
 import itx.iamservice.core.services.dto.UserInfo;
+import itx.iamservice.serviceclient.IAMAuthorizerClient;
 import itx.iamservice.serviceclient.IAMServiceManagerClient;
 import itx.iamservice.serviceclient.IAMServiceClientBuilder;
 import itx.iamservice.serviceclient.IAMServiceProjectManagerClient;
@@ -32,6 +39,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -49,6 +58,7 @@ public class AdminOrganizationServicesTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(AdminOrganizationServicesTests.class);
 
+    private static URL baseUrl;
     private static String jwt_admin_token;
     private static OrganizationId organizationId = OrganizationId.from("my-org-001");
     private static ProjectId projectId = ProjectId.from("project-001");
@@ -58,9 +68,11 @@ public class AdminOrganizationServicesTests {
     private static String adminPassword = "secret";
 
     private static UserId newUserId = UserId.from("user-id-002");
+    private static ClientId newClientId = ClientId.from("user-id-002-client");
     private static RoleId newRoleId = RoleId.from("reader-role");
 
     private static String jwt_organization_admin_token;
+    private static IAMClient iamClient;
     private static IAMServiceManagerClient iamServiceManagerClient;
     private static IAMServiceProjectManagerClient iamServiceProjectManagerClient;
     private static IAMServiceUserManagerClient iamServiceUserManagerClient;
@@ -70,8 +82,8 @@ public class AdminOrganizationServicesTests {
 
     @Test
     @Order(101)
-    public void initTest() throws AuthenticationException {
-        String baseUrl = "http://localhost:" + port;
+    public void initTest() throws AuthenticationException, MalformedURLException, InterruptedException {
+        baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
@@ -84,7 +96,7 @@ public class AdminOrganizationServicesTests {
 
     @Test
     @Order(102)
-    public void createNewOrganizationWithAdminUser() throws AuthenticationException {
+    public void createNewOrganizationWithAdminUser() throws AuthenticationException, InterruptedException {
         Set<String> projectAudience = new HashSet<>();
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
                 projectId.getId(), "My Project 001",
@@ -93,6 +105,13 @@ public class AdminOrganizationServicesTests {
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(jwt_admin_token, setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
         assertEquals(organizationId.getId(), setupOrganizationResponse.getOrganizationId());
+        iamClient = IAMClientBuilder.builder()
+                .setBaseUrl(baseUrl)
+                .setOrganizationId(organizationId.getId())
+                .setProjectId(projectId.getId())
+                .withHttpProxy(5L, TimeUnit.SECONDS)
+                .build();
+        iamClient.waitForInit(10L,  TimeUnit.SECONDS);
     }
 
     @Test
@@ -141,10 +160,19 @@ public class AdminOrganizationServicesTests {
     @Test
     @Order(201)
     public void createNewUser() throws AuthenticationException, IOException {
-        CreateUser createUser = new CreateUser(newUserId.getId(),  "User 2", 3600L, 3600L, "user@email.com");
+        CreateUser createUser = new CreateUser(newUserId.getId(),  "User 2", 3600L, 3600L, "user@email.com", "s3cr3t");
         iamServiceUserManagerClient.createUser(createUser);
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(newUserId);
         assertEquals(userInfo.getId(), newUserId.getId());
+    }
+
+    @Test
+    @Order(202)
+    public void createNewClient() throws AuthenticationException, IOException {
+        CreateClient createClient = new CreateClient(newClientId.getId(), "", 3600L, 3600L, "top-s3cre3t");
+        iamServiceProjectManagerClient.createClient(createClient);
+        ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(newClientId);
+        assertEquals(clientInfo.getId(), newClientId.getId());
     }
 
     @Test
@@ -164,6 +192,20 @@ public class AdminOrganizationServicesTests {
 
     @Test
     @Order(203)
+    public void getTokensForUser() throws AuthenticationException, IOException {
+        IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
+        TokenResponse newUserTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(newUserId.getId(), "s3cr3t", newClientId, "top-s3cre3t");
+        assertNotNull(newUserTokens);
+        assertNotNull(newUserTokens.getAccessToken());
+        assertNotNull(newUserTokens.getRefreshToken());
+        assertNotNull(newUserTokens.getIdToken());
+        iamClient.updateKeyCache();
+        Optional<StandardTokenClaims> tokenClaims = iamClient.validate(JWToken.from(newUserTokens.getAccessToken()));
+        assertTrue(tokenClaims.isPresent());
+    }
+
+    @Test
+    @Order(204)
     public void removeRoleFromUser() throws AuthenticationException, IOException {
         iamServiceUserManagerClient.removeRoleFromUser(newUserId, newRoleId);
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(newUserId);
@@ -172,12 +214,22 @@ public class AdminOrganizationServicesTests {
     }
 
     @Test
-    @Order(204)
-    public void deleteUser() throws AuthenticationException, IOException {
+    @Order(205)
+    public void deleteNewUser() throws AuthenticationException, IOException {
         iamServiceUserManagerClient.deleteUser(newUserId);
         ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         Optional<String> userIdOptional = projectInfo.getUsers().stream().filter(u -> u.equals(newUserId.getId())).findFirst();
         assertTrue(userIdOptional.isEmpty());
+    }
+
+    @Test
+    @Order(206)
+    public void deleteNewClient() throws AuthenticationException, IOException {
+        Optional<String> optional = iamServiceProjectManagerClient.getInfo().getClients().stream().filter(c -> c.equals(newClientId.getId())).findFirst();
+        assertTrue(optional.isPresent());
+        iamServiceProjectManagerClient.deleteClient(newClientId);
+        optional = iamServiceProjectManagerClient.getInfo().getClients().stream().filter(c -> c.equals(newClientId.getId())).findFirst();
+        assertTrue(optional.isEmpty());
     }
 
     @Test

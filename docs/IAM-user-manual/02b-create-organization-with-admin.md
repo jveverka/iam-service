@@ -14,12 +14,16 @@ isolated security realm with own group of users, clients, roles and permissions.
      "adminProjectName": "Project 001",
      "adminClientId": "cl-001",
      "adminClientSecret": "cl-scrt",
-     "adminUserId": "admin1",
+     "adminUserId": "admin",
      "adminUserPassword": "some*top+sercret",
      "adminEmail": "admin@project-001.com",
      "projectAudience": []
   }'
   ```
+  This will single request will create:   
+  * Organization with ID ``test-org-001``
+  * Project with ID ``project-001`` under organization ``test-org-001``
+  * Admin user ``admin`` for project ``project-001`` with permissions to manage that project. 
   
 * [next step: Manage your new Organization and Projects](02c-manage-organization-and-projects.md)
   

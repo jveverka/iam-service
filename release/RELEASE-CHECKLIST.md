@@ -16,6 +16,7 @@
 * Commit changes related to version upgrade.
 * Create release tag and push the tag to origin.
   ```
+  git tag -l 
   git tag <NEW_RELEASE_VERSION>
   git push origin --tags
   ```

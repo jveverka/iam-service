@@ -43,13 +43,6 @@ project(':iam-client-spring') {
     }
 }
 
-project(':iam-spring-httpclient') {
-    dependencies {
-        implementation project(':iam-model')
-        implementation project(':iam-core')
-    }
-}
-
 project(':iam-service-client') {
     dependencies {
         implementation project(':iam-model')

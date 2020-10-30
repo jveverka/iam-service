@@ -54,9 +54,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AdminOrganizationServicesTests {
+public class ProjectManagementTests {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminOrganizationServicesTests.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProjectManagementTests.class);
 
     private static URL baseUrl;
     private static String jwt_admin_token;

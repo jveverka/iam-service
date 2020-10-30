@@ -72,7 +72,6 @@ project(':iam-service') {
         implementation project(':iam-persistence-file-system')
         implementation project(':iam-persistence-in-memory')
         testImplementation project(':iam-service-client')
-        testImplementation project(':iam-spring-httpclient')
     }
 }
 

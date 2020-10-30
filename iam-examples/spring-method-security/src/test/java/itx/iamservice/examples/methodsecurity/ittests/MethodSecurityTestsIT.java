@@ -94,11 +94,11 @@ public class MethodSecurityTestsIT {
     public void createOrganizationProjectAndUsers() throws AuthenticationException {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "Method Security Project",
-                clientId.getId(), "top-secret", userId.getId(),  "top-secret", "admin@email.com", Set.of("methodsecurity"));
+                clientId.getId(), "top-secret", userId.getId(),  "secret", "admin@email.com", Set.of("methodsecurity"));
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(adminTokens.getAccessToken(), setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
-        userTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(userId.getId(), "top-secret", clientId, "top-secret");
+        userTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(userId.getId(), "secret", clientId, "top-secret");
         assertNotNull(userTokens);
     }
 

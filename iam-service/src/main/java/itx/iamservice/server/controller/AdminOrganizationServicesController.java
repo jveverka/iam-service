@@ -88,25 +88,34 @@ public class AdminOrganizationServicesController {
         RoleId adminRoleId = createProjectAdminRoleId(organizationId, projectId);
         LOG.info("Organization setup {}/{}", organizationId.getId(), projectId.getId());
         //Data Check Actions
-        if (clientManagementService.getClient(organizationId, projectId, clientId).isEmpty()) {
+        if (organizationManagerService.get(organizationId).isEmpty()) {
             CreateOrganizationRequest createOrganizationRequest = new CreateOrganizationRequest(organizationId, request.getOrganizationName());
             Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(createOrganizationRequest);
             if (organizationIdOptional.isEmpty()) {
+                LOG.warn("Error: create Organization id={} failed !", organizationId.getId());
                 return ResponseEntity.badRequest().build();
+            } else {
+                LOG.info("Organization id={} created !", organizationId.getId());
             }
         }
-        if (userManagerService.get(organizationId, projectId, userId).isEmpty()) {
+        if (projectManagerService.get(organizationId, projectId).isEmpty()) {
             CreateProjectRequest createProjectRequest = new CreateProjectRequest(projectId, request.getAdminProjectName(), request.getProjectAudience());
             Optional<Project> projectOptional = projectManagerService.create(organizationId, createProjectRequest);
             if (projectOptional.isEmpty()) {
+                LOG.warn("Error: create Project id={} failed !", projectId.getId());
                 return ResponseEntity.badRequest().build();
+            } else {
+                LOG.info("Project id={} created !", projectId.getId());
             }
         }
         //Create Actions
         CreateClientRequest createClientRequest = new CreateClientRequest(clientId, "", 3600*1000L, 24*3600*1000L, request.getAdminClientSecret());
         Optional<ClientCredentials> clientCredentials = clientManagementService.createClient(organizationId, projectId, createClientRequest);
         if (clientCredentials.isEmpty()) {
+            LOG.warn("Error: create Client id={} failed !", clientId.getId());
             return ResponseEntity.badRequest().build();
+        } else {
+            LOG.info("Client id={} created !", clientId.getId());
         }
 
         CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L, request.getAdminUserEmail());
@@ -114,12 +123,18 @@ public class AdminOrganizationServicesController {
         UPCredentials credentials = new UPCredentials(userId, request.getAdminUserPassword());
         userManagerService.setCredentials(organizationId, projectId, userId, credentials);
         if (userOptional.isEmpty()) {
+            LOG.warn("Error: create User id={} failed !", userId.getId());
             return ResponseEntity.badRequest().build();
+        } else {
+            LOG.info("User id={} created !", userId.getId());
         }
 
         Optional<RoleId> optionalAdminRoleId = projectManagerService.addRole(organizationId, projectId, new CreateRoleRequest(adminRoleId, "Admin Role"));
         if (optionalAdminRoleId.isEmpty()) {
+            LOG.warn("Error: create Role id={} failed !", adminRoleId.getId());
             return ResponseEntity.badRequest().build();
+        } else {
+            LOG.info("Role id={} created !", adminRoleId.getId());
         }
 
         clientManagementService.addRole(organizationId, projectId, clientId, adminRoleId);
@@ -130,6 +145,7 @@ public class AdminOrganizationServicesController {
             projectManagerService.addPermissionToRole(organizationId, projectId, adminRoleId, permission.getId());
             adminPermissions.add(permission.asStringValue());
         }
+        LOG.info("setUpOrganization: OK");
         return ResponseEntity.ok().body(new SetupOrganizationResponse(request, adminRoleId.getId(), adminPermissions));
     }
 

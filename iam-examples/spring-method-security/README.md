@@ -15,19 +15,23 @@ JWT tokens issued by __iam-service__ are used to get access to resources hosted 
     ```
     @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
     ```
-  - __GET__ ``/services/secure/data`` - Protected by:
+  * __GET__ ``/services/secure/data`` - Protected by:
     ```
     @PreAuthorize("hasAuthority('spring-method-security.secure-data.read')")
     ```
-  - __POST__ ``/services/secure/data`` - Protected by:
+  * __POST__ ``/services/secure/data`` - Protected by:
     ```
     @PreAuthorize("hasAuthority('spring-method-security.secure-data.read') and 
     hasAuthority('spring-method-security.secure-data.write')")
     ``` 
 * [__R2__ SystemController](src/main/java/itx/iamservice/examples/methodsecurity/controller/SystemController.java)
   Unprotected resources
-  - __GET__ ``/services/public/info``
-  - __GET__ ``/services/public/update-iam-client-cache`` 
+  * __GET__ ``/services/public/info``
+  * __GET__ ``/services/public/update-iam-client-cache`` 
+  * __OpenAPI / Swagger JSON__ - ```http://localhost:8082/v3/api-docs```
+  * __OpenAPI / Swagger YAML__ - ```http://localhost:8082/v3/api-docs.yaml```
+  * __OpenAPI / Swagger UI__ - ```http://localhost:8082/swagger-ui/index.html?url=/v3/api-docs```
+
 
 ## Build and Run
 ```

@@ -20,6 +20,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.1'
 	implementation 'org.bouncycastle:bcpg-jdk15on:1.66'
 	implementation 'org.bouncycastle:bcpkix-jdk15on:1.66'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

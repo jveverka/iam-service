@@ -47,7 +47,7 @@ public class IAMClientConfiguration {
                 .setProjectId(projectId)
                 .withHttpProxy(pollingInterval, timeUnit)
                 .build();
-        Set<String> excludeEndpoints = Set.of("/services/public/**");
+        Set<String> excludeEndpoints = Set.of("/services/public/**", "/swagger-ui/**", "/v3/api**");
         return new IAMSecurityFilterConfiguration(iamClient, excludeEndpoints);
     }
 

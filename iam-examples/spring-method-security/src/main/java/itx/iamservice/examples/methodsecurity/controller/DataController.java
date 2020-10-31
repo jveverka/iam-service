@@ -35,7 +35,7 @@ public class DataController {
     }
 
     @PostMapping("/data")
-    @PreAuthorize("hasAuthority('spring-method-security.secure-data.write')")
+    @PreAuthorize("hasAuthority('spring-method-security.secure-data.read') and hasAuthority('spring-method-security.secure-data.write')")
     public ResponseEntity<ServerData> setData(@RequestBody ServerData serverData, Authentication authentication) {
         LOG.info("setData serverData={}", serverData.getData());
         logAuthentication(authentication);

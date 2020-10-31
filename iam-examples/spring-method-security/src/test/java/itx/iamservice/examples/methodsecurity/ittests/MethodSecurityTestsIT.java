@@ -185,7 +185,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(10)
-    public void testSecureAccessNoAccessTokens() {
+    public void testUnSecureAccessNoAccessTokens() {
         ResponseEntity<ServerData> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", ServerData.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());

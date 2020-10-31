@@ -14,7 +14,8 @@ Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/IAM-use
 This project is __WIP__, stay tuned !   
 Estimated release date: __EOF Nov.2020__ 
 
-## Features
+## Features & Mission
+* [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 
 * [x] Self-Contained IAM management - clients, users, credentials, permission and roles.
 * [x] JWTs issued for authenticated clients and user-agents.
 * [x] Back Channels for JWT verification - backend libraries for resource servers. 
@@ -36,10 +37,10 @@ Estimated release date: __EOF Nov.2020__
 
 ### Components
 * [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone authorization and authentication server). 
-* [__iam-core__](iam-core) - core implementation of IAM business logic (no framework dependencies).
-* [__iam-persistence__](iam-persistence) - libraries for data model persistence.
+* [__iam-client__](iam-common/iam-client) - client library for back channel integrations with other microservices. 
+* [__iam-service-client__](iam-common/iam-service-client) - client library for remote administration of iam-service.
+* [__iam-client-spring__](iam-common/iam-client-spring) - easier integrations for springboot microservices.
 * [__iam-examples__](iam-examples) - examples how to use and integrate with IAM-service.
-* [__iam-common__](iam-common) - libraries for backend services.
 
 ## REST endpoints 
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.

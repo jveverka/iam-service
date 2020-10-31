@@ -1,6 +1,7 @@
 ## Create new Organizations and Projects
 *iam-service* uses [hierarchical](../IAM-data-model.md) Organization/Project structure. Each project is
 isolated security realm with own group of users, clients, roles and permissions.
+[See also: Terms and Vocabulary](Terms-and-Vocabulary.md)
 
 * Create new Organization and one Project under same organization with admin user with proper access permissions.  
   ```

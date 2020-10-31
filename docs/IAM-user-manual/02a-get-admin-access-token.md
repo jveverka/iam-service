@@ -20,6 +20,7 @@ This special project will be called  __iam-admins__ project. Default login crede
 To get 'admin' access tokens, please [use one of supported](IAM-users-manual.md) OAuth2 flows. 
 Once you get access tokens for privileged 'admin' user, you can use iam-service to 
 create your own organizations and projects with users and clients.
+[See also: Terms and Vocabulary](Terms-and-Vocabulary.md)
 
 * Get Admin Access tokens  
   ```

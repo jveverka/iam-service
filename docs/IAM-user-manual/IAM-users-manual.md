@@ -19,8 +19,12 @@ authentication and authorization OAuth2 server.
 * [x] __Client Credentials__ - [flow details](../oauth2/134_client-credentials-flow.md).
 * [x] __Refresh Token__ - [flow detail](../oauth2/15_refresh-token.md).
 
-### Integration Examples
+### Spring Integration Examples
 * [Spring method security example](../../iam-examples/spring-method-security)
 * [Spring resource server example](../../iam-examples/spring-resource-server)
+
+### Client Libraries
 * [IAM-Client java library](../../iam-common/iam-client)
 * [IAM-Service-Client java library](../../iam-common/iam-service-client)
+
+[Terms and Vocabulary](Terms-and-Vocabulary.md)

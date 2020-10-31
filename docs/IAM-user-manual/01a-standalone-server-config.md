@@ -45,3 +45,4 @@
   ```
 
 * [next step: Setup Persistence Layer](01b_setup-persitence-later.md)
+* [Terms and Vocabulary](Terms-and-Vocabulary.md)

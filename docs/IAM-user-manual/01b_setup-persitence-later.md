@@ -1,4 +1,6 @@
 ## Setup Persistence Layer
+By default, *iam-service* uses in-memory persistence mode, which is very convenient for testing purposes.
+However, for real deployment is recommended to use __file-system__ persistence layer.
 
 ### Supported Persistence modes
 * __in-memory__ (default, no persistence) - __application.yml__ configuration contains:

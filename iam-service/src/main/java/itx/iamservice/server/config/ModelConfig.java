@@ -49,7 +49,9 @@ public class ModelConfig {
         LOG.info("#CONFIG: BCP initialized.");
         LOG.info("#CONFIG: default admin password initialized={}", !defaultAdminPassword.isEmpty());
         LOG.info("#CONFIG: default admin client secret initialized={}", !defaultAdminClientSecret.isEmpty());
+        LOG.info("#CONFIG: default admin email={}", defaultAdminEmail);
         LOG.info("#CONFIG: admin organization/project {}/{}", adminOrganization, adminProject);
+        LOG.info("#CONFIG: persistence={}", persistence);
     }
 
     @Bean
@@ -110,6 +112,10 @@ public class ModelConfig {
 
     public void setDefaultAdminClientSecret(String defaultAdminClientSecret) {
         this.defaultAdminClientSecret = defaultAdminClientSecret;
+    }
+
+    public void setDefaultAdminEmail(String defaultAdminEmail) {
+        this.defaultAdminEmail = defaultAdminEmail;
     }
 
 }

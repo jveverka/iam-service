@@ -6,21 +6,21 @@ All actions described below must be performed under project admin user identity.
 [See also: Terms and Vocabulary](Terms-and-Vocabulary.md)
 
 ### Manage Roles
-* Create Role with permissions
+* Create new Role with Permissions
 * Delete Role
 
 ### Manage Permissions
-* Create Permission
+* Create new Permission
 * Delete Permission
 * Add Permission to Role
 * Remove Permission from Role
 
 ### Manage Clients
-* Create Client 
+* Create new Client 
 * Delete Client
 
 ### Manage Users
-* Create User
+* Create new User
 * Delete User
 
 * [next step: Get Access_Tokens for new users](02d-getting-access-tokens-for-new-users.md)

@@ -7,5 +7,5 @@ authentication and authorization server.
   * How to install and configure __iam-service__.
   * How to create/manage organizations and projects.
   * How to create/manage and manage clients and users.
-* See [examples how to integrate](https://github.com/jveverka/iam-service/iam-examples) __iam-service__ in microservice environment.
+* See [examples how to integrate](https://github.com/jveverka/iam-service/tree/master/iam-examples) __iam-service__ in microservice environment.
   

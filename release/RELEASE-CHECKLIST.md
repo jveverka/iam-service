@@ -3,7 +3,8 @@
 * Make sure all changes are committed and pushed.
 * Make sure the documentation is up-to date.
 * Make sure all tests are passing.
-* Upgrade component versions.
+* ``NEW_RELEASE_VERSION=1.0.1-SNAPSHOT``
+* Upgrade component version in script below.
   ```
   ./version-upgrade.sh
   ```
@@ -14,10 +15,10 @@
   cd ..
   ```
 * Commit changes related to version upgrade.
-* Create release tag and push the tag to origin.
+* Create release tag and push the tag to origin.  
   ```
   git tag -l 
-  git tag <NEW_RELEASE_VERSION>
+  git tag v<NEW_RELEASE_VERSION>
   git push origin --tags
   ```
 * Create new release on [github](https://github.com/jveverka/iam-service/releases)  

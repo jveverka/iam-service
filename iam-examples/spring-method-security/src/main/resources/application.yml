@@ -6,9 +6,9 @@ spring:
     timeout-per-shutdown-phase: 20s
 
 iam-client:
-  organization-id: iam-admins
-  project-id: iam-admins
-  base-url: http://127.0.0.1:8080/services/authentication
+  organization-id: it-testing-001
+  project-id: spring-method-security
+  base-url: http://127.0.0.1:8080
   polling-interval: 30
   time-unit: SECONDS
 

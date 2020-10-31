@@ -17,6 +17,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot:2.3.4.RELEASE')
     implementation('org.springframework:spring-web:5.2.9.RELEASE')
     implementation('org.springframework.security:spring-security-core:5.3.4.RELEASE')
+    implementation('io.jsonwebtoken:jjwt-api:0.11.1')
+    implementation('io.jsonwebtoken:jjwt-impl:0.11.1')
 
     implementation('com.fasterxml.jackson.core:jackson-annotations:2.11.2')
     implementation('com.fasterxml.jackson.core:jackson-core:2.11.2')

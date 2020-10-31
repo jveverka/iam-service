@@ -5,13 +5,13 @@ import itx.iamservice.examples.resourceserver.services.DataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/services")
+@RequestMapping("/services/secure")
 public class DataController {
 
     private final DataService dataService;
@@ -25,7 +25,7 @@ public class DataController {
         return ResponseEntity.ok(dataService.getData());
     }
 
-    @PutMapping("/data")
+    @PostMapping("/data")
     public ResponseEntity<Void> setData(@RequestBody ServerData serverData) {
         dataService.setData(serverData);
         return ResponseEntity.ok().build();

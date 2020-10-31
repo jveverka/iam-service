@@ -102,6 +102,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     protected synchronized void setJwkResponse(JWKResponse jwkResponse) {
+        LOG.info("JWK cache updated");
         this.jwkResponse = jwkResponse;
         this.cl.countDown();
     }

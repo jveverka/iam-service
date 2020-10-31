@@ -6,16 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/services")
+@RequestMapping("/services/secure")
 public class DataController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataController.class);
@@ -26,19 +26,25 @@ public class DataController {
         this.dataService = dataService;
     }
 
-    @Secured({"ROLE_iam-admin-service.users.read"})
     @GetMapping("/data")
+    @PreAuthorize("hasAuthority('spring-method-security.secure-data.read')")
     public ResponseEntity<ServerData> getData(Authentication authentication) {
-        LOG.info("getData authentication={}", authentication.getName());
+        LOG.info("getData");
+        logAuthentication(authentication);
         return ResponseEntity.ok(dataService.getData());
     }
 
-    @Secured({"ROLE_iam-admin-service.users.create"})
-    @PutMapping("/data")
-    public ResponseEntity<Void> setData(@RequestBody ServerData serverData,  Authentication authentication) {
-        LOG.info("setData authentication={} serverData={}", authentication.getName(), serverData.getData());
-        dataService.setData(serverData);
-        return ResponseEntity.ok().build();
+    @PostMapping("/data")
+    @PreAuthorize("hasAuthority('spring-method-security.secure-data.write')")
+    public ResponseEntity<ServerData> setData(@RequestBody ServerData serverData, Authentication authentication) {
+        LOG.info("setData serverData={}", serverData.getData());
+        logAuthentication(authentication);
+        return ResponseEntity.ok(dataService.setData(serverData));
+    }
+
+    private void logAuthentication(Authentication authentication) {
+        LOG.info("Authentication: name={}", authentication.getName());
+        authentication.getAuthorities().forEach(a-> LOG.info("  GA: {}", a.getAuthority()));
     }
 
 }

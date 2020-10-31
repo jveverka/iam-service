@@ -18,7 +18,7 @@ public class AuthenticationImpl implements Authentication {
     private boolean isAuthenticated;
 
     public AuthenticationImpl(StandardTokenClaims standardTokenClaims) {
-        this.name = standardTokenClaims.getIssuer();
+        this.name = standardTokenClaims.getSubject();
         List<GrantedAuthorityImpl> authorities = new ArrayList<>();
         standardTokenClaims.getScope().forEach(r->
             authorities.add(new GrantedAuthorityImpl(r))

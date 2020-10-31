@@ -76,11 +76,11 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       echo "Waiting for iam-service to start ..."
       sleep 1
    done
-   until [ $(curl --silent --output /dev/null -f http://127.0.0.1:8082/services/info -w '%{http_code}\n')  -eq  "200" ]; do
+   until [ $(curl --silent --output /dev/null -f http://127.0.0.1:8082/services/public/info -w '%{http_code}\n')  -eq  "200" ]; do
       echo "Waiting for spring-method-security to start ..."
       sleep 1
    done
-   until [ $(curl --silent --output /dev/null -f http://127.0.0.1:8081/services/info -w '%{http_code}\n')  -eq  "401" ]; do
+   until [ $(curl --silent --output /dev/null -f http://127.0.0.1:8081/services/public/info -w '%{http_code}\n')  -eq  "401" ]; do
       echo "Waiting for spring-resource-server to start ..."
       sleep 1
    done

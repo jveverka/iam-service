@@ -47,4 +47,8 @@ public class PermissionInfo {
         return Objects.hash(service, resource, action);
     }
 
+    public static PermissionInfo from(String service, String resource, String action) {
+        return new PermissionInfo(service, resource, action);
+    }
+
 }

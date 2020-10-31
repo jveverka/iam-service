@@ -2,6 +2,7 @@ package itx.iamservice.examples.methodsecurity.config;
 
 import itx.iamservice.client.IAMClient;
 import itx.iamservice.client.IAMClientBuilder;
+import itx.iamservice.client.spring.IAMSecurityFilterConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,8 +12,8 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -38,14 +39,16 @@ public class IAMClientConfiguration {
 
     @Bean
     @Scope("singleton")
-    public IAMClient createIAMClient() throws MalformedURLException, URISyntaxException {
+    public IAMSecurityFilterConfiguration createIAMSecurityFilterConfiguration() throws MalformedURLException {
         LOG.info("createIAMClient");
-        return IAMClientBuilder.builder()
+        IAMClient iamClient = IAMClientBuilder.builder()
                 .setBaseUrl(new URL(baseUrl))
                 .setOrganizationId(organizationId)
                 .setProjectId(projectId)
                 .withHttpProxy(pollingInterval, timeUnit)
                 .build();
+        Set<String> excludeEndpoints = Set.of("/services/public/**");
+        return new IAMSecurityFilterConfiguration(iamClient, excludeEndpoints);
     }
 
     public void setOrganizationId(String organizationId) {

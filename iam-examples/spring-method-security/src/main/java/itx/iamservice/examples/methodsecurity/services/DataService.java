@@ -6,6 +6,6 @@ public interface DataService {
 
     ServerData getData();
 
-    void setData(ServerData serverData);
+    ServerData setData(ServerData serverData);
 
 }

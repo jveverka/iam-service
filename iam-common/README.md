@@ -1,2 +1,6 @@
-# IAM-common
-This component will be completely removed. __iam-service-client__ will be used instead.
+# IAM-common components
+
+* __iam-client__ 
+* __iam-client-spring__
+* __iam-model__
+* __iam-service-client__

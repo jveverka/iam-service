@@ -20,6 +20,9 @@ dependencies {
 	}
 }
 
+springBoot {
+}
+
 test {
 	if (System.properties['test.profile'] != 'integration') {
 		exclude '**/*TestsIT*'

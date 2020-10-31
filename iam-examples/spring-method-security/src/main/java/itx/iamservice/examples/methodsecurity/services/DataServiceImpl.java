@@ -18,8 +18,9 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
-    public void setData(ServerData serverData) {
+    public ServerData setData(ServerData serverData) {
         this.serverData = serverData;
+        return this.serverData;
     }
 
 }

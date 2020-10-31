@@ -28,6 +28,7 @@ This client library makes JWT verification easier for clients and micro-services
    ```
    while(iamClient.waitForInit(10L, TimeUnit.SECONDS)) {
    }
+   iamClient.updateKeyCache();
    HttpServletRequest httpServletRequest = ...;
    JWToken jwt = JWTUtils.extractJwtToken(httpServletRequest.getHeader("Authorization"));
    iamClient.validate(jwt);

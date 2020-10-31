@@ -73,6 +73,9 @@ public interface IAMClient extends AutoCloseable {
      */
     boolean validate(OrganizationId organizationId, ProjectId projectId, Set<Permission> requiredApplicationPermissions, JWToken token);
 
+    /**
+     * Force update of internal JWK key cache.
+     */
     void updateKeyCache();
 
 }

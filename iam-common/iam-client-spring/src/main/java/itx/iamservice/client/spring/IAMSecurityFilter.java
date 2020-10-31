@@ -38,7 +38,7 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
             if (claimSetOptional.isPresent()) {
                 StandardTokenClaims standardTokenClaims = claimSetOptional.get();
                 SecurityContext securityContext = SecurityContextHolder.getContext();
-                securityContext.setAuthentication(new AuthenticationImpl(standardTokenClaims));
+                securityContext.setAuthentication(configuration.getTokenClaimsMapper().map(standardTokenClaims));
                 filterChain.doFilter(request, response);
                 return;
             } else {

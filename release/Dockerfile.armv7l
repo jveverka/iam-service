@@ -2,7 +2,7 @@
 # Tested on AWS (a1.large)  ARM (Cortex-A72), Architecture: aarch64
 # Tested on RaspberryPI 3 Model B+, ARM (Cortex-A53), Architecture: armv7l
 FROM adoptopenjdk/openjdk11:armv7l-debianslim-jdk-11.0.8_10-slim
-COPY iam-service-1.0.0-SNAPSHOT.jar /iam-service-1.0.0-SNAPSHOT.jar
+COPY iam-service-1.0.1-SNAPSHOT.jar /iam-service-1.0.1-SNAPSHOT.jar
 COPY iam-service-start.sh /iam-service-start.sh
 RUN chmod +x /iam-service-start.sh
 RUN mkdir -p /opt/data

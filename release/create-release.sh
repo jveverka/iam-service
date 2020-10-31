@@ -14,7 +14,7 @@ else
 fi
 
 HOME_DIR=`pwd`
-VERSION=1.0.0-SNAPSHOT
+VERSION=1.0.1-SNAPSHOT
 RELEASE_DIR=build/iam-service-${VERSION}
 
 cd ${HOME_DIR}

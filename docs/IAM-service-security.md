@@ -1,8 +1,7 @@
 # IAM Service Security Model
 Internal __iam-service__ security model determines level of access for 
 management of organization and projects. To setup your custom 
-organization and project and security roles and permissions, 
-[follow](IAM-service-project-security.md) this guide. 
+organization and project and security roles and permissions. 
 
 ## Roles, Permissions and Scopes
 For definition of Role and Permission, 

@@ -1,15 +1,15 @@
 ## IAM-Client for Java
-This client library makes JWT verification easier for clients and micro-services. 
+This client library makes JWT verification easier for clients and micro-services (resource-servers). 
 
 ### Easy to use
 1. Add project dependency.
    * maven dependency
      ```
-     <dependevcy>
+     <dependency>
        <groupId>one.microproject.iamservice</groupId>
        <artifactId>iam-client</artifactId>
        <version>1.2.0-SNAPSHOT</version>
-     <dependevcy/>
+     <dependency/>
      ```
    * gradle dependency
      ```

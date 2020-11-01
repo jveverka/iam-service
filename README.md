@@ -37,8 +37,8 @@ Estimated release date: __EOF Nov.2020__
 
 ### Components
 * [__iam-service__](iam-service) - [SpringBoot](https://spring.io/projects/spring-boot) IAM as microservice (standalone authorization and authentication server). 
-* [__iam-client__](iam-common/iam-client) - client library for back channel integrations with other microservices. 
-* [__iam-service-client__](iam-common/iam-service-client) - client library for remote administration of iam-service.
+* [__iam-client__](iam-common/iam-client) - client library for back channel integrations with other microservices (resource-servers). 
+* [__iam-service-client__](iam-common/iam-service-client) - client library for remote administration of iam-service (resource-servers).
 * [__iam-client-spring__](iam-common/iam-client-spring) - easier integrations for springboot microservices.
 * [__iam-examples__](iam-examples) - examples how to use and integrate with IAM-service.
 

@@ -57,21 +57,21 @@ public class MethodSecurityTestsIT {
     private static TokenResponse appReaderTokens;
     private static TokenResponse appWriterTokens;
 
-    private static OrganizationId organizationId;
-    private static ProjectId projectId;
-    private static UserId appAdminUserId;
-    private static ClientId clientId;
-    private static RoleId appUserRoleReader;
-    private static RoleId appUserRoleWriter;
-    private static Set<PermissionInfo> readerPermissions = Set.of(
+    private final static OrganizationId organizationId = OrganizationId.from("it-testing-001");
+    private final static ProjectId projectId = ProjectId.from("spring-method-security");
+    private final static UserId appAdminUserId = UserId.from("user-001");
+    private final static ClientId clientId = ClientId.from("client-001");
+    private final static RoleId appUserRoleReader = RoleId.from("role-reader");
+    private final static RoleId appUserRoleWriter = RoleId.from("role-writer");
+    private final static Set<PermissionInfo> readerPermissions = Set.of(
             PermissionInfo.from("spring-method-security", "secure-data", "read")
     );
-    private static Set<PermissionInfo> writerPermissions = Set.of(
+    private final static Set<PermissionInfo> writerPermissions = Set.of(
             PermissionInfo.from("spring-method-security", "secure-data", "read"),
             PermissionInfo.from("spring-method-security", "secure-data", "write")
     );
-    private static UserId appReaderUserId;
-    private static UserId appWriterUserId;
+    private final static UserId appReaderUserId = UserId.from("bob-reader");
+    private final static UserId appWriterUserId = UserId.from("alice-writer");
 
     private static IAMServiceManagerClient iamServiceManagerClient;
 
@@ -80,14 +80,6 @@ public class MethodSecurityTestsIT {
         restTemplate = new TestRestTemplate();
         iamServerPort = 8080;
         resourceServerPort = 8082;
-        organizationId = OrganizationId.from("it-testing-001");
-        projectId = ProjectId.from("spring-method-security");
-        appAdminUserId = UserId.from("user-001");
-        clientId = ClientId.from("client-001");
-        appUserRoleReader = RoleId.from("role-reader");
-        appUserRoleWriter = RoleId.from("role-writer");
-        appReaderUserId = UserId.from("bob-reader");
-        appWriterUserId = UserId.from("alice-writer");
         URL baseUrl = new URL("http://localhost:" + iamServerPort);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
@@ -200,12 +192,12 @@ public class MethodSecurityTestsIT {
     public void testSecureAccessInvalidIAMAdminTokens() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + iamAdminTokens.getAccessToken()));
-        HttpEntity<ServerData> requestEntity = new HttpEntity(headers);
+        HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<ServerData> response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.GET, requestEntity, ServerData.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         ServerData serverData = new ServerData("update");
-        requestEntity = new HttpEntity(serverData, headers);
+        requestEntity = new HttpEntity<>(serverData, headers);
         response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.POST, requestEntity, ServerData.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -216,12 +208,12 @@ public class MethodSecurityTestsIT {
     public void testSecureAccessInvalidIAppAdminTokens() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appAdminTokens.getAccessToken()));
-        HttpEntity<ServerData> requestEntity = new HttpEntity(headers);
+        HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<ServerData> response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.GET, requestEntity, ServerData.class);
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         ServerData serverData = new ServerData("update");
-        requestEntity = new HttpEntity(serverData, headers);
+        requestEntity = new HttpEntity<>(serverData, headers);
         response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.POST, requestEntity, ServerData.class);
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -232,7 +224,7 @@ public class MethodSecurityTestsIT {
     public void testSecureAccessReaderUserTokensReadAccess() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appReaderTokens.getAccessToken()));
-        HttpEntity<ServerData> requestEntity = new HttpEntity(headers);
+        HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<ServerData> response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.GET, requestEntity, ServerData.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -246,7 +238,7 @@ public class MethodSecurityTestsIT {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appReaderTokens.getAccessToken()));
         ServerData serverData = new ServerData("update");
-        HttpEntity<ServerData> requestEntity = new HttpEntity(serverData, headers);
+        HttpEntity<ServerData> requestEntity = new HttpEntity<>(serverData, headers);
         ResponseEntity<ServerData> response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.POST, requestEntity, ServerData.class);
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -257,7 +249,7 @@ public class MethodSecurityTestsIT {
     public void testSecureAccessWriterUserTokensReadAccess() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appWriterTokens.getAccessToken()));
-        HttpEntity<ServerData> requestEntity = new HttpEntity(headers);
+        HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<ServerData> response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.GET, requestEntity, ServerData.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -271,7 +263,7 @@ public class MethodSecurityTestsIT {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appWriterTokens.getAccessToken()));
         ServerData serverData = new ServerData("update");
-        HttpEntity<ServerData> requestEntity = new HttpEntity(serverData, headers);
+        HttpEntity<ServerData> requestEntity = new HttpEntity<>(serverData, headers);
         ResponseEntity<ServerData> response = restTemplate.exchange(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", HttpMethod.POST, requestEntity, ServerData.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

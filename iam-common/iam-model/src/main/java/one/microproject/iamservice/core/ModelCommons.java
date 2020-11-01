@@ -79,9 +79,9 @@ public final class ModelCommons {
 
     /**
      * Create set of admin permissions for organization and project.
-     * @param organizationId
-     * @param projectId
-     * @return
+     * @param organizationId unique organization ID.
+     * @param projectId unique project ID.
+     * @return a minimal set of permissions for organization / project admin user.
      */
     public static Set<Permission> createProjectAdminPermissions(OrganizationId organizationId, ProjectId projectId) {
         final Set<Permission> adminPermissions = new HashSet<>();
@@ -92,10 +92,23 @@ public final class ModelCommons {
         return adminPermissions.stream().collect(Collectors.toUnmodifiableSet());
     }
 
+    /**
+     * Create unique identifier of project admin role derived from organization / project IDs.
+     * @param organizationId unique organization ID.
+     * @param projectId unique project ID.
+     * @return unique identifier of project admin role.
+     */
     public static RoleId createProjectAdminRoleId(OrganizationId organizationId, ProjectId projectId) {
         return RoleId.from(organizationId.getId() + "-" + projectId.getId() + "-admin");
     }
 
+    /**
+     * Verify if provided scopes contain sufficient permissions to qualify as project admin.
+     * @param organizationId unique organization ID.
+     * @param projectId unique project ID.
+     * @param scopes set of scopes to verify.
+     * @return true if provided set of scopes is qualified as project admin, false otherwise.
+     */
     public static boolean verifyProjectAdminPermissions(OrganizationId organizationId, ProjectId projectId, Set<String> scopes) {
         try {
             final Set<Permission> minimalScopeSet = createProjectAdminPermissions(organizationId, projectId);

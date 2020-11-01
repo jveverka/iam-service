@@ -1,9 +1,13 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
 }
 
 group = 'one.microproject.iamservice'
+archivesBaseName = "iam-client-spring"
 version = '1.2.0-SNAPSHOT'
+
 sourceCompatibility = '11'
 
 repositories {
@@ -34,4 +38,18 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
 }

@@ -27,4 +27,7 @@
     ```
     build/iam-service-release-<NEW_RELEASE_VERSION>.zip
     ```
-    
+* Publish artefacts to as [described here](https://central.sonatype.org/pages/gradle.html).
+  ```
+  gradle uploadArchives
+  ```

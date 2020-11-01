@@ -20,6 +20,7 @@ public interface IAMClient extends AutoCloseable {
      * @param timeout - timeout wait interval duration.
      * @param timeUnit - timeout unit.
      * @return - true, if initialization  has succeeded in given time interval, false otherwise.
+     * @throws InterruptedException in case waiting time is exceeded.
      */
     boolean waitForInit(long timeout, TimeUnit timeUnit) throws InterruptedException;
 

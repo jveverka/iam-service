@@ -12,52 +12,55 @@ public interface IAMServiceStatusClient extends ProjectInfoProvider {
 
     /**
      * https://openid.net/specs/openid-connect-discovery-1_0.html
-     * @return
-     * @throws IOException
+     * @return configuration of this provides.
+     * @throws IOException in case network connection fails.
      */
     ProviderConfigurationResponse getProviderConfiguration() throws IOException;
 
     /**
      * https://tools.ietf.org/html/rfc7517
-     * @return
-     * @throws IOException
+     * @return JSON Web Key.
+     * @throws IOException in case network connection fails.
      */
     JWKResponse getJWK() throws IOException;
 
     /**
      * https://tools.ietf.org/html/rfc7662
-     * @param accessToken
+     * @param accessToken valid access_token.
      * @param tokenTypeHint - may be null (optional)
-     * @return
-     * @throws IOException
+     * @return introspection for provided token.
+     * @throws IOException in case network connection fails.
      */
     IntrospectResponse tokenIntrospection(String accessToken, String tokenTypeHint) throws IOException;
 
     /**
      * https://tools.ietf.org/html/rfc7662
-     * @param accessToken
-     * @return
-     * @throws IOException
+     * @param accessToken valid access_token.
+     * @return introspection for provided token.
+     * @throws IOException in case network connection fails.
      */
     IntrospectResponse tokenIntrospection(String accessToken) throws IOException;
 
     /**
      * https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest
-     * @param accessToken
-     * @return
+     * @param accessToken valid access_token.
+     * @return user info for provided token.
+     * @throws IOException in case network connection fails.
      */
     UserInfoResponse getUserInfo(String accessToken) throws IOException;
 
     /**
      * https://tools.ietf.org/html/rfc7009
-     * @param accessToken
+     * @param accessToken valid access_token.
      * @param tokenTypeHint - may be null (optional)
+     * @throws IOException in case network connection fails.
      */
     void revokeToken(String accessToken, String tokenTypeHint) throws IOException;
 
     /**
      * https://tools.ietf.org/html/rfc7009
-     * @param accessToken
+     * @param accessToken valid access_token.
+     * @throws IOException in case network connection fails.
      */
     void revokeToken(String accessToken) throws IOException;
 

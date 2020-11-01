@@ -1,7 +1,7 @@
 version: '3'
 services:
   iam-service:
-    image: iam-service:1.0.1-SNAPSHOT
+    image: iam-service:1.2.0-SNAPSHOT
     build:
       context: iam-service
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
       timeout: 1s
       retries: 5
   spring-method-security:
-    image: spring-method-security:1.0.1-SNAPSHOT
+    image: spring-method-security:1.2.0-SNAPSHOT
     build:
       context: iam-examples/spring-method-security
       dockerfile: Dockerfile
@@ -24,7 +24,7 @@ services:
     depends_on:
       - iam-service
   spring-resource-server:
-    image: spring-resource-server:1.0.1-SNAPSHOT
+    image: spring-resource-server:1.2.0-SNAPSHOT
     build:
       context: iam-examples/spring-resource-server
       dockerfile: Dockerfile

@@ -10,7 +10,7 @@ JWT tokens issued by __iam-service__ are used to get access to resources hosted 
 3. __client application__ uses issued JWT token to access *Protected Resources*. 
 4. __client application__ can access *Public Resources* directly without any authorization.
 
-* [__R1__ DataController](src/main/java/itx/iamservice/examples/methodsecurity/controller/DataController.java)
+* [__R1__ DataController](src/main/java/one/microproject/iamservice/examples/methodsecurity/controller/DataController.java)
     Protected resource by 
     ```
     @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -24,7 +24,7 @@ JWT tokens issued by __iam-service__ are used to get access to resources hosted 
     @PreAuthorize("hasAuthority('spring-method-security.secure-data.read') and 
     hasAuthority('spring-method-security.secure-data.write')")
     ``` 
-* [__R2__ SystemController](src/main/java/itx/iamservice/examples/methodsecurity/controller/SystemController.java)
+* [__R2__ SystemController](src/main/java/one/microproject/iamservice/examples/methodsecurity/controller/SystemController.java)
   Unprotected resources
   * __GET__ ``/services/public/info``
   * __GET__ ``/services/public/update-iam-client-cache`` 

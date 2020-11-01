@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'itx.iamservice'
+group = 'one.microproject.iamservice'
 version = '1.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 

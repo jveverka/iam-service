@@ -6,14 +6,14 @@ This client library makes JWT verification easier for clients and micro-services
    * maven dependency
      ```
      <dependevcy>
-       <groupId>itx.iamservice</groupId>
+       <groupId>one.microproject.iamservice</groupId>
        <artifactId>iam-client</artifactId>
        <version>1.0.1-SNAPSHOT</version>
      <dependevcy/>
      ```
    * gradle dependency
      ```
-     implementation 'itx.iamservice:iam-client:1.0.1-SNAPSHOT'
+     implementation 'one.microproject.iamservice:iam-client:1.0.1-SNAPSHOT'
      ```
 2. Create client instance programmatically.
    ```
@@ -33,4 +33,4 @@ This client library makes JWT verification easier for clients and micro-services
    JWToken jwt = JWTUtils.extractJwtToken(httpServletRequest.getHeader("Authorization"));
    iamClient.validate(jwt);
    ```
-4. Check [AIMClient API](src/main/java/itx/iamservice/client/IAMClient.java) for other validation options.   
+4. Check [AIMClient API](src/main/java/one/microproject/iamservice/client/IAMClient.java) for other validation options.   

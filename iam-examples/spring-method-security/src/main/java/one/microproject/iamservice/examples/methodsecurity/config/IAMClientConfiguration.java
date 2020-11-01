@@ -42,10 +42,9 @@ public class IAMClientConfiguration {
     public IAMSecurityFilterConfiguration createIAMSecurityFilterConfiguration() throws MalformedURLException {
         LOG.info("createIAMClient");
         IAMClient iamClient = IAMClientBuilder.builder()
-                .setBaseUrl(new URL(baseUrl))
                 .setOrganizationId(organizationId)
                 .setProjectId(projectId)
-                .withHttpProxy(pollingInterval, timeUnit)
+                .withHttpProxy(new URL(baseUrl), pollingInterval, timeUnit)
                 .build();
         Set<String> excludeEndpoints = Set.of("/services/public/**", "/swagger-ui/**", "/v3/api**");
         return new IAMSecurityFilterConfiguration(iamClient, excludeEndpoints);

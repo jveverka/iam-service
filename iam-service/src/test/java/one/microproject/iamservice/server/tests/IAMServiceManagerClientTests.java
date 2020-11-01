@@ -74,10 +74,9 @@ public class IAMServiceManagerClientTests {
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
         iamClient = IAMClientBuilder.builder()
-                .setBaseUrl(baseUrl)
                 .setOrganizationId(IAM_ADMINS_ORG.getId())
                 .setProjectId(IAM_ADMINS_PROJECT.getId())
-                .withHttpProxy(10L, TimeUnit.SECONDS)
+                .withHttpProxy(baseUrl, 10L, TimeUnit.SECONDS)
                 .build();
         while(!iamClient.waitForInit(15L, TimeUnit.SECONDS)) {
             LOG.info("waiting for iam-client initialization ...");

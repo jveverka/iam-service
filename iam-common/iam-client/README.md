@@ -18,10 +18,9 @@ This client library makes JWT verification easier for clients and micro-services
 2. Create client instance programmatically.
    ```
    IAMClient iamClient = IAMClientBuilder.builder()
-            .setBaseUrl(new URL("http://localhost:8080/services/authentication"))
             .setOrganizationId("org-01")
             .setProjectId("project-01")
-            .withHttpProxy(10L, TimeUnit.SECONDS)
+            .withHttpProxy(new URL("http://localhost:8080/services/authentication"), 10L, TimeUnit.SECONDS)
             .build();
    ```
 3. Verify and validate incoming JWT(s).

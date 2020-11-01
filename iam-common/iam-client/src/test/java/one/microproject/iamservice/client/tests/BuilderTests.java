@@ -16,10 +16,9 @@ public class BuilderTests {
     @Test
     public void testBuilder() throws MalformedURLException, URISyntaxException {
         IAMClient iamClient = IAMClientBuilder.builder()
-                .setBaseUrl(new URL("http://localhost:8080/iam"))
                 .setOrganizationId("org-01")
                 .setProjectId("project-01")
-                .withHttpProxy(10L, TimeUnit.SECONDS)
+                .withHttpProxy(new URL("http://localhost:8080/iam"), 10L, TimeUnit.SECONDS)
                 .build();
         assertNotNull(iamClient);
     }

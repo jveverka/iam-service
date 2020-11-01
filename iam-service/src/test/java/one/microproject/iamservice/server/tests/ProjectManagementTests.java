@@ -106,10 +106,9 @@ public class ProjectManagementTests {
         assertNotNull(setupOrganizationResponse);
         assertEquals(organizationId.getId(), setupOrganizationResponse.getOrganizationId());
         iamClient = IAMClientBuilder.builder()
-                .setBaseUrl(baseUrl)
                 .setOrganizationId(organizationId.getId())
                 .setProjectId(projectId.getId())
-                .withHttpProxy(5L, TimeUnit.SECONDS)
+                .withHttpProxy(baseUrl, 5L, TimeUnit.SECONDS)
                 .build();
         iamClient.waitForInit(10L,  TimeUnit.SECONDS);
     }

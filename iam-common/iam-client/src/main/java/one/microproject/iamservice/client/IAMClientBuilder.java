@@ -12,15 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 public class IAMClientBuilder {
 
-    private URL baseUrl;
     private IAMServiceProxy iamServiceProxy;
     private OrganizationId organizationId;
     private ProjectId projectId;
-
-    public IAMClientBuilder setBaseUrl(URL baseUrl) {
-        this.baseUrl = baseUrl;
-        return this;
-    }
 
     public IAMClientBuilder setOrganizationId(String organizationId) {
         this.organizationId = OrganizationId.from(organizationId);
@@ -32,7 +26,7 @@ public class IAMClientBuilder {
         return this;
     }
 
-    public IAMClientBuilder withHttpProxy(Long pollingInterval, TimeUnit timeUnit) {
+    public IAMClientBuilder withHttpProxy(URL baseUrl, Long pollingInterval, TimeUnit timeUnit) {
         Objects.requireNonNull(baseUrl);
         Objects.requireNonNull(organizationId);
         Objects.requireNonNull(projectId);

@@ -175,6 +175,7 @@ public class AuthenticationController {
                 authorizationCodeGrantRequest.getPassword(), scopes, authorizationCodeGrantRequest.getState(),
                 authorizationCodeGrantRequest.getRedirectUri());
         return ResponseEntity.of(authorizationCode);
+        //TODO: redirect to 'redirect URL ?' (redirect to URL associated with clientID which initiated flow ?)
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -14,7 +14,7 @@ import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.services.ResourceServerService;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeGrantRequest;
-import one.microproject.iamservice.core.services.dto.Code;
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.services.dto.ConsentRequest;
 import one.microproject.iamservice.core.services.dto.GrantType;
 import one.microproject.iamservice.core.services.dto.IdTokenRequest;
@@ -25,7 +25,7 @@ import one.microproject.iamservice.core.services.dto.ProviderConfigurationReques
 import one.microproject.iamservice.core.dto.ProviderConfigurationResponse;
 import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
 import one.microproject.iamservice.server.controller.support.ControllerUtils;
 import org.slf4j.Logger;

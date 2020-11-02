@@ -17,7 +17,7 @@ import one.microproject.iamservice.core.dto.IntrospectRequest;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import one.microproject.iamservice.core.services.caches.TokenCache;

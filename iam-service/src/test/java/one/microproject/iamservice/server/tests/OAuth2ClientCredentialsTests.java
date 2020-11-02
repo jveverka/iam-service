@@ -3,7 +3,7 @@ package one.microproject.iamservice.server.tests;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 import one.microproject.iamservice.serviceclient.impl.AuthenticationException;

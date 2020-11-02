@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import one.microproject.iamservice.core.dto.Code;
 
 import java.util.Collection;
 

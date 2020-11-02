@@ -7,12 +7,12 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
-import one.microproject.iamservice.core.services.dto.Code;
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.services.dto.IdTokenRequest;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
 
 import java.net.URI;

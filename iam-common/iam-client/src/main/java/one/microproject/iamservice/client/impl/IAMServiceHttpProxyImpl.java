@@ -1,10 +1,12 @@
 package one.microproject.iamservice.client.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.IntrospectRequest;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.dto.JWKResponse;
 import one.microproject.iamservice.core.dto.ProviderConfigurationResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -99,6 +102,26 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     public void updateKeyCache() {
         IAMServiceHttpFetchTask task = new IAMServiceHttpFetchTask(baseUrl, organizationId, projectId, client, mapper, this);
         task.run();
+    }
+
+    @Override
+    public Optional<TokenResponse> getCode(Code code) {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseUrl + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                            "?grant_type=authorization_code" +
+                            "&code=" + code.getCodeValue())
+                    .post(RequestBody.create("{}", MediaType.parse("application/json")))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return Optional.of(mapper.readValue(response.body().string(), TokenResponse.class));
+            } else {
+                return Optional.empty();
+            }
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 
     protected synchronized void setJwkResponse(JWKResponse jwkResponse) {

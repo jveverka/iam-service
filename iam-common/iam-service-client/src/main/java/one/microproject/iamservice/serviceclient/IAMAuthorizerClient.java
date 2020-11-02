@@ -2,8 +2,8 @@ package one.microproject.iamservice.serviceclient;
 
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
-import one.microproject.iamservice.core.services.dto.Code;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.Code;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import one.microproject.iamservice.serviceclient.impl.ProjectInfoProvider;
 

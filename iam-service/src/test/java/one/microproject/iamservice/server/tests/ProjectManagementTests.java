@@ -21,7 +21,7 @@ import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.ProjectInfo;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfo;
 import one.microproject.iamservice.serviceclient.IAMAuthorizerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;

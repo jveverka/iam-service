@@ -12,7 +12,7 @@ import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
-import one.microproject.iamservice.core.services.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.examples.methodsecurity.dto.ServerData;
 import one.microproject.iamservice.examples.methodsecurity.dto.SystemInfo;
 import one.microproject.iamservice.serviceclient.IAMAuthorizerClient;

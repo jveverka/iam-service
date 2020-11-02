@@ -50,9 +50,9 @@ Estimated release date: __EOF Nov.2020__
 * __OpenAPI / Swagger YAML__ - ```http://localhost:8080/v3/api-docs.yaml```
 * __OpenAPI / Swagger UI__ - ```http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs```
 * __SpringBoot actuator__ - ``http://localhost:8080/actuator``
-* [__Security Rules__](docs/IAM-service-security.md) - accessing APIs.
 
 ### Technical documentation
+* [Security Rules](docs/IAM-service-security.md) - accessing APIs.
 * [Internal Data Model](docs/IAM-data-model.md) - internal data model description and glossary.
 * [JWT mappings](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
 * [Project build & test instructions](docs/IAM-build-test.md) - how to build this project locally.

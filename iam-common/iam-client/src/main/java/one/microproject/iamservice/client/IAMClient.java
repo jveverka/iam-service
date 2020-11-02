@@ -1,6 +1,8 @@
 package one.microproject.iamservice.client;
 
 import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.Code;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
@@ -78,5 +80,12 @@ public interface IAMClient extends AutoCloseable {
      * Force update of internal JWK key cache.
      */
     void updateKeyCache();
+
+    /**
+     * Get tokens in exchange for authorization_code. This call is used to finish OAuth2 authorization code grant flow.
+     * @param code authorization_code.
+     * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
+     */
+    Optional<TokenResponse> getCode(Code code);
 
 }

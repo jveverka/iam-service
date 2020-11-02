@@ -1,4 +1,4 @@
-package one.microproject.iamservice.core.services.dto;
+package one.microproject.iamservice.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -7,7 +7,7 @@ import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
-import one.microproject.iamservice.core.services.dto.Code;
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.services.dto.Scope;
 
 import java.net.URI;

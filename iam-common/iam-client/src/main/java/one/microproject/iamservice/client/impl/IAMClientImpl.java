@@ -2,6 +2,8 @@ package one.microproject.iamservice.client.impl;
 
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.Code;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
@@ -71,6 +73,11 @@ public class IAMClientImpl implements IAMClient {
     @Override
     public void updateKeyCache() {
         iamServiceProxy.updateKeyCache();
+    }
+
+    @Override
+    public Optional<TokenResponse> getCode(Code code) {
+        return iamServiceProxy.getCode(code);
     }
 
     @Override

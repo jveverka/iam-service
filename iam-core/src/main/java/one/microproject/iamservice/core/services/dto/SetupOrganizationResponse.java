@@ -20,7 +20,8 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
                 request.getAdminUserId(),
                 request.getAdminUserPassword(),
                 request.getAdminUserEmail(),
-                request.getProjectAudience());
+                request.getProjectAudience(),
+                request.getRedirectURL());
         this.adminRoleId = adminRoleId;
         this.adminPermissions = adminPermissions;
     }
@@ -37,8 +38,9 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
                                      @JsonProperty("projectAudience") Set<String> projectAudience,
                                      @JsonProperty("adminRoleId") String adminRoleId,
                                      @JsonProperty("adminUserEmail") String adminUserEmail,
-                                     @JsonProperty("adminPermissions") Set<String> adminPermissions) {
-        super(organizationId, organizationName, adminProjectId, adminProjectName, adminClientId, adminClientSecret, adminUserId, adminUserPassword, adminUserEmail, projectAudience);
+                                     @JsonProperty("adminPermissions") Set<String> adminPermissions,
+                                     @JsonProperty("redirectURL") String redirectURL) {
+        super(organizationId, organizationName, adminProjectId, adminProjectName, adminClientId, adminClientSecret, adminUserId, adminUserPassword, adminUserEmail, projectAudience, redirectURL);
         this.adminRoleId = adminRoleId;
         this.adminPermissions = adminPermissions;
     }

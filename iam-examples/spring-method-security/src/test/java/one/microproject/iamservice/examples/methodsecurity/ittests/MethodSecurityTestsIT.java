@@ -118,7 +118,8 @@ public class MethodSecurityTestsIT {
     public void createOrganizationProjectAndAdminUser() throws AuthenticationException {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "Method Security Project",
-                clientId.getId(), "top-secret", appAdminUserId.getId(),  "secret", "admin@email.com", Set.of("methodsecurity"));
+                clientId.getId(), "top-secret", appAdminUserId.getId(),  "secret", "admin@email.com",
+                Set.of("methodsecurity"), "http://localhost:" + iamServerPort + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect");
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(iamAdminTokens.getAccessToken(), setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
     }

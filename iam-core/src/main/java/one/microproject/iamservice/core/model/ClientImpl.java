@@ -15,30 +15,35 @@ public class ClientImpl implements Client {
     private final Long defaultAccessTokenDuration;
     private final Long defaultRefreshTokenDuration;
     private final Set<RoleId> roles;
+    private final ClientProperties properties;
 
     public ClientImpl(ClientCredentials credentials,
-                  String name,
-                  Long defaultAccessTokenDuration,
-                  Long defaultRefreshTokenDuration) {
+                      String name,
+                      Long defaultAccessTokenDuration,
+                      Long defaultRefreshTokenDuration,
+                      ClientProperties properties) {
         this.credentials = credentials;
         this.name = name;
         this.roles = new HashSet<>();
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
+        this.properties = properties;
     }
 
     @JsonCreator
     public ClientImpl(@JsonProperty("credentials") ClientCredentials credentials,
-                  @JsonProperty("name") String name,
-                  @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
-                  @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
-                  @JsonProperty("roles") Collection<RoleId> roles) {
+                      @JsonProperty("name") String name,
+                      @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
+                      @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
+                      @JsonProperty("roles") Collection<RoleId> roles,
+                      @JsonProperty("properties") ClientProperties properties) {
         this.credentials = credentials;
         this.name = name;
         this.roles = new HashSet<>();
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
         this.roles.addAll(roles);
+        this.properties = properties;
     }
 
     @JsonIgnore
@@ -80,6 +85,11 @@ public class ClientImpl implements Client {
     @Override
     public Long getDefaultRefreshTokenDuration() {
         return defaultRefreshTokenDuration;
+    }
+
+    @Override
+    public ClientProperties getProperties() {
+        return properties;
     }
 
 }

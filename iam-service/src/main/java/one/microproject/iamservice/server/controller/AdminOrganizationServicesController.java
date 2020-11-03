@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import one.microproject.iamservice.core.dto.CreateOrganization;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.Permission;
@@ -109,7 +110,8 @@ public class AdminOrganizationServicesController {
             }
         }
         //Create Actions
-        CreateClientRequest createClientRequest = new CreateClientRequest(clientId, "", 3600*1000L, 24*3600*1000L, request.getAdminClientSecret());
+        CreateClientRequest createClientRequest = new CreateClientRequest(clientId, "", 3600*1000L, 24*3600*1000L,
+                request.getAdminClientSecret(), ClientProperties.from(request.getRedirectURL()));
         Optional<ClientCredentials> clientCredentials = clientManagementService.createClient(organizationId, projectId, createClientRequest);
         if (clientCredentials.isEmpty()) {
             LOG.warn("Error: create Client id={} failed !", clientId.getId());

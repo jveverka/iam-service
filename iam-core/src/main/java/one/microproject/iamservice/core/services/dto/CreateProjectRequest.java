@@ -22,7 +22,7 @@ public class CreateProjectRequest {
         this.id = id;
         this.name = name;
         this.audience = new HashSet<>();
-        audience.forEach(a->this.audience.add(a));
+        this.audience.addAll(audience);
     }
 
     public ProjectId getId() {

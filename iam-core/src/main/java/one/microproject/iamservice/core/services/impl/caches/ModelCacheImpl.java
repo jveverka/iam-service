@@ -232,7 +232,7 @@ public class ModelCacheImpl implements ModelCache {
         if (project !=  null && c == null) {
             ClientCredentials credentials = new ClientCredentials(request.getId(), request.getSecret());
             Client client = new ClientImpl(credentials, request.getName(),
-                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration());
+                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), request.getProperties());
             project.addClient(client.getId());
             clients.put(clientKey, client);
             persistenceService.onNodeUpdated(projectKey, project);

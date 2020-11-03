@@ -7,6 +7,7 @@ import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.ClientImpl;
+import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.Credentials;
 import one.microproject.iamservice.core.model.KeyPairData;
 import one.microproject.iamservice.core.model.KeyPairSerialized;
@@ -93,8 +94,9 @@ public class ModelSerializationTests {
 
     @Test
     public void serializeAndDeserializeClient() throws JsonProcessingException {
+        ClientProperties properties = ClientProperties.from("http://localhost:8080");
         ClientCredentials credentials = new ClientCredentials(ClientId.from("client-001"), "secret");
-        Client client = new ClientImpl(credentials, "name", 10L, 10L, Collections.emptyList());
+        Client client = new ClientImpl(credentials, "name", 10L, 10L, Collections.emptyList(), properties);
         String serialized = mapper.writeValueAsString(client);
         Client clientDeserialized = mapper.readValue(serialized, Client.class);
         assertNotNull(clientDeserialized);

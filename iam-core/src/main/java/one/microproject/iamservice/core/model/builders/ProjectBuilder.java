@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.model.builders;
 
 import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.Project;
@@ -42,18 +43,18 @@ public final class ProjectBuilder {
         }
     }
 
-    public ClientBuilder addClient(String name) {
+    public ClientBuilder addClient(String name, String redirectURL) {
         ClientId id = ClientId.from(UUID.randomUUID().toString());
-        return addClient(id, name);
+        return addClient(id, name, redirectURL);
     }
 
-    public ClientBuilder addClient(ClientId id, String name) {
+    public ClientBuilder addClient(ClientId id, String name, String redirectURL) {
         String secret = UUID.randomUUID().toString();
-        return addClient(id, name, secret);
+        return addClient(id, name, secret, redirectURL);
     }
 
-    public ClientBuilder addClient(ClientId id, String name, String secret) {
-        CreateClientRequest request = new CreateClientRequest(id, name, 3600*1000L, 24*3600*1000L, secret);
+    public ClientBuilder addClient(ClientId id, String name, String secret, String redirectURL) {
+        CreateClientRequest request = new CreateClientRequest(id, name, 3600*1000L, 24*3600*1000L, secret, ClientProperties.from(redirectURL));
         Optional<Client> client = modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), request);
         if (client.isPresent()) {
             return new ClientBuilder(this, client.get());

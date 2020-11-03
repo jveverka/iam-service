@@ -24,15 +24,15 @@ import java.util.Optional;
 
 public class ProviderConfigurationServiceImpl implements ProviderConfigurationService {
 
-    private static final String[] responseTypes = { "code", "code id_token","code token","code id_token token" };
-    private static final String[] grantTypes = { "authorization_code", "refresh_token", "password", "client_credentials" };
-    private static final String[] subjectTypesSupported = { "public", "pairwise" };
-    private static final String[] idTokenSigningAlgValuesSupported = { "RS256" };
-    private static final String[] idTokenEncryptionAlgValuesSupported = { "RSA" };
-
     public static final String KEY_TYPE = "RSA";
     public static final String KEY_USE = "sig";
     public static final String KEY_ALGORITHM = "RS256";
+
+    private static final String[] responseTypes = { "code", "code id_token","code token","code id_token token" };
+    private static final String[] grantTypes = { "authorization_code", "refresh_token", "password", "client_credentials" };
+    private static final String[] subjectTypesSupported = { "public", "pairwise" };
+    private static final String[] idTokenSigningAlgValuesSupported = { KEY_ALGORITHM };
+    private static final String[] idTokenEncryptionAlgValuesSupported = { KEY_TYPE };
 
     public static String[] getOperations() {
         return new String[] { "verify" };

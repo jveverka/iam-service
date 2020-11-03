@@ -99,13 +99,21 @@ public final class ModelUtils {
                 .addProject(projectId, IAM_ADMINS_NAME, IAM_AUDIENCE)
                     .addRole(iamAdmin)
                     .addRole(iamClientRole)
-                    .addClient(IAM_ADMIN_CLIENT_ID, "client-1", iamClientSecret)
+                    .addClient(IAM_ADMIN_CLIENT_ID, "client-1", iamClientSecret, getIamAdminsRedirectURL())
                         .addRole(iamClientRole.getId())
                     .and()
                     .addUser(IAM_ADMIN_USER, "iam-admin", iamAdminEmail)
                         .addUserNamePasswordCredentials(IAM_ADMIN_USER, iamAdminPassword)
                         .addRole(iamAdmin.getId())
                 .build();
+    }
+
+    public static String getIamAdminsRedirectURL() {
+        return getRedirectURL(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT);
+    }
+
+    public static String getRedirectURL(OrganizationId organizationId, ProjectId projectId) {
+        return "http://loclahost:8080/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect";
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {

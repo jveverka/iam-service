@@ -21,7 +21,7 @@ import java.util.Optional;
 public interface AuthenticationService {
 
     /**
-     * Authenticate end-user in username/password flow.
+     * Authenticate end-user in username/password credentials flow.
      * grant_type=password
      * @param organizationId
      * @param projectId

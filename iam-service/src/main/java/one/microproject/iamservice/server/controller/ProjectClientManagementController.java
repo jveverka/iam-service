@@ -42,7 +42,9 @@ public class ProjectClientManagementController {
                                              @RequestBody CreateClient createClient) {
         iamSecurityValidator.verifyProjectAdminAccess(OrganizationId.from(organizationId), ProjectId.from(projectId));
         CreateClientRequest request = new CreateClientRequest(ClientId.from(createClient.getId()),
-                createClient.getName(), createClient.getDefaultAccessTokenDuration(), createClient.getDefaultRefreshTokenDuration(), createClient.getSecret());
+                createClient.getName(), createClient.getDefaultAccessTokenDuration(),
+                createClient.getDefaultRefreshTokenDuration(), createClient.getSecret(),
+                createClient.getProperties());
         Optional<ClientCredentials> client = clientManagementService.createClient(OrganizationId.from(organizationId), ProjectId.from(projectId), request);
         if (client.isPresent()) {
             return ResponseEntity.ok().build();

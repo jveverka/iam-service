@@ -17,6 +17,7 @@ public class SetupOrganizationRequest {
     private final String adminUserPassword;
     private final String adminUserEmail;
     private final Set<String> projectAudience;
+    private final String redirectURL;
 
     @JsonCreator
     public SetupOrganizationRequest(@JsonProperty("organizationId") String organizationId,
@@ -28,7 +29,8 @@ public class SetupOrganizationRequest {
                                     @JsonProperty("adminUserId") String adminUserId,
                                     @JsonProperty("adminUserPassword") String adminUserPassword,
                                     @JsonProperty("adminUserEmail") String adminUserEmail,
-                                    @JsonProperty("projectAudience") Set<String> projectAudience) {
+                                    @JsonProperty("projectAudience") Set<String> projectAudience,
+                                    @JsonProperty("redirectURL") String redirectURL) {
         this.organizationId = organizationId;
         this.organizationName = organizationName;
         this.adminProjectId = adminProjectId;
@@ -39,6 +41,7 @@ public class SetupOrganizationRequest {
         this.adminUserPassword = adminUserPassword;
         this.adminUserEmail = adminUserEmail;
         this.projectAudience = projectAudience;
+        this.redirectURL = redirectURL;
     }
 
     public String getOrganizationId() {
@@ -80,4 +83,9 @@ public class SetupOrganizationRequest {
     public Set<String> getProjectAudience() {
         return projectAudience;
     }
+
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
 }

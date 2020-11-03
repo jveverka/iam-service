@@ -62,6 +62,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                                 IdTokenRequest idTokenRequest) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
+            Optional<Client> optionalClient = modelCache.getClient(organizationId, projectId, cc.getId());
+            if (optionalClient.isPresent() && Boolean.FALSE.equals(optionalClient.get().getProperties().getPasswordCredentialsEnabled())) {
+                LOG.info("Invalid flow for client {} !", optionalClient.get().getId());
+                return Optional.empty();
+            }
             ClientCredentials clientCredentials = authenticationRequest.getClientCredentials();
             boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
             if (!validationResult) {
@@ -109,6 +114,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (projectOptional.isPresent()) {
             Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientCredentials.getId());
             if (clientOptional.isPresent()) {
+                if (Boolean.FALSE.equals(clientOptional.get().getProperties().getClientCredentialsEnabled())) {
+                    LOG.info("Invalid flow for client {} !", clientOptional.get().getId());
+                    return Optional.empty();
+                }
                 boolean validationResult = modelCache.verifyClientCredentials(organizationId, projectId, clientCredentials);
                 if (validationResult) {
                     Client client = clientOptional.get();
@@ -187,7 +196,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             LOG.info("Invalid JWT type {}, expected type {}", tokenType, TokenType.BEARER.getType());
                         }
                     } catch (Exception e) {
-                        LOG.warn("Exception: ", e.getMessage());
+                        LOG.warn("Exception: {}", e.getMessage());
                     }
                 } else {
                     LOG.warn("JWT is invalid !");
@@ -224,7 +233,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 LOG.warn("JWT is invalid !");
                             }
                         } catch (Exception e) {
-                            LOG.warn("Exception: ", e.getMessage());
+                            LOG.warn("Exception: {}", e.getMessage());
                         }
                     } else {
                         LOG.info("Client {} credentials invalid !", clientCredentials.getId());
@@ -245,6 +254,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<AuthorizationCodeContext> contextOptional = codeCache.get(code);
         if (contextOptional.isPresent()) {
             AuthorizationCodeContext context = contextOptional.get();
+            Optional<Client> optionalClient = modelCache.getClient(context.getOrganizationId(), context.getProjectId(), context.getClientId());
+            if (optionalClient.isPresent() && Boolean.FALSE.equals(optionalClient.get().getProperties().getAuthorizationCodeGrantEnabled())) {
+                LOG.info("Invalid flow for clientId {} !", optionalClient.get().getId());
+                return Optional.empty();
+            }
             Optional<User> optionalUser = modelCache.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
@@ -281,6 +295,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (!optionalClient.isPresent()) {
                 LOG.info("Invalid clientId {} !", clientId);
                 return Optional.empty();
+            } else {
+                if (Boolean.FALSE.equals(optionalClient.get().getProperties().getAuthorizationCodeGrantEnabled())) {
+                    LOG.info("Invalid flow for clientId {} !", clientId);
+                    return Optional.empty();
+                }
             }
         } else {
             LOG.info("Organization/Project {}/{} not found", organizationId, projectId);
@@ -345,11 +364,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (userOptional.isPresent()) {
                 PublicKey publicKey = userOptional.get().getKeyPairData().getPublicKey();
                 Optional<Jws<Claims>> claims = TokenUtils.verify(token, publicKey);
-                String type = claims.get().getBody().get(TokenUtils.TYPE_CLAIM, String.class);
-                if (claims.isPresent() &&
-                        claims.get().getBody().getSubject().equals(userOptional.get().getId().getId()) &&
-                        TokenType.BEARER.getType().equals(type)) {
-                    return Optional.of(new UserInfoResponse(userOptional.get().getId().getId()));
+                if (claims.isPresent()) {
+                    String type = claims.get().getBody().get(TokenUtils.TYPE_CLAIM, String.class);
+                    if (claims.get().getBody().getSubject().equals(userOptional.get().getId().getId()) &&
+                            TokenType.BEARER.getType().equals(type)) {
+                        return Optional.of(new UserInfoResponse(userOptional.get().getId().getId()));
+                    }
                 }
             }
         }

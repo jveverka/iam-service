@@ -33,13 +33,10 @@ public class CacheCleanupSchedulerImpl implements CacheCleanupScheduler {
     @Override
     public void start() {
         LOG.info("starting cache cleanup scheduler ...");
-        executorService.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                LOG.debug("cleaning authorization code and token caches ...");
-                authorizationCodeCache.purgeCodes();
-                tokenCache.purgeRevokedTokens();
-            }
+        executorService.scheduleWithFixedDelay(() -> {
+            LOG.debug("cleaning authorization code and token caches ...");
+            authorizationCodeCache.purgeCodes();
+            tokenCache.purgeRevokedTokens();
         }, 0L, delay, timeUnit);
     }
 

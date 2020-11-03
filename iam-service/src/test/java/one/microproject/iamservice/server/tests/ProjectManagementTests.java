@@ -9,6 +9,7 @@ import one.microproject.iamservice.core.dto.CreateUser;
 import one.microproject.iamservice.core.dto.PermissionInfo;
 import one.microproject.iamservice.core.dto.RoleInfo;
 import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PermissionId;
@@ -70,6 +71,7 @@ public class ProjectManagementTests {
     private static UserId newUserId = UserId.from("user-id-002");
     private static ClientId newClientId = ClientId.from("user-id-002-client");
     private static RoleId newRoleId = RoleId.from("reader-role");
+    private static ClientProperties newClientProperties = ClientProperties.from(ModelUtils.getRedirectURL(organizationId, projectId));
 
     private static String jwt_organization_admin_token;
     private static IAMClient iamClient;
@@ -101,7 +103,7 @@ public class ProjectManagementTests {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
                 projectId.getId(), "My Project 001",
                 adminClientId.getId(), adminClientSecret,
-                adminUserId.getId(), adminPassword, "user1@email.com", projectAudience);
+                adminUserId.getId(), adminPassword, "user1@email.com", projectAudience, newClientProperties.getRedirectURL());
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(jwt_admin_token, setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
         assertEquals(organizationId.getId(), setupOrganizationResponse.getOrganizationId());
@@ -168,7 +170,7 @@ public class ProjectManagementTests {
     @Test
     @Order(202)
     public void createNewClient() throws AuthenticationException, IOException {
-        CreateClient createClient = new CreateClient(newClientId.getId(), "", 3600L, 3600L, "top-s3cre3t");
+        CreateClient createClient = new CreateClient(newClientId.getId(), "", 3600L, 3600L, "top-s3cre3t", newClientProperties);
         iamServiceProjectManagerClient.createClient(createClient);
         ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(newClientId);
         assertEquals(clientInfo.getId(), newClientId.getId());

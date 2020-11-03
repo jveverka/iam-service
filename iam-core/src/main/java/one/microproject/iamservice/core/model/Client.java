@@ -29,4 +29,6 @@ public interface Client {
 
     Long getDefaultRefreshTokenDuration();
 
+    ClientProperties getProperties();
+
 }

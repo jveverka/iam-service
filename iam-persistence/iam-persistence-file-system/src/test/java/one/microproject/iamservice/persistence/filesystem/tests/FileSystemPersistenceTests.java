@@ -48,7 +48,7 @@ public class FileSystemPersistenceTests {
         assertEquals(1, modelWrapper.getProjects().size());
         assertEquals(1, modelWrapper.getClients().size());
         assertEquals(1, modelWrapper.getUsers().size());
-        assertEquals(2, modelWrapper.getRoles().size());
+        assertEquals(3, modelWrapper.getRoles().size());
 
         DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(serializedModel, persistenceService);
         ModelCache modelCache = dataLoadService.populateCache();

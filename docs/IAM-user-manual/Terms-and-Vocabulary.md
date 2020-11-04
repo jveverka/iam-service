@@ -22,6 +22,11 @@ able to fully mage project.
 Unique identity of client device with credentials (client-id and client-secret)
 * Client may have one or more roles assigned.
 * Client's permissions is set of permission defined by union of all role permission sets for this Client.
+* Client properties:
+  * Redirect URL
+  * authorizationCodeGrantEnabled
+  * passwordCredentialsEnabled
+  * clientCredentialsEnabled
 
 #### Users
 Unique identity of end-user (person) with email, username and credentials. 

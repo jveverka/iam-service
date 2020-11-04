@@ -54,7 +54,11 @@ public final class ProjectBuilder {
     }
 
     public ClientBuilder addClient(ClientId id, String name, String secret, String redirectURL) {
-        CreateClientRequest request = new CreateClientRequest(id, name, 3600*1000L, 24*3600*1000L, secret, ClientProperties.from(redirectURL));
+        return addClient(id, name, secret, ClientProperties.from(redirectURL));
+    }
+
+    public ClientBuilder addClient(ClientId id, String name, String secret, ClientProperties properties) {
+        CreateClientRequest request = new CreateClientRequest(id, name, 3600*1000L, 24*3600*1000L, secret, properties);
         Optional<Client> client = modelCache.add(organizationBuilder.getOrganization().getId(), project.getId(), request);
         if (client.isPresent()) {
             return new ClientBuilder(this, client.get());

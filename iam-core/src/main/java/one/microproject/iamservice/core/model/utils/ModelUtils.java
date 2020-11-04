@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.model.utils;
 
 import one.microproject.iamservice.core.IAMModelBuilders;
 import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.KeyPairData;
 import one.microproject.iamservice.core.model.KeyPairSerialized;
 import one.microproject.iamservice.core.model.Model;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,16 +78,22 @@ public final class ModelUtils {
 
     public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, PersistenceService persistenceService) throws PKIException {
 
-        Role iamAdmin = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin"), "Manage IAM-Service")
+        Role iamGlobalAdminRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-global"), "Manage IAM-Service")
                 .addPermission(ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL)
                 .addPermission(ModelCommons.IAM_SERVICE_PROJECTS_RESOURCE_ACTION_ALL)
                 .addPermission(ModelCommons.IAM_SERVICE_USERS_RESOURCE_ACTION_ALL)
                 .addPermission(ModelCommons.IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL)
                 .build();
 
+        Role iamProjectAdminRole = new RoleImpl(RoleId.from("iam-admin-project"), "",
+                ModelCommons.createProjectAdminPermissions(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT));
+
         Role iamClientRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-client"), "IAM Client role.")
                 .addPermission(ModelCommons.IAM_SERVICE_ORGANIZATION_RESOURCE_ACTION_READ)
                 .build();
+
+        ClientProperties properties = new ClientProperties(getIamAdminsRedirectURL(),
+                true, true, false, new HashMap<>());
 
         ModelId id = ModelId.from("default-model-001");
         String modelName = "Default Model";
@@ -97,14 +105,16 @@ public final class ModelUtils {
         return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
                 .addOrganization(organizationId, IAM_ADMINS_NAME)
                 .addProject(projectId, IAM_ADMINS_NAME, IAM_AUDIENCE)
-                    .addRole(iamAdmin)
+                    .addRole(iamGlobalAdminRole)
                     .addRole(iamClientRole)
-                    .addClient(IAM_ADMIN_CLIENT_ID, "client-1", iamClientSecret, getIamAdminsRedirectURL())
+                    .addRole(iamProjectAdminRole)
+                    .addClient(IAM_ADMIN_CLIENT_ID, "Admin Client 01", iamClientSecret, properties)
                         .addRole(iamClientRole.getId())
                     .and()
-                    .addUser(IAM_ADMIN_USER, "iam-admin", iamAdminEmail)
+                    .addUser(IAM_ADMIN_USER, "IAM Admin Superuser", iamAdminEmail)
                         .addUserNamePasswordCredentials(IAM_ADMIN_USER, iamAdminPassword)
-                        .addRole(iamAdmin.getId())
+                        .addRole(iamGlobalAdminRole.getId())
+                        .addRole(iamProjectAdminRole.getId())
                 .build();
     }
 

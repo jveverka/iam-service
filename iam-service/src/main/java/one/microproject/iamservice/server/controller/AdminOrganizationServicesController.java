@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -110,8 +111,10 @@ public class AdminOrganizationServicesController {
             }
         }
         //Create Actions
+        ClientProperties properties = new ClientProperties(request.getRedirectURL(),
+                true, true, false, new HashMap<>());
         CreateClientRequest createClientRequest = new CreateClientRequest(clientId, "", 3600*1000L, 24*3600*1000L,
-                request.getAdminClientSecret(), ClientProperties.from(request.getRedirectURL()));
+                request.getAdminClientSecret(), properties);
         Optional<ClientCredentials> clientCredentials = clientManagementService.createClient(organizationId, projectId, createClientRequest);
         if (clientCredentials.isEmpty()) {
             LOG.warn("Error: create Client id={} failed !", clientId.getId());

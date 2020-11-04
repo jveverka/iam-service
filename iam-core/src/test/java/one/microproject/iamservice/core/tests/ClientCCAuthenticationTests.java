@@ -2,11 +2,15 @@ package one.microproject.iamservice.core.tests;
 
 import io.jsonwebtoken.impl.DefaultClaims;
 import one.microproject.iamservice.core.model.ClientCredentials;
+import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.services.AuthenticationService;
+import one.microproject.iamservice.core.services.admin.ClientManagementService;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.ModelCache;
+import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.IdTokenRequest;
 import one.microproject.iamservice.core.dto.IntrospectRequest;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
@@ -14,6 +18,7 @@ import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
+import one.microproject.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.impl.caches.TokenCacheImpl;
@@ -58,6 +63,9 @@ public class ClientCCAuthenticationTests {
     private static IdTokenRequest idTokenRequest;
     private static AuthenticationService authenticationService;
     private static URI issuerUri;
+    private static ClientManagementService clientManagementService;
+    private static ClientId testClientId = ClientId.from("test-client-001");
+    private static String testClientSecret = "6486231";
 
     @BeforeAll
     private static void init() throws PKIException, URISyntaxException {
@@ -69,19 +77,23 @@ public class ClientCCAuthenticationTests {
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
         issuerUri = new URI("http://localhost:8080/issuer");
+        clientManagementService = new ClientManagementServiceImpl(modelCache);
+        ClientProperties properties = ClientProperties.from("");
+        CreateClientRequest request = new CreateClientRequest(testClientId, "", 3600L, 3600L, testClientSecret, properties);
+        clientManagementService.createClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, request);
     }
 
     @Test
     @Order(1)
     @SuppressWarnings("unchecked")
     public void authenticateTest() {
-        ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
+        ClientCredentials clientCredentials = new ClientCredentials(testClientId, testClientSecret);
         String issuerClaim = issuerUri.toString();
         Scope scope = new Scope(Set.of("iam-admin-client"));
         Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
         DefaultClaims defaultClaims = TokenUtils.extractClaims(JWToken.from(tokensOptional.get().getAccessToken()));
-        assertEquals(ModelUtils.IAM_ADMIN_CLIENT_ID.getId(), defaultClaims.getSubject());
+        assertEquals(testClientId.getId(), defaultClaims.getSubject());
         assertEquals(issuerClaim, defaultClaims.getIssuer());
         String scopeClaim = (String)defaultClaims.get(TokenUtils.SCOPE_CLAIM);
         assertNotNull(scopeClaim);

@@ -12,7 +12,7 @@ Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519).
 Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/IAM-users-manual.md) for more details.
 
 This project is __WIP__, stay tuned !   
-Estimated release date: __EOF Nov.2020__ 
+Estimated release date of MVP: __EOF Nov.2020__ 
 
 ## Features & Mission
 * [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 

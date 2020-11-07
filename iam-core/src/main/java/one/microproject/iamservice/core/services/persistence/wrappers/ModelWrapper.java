@@ -1,6 +1,7 @@
 package one.microproject.iamservice.core.services.persistence.wrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.Model;
@@ -11,9 +12,12 @@ import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.keys.ModelKey;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class ModelWrapper {
 
@@ -107,24 +111,89 @@ public class ModelWrapper {
         roles.put(key, value);
     }
 
-    public void removeOrganization(ModelKey<Organization> key) {
-        organizations.remove(key);
+    public Organization removeOrganization(ModelKey<Organization> key) {
+        return organizations.remove(key);
     }
 
-    public void removeProject(ModelKey<Project> key) {
-        projects.remove(key);
+    public Project removeProject(ModelKey<Project> key) {
+        return projects.remove(key);
     }
 
-    public void removeUser(ModelKey<User> key) {
-        users.remove(key);
+    public User removeUser(ModelKey<User> key) {
+        return users.remove(key);
     }
 
-    public void removeClient(ModelKey<Client> key) {
-        clients.remove(key);
+    public Client removeClient(ModelKey<Client> key) {
+        return clients.remove(key);
     }
 
-    public void removeRole(ModelKey<Role> key) {
-        roles.remove(key);
+    public Role removeRole(ModelKey<Role> key) {
+        return roles.remove(key);
+    }
+
+    public Organization getOrganization(ModelKey<Organization> key) {
+        return organizations.get(key);
+    }
+
+    public Project getProject(ModelKey<Project> key) {
+        return projects.get(key);
+    }
+
+    public User getUser(ModelKey<User> key) {
+        return users.get(key);
+    }
+
+    public Client getClient(ModelKey<Client> key) {
+        return clients.get(key);
+    }
+
+    public Role getRole(ModelKey<Role> key) {
+        return roles.get(key);
+    }
+
+    @JsonIgnore
+    public Set<ModelKey<Organization>> getOrganizationsKeys() {
+        return organizations.keySet();
+    }
+
+    @JsonIgnore
+    public Set<ModelKey<Project>> getProjectKeys() {
+        return projects.keySet();
+    }
+
+    @JsonIgnore
+    public Set<ModelKey<User>> getUserKeys() {
+        return users.keySet();
+    }
+
+    @JsonIgnore
+    public Set<ModelKey<Client>> getClientKeys() {
+        return clients.keySet();
+    }
+
+    @JsonIgnore
+    public Set<ModelKey<Role>> getRoleKeys() {
+        return roles.keySet();
+    }
+
+    @JsonIgnore
+    public Collection<Organization> getAllOrganizations() {
+        return organizations.values().stream().collect(Collectors.toUnmodifiableList());
+    }
+
+    @JsonIgnore
+    public Set<Map.Entry<ModelKey<Client>, Client>> getClientEntrySet() {
+        return clients.entrySet();
+    }
+
+    @JsonIgnore
+    public Set<Map.Entry<ModelKey<User>, User>> getUserEntrySet() {
+        return users.entrySet();
+    }
+
+    @JsonIgnore
+    public Set<Map.Entry<ModelKey<Role>, Role>> getRoleEntrySet() {
+        return roles.entrySet();
     }
 
 }

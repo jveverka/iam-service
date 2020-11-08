@@ -27,6 +27,7 @@ import one.microproject.iamservice.core.services.impl.caches.CacheCleanupSchedul
 import one.microproject.iamservice.core.services.impl.caches.TokenCacheImpl;
 import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
@@ -56,14 +57,14 @@ public class IAMCoreBuilder {
     public IAMCoreBuilder withModel(Model model, PersistenceService persistenceService) {
         this.model = model;
         this.persistenceService = persistenceService;
-        this.modelCache = new ModelCacheImpl(model, persistenceService);
+        this.modelCache = new ModelCacheImpl(new ModelWrapperImpl(model, persistenceService));
         return this;
     }
 
     public IAMCoreBuilder withModel(Model model) {
         this.model = model;
         this.persistenceService = new LoggingPersistenceServiceImpl();
-        this.modelCache = new ModelCacheImpl(model, this.persistenceService);
+        this.modelCache = new ModelCacheImpl(new ModelWrapperImpl(model, persistenceService));
         return this;
     }
 

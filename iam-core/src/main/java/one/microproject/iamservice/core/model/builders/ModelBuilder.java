@@ -10,6 +10,8 @@ import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
 
 import java.util.UUID;
 
@@ -19,13 +21,15 @@ public final class ModelBuilder {
 
     public ModelBuilder(ModelId id, String name, PersistenceService persistenceService) {
         Model model = new ModelImpl(id, name);
-        this.modelCache = new ModelCacheImpl(model, persistenceService);
+        ModelWrapper modelWrapper =  new ModelWrapperImpl(model, persistenceService);
+        this.modelCache = new ModelCacheImpl(modelWrapper);
     }
 
     public ModelBuilder(String name, PersistenceService persistenceService) {
         ModelId id = ModelId.from(UUID.randomUUID().toString());
         Model model = new ModelImpl(id, name);
-        this.modelCache = new ModelCacheImpl(model, persistenceService);
+        ModelWrapper modelWrapper =  new ModelWrapperImpl(model, persistenceService);
+        this.modelCache = new ModelCacheImpl(modelWrapper);
     }
 
     public OrganizationBuilder addOrganization(String name) throws PKIException {

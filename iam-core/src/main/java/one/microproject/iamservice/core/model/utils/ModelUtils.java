@@ -29,6 +29,8 @@ import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
 import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
 import one.microproject.iamservice.core.ModelCommons;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,8 @@ public final class ModelUtils {
 
     public static ModelCache createEmptyModelCache(PersistenceService persistenceService, ModelId id, String modelName) {
         Model model = new ModelImpl(id, modelName);
-        return new ModelCacheImpl(model, persistenceService);
+        ModelWrapper modelWrapper =  new ModelWrapperImpl(model, persistenceService);
+        return new ModelCacheImpl(modelWrapper);
     }
     public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail) throws PKIException {
         return createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail, new LoggingPersistenceServiceImpl());

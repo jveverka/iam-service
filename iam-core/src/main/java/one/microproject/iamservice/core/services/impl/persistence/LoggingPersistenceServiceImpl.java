@@ -2,7 +2,6 @@ package one.microproject.iamservice.core.services.impl.persistence;
 
 import one.microproject.iamservice.core.model.Model;
 import one.microproject.iamservice.core.model.keys.ModelKey;
-import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +14,6 @@ public class LoggingPersistenceServiceImpl implements PersistenceService {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingPersistenceServiceImpl.class);
 
     @Override
-    public void onModelInitialization(ModelWrapper modelWrapper) {
-        LOG.info("onModelInitialization: {}", modelWrapper.getModel().getId());
-    }
-
-    @Override
     public void onModelChange(Model model) {
         LOG.info("onModelChange: {}", model.getId());
     }
@@ -27,11 +21,6 @@ public class LoggingPersistenceServiceImpl implements PersistenceService {
     @Override
     public <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
         LOG.info("onNodeCreated: {}", modelKey);
-    }
-
-    @Override
-    public <T> void onNodeUpdated(ModelKey<T> modelKey, T newNode) {
-        LOG.info("onNodeUpdated: {}", modelKey);
     }
 
     @Override

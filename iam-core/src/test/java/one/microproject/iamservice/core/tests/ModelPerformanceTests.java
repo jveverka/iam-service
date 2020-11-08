@@ -10,8 +10,6 @@ import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
-import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
-import one.microproject.iamservice.core.services.persistence.PersistenceService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,9 +51,8 @@ public class ModelPerformanceTests {
     @Test
     @Order(1)
     public void generateBigModel() throws PKIException {
-        PersistenceService persistenceService = new LoggingPersistenceServiceImpl();
         long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        model = ModelUtils.createModel(organizations, projects, clients, users, permissions, roles, persistenceService);
+        model = ModelUtils.createModel(organizations, projects, clients, users, permissions, roles);
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         LOG.info("memory allocated for model = {}Mb", (((memAfter - memBefore)/1024F)/1024F));
         assertNotNull(model);

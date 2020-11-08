@@ -5,6 +5,7 @@ import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.persistence.DataLoadService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
 import one.microproject.iamservice.persistence.filesystem.FileSystemDataLoadServiceImpl;
 import one.microproject.iamservice.persistence.filesystem.FileSystemPersistenceServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -37,12 +38,12 @@ public class FileSystemPersistenceTests {
 
     @Test
     public void testPersistenceSerializationAndLoading() throws Exception {
-        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(sharedTempDir, false);
-        ModelUtils.createDefaultModelCache("secret", "top-secret", "admin@email.com", persistenceService);
+        ModelCache cache = ModelUtils.createDefaultModelCache("secret", "top-secret", "admin@email.com");
+        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(sharedTempDir, false, cache.export());
         String serializedModel = persistenceService.flushToString();
         assertNotNull(serializedModel);
 
-        ModelWrapper modelWrapper = mapper.readValue(serializedModel, ModelWrapper.class);
+        ModelWrapper modelWrapper = mapper.readValue(serializedModel, ModelWrapperImpl.class);
         assertNotNull(modelWrapper);
         assertEquals(1, modelWrapper.getOrganizations().size());
         assertEquals(1, modelWrapper.getProjects().size());
@@ -50,27 +51,27 @@ public class FileSystemPersistenceTests {
         assertEquals(1, modelWrapper.getUsers().size());
         assertEquals(3, modelWrapper.getRoles().size());
 
-        DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(serializedModel, persistenceService);
-        ModelCache modelCache = dataLoadService.populateCache();
+        DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(serializedModel);
+        ModelWrapper modelCache = dataLoadService.populateCache();
         assertNotNull(modelCache);
     }
 
     public static void main(String[] args) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         Path dataFilePath = Paths.get("/tmp/iam-data.json");
-        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(dataFilePath, true);
         long timeStamp = System.nanoTime();
-        ModelCache modelCache = ModelUtils.createModel(3, 3, 4, 100, 5, 3, persistenceService);
+        ModelCache modelCache = ModelUtils.createModel(3, 3, 4, 100, 5, 3);
+        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(dataFilePath, true, modelCache.export());
         LOG.info("model create time: {} ms", ((System.nanoTime() - timeStamp)/1_000_000F));
         timeStamp = System.nanoTime();
         persistenceService.flush();
         LOG.info("model flush time: {} ms", ((System.nanoTime() - timeStamp)/1_000_000F));
         assertNotNull(modelCache);
-        DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(dataFilePath, persistenceService);
+        DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(dataFilePath);
         timeStamp = System.nanoTime();
-        modelCache = dataLoadService.populateCache();
+        ModelWrapper cache = dataLoadService.populateCache();
         LOG.info("model load time: {} ms", ((System.nanoTime() - timeStamp)/1_000_000F));
-        assertNotNull(modelCache);
+        assertNotNull(cache);
     }
 
 }

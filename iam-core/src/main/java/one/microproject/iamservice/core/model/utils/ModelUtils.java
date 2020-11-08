@@ -177,12 +177,11 @@ public final class ModelUtils {
      * @param users - number of users in project
      * @param permissions - number of permissions in project
      * @param roles - number of roles in project
-     * @param persistenceService - persistence service
      * @return
      * @throws PKIException
      */
-    public static ModelCache createModel(int organizations, int projects, int clients, int users, int permissions, int roles, PersistenceService persistenceService) throws PKIException {
-        ModelBuilder modelBuilder = IAMModelBuilders.modelBuilder(ModelId.from("test-model"), "test-model", persistenceService);
+    public static ModelCache createModel(int organizations, int projects, int clients, int users, int permissions, int roles) throws PKIException {
+        ModelBuilder modelBuilder = IAMModelBuilders.modelBuilder(ModelId.from("test-model"), "test-model", new LoggingPersistenceServiceImpl());
         String organizationPrefix = "organization-";
         String projectPrefix = "project-";
         String permissionPrefix = "resource-";

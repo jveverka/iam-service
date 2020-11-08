@@ -24,13 +24,9 @@ import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.CreateProjectRequest;
 import one.microproject.iamservice.core.services.dto.CreateUserRequest;
-import one.microproject.iamservice.core.services.persistence.wrappers.ClientWrapper;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
-import one.microproject.iamservice.core.services.persistence.wrappers.OrganizationWrapper;
-import one.microproject.iamservice.core.services.persistence.wrappers.ProjectWrapper;
-import one.microproject.iamservice.core.services.persistence.wrappers.RoleWrapper;
-import one.microproject.iamservice.core.services.persistence.wrappers.UserWrapper;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,65 +35,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
 
 public class ModelCacheImpl implements ModelCache {
 
-    private final Model model;
-    private final Map<ModelKey<Organization>, Organization> organizations;
-    private final Map<ModelKey<Project>, Project> projects;
-    private final Map<ModelKey<User>, User> users;
-    private final Map<ModelKey<Client>, Client> clients;
-    private final Map<ModelKey<Role>, Role> roles;
+    private final ModelWrapper modelWrapper;
 
-    private final PersistenceService persistenceService;
-
-    public ModelCacheImpl(ModelWrapper modelWrapper, PersistenceService persistenceService) {
-        this.model = modelWrapper.getModel();
-        this.organizations = new ConcurrentHashMap<>();
-        this.projects = new ConcurrentHashMap<>();
-        this.users = new ConcurrentHashMap<>();
-        this.clients = new ConcurrentHashMap<>();
-        this.roles = new ConcurrentHashMap<>();
-        modelWrapper.getOrganizations().forEach(o -> this.organizations.put(o.getKey(), o.getValue()));
-        modelWrapper.getProjects().forEach(o -> this.projects.put(o.getKey(), o.getValue()));
-        modelWrapper.getUsers().forEach(o -> this.users.put(o.getKey(), o.getValue()));
-        modelWrapper.getClients().forEach(o -> this.clients.put(o.getKey(), o.getValue()));
-        modelWrapper.getRoles().forEach(o -> this.roles.put(o.getKey(), o.getValue()));
-        this.persistenceService = persistenceService;
-        this.persistenceService.onModelInitialization(modelWrapper);
+    public ModelCacheImpl(ModelWrapper modelWrapper) {
+        this.modelWrapper = modelWrapper;
     }
 
     public ModelCacheImpl(Model model, PersistenceService persistenceService) {
-        this.model = model;
-        this.organizations = new ConcurrentHashMap<>();
-        this.projects = new ConcurrentHashMap<>();
-        this.users = new ConcurrentHashMap<>();
-        this.clients = new ConcurrentHashMap<>();
-        this.roles = new ConcurrentHashMap<>();
-        this.persistenceService = persistenceService;
-        this.persistenceService.onModelChange(model);
+        this.modelWrapper = new ModelWrapperImpl(model, persistenceService);
     }
 
     @Override
     public synchronized ModelWrapper export() {
-        List<OrganizationWrapper> organizationWrappers = new ArrayList<>();
-        organizations.forEach((k,v) -> organizationWrappers.add(new OrganizationWrapper(k,v)));
-        List<ProjectWrapper> projectWrappers = new ArrayList<>();
-        projects.forEach((k,v) -> projectWrappers.add(new ProjectWrapper(k,v)));
-        List<UserWrapper> usersWrappers = new ArrayList<>();
-        users.forEach((k,v) -> usersWrappers.add(new UserWrapper(k,v)));
-        List<ClientWrapper> clientWrappers = new ArrayList<>();
-        clients.forEach((k,v) -> clientWrappers.add(new ClientWrapper(k,v)));
-        List<RoleWrapper> roleWrappers = new ArrayList<>();
-        roles.forEach((k,v) -> roleWrappers.add(new RoleWrapper(k,v)));
-        return new ModelWrapper(model, organizationWrappers, projectWrappers, usersWrappers, clientWrappers, roleWrappers);
+        return this.modelWrapper;
     }
 
     @Override
     public synchronized Model getModel() {
-        return model;
+        return this.modelWrapper.getModel();
     }
 
     /**
@@ -107,9 +66,8 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized Optional<OrganizationId> add(Organization organization) {
         ModelKey<Organization> key = organizationKey(organization.getId());
-        if (organizations.get(key) == null) {
-            organizations.put(key, organization);
-            persistenceService.onNodeCreated(key, organization);
+        if (modelWrapper.getOrganization(key) == null) {
+            modelWrapper.putOrganization(key, organization);
             return Optional.of(organization.getId());
         } else {
             return Optional.empty();
@@ -118,22 +76,19 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized Collection<Organization> getOrganizations() {
-        return organizations.values().stream().collect(Collectors.toList());
+        return modelWrapper.getAllOrganizations();
     }
 
     @Override
     public synchronized Optional<Organization> getOrganization(OrganizationId organizationId) {
-        return Optional.ofNullable(organizations.get(organizationKey(organizationId)));
+        return Optional.ofNullable(modelWrapper.getOrganization(organizationKey(organizationId)));
     }
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId) {
         if (!checkOrganizationReferences(organizationId)) {
             ModelKey<Organization> key = organizationKey(organizationId);
-            Organization removed = organizations.remove(key);
-            if (removed != null) {
-                persistenceService.onNodeDeleted(key, removed);
-            }
+            Organization removed = modelWrapper.removeOrganization(key);
             return removed != null;
         }
         return false;
@@ -142,7 +97,7 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public boolean removeWithDependencies(OrganizationId organizationId) {
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
-        for (ModelKey<Project> key: projects.keySet()) {
+        for (ModelKey<Project> key: modelWrapper.getProjectKeys()) {
             if (key.startsWith(organizationKey)) {
                 removeWithDependencies(organizationId, ProjectId.from(key.getIds()[1].getId()));
             }
@@ -153,20 +108,18 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized void setProperty(OrganizationId id, String key, String value) {
         ModelKey<Organization> organizationKey = organizationKey(id);
-        Organization organization = organizations.get(organizationKey);
+        Organization organization = modelWrapper.getOrganization(organizationKey);
         if (organization != null) {
             organization.setProperty(key, value);
-            persistenceService.onNodeUpdated(organizationKey, organization);
         }
     }
 
     @Override
     public synchronized void removeProperty(OrganizationId id, String key) {
         ModelKey<Organization> organizationKey = organizationKey(id);
-        Organization organization = organizations.get(organizationKey);
+        Organization organization = modelWrapper.getOrganization(organizationKey);
         if (organization != null) {
             organization.removeProperty(key);
-            persistenceService.onNodeUpdated(organizationKey, organization);
         }
     }
 
@@ -176,7 +129,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized Optional<User> getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) {
-        User user = users.get(userKey(organizationId, projectId, userId));
+        User user = modelWrapper.getUser(userKey(organizationId, projectId, userId));
         if (user !=  null) {
             return Optional.of(user);
         }
@@ -187,9 +140,9 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Collection<User> getUsers(OrganizationId organizationId, ProjectId projectId) {
         List<User> result = new ArrayList<>();
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        users.keySet().forEach(k -> {
+        modelWrapper.getUserKeys().forEach(k -> {
             if (k.startsWith(projectKey)) {
-                result.add(users.get(k));
+                result.add(modelWrapper.getUser(k));
             }
         });
         return result;
@@ -199,9 +152,9 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Collection<User> getUsers(OrganizationId organizationId) {
         List<User> result = new ArrayList<>();
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
-        users.keySet().forEach(k -> {
+        modelWrapper.getUserKeys().forEach(k -> {
             if (k.startsWith(organizationKey)) {
-                result.add(users.get(k));
+                result.add(modelWrapper.getUser(k));
             }
         });
         return result;
@@ -210,15 +163,11 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project project = projects.get(projectKey);
+        Project project = modelWrapper.getProject(projectKey);
         ModelKey<User> userKey = userKey(organizationId, projectId, userId);
-        User removed = users.remove(userKey);
+        User removed = modelWrapper.removeUser(userKey);
         if (project != null) {
             project.remove(userId);
-            persistenceService.onNodeUpdated(projectKey, project);
-        }
-        if (removed !=  null) {
-            persistenceService.onNodeDeleted(userKey, removed);
         }
         return removed != null;
     }
@@ -227,16 +176,14 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Optional<Client> add(OrganizationId organizationId, ProjectId projectId, CreateClientRequest request) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         ModelKey<Client> clientKey = clientKey(organizationId, projectId, request.getId());
-        Project project = projects.get(projectKey);
-        Client c = clients.get(clientKey);
+        Project project = modelWrapper.getProject(projectKey);
+        Client c = modelWrapper.getClient(clientKey);
         if (project !=  null && c == null) {
             ClientCredentials credentials = new ClientCredentials(request.getId(), request.getSecret());
             Client client = new ClientImpl(credentials, request.getName(),
                     request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), request.getProperties());
             project.addClient(client.getId());
-            clients.put(clientKey, client);
-            persistenceService.onNodeUpdated(projectKey, project);
-            persistenceService.onNodeCreated(clientKey, client);
+            modelWrapper.putClient(clientKey, client);
             return Optional.of(client);
         }
         return Optional.empty();
@@ -244,7 +191,7 @@ public class ModelCacheImpl implements ModelCache {
 
     @Override
     public synchronized Optional<Project> getProject(OrganizationId organizationId, ProjectId projectId) {
-        Project project = projects.get(projectKey(organizationId, projectId));
+        Project project = modelWrapper.getProject(projectKey(organizationId, projectId));
         if (project != null) {
             return Optional.of(project);
         }
@@ -255,9 +202,9 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Collection<Project> getProjects(OrganizationId organizationId) {
         List<Project> result = new ArrayList<>();
         ModelKey<Organization> organizationKey = ModelKey.from(Organization.class, organizationId);
-        projects.keySet().forEach(k -> {
+        modelWrapper.getProjectKeys().forEach(k -> {
             if (k.startsWith(organizationKey)) {
-                result.add(projects.get(k));
+                result.add(modelWrapper.getProject(k));
             }
         });
         return result;
@@ -267,16 +214,14 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Optional<Project> add(OrganizationId organizationId, CreateProjectRequest request) throws PKIException {
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
         ModelKey<Project> projectKey = projectKey(organizationId, request.getId());
-        Organization organization = organizations.get(organizationKey);
-        Project p = projects.get(projectKey);
+        Organization organization = modelWrapper.getOrganization(organizationKey);
+        Project p = modelWrapper.getProject(projectKey);
         if (organization != null && p == null) {
             organization.addProject(request.getId());
             ModelKey<Project> key = projectKey(organizationId, request.getId());
             Project project = new ProjectImpl(request.getId(),
                     request.getName(), organization.getId(), organization.getPrivateKey(), request.getAudience());
-            projects.put(key, project);
-            persistenceService.onNodeCreated(key, project);
-            persistenceService.onNodeUpdated(organizationKey, organization);
+            modelWrapper.putProject(key, project);
             return Optional.of(project);
         } else {
             return Optional.empty();
@@ -288,14 +233,10 @@ public class ModelCacheImpl implements ModelCache {
         if (!checkProjectReferences(organizationId, projectId)) {
             ModelKey<Organization> organizationKey = organizationKey(organizationId);
             ModelKey<Project> key = projectKey(organizationId, projectId);
-            Project removed = projects.remove(key);
-            if (removed != null) {
-                persistenceService.onNodeDeleted(key, removed);
-            }
-            Organization organization = organizations.get(organizationKey);
+            Project removed = modelWrapper.removeProject(key);
+            Organization organization = modelWrapper.getOrganization(organizationKey);
             if (organization != null) {
                 organization.removeProject(projectId);
-                persistenceService.onNodeUpdated(organizationKey, organization);
             }
             return removed != null;
         }
@@ -305,28 +246,19 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean removeWithDependencies(OrganizationId organizationId, ProjectId projectId) {
         ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
-        for (ModelKey<User> key: users.keySet()) {
+        for (ModelKey<User> key: modelWrapper.getUserKeys()) {
             if (key.startsWith(projectKey)) {
-                User removed = users.remove(key);
-                if (removed != null) {
-                    persistenceService.onNodeDeleted(key, removed);
-                }
+                modelWrapper.removeUser(key);
             }
         }
-        for (ModelKey<Client> key: clients.keySet()) {
+        for (ModelKey<Client> key: modelWrapper.getClientKeys()) {
             if (key.startsWith(projectKey)) {
-                Client removed = clients.remove(key);
-                if (removed != null) {
-                    persistenceService.onNodeDeleted(key, removed);
-                }
+                modelWrapper.removeClient(key);
             }
         }
-        for (ModelKey<Role> key: roles.keySet()) {
+        for (ModelKey<Role> key: modelWrapper.getRoleKeys()) {
             if (key.startsWith(projectKey)) {
-                Role removed = roles.remove(key);
-                if (removed != null) {
-                    persistenceService.onNodeDeleted(key, removed);
-                }
+                modelWrapper.removeRole(key);
             }
         }
         return remove(organizationId, projectId);
@@ -335,20 +267,18 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized void setProperty(OrganizationId id, ProjectId projectId, String key, String value) {
         ModelKey<Project> projectKey = projectKey(id, projectId);
-        Project project = projects.get(projectKey);
+        Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.setProperty(key, value);
-            persistenceService.onNodeUpdated(projectKey, project);
         }
     }
 
     @Override
     public synchronized void removeProperty(OrganizationId id, ProjectId projectId, String key) {
         ModelKey<Project> projectKey = projectKey(id, projectId);
-        Project project = projects.get(projectKey);
+        Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.removeProperty(key);
-            persistenceService.onNodeUpdated(projectKey, project);
         }
     }
 
@@ -356,16 +286,14 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         ModelKey<User> userKey = userKey(organizationId, projectId, request.getId());
-        Project project = projects.get(projectKey);
-        User u = users.get(userKey);
+        Project project = modelWrapper.getProject(projectKey);
+        User u = modelWrapper.getUser(userKey);
         if (project != null && u == null) {
             User user = new UserImpl(request.getId(), request.getName(), project.getId(),
                     request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), project.getPrivateKey(), request.getEmail());
             ModelKey<User> key = userKey(organizationId, projectId, user.getId());
             project.add(user.getId());
-            users.put(key, user);
-            persistenceService.onNodeUpdated(projectKey, project);
-            persistenceService.onNodeCreated(key, user);
+            modelWrapper.putUser(key, user);
             return Optional.of(user);
         }
         return Optional.empty();
@@ -374,7 +302,7 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized Optional<Client> getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         ModelKey<Client> key = clientKey(organizationId, projectId, clientId);
-        Client client = clients.get(key);
+        Client client = modelWrapper.getClient(key);
         if (client !=  null) {
             return Optional.of(client);
         }
@@ -385,9 +313,9 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Collection<Client> getClients(OrganizationId organizationId, ProjectId projectId) {
         List<Client> result = new ArrayList<>();
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        clients.keySet().forEach(k -> {
+        modelWrapper.getClientKeys().forEach(k -> {
             if (k.startsWith(projectKey)) {
-                result.add(clients.get(k));
+                result.add(modelWrapper.getClient(k));
             }
         });
         return result;
@@ -396,7 +324,7 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean verifyClientCredentials(OrganizationId organizationId, ProjectId projectId, ClientCredentials clientCredentials) {
         ModelKey<Client> key = clientKey(organizationId, projectId, clientCredentials.getId());
-        Client client = clients.get(key);
+        Client client = modelWrapper.getClient(key);
         if (client != null) {
             return clientCredentials.equals(client.getCredentials());
         }
@@ -406,15 +334,11 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, ClientId clientId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project project = projects.get(projectKey);
+        Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.removeClient(clientId);
-            persistenceService.onNodeUpdated(projectKey, project);
             ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
-            Client removed = clients.remove(clientKey);
-            if (removed != null) {
-                persistenceService.onNodeDeleted(clientKey, removed);
-            }
+            Client removed = modelWrapper.removeClient(clientKey);
             return removed != null;
         }
         return false;
@@ -423,11 +347,10 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean assignRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
         ModelKey<Client> clientKey = clientKey(id, projectId, clientId);
-        Role role = roles.get(roleKey(id, projectId, roleId));
-        Client client = clients.get(clientKey);
+        Role role = modelWrapper.getRole(roleKey(id, projectId, roleId));
+        Client client = modelWrapper.getClient(clientKey);
         if (role != null && client != null) {
             client.addRole(roleId);
-            persistenceService.onNodeUpdated(clientKey, client);
             return true;
         }
         return false;
@@ -436,11 +359,10 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean removeRole(OrganizationId id, ProjectId projectId, ClientId clientId, RoleId roleId) {
         ModelKey<Client> clientKey = clientKey(id, projectId, clientId);
-        Role role = roles.get(roleKey(id, projectId, roleId));
-        Client client = clients.get(clientKey);
+        Role role = modelWrapper.getRole(roleKey(id, projectId, roleId));
+        Client client = modelWrapper.getClient(clientKey);
         if (role != null && client != null) {
             client.removeRole(roleId);
-            persistenceService.onNodeUpdated(clientKey, client);
             return true;
         }
         return false;
@@ -449,14 +371,12 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized Optional<RoleId> add(OrganizationId organizationId, ProjectId projectId, Role role) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Role r = roles.get(roleKey(organizationId, projectId, role.getId()));
-        Project project = projects.get(projectKey);
+        Role r = modelWrapper.getRole(roleKey(organizationId, projectId, role.getId()));
+        Project project = modelWrapper.getProject(projectKey);
         if (project != null && r == null) {
             project.addRole(role.getId());
             ModelKey<Role> key = roleKey(organizationId, projectId, role.getId());
-            roles.put(key, role);
-            persistenceService.onNodeUpdated(projectKey, project);
-            persistenceService.onNodeCreated(key, role);
+            modelWrapper.putRole(key, role);
             return Optional.of(role.getId());
         } else {
             return Optional.empty();
@@ -467,9 +387,9 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized Collection<Role> getRoles(OrganizationId organizationId, ProjectId projectId) {
         List<Role> result = new ArrayList<>();
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        roles.keySet().forEach(k -> {
+        modelWrapper.getRoleKeys().forEach(k -> {
             if (k.startsWith(projectKey)) {
-                result.add(roles.get(k));
+                result.add(modelWrapper.getRole(k));
             }
         });
         return result;
@@ -478,7 +398,7 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized Set<RoleId> getRoles(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         ModelKey<User> userKey = userKey(organizationId, projectId, userId);
-        User user = users.get(userKey);
+        User user = modelWrapper.getUser(userKey);
         if (user != null) {
             return Set.copyOf(user.getRoles());
         }
@@ -488,22 +408,18 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized Optional<Role> getRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-        return Optional.ofNullable(roles.get(roleKey));
+        return Optional.ofNullable(modelWrapper.getRole(roleKey));
     }
 
     @Override
     public synchronized boolean remove(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         if (!checkRoleReferences(organizationId, projectId, roleId)) {
             ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-            Project project = projects.get(projectKey);
+            Project project = modelWrapper.getProject(projectKey);
             if (project != null) {
                 project.removeRole(roleId);
-                persistenceService.onNodeUpdated(projectKey, project);
                 ModelKey<Role> key = roleKey(organizationId, projectId, roleId);
-                Role removed = roles.remove(key);
-                if (removed != null) {
-                    persistenceService.onNodeDeleted(key, removed);
-                }
+                Role removed = modelWrapper.removeRole(key);
                 return removed != null;
             }
         }
@@ -513,14 +429,13 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean addPermissionToRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project project = projects.get(projectKey);
+        Project project = modelWrapper.getProject(projectKey);
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-        Role role = roles.get(roleKey);
+        Role role = modelWrapper.getRole(roleKey);
         if (role != null && project != null) {
             Optional<Permission> permission = project.getPermission(permissionId);
             if (permission.isPresent()) {
                 role.addPermission(permission.get());
-                persistenceService.onNodeUpdated(roleKey, role);
             }
             return true;
         }
@@ -530,11 +445,10 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean assignRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
         ModelKey<User> userKey = userKey(id, projectId, userId);
-        Role role = roles.get(roleKey(id, projectId, roleId));
-        User user = users.get(userKey);
+        Role role = modelWrapper.getRole(roleKey(id, projectId, roleId));
+        User user = modelWrapper.getUser(userKey);
         if (role != null && user != null) {
             user.addRole(roleId);
-            persistenceService.onNodeUpdated(userKey, user);
             return true;
         }
         return false;
@@ -543,11 +457,10 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean removeRole(OrganizationId id, ProjectId projectId, UserId userId, RoleId roleId) {
         ModelKey<User> userKey = userKey(id, projectId, userId);
-        Role role = roles.get(roleKey(id, projectId, roleId));
-        User user = users.get(userKey);
+        Role role = modelWrapper.getRole(roleKey(id, projectId, roleId));
+        User user = modelWrapper.getUser(userKey);
         if (role != null && user != null) {
             user.removeRole(roleId);
-            persistenceService.onNodeUpdated(userKey, user);
             return true;
         }
         return false;
@@ -556,10 +469,9 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean setCredentials(OrganizationId id, ProjectId projectId, UserId userId, Credentials credentials) {
         ModelKey<User> userKey = userKey(id, projectId, userId);
-        User user = users.get(userKey);
+        User user = modelWrapper.getUser(userKey);
         if (user != null) {
             user.addCredentials(credentials);
-            persistenceService.onNodeUpdated(userKey, user);
             return true;
         }
         return false;
@@ -568,10 +480,9 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean removePermissionFromRole(OrganizationId organizationId, ProjectId projectId, RoleId roleId, PermissionId permissionId) {
         ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-        Role role = roles.get(roleKey);
+        Role role = modelWrapper.getRole(roleKey);
         if (role != null) {
             boolean result = role.removePermission(permissionId);
-            persistenceService.onNodeUpdated(roleKey, role);
             return result;
         }
         return false;
@@ -580,10 +491,9 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized boolean addPermission(OrganizationId organizationId, ProjectId projectId, Permission permission) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project  project =  projects.get(projectKey);
+        Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.addPermission(permission);
-            persistenceService.onNodeUpdated(projectKey, project);
             return true;
         }
         return false;
@@ -593,10 +503,9 @@ public class ModelCacheImpl implements ModelCache {
     public synchronized boolean removePermission(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
         if (!checkPermissionReferences(organizationId, projectId, permissionId)) {
             ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-            Project project = projects.get(projectKey);
+            Project project = modelWrapper.getProject(projectKey);
             if (project != null) {
                 project.removePermission(permissionId);
-                persistenceService.onNodeUpdated(projectKey, project);
                 return true;
             }
         }
@@ -606,7 +515,7 @@ public class ModelCacheImpl implements ModelCache {
     @Override
     public synchronized Set<Permission> getPermissions(OrganizationId organizationId, ProjectId projectId) {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Project  project =  projects.get(projectKey);
+        Project project =  modelWrapper.getProject(projectKey);
         if (project != null) {
             return Set.copyOf(project.getPermissions());
         }
@@ -618,12 +527,12 @@ public class ModelCacheImpl implements ModelCache {
         Set<Permission> result = new HashSet<>();
         ModelKey<User> userKey = userKey(organizationId, projectId, userId);
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        User user = users.get(userKey);
-        Project  project =  projects.get(projectKey);
+        User user = modelWrapper.getUser(userKey);
+        Project project =  modelWrapper.getProject(projectKey);
         if (user != null && project != null) {
             for (RoleId roleId: user.getRoles()) {
                  ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-                 Role role = roles.get(roleKey);
+                 Role role = modelWrapper.getRole(roleKey);
                  if (role != null) {
                      result.addAll(role.getPermissions());
                  }
@@ -637,12 +546,12 @@ public class ModelCacheImpl implements ModelCache {
         Set<Permission> result = new HashSet<>();
         ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
-        Client client = clients.get(clientKey);
-        Project  project =  projects.get(projectKey);
+        Client client = modelWrapper.getClient(clientKey);
+        Project project =  modelWrapper.getProject(projectKey);
         if (client != null && project != null) {
             for (RoleId roleId: client.getRoles()) {
                  ModelKey<Role> roleKey = roleKey(organizationId, projectId, roleId);
-                 Role role = roles.get(roleKey);
+                 Role role = modelWrapper.getRole(roleKey);
                  if (role != null) {
                      result.addAll(role.getPermissions());
                  }
@@ -673,7 +582,7 @@ public class ModelCacheImpl implements ModelCache {
 
     private boolean checkOrganizationReferences(OrganizationId organizationId) {
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
-        for (ModelKey<Project> key: projects.keySet()) {
+        for (ModelKey<Project> key: modelWrapper.getProjectKeys()) {
             if (key.startsWith(organizationKey)) {
                 return true;
             }
@@ -683,17 +592,17 @@ public class ModelCacheImpl implements ModelCache {
 
     private boolean checkProjectReferences(OrganizationId organizationId, ProjectId projectId)  {
         ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
-        for (ModelKey<User> key: users.keySet()) {
+        for (ModelKey<User> key: modelWrapper.getUserKeys()) {
             if (key.startsWith(projectKey)) {
                 return true;
             }
         }
-        for (ModelKey<Client> key: clients.keySet()) {
+        for (ModelKey<Client> key: modelWrapper.getClientKeys()) {
             if (key.startsWith(projectKey)) {
                 return true;
             }
         }
-        for (ModelKey<Role> key: roles.keySet()) {
+        for (ModelKey<Role> key: modelWrapper.getRoleKeys()) {
             if (key.startsWith(projectKey)) {
                 return true;
             }
@@ -703,7 +612,7 @@ public class ModelCacheImpl implements ModelCache {
 
     private boolean checkPermissionReferences(OrganizationId organizationId, ProjectId projectId, PermissionId permissionId) {
         ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
-        for (Map.Entry<ModelKey<Role>, Role> entry: roles.entrySet()) {
+        for (Map.Entry<ModelKey<Role>, Role> entry: modelWrapper.getRoleEntrySet()) {
             if (entry.getKey().startsWith(projectKey)) {
                 for (Permission permission : entry.getValue().getPermissions()) {
                     if (permission.getId().equals(permissionId)) {
@@ -717,12 +626,12 @@ public class ModelCacheImpl implements ModelCache {
 
     private boolean checkRoleReferences(OrganizationId organizationId, ProjectId projectId, RoleId roleId) {
         ModelKey<Project> projectKey = projectKey(organizationId,  projectId);
-        for (Map.Entry<ModelKey<User>, User> entry: users.entrySet()) {
+        for (Map.Entry<ModelKey<User>, User> entry: modelWrapper.getUserEntrySet()) {
             if (entry.getKey().startsWith(projectKey)) {
                 return entry.getValue().getRoles().contains(roleId);
             }
         }
-        for (Map.Entry<ModelKey<Client>, Client> entry: clients.entrySet()) {
+        for (Map.Entry<ModelKey<Client>, Client> entry: modelWrapper.getClientEntrySet()) {
             if (entry.getKey().startsWith(projectKey)) {
                 return entry.getValue().getRoles().contains(roleId);
             }

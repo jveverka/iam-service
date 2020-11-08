@@ -17,7 +17,7 @@ import one.microproject.iamservice.core.services.dto.CreateProjectRequest;
 import one.microproject.iamservice.core.services.dto.CreateRoleRequest;
 import one.microproject.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
 import one.microproject.iamservice.core.services.impl.admin.ProjectManagerServiceImpl;
-import one.microproject.iamservice.core.tests.persistence.TestingPersistenceService;
+import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ProjectManagerServiceTests {
 
     private static ModelCache modelCache;
-    private static TestingPersistenceService testingPersistenceService;
     private static OrganizationManagerService organizationManagerService;
     private static ProjectManagerService projectManagerService;
     private static OrganizationId oid001;
@@ -46,8 +45,7 @@ public class ProjectManagerServiceTests {
     @BeforeAll
     private static void init() {
         Security.addProvider(new BouncyCastleProvider());
-        testingPersistenceService = new TestingPersistenceService();
-        modelCache = ModelUtils.createEmptyModelCache(testingPersistenceService, ModelId.from("model-01"), "test-model");
+        modelCache = ModelUtils.createEmptyModelCache(new LoggingPersistenceServiceImpl(), ModelId.from("model-01"), "test-model");
         organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
         projectManagerService = new ProjectManagerServiceImpl(modelCache);
     }

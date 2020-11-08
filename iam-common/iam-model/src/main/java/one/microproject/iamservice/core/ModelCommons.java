@@ -47,24 +47,6 @@ public final class ModelCommons {
             IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL
     );
 
-    public static Set<Permission> getOrganizationAdminPermissionSet(OrganizationId organizationId) {
-        return Set.of(
-                new Permission(getServiceId(organizationId), ORGANIZATIONS_RESOURCE, ACTION_ALL),
-                new Permission(getServiceId(organizationId), PROJECTS_RESOURCE, ACTION_ALL),
-                new Permission(getServiceId(organizationId), USERS_RESOURCE, ACTION_ALL),
-                new Permission(getServiceId(organizationId), CLIENTS_RESOURCE, ACTION_ALL)
-        );
-    }
-
-    public static Set<Permission> getProjectAdminPermissionSet(OrganizationId organizationId, ProjectId projectId) {
-        return Set.of(
-                new Permission(getServiceId(organizationId, projectId), ORGANIZATION_RESOURCE, ACTION_ALL),
-                new Permission(getServiceId(organizationId, projectId), PROJECT_RESOURCE, ACTION_ALL),
-                new Permission(getServiceId(organizationId, projectId), USERS_RESOURCE, ACTION_ALL),
-                new Permission(getServiceId(organizationId, projectId), CLIENTS_RESOURCE, ACTION_ALL)
-        );
-    }
-
     public static String getServiceId(OrganizationId organizationId) {
         return getServiceId(organizationId, null);
     }

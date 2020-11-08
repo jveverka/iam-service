@@ -5,11 +5,13 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.services.caches.ModelCache;
+import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
+import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import one.microproject.iamservice.core.services.persistence.DataLoadService;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.persistence.filesystem.FileSystemDataLoadServiceImpl;
 import one.microproject.iamservice.persistence.filesystem.FileSystemPersistenceServiceImpl;
-import one.microproject.iamservice.persistence.inmemory.InMemoryPersistenceServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,34 +58,35 @@ public class ModelConfig {
 
     @Bean
     @Scope("singleton")
-    public ModelCache getModelCache(@Autowired PersistenceService persistenceService) throws PKIException, IOException {
+    public ModelCache getModelCache() throws PKIException, IOException {
         try {
             if ("file-system".equals(persistence)) {
                 LOG.info("#CONFIG: populating ModelCache from file: {}", path);
-                DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path), persistenceService);
-                return dataLoadService.populateCache();
+                DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path));
+                ModelWrapper modelWrapper = dataLoadService.populateCache();
+                return new ModelCacheImpl(modelWrapper);
             } else {
                 LOG.info("#CONFIG: default ModelCache created");
                 return ModelUtils.createDefaultModelCache(
-                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, persistenceService);
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, new LoggingPersistenceServiceImpl());
             }
         } catch (Exception e) {
             LOG.error("Error: {}", e.getMessage());
             LOG.warn("#CONFIG: fallback to default ModelCache");
             return ModelUtils.createDefaultModelCache(OrganizationId.from(adminOrganization), ProjectId.from(adminProject),
-                    defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, persistenceService);
+                    defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, new LoggingPersistenceServiceImpl());
         }
     }
 
     @Bean
     @Scope("singleton")
-    public PersistenceService getPersistenceService() {
+    public PersistenceService getPersistenceService(@Autowired ModelCache modelCache) {
         if ("file-system".equals(persistence)) {
             LOG.info("#CONFIG: getPersistenceService: {} path={}", persistence, path);
-            persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path), true);
+            persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path), true, modelCache.export());
         } else {
             LOG.info("#CONFIG: getPersistenceService: in-memory");
-            persistenceService = new InMemoryPersistenceServiceImpl();
+            persistenceService = new LoggingPersistenceServiceImpl();
         }
         return persistenceService;
     }

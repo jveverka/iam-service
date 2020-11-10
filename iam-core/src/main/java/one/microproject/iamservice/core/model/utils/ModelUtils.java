@@ -76,10 +76,11 @@ public final class ModelUtils {
     }
 
     public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, PersistenceService persistenceService) throws PKIException {
-        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, persistenceService);
+        Model model = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, new ModelWrapperImpl(model, persistenceService));
     }
 
-    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, PersistenceService persistenceService) throws PKIException {
+    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper) throws PKIException {
 
         Role iamGlobalAdminRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-global"), "Manage IAM-Service")
                 .addPermission(ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL)
@@ -98,14 +99,11 @@ public final class ModelUtils {
         ClientProperties properties = new ClientProperties(getIamAdminsRedirectURL(),
                 true, true, false, new HashMap<>());
 
-        ModelId id = ModelId.from("default-model-001");
-        String modelName = "Default Model";
-
-        LOG.info("#MODEL: Initializing default model id={} name={} ...", id, modelName);
+        LOG.info("#MODEL: Initializing default model id={} name={} ...", modelWrapper.getModel().getId(), modelWrapper.getModel().getName());
         LOG.info("#MODEL: Default organizationId={}, projectId={}", IAM_ADMINS_ORG.getId(), IAM_ADMINS_PROJECT.getId());
         LOG.info("#MODEL:    Default admin userId={}", IAM_ADMIN_USER.getId());
         LOG.info("#MODEL:    Default client credentials clientId={} clientSecret={}", IAM_ADMIN_CLIENT_ID.getId(), iamClientSecret);
-        return IAMModelBuilders.modelBuilder(id, modelName, persistenceService)
+        return IAMModelBuilders.modelBuilder(modelWrapper)
                 .addOrganization(organizationId, IAM_ADMINS_NAME)
                 .addProject(projectId, IAM_ADMINS_NAME, IAM_AUDIENCE)
                     .addRole(iamGlobalAdminRole)
@@ -180,11 +178,12 @@ public final class ModelUtils {
      * @param users - number of users in project
      * @param permissions - number of permissions in project
      * @param roles - number of roles in project
+     * @param modelWrapper
      * @return
      * @throws PKIException
      */
-    public static ModelCache createModel(int organizations, int projects, int clients, int users, int permissions, int roles) throws PKIException {
-        ModelBuilder modelBuilder = IAMModelBuilders.modelBuilder(ModelId.from("test-model"), "test-model", new LoggingPersistenceServiceImpl());
+    public static ModelCache createModel(int organizations, int projects, int clients, int users, int permissions, int roles, ModelWrapper modelWrapper) throws PKIException {
+        ModelBuilder modelBuilder = IAMModelBuilders.modelBuilder(modelWrapper);
         String organizationPrefix = "organization-";
         String projectPrefix = "project-";
         String permissionPrefix = "resource-";
@@ -224,6 +223,14 @@ public final class ModelUtils {
             }
         }
         return modelBuilder.build();
+    }
+
+    public static ModelWrapper createInMemoryModelWrapper(String modelId) {
+        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), ""), new LoggingPersistenceServiceImpl());
+    }
+
+    public static ModelWrapper createInMemoryModelWrapper(String modelId, String modelName) {
+        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), modelName), new LoggingPersistenceServiceImpl());
     }
 
 }

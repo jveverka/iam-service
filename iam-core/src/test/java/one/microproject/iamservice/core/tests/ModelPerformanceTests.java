@@ -1,6 +1,7 @@
 package one.microproject.iamservice.core.tests;
 
 import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.Model;
 import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKIException;
@@ -24,6 +25,7 @@ import java.security.Security;
 import java.util.Collection;
 import java.util.Optional;
 
+import static one.microproject.iamservice.core.model.utils.ModelUtils.createInMemoryModelWrapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,6 +36,7 @@ public class ModelPerformanceTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelPerformanceTests.class);
 
+    private static ModelWrapper modelWrapper;
     private static int organizations = 3;
     private static int projects = 3;
     private static int clients = 4;
@@ -51,8 +54,9 @@ public class ModelPerformanceTests {
     @Test
     @Order(1)
     public void generateBigModel() throws PKIException {
+        modelWrapper = createInMemoryModelWrapper("default");
         long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        model = ModelUtils.createModel(organizations, projects, clients, users, permissions, roles);
+        model = ModelUtils.createModel(organizations, projects, clients, users, permissions, roles, modelWrapper);
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         LOG.info("memory allocated for model = {}Mb", (((memAfter - memBefore)/1024F)/1024F));
         assertNotNull(model);
@@ -65,7 +69,6 @@ public class ModelPerformanceTests {
     @Test
     @Order(2)
     public void checkModelCache() {
-        ModelWrapper modelWrapper = model.export();
         assertNotNull(modelWrapper);
         assertNotNull(modelWrapper.getModel());
         assertEquals(organizations, modelWrapper.getOrganizations().size());
@@ -90,7 +93,6 @@ public class ModelPerformanceTests {
     public void removeOrganizationWithExistingProjects() {
         boolean result = model.remove(OrganizationId.from("organization-0"));
         assertFalse(result);
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations, modelWrapper.getOrganizations().size());
     }
 
@@ -99,7 +101,6 @@ public class ModelPerformanceTests {
     public void removeProjectWithExistingUsersAndClientsAndRoles() {
         boolean result = model.remove(OrganizationId.from("organization-0"), ProjectId.from("project-0"));
         assertFalse(result);
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
     }
 
@@ -108,7 +109,6 @@ public class ModelPerformanceTests {
     public void removeRoleInUse() {
         boolean result = model.remove(OrganizationId.from("organization-0"), ProjectId.from("project-0"), RoleId.from("role-0"));
         assertFalse(result);
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations*projects*roles, modelWrapper.getRoles().size());
     }
 
@@ -131,7 +131,6 @@ public class ModelPerformanceTests {
                 }
             }
         }
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations, modelWrapper.getOrganizations().size());
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
         assertEquals(organizations*projects*clients, modelWrapper.getClients().size());
@@ -151,7 +150,6 @@ public class ModelPerformanceTests {
                 }
             }
         }
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations, modelWrapper.getOrganizations().size());
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
         assertEquals(0, modelWrapper.getClients().size());
@@ -171,7 +169,6 @@ public class ModelPerformanceTests {
                 }
             }
         }
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations, modelWrapper.getOrganizations().size());
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
         assertEquals(0, modelWrapper.getClients().size());
@@ -191,7 +188,6 @@ public class ModelPerformanceTests {
                 }
             }
         }
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations, modelWrapper.getOrganizations().size());
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
         assertEquals(0, modelWrapper.getClients().size());
@@ -209,7 +205,6 @@ public class ModelPerformanceTests {
                  assertTrue(result);
             }
         }
-        ModelWrapper modelWrapper = model.export();
         assertEquals(organizations, modelWrapper.getOrganizations().size());
         assertEquals(0, modelWrapper.getProjects().size());
         assertEquals(0, modelWrapper.getClients().size());
@@ -224,7 +219,6 @@ public class ModelPerformanceTests {
              boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex));
              assertTrue(result);
         }
-        ModelWrapper modelWrapper = model.export();
         assertEquals(0, modelWrapper.getProjects().size());
         assertEquals(0, modelWrapper.getOrganizations().size());
         assertEquals(0, modelWrapper.getUsers().size());

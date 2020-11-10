@@ -44,11 +44,6 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public synchronized ModelWrapper export() {
-        return this.modelWrapper;
-    }
-
-    @Override
     public synchronized Model getModel() {
         return this.modelWrapper.getModel();
     }

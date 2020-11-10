@@ -58,32 +58,49 @@ public class ModelConfig {
 
     @Bean
     @Scope("singleton")
-    public ModelCache getModelCache() throws PKIException, IOException {
+    public ModelWrapper createModelWrapper() {
         try {
             if ("file-system".equals(persistence)) {
-                LOG.info("#CONFIG: populating ModelCache from file: {}", path);
+                LOG.info("#CONFIG: populating ModelWrapper from file: {}", path);
                 DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path));
-                ModelWrapper modelWrapper = dataLoadService.populateCache();
-                return new ModelCacheImpl(modelWrapper);
+                return dataLoadService.populateCache();
             } else {
-                LOG.info("#CONFIG: default ModelCache created");
-                return ModelUtils.createDefaultModelCache(
-                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, new LoggingPersistenceServiceImpl());
+                LOG.info("#CONFIG: default ModelWrapper created");
+                return ModelUtils.createInMemoryModelWrapper("default-model");
             }
         } catch (Exception e) {
             LOG.error("Error: {}", e.getMessage());
-            LOG.warn("#CONFIG: fallback to default ModelCache");
-            return ModelUtils.createDefaultModelCache(OrganizationId.from(adminOrganization), ProjectId.from(adminProject),
-                    defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, new LoggingPersistenceServiceImpl());
+            LOG.warn("#CONFIG: fallback to default ModelWrapper");
+            return ModelUtils.createInMemoryModelWrapper("default-model");
         }
     }
 
     @Bean
     @Scope("singleton")
-    public PersistenceService getPersistenceService(@Autowired ModelCache modelCache) {
+    public ModelCache getModelCache(@Autowired ModelWrapper modelWrapper) throws PKIException, IOException {
+        try {
+            if ("file-system".equals(persistence)) {
+                LOG.info("#CONFIG: populating ModelCache from file: {}", path);
+                return new ModelCacheImpl(modelWrapper);
+            } else {
+                LOG.info("#CONFIG: default ModelCache created");
+                return ModelUtils.createDefaultModelCache(
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
+            }
+        } catch (Exception e) {
+            LOG.error("Error: {}", e.getMessage());
+            LOG.warn("#CONFIG: fallback to default ModelCache");
+            return ModelUtils.createDefaultModelCache(OrganizationId.from(adminOrganization), ProjectId.from(adminProject),
+                    defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
+        }
+    }
+
+    @Bean
+    @Scope("singleton")
+    public PersistenceService getPersistenceService(@Autowired ModelWrapper modelWrapper) {
         if ("file-system".equals(persistence)) {
             LOG.info("#CONFIG: getPersistenceService: {} path={}", persistence, path);
-            persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path), true, modelCache.export());
+            persistenceService = new FileSystemPersistenceServiceImpl(Path.of(path), true, modelWrapper);
         } else {
             LOG.info("#CONFIG: getPersistenceService: in-memory");
             persistenceService = new LoggingPersistenceServiceImpl();

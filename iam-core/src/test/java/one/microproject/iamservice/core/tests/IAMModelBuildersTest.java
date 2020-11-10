@@ -10,6 +10,7 @@ import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.caches.ModelCache;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import java.security.Security;
 import java.util.Set;
 
+import static one.microproject.iamservice.core.model.utils.ModelUtils.createInMemoryModelWrapper;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -51,7 +53,7 @@ public class IAMModelBuildersTest {
     @Test
     @Order(2)
     public void testModelBuilder() throws PKIException {
-        ModelCache modelCache = IAMModelBuilders.modelBuilder("my model")
+        ModelCache modelCache = IAMModelBuilders.modelBuilder(createInMemoryModelWrapper("my model"))
                 .addOrganization("first organization")
                     .addProject("first project", audience)
                         .addRole(adminFullAccess)
@@ -91,7 +93,7 @@ public class IAMModelBuildersTest {
     @Test
     @Order(4)
     public void testModelBuilderWithIds() throws PKIException {
-        ModelCache modelCache = IAMModelBuilders.modelBuilder(ModelId.from("model-001"), "my model")
+        ModelCache modelCache = IAMModelBuilders.modelBuilder(createInMemoryModelWrapper("model-001", "my model"))
                 .addOrganization(OrganizationId.from("org-001"), "first organization")
                     .addProject(ProjectId.from("project-001"), "first project", audience)
                     .addRole(adminFullAccess)

@@ -1,8 +1,12 @@
 package one.microproject.iamservice.persistence.filesystem.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.iamservice.core.model.Model;
+import one.microproject.iamservice.core.model.ModelId;
+import one.microproject.iamservice.core.model.ModelImpl;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
+import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import one.microproject.iamservice.core.services.persistence.DataLoadService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
@@ -19,6 +23,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Security;
 
+import static one.microproject.iamservice.core.model.utils.ModelUtils.IAM_ADMINS_ORG;
+import static one.microproject.iamservice.core.model.utils.ModelUtils.IAM_ADMINS_PROJECT;
+import static one.microproject.iamservice.core.model.utils.ModelUtils.createDefaultModelCache;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -38,12 +45,14 @@ public class FileSystemPersistenceTests {
 
     @Test
     public void testPersistenceSerializationAndLoading() throws Exception {
-        ModelCache cache = ModelUtils.createDefaultModelCache("secret", "top-secret", "admin@email.com");
-        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(sharedTempDir, false, cache.export());
+        Model model = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
+        ModelWrapper modelWrapper = new ModelWrapperImpl(model, new LoggingPersistenceServiceImpl());
+        createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, "secret", "top-secret", "admin@email.com", modelWrapper);
+        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(sharedTempDir, false, modelWrapper);
         String serializedModel = persistenceService.flushToString();
         assertNotNull(serializedModel);
 
-        ModelWrapper modelWrapper = mapper.readValue(serializedModel, ModelWrapperImpl.class);
+        modelWrapper = mapper.readValue(serializedModel, ModelWrapperImpl.class);
         assertNotNull(modelWrapper);
         assertEquals(1, modelWrapper.getOrganizations().size());
         assertEquals(1, modelWrapper.getProjects().size());
@@ -60,8 +69,10 @@ public class FileSystemPersistenceTests {
         Security.addProvider(new BouncyCastleProvider());
         Path dataFilePath = Paths.get("/tmp/iam-data.json");
         long timeStamp = System.nanoTime();
-        ModelCache modelCache = ModelUtils.createModel(3, 3, 4, 100, 5, 3);
-        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(dataFilePath, true, modelCache.export());
+        Model model = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
+        ModelWrapper modelWrapper = new ModelWrapperImpl(model, new LoggingPersistenceServiceImpl());
+        ModelCache modelCache = ModelUtils.createModel(3, 3, 4, 100, 5, 3, modelWrapper);
+        FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(dataFilePath, true, modelWrapper);
         LOG.info("model create time: {} ms", ((System.nanoTime() - timeStamp)/1_000_000F));
         timeStamp = System.nanoTime();
         persistenceService.flush();

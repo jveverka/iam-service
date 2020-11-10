@@ -27,8 +27,6 @@ import java.util.Set;
 
 public interface ModelCache {
 
-    ModelWrapper export();
-
     Model getModel();
 
     //ORGANIZATION

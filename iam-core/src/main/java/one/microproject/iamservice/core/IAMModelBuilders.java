@@ -6,26 +6,15 @@ import one.microproject.iamservice.core.model.builders.ModelBuilder;
 import one.microproject.iamservice.core.model.builders.RoleBuilder;
 import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 
 public final class IAMModelBuilders {
 
     private IAMModelBuilders() {
     }
 
-    public static ModelBuilder modelBuilder(String name, PersistenceService persistenceService) {
-        return new ModelBuilder(name, persistenceService);
-    }
-
-    public static ModelBuilder modelBuilder(String name) {
-        return new ModelBuilder(name, new LoggingPersistenceServiceImpl());
-    }
-
-    public static ModelBuilder modelBuilder(ModelId id, String name, PersistenceService persistenceService) {
-        return new ModelBuilder(id, name, persistenceService);
-    }
-
-    public static ModelBuilder modelBuilder(ModelId id, String name) {
-        return new ModelBuilder(id, name, new LoggingPersistenceServiceImpl());
+    public static ModelBuilder modelBuilder(ModelWrapper modelWrapper) {
+        return new ModelBuilder(modelWrapper);
     }
 
     public static RoleBuilder roleBuilder(String name) {

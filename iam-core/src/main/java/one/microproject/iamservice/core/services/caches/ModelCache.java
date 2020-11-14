@@ -19,13 +19,17 @@ import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.CreateProjectRequest;
 import one.microproject.iamservice.core.services.dto.CreateUserRequest;
-import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
+import one.microproject.iamservice.core.services.persistence.PersistenceService;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 public interface ModelCache {
+
+    void onInit(PersistenceService persistenceService, boolean flushOnChange) throws Exception;
+
+    void flush() throws Exception;
 
     Model getModel();
 

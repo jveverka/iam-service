@@ -24,6 +24,7 @@ import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.CreateProjectRequest;
 import one.microproject.iamservice.core.services.dto.CreateUserRequest;
+import one.microproject.iamservice.core.services.persistence.PersistenceService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 
 import java.util.ArrayList;
@@ -41,6 +42,16 @@ public class ModelCacheImpl implements ModelCache {
 
     public ModelCacheImpl(ModelWrapper modelWrapper) {
         this.modelWrapper = modelWrapper;
+    }
+
+    @Override
+    public void onInit(PersistenceService persistenceService, boolean flushOnChange) throws Exception {
+        modelWrapper.onInit(persistenceService, flushOnChange);
+    }
+
+    @Override
+    public void flush() throws Exception {
+        modelWrapper.flush();
     }
 
     @Override

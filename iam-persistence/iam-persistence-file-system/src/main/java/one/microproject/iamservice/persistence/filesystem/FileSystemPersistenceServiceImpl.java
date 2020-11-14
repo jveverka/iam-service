@@ -2,10 +2,8 @@ package one.microproject.iamservice.persistence.filesystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import one.microproject.iamservice.core.model.Model;
-import one.microproject.iamservice.core.model.keys.ModelKey;
-import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,57 +16,18 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
 
     private final Path dataFile;
     private final ObjectMapper mapper;
-    private final boolean flushOnChange;
-    private final ModelWrapper modelWrapper;
 
-    public FileSystemPersistenceServiceImpl(Path dataFile, boolean flushOnChange, ModelWrapper modelWrapper) {
+    public FileSystemPersistenceServiceImpl(Path dataFile) {
         this.dataFile = dataFile;
         this.mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        this.flushOnChange = flushOnChange;
-        this.modelWrapper = modelWrapper;
-        LOG.info("FileSystemPersistence: dataFile={}, flushOnChange={}", dataFile, flushOnChange);
+        LOG.info("FileSystemPersistence: dataFile={}", dataFile);
     }
 
     @Override
-    public synchronized void onModelChange(Model model) {
-        flushOnChange();
-    }
-
-    @Override
-    public synchronized <T> void onNodeCreated(ModelKey<T> modelKey, T newNode) {
-        long timeStamp = System.nanoTime();
-        flushOnChange();
-        LOG.trace("onNodeCreated: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
-    }
-
-    @Override
-    public synchronized <T> void onNodeDeleted(ModelKey<T> modelKey, T oldNode) {
-        long timeStamp = System.nanoTime();
-        flushOnChange();
-        LOG.trace("onNodeDeleted: {}ms", ((System.nanoTime() - timeStamp)/1_000_000F));
-    }
-
-    @Override
-    public synchronized void flush() throws Exception {
-        flushToFile();
-    }
-
-    public synchronized void flushToFile() throws IOException {
+    public void onModelChange(ModelWrapper modelWrapper) throws IOException {
+        long timestamp = System.nanoTime();
         mapper.writeValue(dataFile.toFile(), modelWrapper);
-    }
-
-    public synchronized String flushToString() throws IOException {
-        return mapper.writeValueAsString(modelWrapper);
-    }
-
-    private void flushOnChange() {
-        try {
-            if (flushOnChange) {
-                flush();
-            }
-        } catch (Exception e) {
-            LOG.error("Error: ", e);
-        }
+        LOG.info("onModelChange: {}, saved in {}ms", modelWrapper.getModel().getId(), ((System.nanoTime() - timestamp)/1_000_000F));
     }
 
 }

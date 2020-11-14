@@ -10,9 +10,11 @@ import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.keys.ModelKey;
-import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 
 public class ModelWrapperImpl implements ModelWrapper {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ModelWrapperImpl.class);
+
     private final Model model;
     private final Map<ModelKey<Organization>, Organization> organizations;
     private final Map<ModelKey<Project>, Project> projects;
@@ -31,8 +35,9 @@ public class ModelWrapperImpl implements ModelWrapper {
     private final Map<ModelKey<Role>, Role> roles;
 
     private PersistenceService persistenceService;
+    private boolean flushOnChange = false;
 
-    public ModelWrapperImpl(Model model, PersistenceService persistenceService) {
+    public ModelWrapperImpl(Model model, PersistenceService persistenceService, boolean flushOnChange) {
         this.model = model;
         this.organizations  = new ConcurrentHashMap<>();
         this.projects  = new ConcurrentHashMap<>();
@@ -40,7 +45,7 @@ public class ModelWrapperImpl implements ModelWrapper {
         this.clients  = new ConcurrentHashMap<>();
         this.roles  = new ConcurrentHashMap<>();
         this.persistenceService = persistenceService;
-        this.persistenceService.onModelChange(model);
+        this.flushOnChange = flushOnChange;
     }
 
     @JsonCreator
@@ -61,8 +66,34 @@ public class ModelWrapperImpl implements ModelWrapper {
         users.forEach(u -> this.users.put(u.getKey(), u.getValue()));
         clients.forEach(c -> this.clients.put(c.getKey(), c.getValue()));
         roles.forEach(r -> this.roles.put(r.getKey(), r.getValue()));
-        this.persistenceService = new LoggingPersistenceServiceImpl();
-        this.persistenceService.onModelChange(model);
+    }
+
+    @Override
+    public void onInit(PersistenceService persistenceService, boolean flushOnChange) throws Exception {
+        LOG.info("onInit: flushOnChange={}", flushOnChange);
+        LOG.info("onInit: organizations={}", organizations.size());
+        LOG.info("onInit: projects={}", projects.size());
+        LOG.info("onInit: users={}", users.size());
+        LOG.info("onInit: clients={}", clients.size());
+        LOG.info("onInit: roles={}", roles.size());
+        this.persistenceService = persistenceService;
+        this.flushOnChange = flushOnChange;
+        flushOnChange();
+    }
+
+    @Override
+    public void flush() throws Exception {
+        persistenceService.onModelChange(this);
+    }
+
+    private void flushOnChange() {
+        if (flushOnChange) {
+            try {
+                persistenceService.onModelChange(this);
+            } catch (IOException e) {
+                LOG.error("Persistence Error: {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -109,35 +140,35 @@ public class ModelWrapperImpl implements ModelWrapper {
     @Override
     public void putOrganization(ModelKey<Organization> key, Organization value) {
         organizations.put(key, value);
-        persistenceService.onNodeCreated(key, value);
+        flushOnChange();
     }
 
     @JsonIgnore
     @Override
     public void putProject(ModelKey<Project> key, Project value) {
         projects.put(key, value);
-        persistenceService.onNodeCreated(key, value);
+        flushOnChange();
     }
 
     @JsonIgnore
     @Override
     public void putUser(ModelKey<User> key, User value) {
         users.put(key, value);
-        persistenceService.onNodeCreated(key, value);
+        flushOnChange();
     }
 
     @JsonIgnore
     @Override
     public void putClient(ModelKey<Client> key, Client value) {
         clients.put(key, value);
-        persistenceService.onNodeCreated(key, value);
+        flushOnChange();
     }
 
     @JsonIgnore
     @Override
     public void putRole(ModelKey<Role> key, Role value) {
         roles.put(key, value);
-        persistenceService.onNodeCreated(key, value);
+        flushOnChange();
     }
 
     @JsonIgnore
@@ -145,7 +176,7 @@ public class ModelWrapperImpl implements ModelWrapper {
     public Organization removeOrganization(ModelKey<Organization> key) {
         Organization organization = organizations.remove(key);
         if (organization !=  null) {
-            persistenceService.onNodeDeleted(key, organization);
+            flushOnChange();
         }
         return organization;
     }
@@ -155,7 +186,7 @@ public class ModelWrapperImpl implements ModelWrapper {
     public Project removeProject(ModelKey<Project> key) {
         Project project = projects.remove(key);
         if (project !=  null) {
-            persistenceService.onNodeDeleted(key, project);
+            flushOnChange();
         }
         return project;
     }
@@ -165,7 +196,7 @@ public class ModelWrapperImpl implements ModelWrapper {
     public User removeUser(ModelKey<User> key) {
         User user = users.remove(key);
         if (user !=  null) {
-            persistenceService.onNodeDeleted(key, user);
+            flushOnChange();
         }
         return user;
     }
@@ -175,7 +206,7 @@ public class ModelWrapperImpl implements ModelWrapper {
     public Client removeClient(ModelKey<Client> key) {
         Client client = clients.remove(key);
         if (client !=  null) {
-            persistenceService.onNodeDeleted(key, client);
+            flushOnChange();
         }
         return client;
     }
@@ -185,7 +216,7 @@ public class ModelWrapperImpl implements ModelWrapper {
     public Role removeRole(ModelKey<Role> key) {
         Role role = roles.remove(key);
         if (role !=  null) {
-            persistenceService.onNodeDeleted(key, role);
+            flushOnChange();
         }
         return role;
     }

@@ -17,6 +17,12 @@ import java.util.Set;
 
 public interface ModelWrapper {
 
+    @JsonIgnore
+    void onInit(PersistenceService persistenceService, boolean flushOnChange) throws Exception;
+
+    @JsonIgnore
+    void flush() throws Exception;
+
     Model getModel();
 
     List<OrganizationWrapper> getOrganizations();

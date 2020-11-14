@@ -55,6 +55,7 @@ public final class ModelUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelUtils.class);
 
+    public static final Model DEFAULT_MODEL = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
     public static final String IAM_ADMINS_NAME = "iam-admins";
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);
     public static final ProjectId IAM_ADMINS_PROJECT = ProjectId.from(IAM_ADMINS_NAME);
@@ -68,16 +69,17 @@ public final class ModelUtils {
 
     public static ModelCache createEmptyModelCache(PersistenceService persistenceService, ModelId id, String modelName) {
         Model model = new ModelImpl(id, modelName);
-        ModelWrapper modelWrapper =  new ModelWrapperImpl(model, persistenceService);
+        ModelWrapper modelWrapper =  new ModelWrapperImpl(model, persistenceService, false);
         return new ModelCacheImpl(modelWrapper);
     }
+
     public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail) throws PKIException {
-        return createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail, new LoggingPersistenceServiceImpl());
+        ModelWrapper modelWrapper =  new ModelWrapperImpl(DEFAULT_MODEL, new LoggingPersistenceServiceImpl(), false);
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper);
     }
 
-    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, PersistenceService persistenceService) throws PKIException {
-        Model model = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
-        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, new ModelWrapperImpl(model, persistenceService));
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper) throws PKIException {
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper);
     }
 
     public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper) throws PKIException {
@@ -225,12 +227,16 @@ public final class ModelUtils {
         return modelBuilder.build();
     }
 
+    public static ModelWrapper createModelWrapper(String modelId, PersistenceService persistenceService, boolean flushOnChange) {
+        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), ""), persistenceService, flushOnChange);
+    }
+
     public static ModelWrapper createInMemoryModelWrapper(String modelId) {
-        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), ""), new LoggingPersistenceServiceImpl());
+        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), ""), new LoggingPersistenceServiceImpl(), false);
     }
 
     public static ModelWrapper createInMemoryModelWrapper(String modelId, String modelName) {
-        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), modelName), new LoggingPersistenceServiceImpl());
+        return new ModelWrapperImpl(new ModelImpl(ModelId.from(modelId), modelName), new LoggingPersistenceServiceImpl(), false);
     }
 
 }

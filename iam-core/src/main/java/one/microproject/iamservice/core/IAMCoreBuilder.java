@@ -1,6 +1,5 @@
 package one.microproject.iamservice.core;
 
-import one.microproject.iamservice.core.model.Model;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
@@ -26,18 +25,19 @@ import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCa
 import one.microproject.iamservice.core.services.impl.caches.CacheCleanupSchedulerImpl;
 import one.microproject.iamservice.core.services.impl.caches.TokenCacheImpl;
 import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
-import one.microproject.iamservice.core.services.persistence.PersistenceService;
+import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
 import java.util.concurrent.TimeUnit;
 
+import static one.microproject.iamservice.core.model.utils.ModelUtils.DEFAULT_MODEL;
+
 public class IAMCoreBuilder {
 
-    private Model model;
     private ModelCache modelCache;
-    private PersistenceService persistenceService;
+    private ModelWrapper modelWrapper;
     private CacheCleanupScheduler cacheCleanupScheduler;
     private AuthorizationCodeCache authorizationCodeCache;
     private TokenCache tokenCache;
@@ -54,23 +54,17 @@ public class IAMCoreBuilder {
         return this;
     }
 
-    public IAMCoreBuilder withModel(Model model, PersistenceService persistenceService) {
-        this.model = model;
-        this.persistenceService = persistenceService;
-        this.modelCache = new ModelCacheImpl(new ModelWrapperImpl(model, persistenceService));
-        return this;
-    }
-
-    public IAMCoreBuilder withModel(Model model) {
-        this.model = model;
-        this.persistenceService = new LoggingPersistenceServiceImpl();
-        this.modelCache = new ModelCacheImpl(new ModelWrapperImpl(model, persistenceService));
+    public IAMCoreBuilder withModelWrapper(ModelWrapper modelWrapper) {
+        this.modelWrapper = modelWrapper;
+        this.modelCache = new ModelCacheImpl(modelWrapper);
         return this;
     }
 
     public IAMCoreBuilder withDefaultModel(String iamAdminPassword, String iamClientSecret, String iamAdminEmail) throws PKIException {
-        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail);
-        this.model = modelCache.getModel();
+        if (modelWrapper == null) {
+            modelWrapper = new ModelWrapperImpl(DEFAULT_MODEL, new LoggingPersistenceServiceImpl(), false);
+        }
+        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper);
         return this;
     }
 
@@ -95,17 +89,11 @@ public class IAMCoreBuilder {
     }
 
     public IAMCore build() {
-        if (model == null) {
-            throw new UnsupportedOperationException("Model not defined ! Initialize model first by IAMCoreBuilder.withDefaultModel()");
-        }
         if (authorizationCodeCache == null) {
             authorizationCodeCache = new AuthorizationCodeCacheImpl(20L, TimeUnit.MINUTES);
         }
         if (tokenCache == null) {
             tokenCache = new TokenCacheImpl(modelCache);
-        }
-        if (persistenceService == null) {
-            persistenceService = new LoggingPersistenceServiceImpl();
         }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();
@@ -128,12 +116,8 @@ public class IAMCoreBuilder {
      */
     public class IAMCore implements AutoCloseable {
 
-        public Model getModel() {
-            return model;
-        }
-
-        public PersistenceService getPersistenceService() {
-            return persistenceService;
+        public ModelCache getModelCache() {
+            return modelCache;
         }
 
         public AuthenticationService getAuthenticationService() {

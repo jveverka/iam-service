@@ -16,10 +16,9 @@ public class IAMCoreBuilderTests {
                 .withDefaultModel("secret", "top-secret", "admin@email.com")
                 .build();
         assertNotNull(iamCore);
-        assertNotNull(iamCore.getModel());
         assertNotNull(iamCore.getClientManagementService());
         assertNotNull(iamCore.getOrganizationManagerService());
-        assertNotNull(iamCore.getPersistenceService());
+        assertNotNull(iamCore.getModelCache());
         assertNotNull(iamCore.getProjectManagerService());
         assertNotNull(iamCore.getResourceServerService());
         assertNotNull(iamCore.getUserManagerService());
@@ -35,10 +34,9 @@ public class IAMCoreBuilderTests {
                 .withDefaultAuthorizationCodeCache(20L, TimeUnit.MINUTES)
                 .build();
         assertNotNull(iamCore);
-        assertNotNull(iamCore.getModel());
         assertNotNull(iamCore.getClientManagementService());
         assertNotNull(iamCore.getOrganizationManagerService());
-        assertNotNull(iamCore.getPersistenceService());
+        assertNotNull(iamCore.getModelCache());
         assertNotNull(iamCore.getProjectManagerService());
         assertNotNull(iamCore.getResourceServerService());
         assertNotNull(iamCore.getUserManagerService());

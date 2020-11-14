@@ -168,6 +168,7 @@ public class AuthenticationController {
                                                                        @PathVariable("project-id") String projectId,
                                                                        @RequestBody AuthorizationCodeGrantRequest authorizationCodeGrantRequest,
                                                                        HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+        LOG.info("authorizeProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(authorizationCodeGrantRequest.getScopes()));
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId),
@@ -182,6 +183,7 @@ public class AuthenticationController {
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
                                                         @RequestBody ConsentRequest request) {
+        LOG.info("consentProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         if (authenticationService.setScope(request.getCode(), scopes)) {
             return ResponseEntity.ok().build();

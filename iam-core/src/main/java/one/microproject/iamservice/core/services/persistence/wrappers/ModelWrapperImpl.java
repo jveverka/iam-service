@@ -86,6 +86,11 @@ public class ModelWrapperImpl implements ModelWrapper {
         persistenceService.onModelChange(this);
     }
 
+    @Override
+    public boolean isInitialized() {
+        return true;
+    }
+
     private void flushOnChange() {
         if (flushOnChange) {
             try {

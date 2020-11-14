@@ -26,6 +26,7 @@ cp iam-service/build/libs/iam-service-${VERSION}.jar ${RELEASE_DIR}
 cp LICENSE ${RELEASE_DIR}
 cp release/README-release.md ${RELEASE_DIR}/README.md
 cp release/Dockerfile.* ${RELEASE_DIR}
+cp release/docker-compose* ${RELEASE_DIR}
 cp iam-service/src/main/resources/application.yml ${RELEASE_DIR}
 cp iam-service/iam-service-start.sh ${RELEASE_DIR}
 

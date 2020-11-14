@@ -1,5 +1,9 @@
 package one.microproject.iamservice.persistence.mongo.tests;
 
+import one.microproject.iamservice.core.model.Client;
+import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
+import one.microproject.iamservice.core.model.Credentials;
 import one.microproject.iamservice.core.model.Model;
 import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.OrganizationId;
@@ -10,10 +14,15 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.RoleImpl;
+import one.microproject.iamservice.core.model.User;
+import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import one.microproject.iamservice.core.model.keys.ModelKey;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
+import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.CreateProjectRequest;
+import one.microproject.iamservice.core.services.dto.CreateUserRequest;
 import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.persistence.mongo.MongoConfiguration;
@@ -33,6 +42,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.security.Security;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,7 +61,9 @@ public class MongoPersistenceTests {
     private static OrganizationId organizationId01 = OrganizationId.from("org-001");
     private static OrganizationId organizationId02 = OrganizationId.from("org-002");
     private static ProjectId projectId01 = ProjectId.from("proj-001");
-    private static ProjectId projectId02 = ProjectId.from("proj-002");
+    private static RoleId roleId = RoleId.from("r-01");
+    private static ClientId clientId = ClientId.from("admin-client");
+    private static UserId userId = UserId.from("admin");
 
     private static ModelCache modelCache;
     private static ModelWrapper modelWrapper;
@@ -78,6 +90,8 @@ public class MongoPersistenceTests {
     @Order(1)
     public void testInitialCache() throws Exception {
         modelCache.flush();
+        boolean initialized = modelWrapper.isInitialized();
+        assertFalse(initialized);
     }
 
     @Test
@@ -89,6 +103,8 @@ public class MongoPersistenceTests {
         assertNotNull(modelFromDb);
         assertEquals(model.getId(), modelFromDb.getId());
         assertEquals(model.getName(), modelFromDb.getName());
+        boolean initialized = modelWrapper.isInitialized();
+        assertTrue(initialized);
     }
 
     @Test
@@ -136,17 +152,75 @@ public class MongoPersistenceTests {
     @Test
     @Order(13)
     public void testCreateRolesOnProject() throws PKIException {
-        Optional<RoleId> roleIdOptional = modelCache.add(organizationId01, projectId01, new RoleImpl(RoleId.from("r-01"), "", Collections.EMPTY_LIST));
+        Optional<RoleId> roleIdOptional = modelCache.add(organizationId01, projectId01, new RoleImpl(roleId, "", Collections.EMPTY_LIST));
         assertTrue(roleIdOptional.isPresent());
+
+        Optional<Role> role = modelCache.getRole(organizationId01, projectId01, roleId);
+        assertTrue(role.isPresent());
+    }
+
+    @Test
+    @Order(14)
+    public void testCreateClientsOnProject() throws PKIException {
+        Optional<Client> clientOptional = modelCache.add(organizationId01, projectId01,
+                new CreateClientRequest(clientId, "", 3600L, 3600L, "secret",
+                        new ClientProperties("", true, true, true, new HashMap<>())));
+        assertTrue(clientOptional.isPresent());
+
+        clientOptional = modelCache.getClient(organizationId01, projectId01, clientId);
+        assertTrue(clientOptional.isPresent());
+    }
+
+    @Test
+    @Order(15)
+    public void testCreateUsersOnProject() throws PKIException {
+        Optional<User> userOptional = modelCache.add(organizationId01, projectId01, new CreateUserRequest(userId, "", 3600L, 3600L, ""));
+        assertTrue(userOptional.isPresent());
+
+        userOptional = modelCache.getUser(organizationId01, projectId01, userId);
+        assertTrue(userOptional.isPresent());
+
+        Optional<Credentials> credentialsOptional = userOptional.get().getCredentials(UPCredentials.class);
+        assertTrue(credentialsOptional.isEmpty());
+
+        /**
+        boolean setCredentials = modelCache.setCredentials(organizationId01, projectId01, userId, new UPCredentials(userId, "secret"));
+        assertTrue(setCredentials);
+
+        userOptional = modelCache.getUser(organizationId01, projectId01, userId);
+        assertTrue(userOptional.isPresent());
+        credentialsOptional = userOptional.get().getCredentials(UPCredentials.class);
+        assertTrue(credentialsOptional.isPresent());
+         */
+    }
+
+    @Test
+    @Order(35)
+    public void testRemoveUsersFromProject() throws PKIException {
+        boolean removed = modelCache.remove(organizationId01, projectId01, userId);
+        assertTrue(removed);
+
+        removed = modelCache.remove(organizationId01, projectId01, userId);
+        assertFalse(removed);
+    }
+
+    @Test
+    @Order(36)
+    public void testRemoveClientsFromProject() throws PKIException {
+        boolean removed = modelCache.remove(organizationId01, projectId01, clientId);
+        assertTrue(removed);
+
+        removed = modelCache.remove(organizationId01, projectId01, clientId);
+        assertFalse(removed);
     }
 
     @Test
     @Order(37)
     public void testRemoveRolesFromProject() throws PKIException {
-        boolean removed = modelCache.remove(organizationId01, projectId01, RoleId.from("r-01"));
+        boolean removed = modelCache.remove(organizationId01, projectId01, roleId);
         assertTrue(removed);
 
-        removed = modelCache.remove(organizationId01, projectId01, RoleId.from("r-01"));
+        removed = modelCache.remove(organizationId01, projectId01, roleId);
         assertFalse(removed);
     }
 

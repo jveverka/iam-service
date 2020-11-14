@@ -67,6 +67,12 @@ public class MongoModelWrapperImpl implements ModelWrapper {
     }
 
     @Override
+    public boolean isInitialized() {
+        ModelInfoWrapper modelInfoWrapper = modelInfoCollection.findOne();
+        return modelInfoWrapper != null;
+    }
+
+    @Override
     public Model getModel() {
         ModelInfoWrapper modelInfoWrapper = modelInfoCollection.findOne();
         return modelInfoWrapper.getModel();

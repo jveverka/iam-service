@@ -23,6 +23,9 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
 
+    implementation 'org.mongodb:mongodb-driver-sync:4.1.0'
+    implementation 'org.mongojack:mongojack:4.0.2'
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

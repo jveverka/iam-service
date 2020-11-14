@@ -27,7 +27,7 @@ public class ModelWrapperImpl implements ModelWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelWrapperImpl.class);
 
-    private final Model model;
+    private Model model;
     private final Map<ModelKey<Organization>, Organization> organizations;
     private final Map<ModelKey<Project>, Project> projects;
     private final Map<ModelKey<User>, User> users;
@@ -99,6 +99,11 @@ public class ModelWrapperImpl implements ModelWrapper {
     @Override
     public Model getModel() {
         return model;
+    }
+
+    @Override
+    public void setModel(Model model) {
+        this.model = model;
     }
 
     @Override

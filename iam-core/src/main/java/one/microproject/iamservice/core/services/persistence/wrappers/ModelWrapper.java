@@ -25,6 +25,8 @@ public interface ModelWrapper {
 
     Model getModel();
 
+    void setModel(Model model);
+
     List<OrganizationWrapper> getOrganizations();
 
     List<ProjectWrapper> getProjects();

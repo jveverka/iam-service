@@ -59,6 +59,11 @@ public class ModelCacheImpl implements ModelCache {
         return this.modelWrapper.getModel();
     }
 
+    @Override
+    public void setModel(Model model) {
+        this.modelWrapper.setModel(model);
+    }
+
     /**
      * Organization methods
      **/

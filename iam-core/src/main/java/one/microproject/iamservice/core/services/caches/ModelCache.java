@@ -33,6 +33,8 @@ public interface ModelCache {
 
     Model getModel();
 
+    void setModel(Model model);
+
     //ORGANIZATION
     Optional<OrganizationId> add(Organization organization);
 

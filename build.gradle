@@ -74,6 +74,13 @@ project(':iam-persistence-file-system') {
     }
 }
 
+project(':iam-persistence-mongo') {
+    dependencies {
+        implementation project(':iam-model')
+        implementation project(':iam-core')
+    }
+}
+
 project(':spring-resource-server') {
     dependencies {
         testImplementation project(':iam-model')

@@ -116,6 +116,7 @@ public class ModelCacheImpl implements ModelCache {
         Organization organization = modelWrapper.getOrganization(organizationKey);
         if (organization != null) {
             organization.setProperty(key, value);
+            modelWrapper.putOrganization(organizationKey, organization);
         }
     }
 
@@ -125,6 +126,7 @@ public class ModelCacheImpl implements ModelCache {
         Organization organization = modelWrapper.getOrganization(organizationKey);
         if (organization != null) {
             organization.removeProperty(key);
+            modelWrapper.putOrganization(organizationKey, organization);
         }
     }
 
@@ -173,6 +175,7 @@ public class ModelCacheImpl implements ModelCache {
         User removed = modelWrapper.removeUser(userKey);
         if (project != null) {
             project.remove(userId);
+            modelWrapper.putProject(projectKey, project);
         }
         return removed != null;
     }
@@ -189,6 +192,7 @@ public class ModelCacheImpl implements ModelCache {
                     request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), request.getProperties());
             project.addClient(client.getId());
             modelWrapper.putClient(clientKey, client);
+            modelWrapper.putProject(projectKey, project);
             return Optional.of(client);
         }
         return Optional.empty();
@@ -227,6 +231,7 @@ public class ModelCacheImpl implements ModelCache {
             Project project = new ProjectImpl(request.getId(),
                     request.getName(), organization.getId(), organization.getPrivateKey(), request.getAudience());
             modelWrapper.putProject(key, project);
+            modelWrapper.putOrganization(organizationKey, organization);
             return Optional.of(project);
         } else {
             return Optional.empty();
@@ -242,6 +247,7 @@ public class ModelCacheImpl implements ModelCache {
             Organization organization = modelWrapper.getOrganization(organizationKey);
             if (organization != null) {
                 organization.removeProject(projectId);
+                modelWrapper.putOrganization(organizationKey, organization);
             }
             return removed != null;
         }
@@ -275,6 +281,7 @@ public class ModelCacheImpl implements ModelCache {
         Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.setProperty(key, value);
+            modelWrapper.putProject(projectKey, project);
         }
     }
 
@@ -284,6 +291,7 @@ public class ModelCacheImpl implements ModelCache {
         Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.removeProperty(key);
+            modelWrapper.putProject(projectKey, project);
         }
     }
 
@@ -299,6 +307,7 @@ public class ModelCacheImpl implements ModelCache {
             ModelKey<User> key = userKey(organizationId, projectId, user.getId());
             project.add(user.getId());
             modelWrapper.putUser(key, user);
+            modelWrapper.putProject(projectKey, project);
             return Optional.of(user);
         }
         return Optional.empty();
@@ -344,6 +353,7 @@ public class ModelCacheImpl implements ModelCache {
             project.removeClient(clientId);
             ModelKey<Client> clientKey = clientKey(organizationId, projectId, clientId);
             Client removed = modelWrapper.removeClient(clientKey);
+            modelWrapper.putProject(projectKey, project);
             return removed != null;
         }
         return false;
@@ -356,6 +366,7 @@ public class ModelCacheImpl implements ModelCache {
         Client client = modelWrapper.getClient(clientKey);
         if (role != null && client != null) {
             client.addRole(roleId);
+            modelWrapper.putClient(clientKey, client);
             return true;
         }
         return false;
@@ -368,6 +379,7 @@ public class ModelCacheImpl implements ModelCache {
         Client client = modelWrapper.getClient(clientKey);
         if (role != null && client != null) {
             client.removeRole(roleId);
+            modelWrapper.putClient(clientKey, client);
             return true;
         }
         return false;
@@ -382,6 +394,7 @@ public class ModelCacheImpl implements ModelCache {
             project.addRole(role.getId());
             ModelKey<Role> key = roleKey(organizationId, projectId, role.getId());
             modelWrapper.putRole(key, role);
+            modelWrapper.putProject(projectKey, project);
             return Optional.of(role.getId());
         } else {
             return Optional.empty();
@@ -425,6 +438,7 @@ public class ModelCacheImpl implements ModelCache {
                 project.removeRole(roleId);
                 ModelKey<Role> key = roleKey(organizationId, projectId, roleId);
                 Role removed = modelWrapper.removeRole(key);
+                modelWrapper.putProject(projectKey, project);
                 return removed != null;
             }
         }
@@ -441,6 +455,7 @@ public class ModelCacheImpl implements ModelCache {
             Optional<Permission> permission = project.getPermission(permissionId);
             if (permission.isPresent()) {
                 role.addPermission(permission.get());
+                modelWrapper.putRole(roleKey, role);
             }
             return true;
         }
@@ -454,6 +469,7 @@ public class ModelCacheImpl implements ModelCache {
         User user = modelWrapper.getUser(userKey);
         if (role != null && user != null) {
             user.addRole(roleId);
+            modelWrapper.putUser(userKey, user);
             return true;
         }
         return false;
@@ -466,6 +482,7 @@ public class ModelCacheImpl implements ModelCache {
         User user = modelWrapper.getUser(userKey);
         if (role != null && user != null) {
             user.removeRole(roleId);
+            modelWrapper.putUser(userKey, user);
             return true;
         }
         return false;
@@ -477,6 +494,7 @@ public class ModelCacheImpl implements ModelCache {
         User user = modelWrapper.getUser(userKey);
         if (user != null) {
             user.addCredentials(credentials);
+            modelWrapper.putUser(userKey, user);
             return true;
         }
         return false;
@@ -488,6 +506,7 @@ public class ModelCacheImpl implements ModelCache {
         Role role = modelWrapper.getRole(roleKey);
         if (role != null) {
             boolean result = role.removePermission(permissionId);
+            modelWrapper.putRole(roleKey, role);
             return result;
         }
         return false;
@@ -499,6 +518,7 @@ public class ModelCacheImpl implements ModelCache {
         Project project = modelWrapper.getProject(projectKey);
         if (project != null) {
             project.addPermission(permission);
+            modelWrapper.putProject(projectKey, project);
             return true;
         }
         return false;
@@ -511,6 +531,7 @@ public class ModelCacheImpl implements ModelCache {
             Project project = modelWrapper.getProject(projectKey);
             if (project != null) {
                 project.removePermission(permissionId);
+                modelWrapper.putProject(projectKey, project);
                 return true;
             }
         }

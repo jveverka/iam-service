@@ -110,27 +110,52 @@ public class MongoModelWrapperImpl implements ModelWrapper {
 
     @Override
     public void putOrganization(ModelKey<Organization> key, Organization value) {
-        organizationCollection.insert(new OrganizationMongoWrapper(convertToId(key), key, value));
+        String id = convertToId(key);
+        if (organizationCollection.findOneById(id) == null) {
+            organizationCollection.insert(new OrganizationMongoWrapper(id, key, value));
+        } else {
+            organizationCollection.replaceOneById(id, new OrganizationMongoWrapper(id, key, value));
+        }
     }
 
     @Override
     public void putProject(ModelKey<Project> key, Project value) {
-        projectCollection.insert(new ProjectMongoWrapper(convertToId(key), key, value));
+        String id = convertToId(key);
+        if (projectCollection.findOneById(id) == null) {
+            projectCollection.insert(new ProjectMongoWrapper(id, key, value));
+        } else {
+            projectCollection.replaceOneById(id, new ProjectMongoWrapper(id, key, value));
+        }
     }
 
     @Override
     public void putUser(ModelKey<User> key, User value) {
-        userCollection.insert(new UserMongoWrapper(convertToId(key), key, value));
+        String id = convertToId(key);
+        if (userCollection.findOneById(id) == null) {
+            userCollection.insert(new UserMongoWrapper(id, key, value));
+        } else {
+            userCollection.replaceOneById(id, new UserMongoWrapper(id, key, value));
+        }
     }
 
     @Override
     public void putClient(ModelKey<Client> key, Client value) {
-        clientCollection.insert(new ClientMongoWrapper(convertToId(key), key, value));
+        String id = convertToId(key);
+        if (clientCollection.findOneById(id) == null) {
+            clientCollection.insert(new ClientMongoWrapper(id, key, value));
+        } else {
+            clientCollection.replaceOneById(id, new ClientMongoWrapper(id, key, value));
+        }
     }
 
     @Override
     public void putRole(ModelKey<Role> key, Role value) {
-        roleCollection.insert(new RoleMongoWrapper(convertToId(key), key, value));
+        String id = convertToId(key);
+        if (roleCollection.findOneById(id) == null) {
+            roleCollection.insert(new RoleMongoWrapper(id, key, value));
+        } else {
+            roleCollection.replaceOneById(id, new RoleMongoWrapper(id, key, value));
+        }
     }
 
     @Override

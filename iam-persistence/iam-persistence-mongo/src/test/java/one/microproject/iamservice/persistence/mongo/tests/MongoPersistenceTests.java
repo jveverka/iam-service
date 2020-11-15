@@ -1,6 +1,7 @@
 package one.microproject.iamservice.persistence.mongo.tests;
 
 import one.microproject.iamservice.core.model.Client;
+import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.Credentials;
@@ -169,6 +170,15 @@ public class MongoPersistenceTests {
 
         clientOptional = modelCache.getClient(organizationId01, projectId01, clientId);
         assertTrue(clientOptional.isPresent());
+
+        ClientCredentials cc = new ClientCredentials(clientId, "secret");
+        boolean verification = modelCache.verifyClientCredentials(organizationId01, projectId01, cc);
+        assertTrue(verification);
+
+        cc = new ClientCredentials(clientId, "xxxxx");
+        verification = modelCache.verifyClientCredentials(organizationId01, projectId01, cc);
+        assertFalse(verification);
+
     }
 
     @Test
@@ -183,7 +193,6 @@ public class MongoPersistenceTests {
         Optional<Credentials> credentialsOptional = userOptional.get().getCredentials(UPCredentials.class);
         assertTrue(credentialsOptional.isEmpty());
 
-        /**
         boolean setCredentials = modelCache.setCredentials(organizationId01, projectId01, userId, new UPCredentials(userId, "secret"));
         assertTrue(setCredentials);
 
@@ -191,7 +200,6 @@ public class MongoPersistenceTests {
         assertTrue(userOptional.isPresent());
         credentialsOptional = userOptional.get().getCredentials(UPCredentials.class);
         assertTrue(credentialsOptional.isPresent());
-         */
     }
 
     @Test

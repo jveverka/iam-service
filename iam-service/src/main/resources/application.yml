@@ -26,9 +26,11 @@ iam-service:
     persistence: in-memory
 
     #only for file-system persistence
+    #persistence: file-system
     #path: /path/to/model-storage.json
 
     #only for mongo-db persistence
+    #persistence: mongo-db
     #mongo-host: localhost
     #mongo-port: 27017
     #mongo-database: iam-service-db

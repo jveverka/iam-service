@@ -44,5 +44,5 @@
   docker image rm -f iam-service:1.2.0-SNAPSHOT
   ```
 
-* [next step: Setup Persistence Layer](01b_setup-persitence-later.md)
+* [next step: Setup Persistence Layer](01b_setup-persitence-layer.md)
 * [Terms and Vocabulary](Terms-and-Vocabulary.md)

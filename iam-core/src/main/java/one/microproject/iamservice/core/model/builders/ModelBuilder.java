@@ -26,7 +26,7 @@ public final class ModelBuilder {
     public OrganizationBuilder addOrganization(OrganizationId id, String name) throws PKIException {
         Organization organization = new OrganizationImpl(id, name);
         this.modelCache.add(organization);
-        return new OrganizationBuilder(modelCache,this, organization);
+        return new OrganizationBuilder(modelCache, this, organization.getId());
     }
 
     public ModelCache build() {

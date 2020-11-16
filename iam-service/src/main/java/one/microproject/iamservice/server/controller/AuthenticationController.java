@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getBaseUrl;
+import static one.microproject.iamservice.server.controller.support.ControllerUtils.getClientCredentials;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getContextPath;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getIssuerUri;
 
@@ -110,28 +112,45 @@ public class AuthenticationController {
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
             return ResponseEntity.of(tokensOptional);
         } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
-            LOG.info("postGetTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientId);
-            ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
-            Scope scopes = ModelUtils.getScopes(scope);
-            UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
-            return ResponseEntity.of(tokensOptional);
+            Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
+            if (ccOptional.isPresent()) {
+                ClientCredentials clientCredentials = ccOptional.get();
+                LOG.info("postGetTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientCredentials.getId().getId());
+                Scope scopes = ModelUtils.getScopes(scope);
+                UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
+                Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
+                return ResponseEntity.of(tokensOptional);
+            } else {
+                LOG.warn("Can't get client credentials !");
+            }
         } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
-            LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientId);
-            ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
-            Scope scopes = ModelUtils.getScopes(scope);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, idTokenRequest);
-            return ResponseEntity.of(tokensOptional);
+            Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
+            if (ccOptional.isPresent()) {
+                ClientCredentials clientCredentials = ccOptional.get();
+                LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientCredentials.getId().getId());
+                Scope scopes = ModelUtils.getScopes(scope);
+                Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, idTokenRequest);
+                return ResponseEntity.of(tokensOptional);
+            } else {
+                LOG.warn("Can't get client credentials !");
+            }
         } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
-            LOG.info("postGetTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientId, refreshToken);
-            JWToken jwToken = new JWToken(refreshToken);
-            ClientCredentials clientCredentials = new ClientCredentials(ClientId.from(clientId), clientSecret);
-            Scope scopes = ModelUtils.getScopes(scope);
-            Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(orgId, projId, jwToken, clientCredentials, scopes, idTokenRequest);
-            return ResponseEntity.of(tokensOptional);
+            Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
+            if (ccOptional.isPresent()) {
+                ClientCredentials clientCredentials = ccOptional.get();
+                LOG.info("postGetTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientCredentials.getId().getId(), refreshToken);
+                JWToken jwToken = new JWToken(refreshToken);
+                Scope scopes = ModelUtils.getScopes(scope);
+                Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(orgId, projId, jwToken, clientCredentials, scopes, idTokenRequest);
+                return ResponseEntity.of(tokensOptional);
+            } else {
+                LOG.warn("Can't get client credentials !");
+            }
         } else {
+            LOG.warn("Unsupported grant_type={} !", grantType);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @GetMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.TEXT_HTML_VALUE)
@@ -168,6 +187,7 @@ public class AuthenticationController {
                                                                        @PathVariable("project-id") String projectId,
                                                                        @RequestBody AuthorizationCodeGrantRequest authorizationCodeGrantRequest,
                                                                        HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+        LOG.info("authorizeProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(authorizationCodeGrantRequest.getScopes()));
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId),
@@ -182,6 +202,7 @@ public class AuthenticationController {
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
                                                         @RequestBody ConsentRequest request) {
+        LOG.info("consentProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         if (authenticationService.setScope(request.getCode(), scopes)) {
             return ResponseEntity.ok().build();

@@ -17,4 +17,17 @@ However, for real deployment is recommended to use __file-system__ persistence l
       persistence: file-system
       path: /path/to/model-storage.json
   ``` 
+* __mongo-db__ - data is persisted into MongoDB.
+  In this case __application.yml__ configuration contains: 
+  ```
+  iam-service:
+    data-model:
+      persistence: mongo-db
+      mongo-host: localhost
+      mongo-port: 27017
+      mongo-database: iam-service-db
+      mongo-username: iam-admin
+      mongo-password: secret
+  ``` 
+
 * [next step: Getting Admin access](02a-get-admin-access-token.md)

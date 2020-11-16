@@ -1,5 +1,7 @@
 package one.microproject.iamservice.server.config;
 
+import one.microproject.iamservice.core.model.ModelId;
+import one.microproject.iamservice.core.model.ModelImpl;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
@@ -9,6 +11,8 @@ import one.microproject.iamservice.core.services.persistence.DataLoadService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.persistence.filesystem.FileSystemDataLoadServiceImpl;
 import one.microproject.iamservice.persistence.filesystem.FileSystemPersistenceServiceImpl;
+import one.microproject.iamservice.persistence.mongo.MongoConfiguration;
+import one.microproject.iamservice.persistence.mongo.MongoModelWrapperImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,11 @@ public class ModelConfig {
     private String defaultAdminEmail;
     private String persistence;
     private String path;
+    private String mongoHost;
+    private Integer mongoPort;
+    private String mongoDatabase;
+    private String mongoUsername;
+    private String mongoPassword;
 
     private ModelCache modelCache;
 
@@ -79,6 +88,20 @@ public class ModelConfig {
                 LOG.error("Error: {}", e.getMessage());
                 throw e;
             }
+        } else if ("mongo-db".equals(persistence)) {
+            LOG.info("#CONFIG: creating mongo-db backed model cache");
+            LOG.info("#CONFIG: mongoHost=mongodb://{}:******@{}:{}/{}", mongoUsername, mongoHost, mongoPort, mongoDatabase);
+            modelWrapper = new MongoModelWrapperImpl(new MongoConfiguration(mongoHost, mongoPort, mongoDatabase, mongoUsername, mongoPassword));
+            if (!modelWrapper.isInitialized()) {
+                LOG.info("#CONFIG: initializing mongo-db with default model");
+                modelWrapper.setModel(new ModelImpl(ModelId.from("default-model"), ""));
+                modelCache = ModelUtils.createDefaultModelCache(
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
+            } else {
+                LOG.info("#CONFIG: mongo-db model is already initialized !");
+                modelCache = new ModelCacheImpl(modelWrapper);
+            }
+            return modelCache;
         } else {
             LOG.info("#CONFIG: default ModelWrapper created");
             modelWrapper = ModelUtils.createInMemoryModelWrapper("default-model");
@@ -118,4 +141,43 @@ public class ModelConfig {
         this.defaultAdminEmail = defaultAdminEmail;
     }
 
+    public String getMongoHost() {
+        return mongoHost;
+    }
+
+    public void setMongoHost(String mongoHost) {
+        this.mongoHost = mongoHost;
+    }
+
+    public Integer getMongoPort() {
+        return mongoPort;
+    }
+
+    public void setMongoPort(Integer mongoPort) {
+        this.mongoPort = mongoPort;
+    }
+
+    public String getMongoDatabase() {
+        return mongoDatabase;
+    }
+
+    public void setMongoDatabase(String mongoDatabase) {
+        this.mongoDatabase = mongoDatabase;
+    }
+
+    public String getMongoUsername() {
+        return mongoUsername;
+    }
+
+    public void setMongoUsername(String mongoUsername) {
+        this.mongoUsername = mongoUsername;
+    }
+
+    public String getMongoPassword() {
+        return mongoPassword;
+    }
+
+    public void setMongoPassword(String mongoPassword) {
+        this.mongoPassword = mongoPassword;
+    }
 }

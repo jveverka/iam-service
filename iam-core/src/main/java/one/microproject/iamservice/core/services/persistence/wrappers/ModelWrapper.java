@@ -23,7 +23,12 @@ public interface ModelWrapper {
     @JsonIgnore
     void flush() throws Exception;
 
+    @JsonIgnore
+    boolean isInitialized();
+
     Model getModel();
+
+    void setModel(Model model);
 
     List<OrganizationWrapper> getOrganizations();
 

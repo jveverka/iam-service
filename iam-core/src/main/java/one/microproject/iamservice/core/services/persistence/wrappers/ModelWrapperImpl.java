@@ -27,7 +27,7 @@ public class ModelWrapperImpl implements ModelWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelWrapperImpl.class);
 
-    private final Model model;
+    private Model model;
     private final Map<ModelKey<Organization>, Organization> organizations;
     private final Map<ModelKey<Project>, Project> projects;
     private final Map<ModelKey<User>, User> users;
@@ -86,6 +86,11 @@ public class ModelWrapperImpl implements ModelWrapper {
         persistenceService.onModelChange(this);
     }
 
+    @Override
+    public boolean isInitialized() {
+        return true;
+    }
+
     private void flushOnChange() {
         if (flushOnChange) {
             try {
@@ -99,6 +104,11 @@ public class ModelWrapperImpl implements ModelWrapper {
     @Override
     public Model getModel() {
         return model;
+    }
+
+    @Override
+    public void setModel(Model model) {
+        this.model = model;
     }
 
     @Override

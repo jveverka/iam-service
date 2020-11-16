@@ -1,5 +1,7 @@
 package one.microproject.iamservice.server.controller.support;
 
+import one.microproject.iamservice.core.model.ClientCredentials;
+import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
 
 import javax.servlet.ServletContext;
@@ -8,7 +10,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.Enumeration;
+import java.util.Optional;
 
 public final class ControllerUtils {
 
@@ -60,6 +64,21 @@ public final class ControllerUtils {
             sb.append(" ");
         }
         return sb.toString().trim();
+    }
+
+    public static Optional<ClientCredentials> getClientCredentials(HttpServletRequest request, String clientId, String clientSecret) {
+        if (clientId != null && clientSecret != null) {
+            return Optional.of(new ClientCredentials(ClientId.from(clientId), clientSecret));
+        }
+        String authorization = request.getHeader("Authorization");
+        if (authorization != null && authorization.startsWith("Basic ")) {
+            String[] authorizations = authorization.split(" ");
+            byte[] decoded = Base64.getDecoder().decode(authorizations[1]);
+            String decodedString = new String(decoded);
+            String[] usernamePassword = decodedString.split(":");
+            return Optional.of(new ClientCredentials(ClientId.from(usernamePassword[0]), usernamePassword[1]));
+        }
+        return Optional.empty();
     }
 
 }

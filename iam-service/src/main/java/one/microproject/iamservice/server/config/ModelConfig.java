@@ -63,12 +63,11 @@ public class ModelConfig {
     @Bean
     @Scope("singleton")
     public ModelCache createModelCache() throws Exception {
-        ModelWrapper modelWrapper = null;
         if ("file-system".equals(persistence)) {
             try {
                 LOG.info("#CONFIG: populating ModelCache from file: {}", path);
                 DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path));
-                modelWrapper = dataLoadService.populateCache();
+                ModelWrapper modelWrapper = dataLoadService.populateCache();
                 modelWrapper.onInit(new FileSystemPersistenceServiceImpl(Path.of(path)), false);
                 modelCache = new ModelCacheImpl(modelWrapper);
                 LOG.info("#CONFIG: ModelCache loaded from file OK");
@@ -78,7 +77,7 @@ public class ModelConfig {
             }
             try {
                 LOG.info("#CONFIG: creating default model");
-                modelWrapper = ModelUtils.createModelWrapper("default-model", new FileSystemPersistenceServiceImpl(Path.of(path)), false);
+                ModelWrapper modelWrapper = ModelUtils.createModelWrapper("default-model", new FileSystemPersistenceServiceImpl(Path.of(path)), false);
                 modelCache = ModelUtils.createDefaultModelCache(
                         OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
                 modelCache.flush();
@@ -91,7 +90,7 @@ public class ModelConfig {
         } else if ("mongo-db".equals(persistence)) {
             LOG.info("#CONFIG: creating mongo-db backed model cache");
             LOG.info("#CONFIG: mongoHost=mongodb://{}:******@{}:{}/{}", mongoUsername, mongoHost, mongoPort, mongoDatabase);
-            modelWrapper = new MongoModelWrapperImpl(new MongoConfiguration(mongoHost, mongoPort, mongoDatabase, mongoUsername, mongoPassword));
+            ModelWrapper modelWrapper = new MongoModelWrapperImpl(new MongoConfiguration(mongoHost, mongoPort, mongoDatabase, mongoUsername, mongoPassword));
             if (!modelWrapper.isInitialized()) {
                 LOG.info("#CONFIG: initializing mongo-db with default model");
                 modelWrapper.setModel(new ModelImpl(ModelId.from("default-model"), ""));
@@ -104,7 +103,7 @@ public class ModelConfig {
             return modelCache;
         } else {
             LOG.info("#CONFIG: default ModelWrapper created");
-            modelWrapper = ModelUtils.createInMemoryModelWrapper("default-model");
+            ModelWrapper modelWrapper = ModelUtils.createInMemoryModelWrapper("default-model");
             modelCache = ModelUtils.createDefaultModelCache(
                     OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
             return modelCache;

@@ -64,6 +64,7 @@ project(':iam-service') {
         implementation project(':iam-client-spring')
         implementation project(':iam-persistence-file-system')
         implementation project(':iam-persistence-mongo')
+        implementation project(':iam-caches-redis')
         testImplementation project(':iam-service-client')
     }
 }
@@ -76,6 +77,13 @@ project(':iam-persistence-file-system') {
 }
 
 project(':iam-persistence-mongo') {
+    dependencies {
+        implementation project(':iam-model')
+        implementation project(':iam-core')
+    }
+}
+
+project(':iam-caches-redis') {
     dependencies {
         implementation project(':iam-model')
         implementation project(':iam-core')

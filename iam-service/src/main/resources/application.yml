@@ -16,6 +16,12 @@ iam-service:
   cache-cleanup-interval:
     duration: 1
     timeunit: MINUTES
+  #Cache Backing
+  cache-type:
+    type: in-memory
+    #type: redis
+    #host: localhost
+    #port: 6379
   #Default application model parameters
   data-model:
     default-admin-password: secret

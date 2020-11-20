@@ -13,9 +13,10 @@ include "iam-service"
 
 include "iam-persistence-file-system"
 project(":iam-persistence-file-system").projectDir = new File("iam-persistence/iam-persistence-file-system")
-
 include "iam-persistence-mongo"
 project(":iam-persistence-mongo").projectDir = new File("iam-persistence/iam-persistence-mongo")
+include "iam-caches-redis"
+project(":iam-caches-redis").projectDir = new File("iam-persistence/iam-caches-redis")
 
 include "spring-resource-server"
 project(":spring-resource-server").projectDir = new File("iam-examples/spring-resource-server")

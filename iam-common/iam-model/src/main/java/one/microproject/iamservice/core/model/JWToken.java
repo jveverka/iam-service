@@ -1,12 +1,16 @@
 package one.microproject.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public final class JWToken {
 
     private final String token;
 
-    public JWToken(String token) {
+    @JsonCreator
+    public JWToken(@JsonProperty("token") String token) {
         this.token = token;
     }
 

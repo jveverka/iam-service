@@ -5,8 +5,9 @@
 * [OAuth2 Essentials](https://oauth.net/2/)
 * [AWS Cognito endpoints](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-userpools-server-contract-reference.html)
 * [An Illustrated Guide to OAuth and OpenID Connect](https://www.youtube.com/watch?v=t18YB3xDfXI)
-* [Oauth 2.1](https://oauth.net/2.1/)
+* [OAuth 2.1](https://oauth.net/2.1/)
 * [OAuth 3](https://oauth.net/3/)
+* [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html)
 
 ## Spring OAuth2 references
 * [OAuth 2.0 Integration Sample](https://github.com/spring-projects-experimental/spring-authorization-server/tree/master/samples/boot/oauth2-integration)

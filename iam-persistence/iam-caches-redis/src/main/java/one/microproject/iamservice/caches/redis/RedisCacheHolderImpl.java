@@ -3,12 +3,16 @@ package one.microproject.iamservice.caches.redis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import java.util.Set;
 import java.util.function.Predicate;
 
 public class RedisCacheHolderImpl<V> implements CacheHolder<V> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RedisCacheHolderImpl.class);
 
     private final String keyPrefix;
     private final Jedis jedis;
@@ -24,12 +28,14 @@ public class RedisCacheHolderImpl<V> implements CacheHolder<V> {
 
     @Override
     public Set<String> keys() {
+        LOG.trace("keys");
         return jedis.keys(keyPrefix + ":*");
     }
 
     @Override
     public void put(String key, V value) throws CacheReadException {
         try {
+            LOG.trace("put {}:{}", key, value.toString());
             jedis.set(keyPrefix + ":" + key, mapper.writeValueAsString(value));
         } catch (JsonProcessingException e) {
             throw new CacheReadException(e);
@@ -39,6 +45,7 @@ public class RedisCacheHolderImpl<V> implements CacheHolder<V> {
     @Override
     public V get(String key) throws CacheReadException {
         try {
+            LOG.trace("get {}", key);
             String value = jedis.get(keyPrefix + ":" + key);
             if (value != null) {
                 return mapper.readValue(value, type);
@@ -58,6 +65,7 @@ public class RedisCacheHolderImpl<V> implements CacheHolder<V> {
     @Override
     public V remove(String key) throws CacheReadException {
         try {
+            LOG.trace("remove {}", key);
             String value = jedis.get(keyPrefix + ":" + key);
             if (value != null) {
                 V v = mapper.readValue(value, type);
@@ -74,7 +82,8 @@ public class RedisCacheHolderImpl<V> implements CacheHolder<V> {
     @Override
     public void remove(Predicate predicate) throws CacheReadException {
         try {
-        Set<String> keys = jedis.keys(keyPrefix + ":*");
+            LOG.trace("remove by predicate");
+            Set<String> keys = jedis.keys(keyPrefix + ":*");
             for (String key: keys) {
                 String value = jedis.get(key);
                 if (value != null) {

@@ -320,7 +320,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                     Code code = Code.from(UUID.randomUUID().toString());
                     AuthorizationCodeContext authorizationCodeContext =
-                            new AuthorizationCodeContext(issuerUri, organizationId, projectId, clientId, userId, state, new Date(), scope, projectOptional.get().getAudience(), redirectURI);
+                            new AuthorizationCodeContext(issuerUri, organizationId, projectId, clientId, userId, state, new Date(), filteredScopes, projectOptional.get().getAudience(), redirectURI);
                     AuthorizationCode authorizationCode = codeCache.save(code, authorizationCodeContext);
                     return Optional.of(authorizationCode);
                 }

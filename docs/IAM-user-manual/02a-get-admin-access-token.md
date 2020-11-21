@@ -12,7 +12,7 @@ This special project will be called  __iam-admins__ project. Default login crede
 | admin password         | [see config manual](01a-standalone-server-config.md)                          |
 | admin client id        | admin-client                                                                  |
 | admin client secret    | [see config manual](01a-standalone-server-config.md)                          |
-| Supported OAuth2 flows | Authorization Code, Password Credentials, Client Credentials                  |
+| Supported OAuth2 flows | Authorization Code, Password Credentials                                      |
 | Authorization url      | http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize |
 | Access token url       | http://localhost:8080/services/authentication/iam-admins/iam-admins/token     |
 | Redirect URL           | http://localhost:8080/services/authentication/iam-admins/iam-admins/redirect  |
@@ -20,7 +20,7 @@ This special project will be called  __iam-admins__ project. Default login crede
 To get 'admin' access tokens, please [use one of supported](IAM-users-manual.md) OAuth2 flows. 
 Once you get access tokens for privileged 'admin' user, you can use iam-service to 
 create your own organizations and projects with users and clients.
-[See also: Terms and Vocabulary](Terms-and-Vocabulary.md)
+See also: [Default Access Rules](Default-Access-Rules.md) and [Terms and Vocabulary](Terms-and-Vocabulary.md)
 
 * Get Admin Access tokens  
   ```

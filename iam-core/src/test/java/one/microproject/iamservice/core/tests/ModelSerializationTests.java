@@ -28,6 +28,7 @@ import one.microproject.iamservice.core.model.RoleImpl;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserImpl;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import one.microproject.iamservice.core.model.keys.ModelKey;
@@ -133,7 +134,7 @@ public class ModelSerializationTests {
         credentialsList.add(credentials);
         User user = new UserImpl(UserId.from("user-001"), "name",
                 ProjectId.from("project-001"), 10L, 10L,
-                Collections.emptyList(), credentialsList, keyPairSerialized, "admin@email.com");
+                Collections.emptyList(), credentialsList, keyPairSerialized, "admin@email.com", UserProperties.getDefault());
         String serialized = mapper.writeValueAsString(user);
         User userDeserialized = mapper.readValue(serialized, User.class);
         assertNotNull(userDeserialized);

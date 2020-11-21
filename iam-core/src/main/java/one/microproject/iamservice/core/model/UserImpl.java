@@ -29,9 +29,11 @@ public class UserImpl implements User {
     private final Long defaultAccessTokenDuration;
     private final Long defaultRefreshTokenDuration;
     private final String email;
+    private final UserProperties properties;
 
     public UserImpl(UserId id, String name, ProjectId projectId,
-                    Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration, PrivateKey projectPrivateKey, String email) throws PKIException {
+                    Long defaultAccessTokenDuration, Long defaultRefreshTokenDuration, PrivateKey projectPrivateKey,
+                    String email, UserProperties properties) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
@@ -42,6 +44,7 @@ public class UserImpl implements User {
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
         this.email = email;
+        this.properties = properties;
     }
 
     @JsonCreator
@@ -53,7 +56,8 @@ public class UserImpl implements User {
                     @JsonProperty("roles") Collection<RoleId> roles,
                     @JsonProperty("credentials") Collection<Credentials> credentials,
                     @JsonProperty("keyPairSerialized") KeyPairSerialized keyPairSerialized,
-                    @JsonProperty("email") String email) throws PKIException {
+                    @JsonProperty("email") String email,
+                    @JsonProperty("properties") UserProperties properties) throws PKIException {
         this.id = id;
         this.name = name;
         this.credentials = new ConcurrentHashMap<>();
@@ -68,6 +72,7 @@ public class UserImpl implements User {
             this.credentials.put(c.getType(), c)
         );
         this.email = email;
+        this.properties = properties;
     }
 
     @Override
@@ -151,6 +156,11 @@ public class UserImpl implements User {
     @Override
     public String getEmail() {
         return email;
+    }
+
+    @Override
+    public UserProperties getProperties() {
+        return properties;
     }
 
 }

@@ -17,6 +17,7 @@ import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.RoleImpl;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import one.microproject.iamservice.core.model.keys.ModelKey;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
@@ -184,7 +185,7 @@ public class MongoPersistenceTests {
     @Test
     @Order(15)
     public void testCreateUsersOnProject() throws PKIException {
-        Optional<User> userOptional = modelCache.add(organizationId01, projectId01, new CreateUserRequest(userId, "", 3600L, 3600L, ""));
+        Optional<User> userOptional = modelCache.add(organizationId01, projectId01, new CreateUserRequest(userId, "", 3600L, 3600L, "", UserProperties.getDefault()));
         assertTrue(userOptional.isPresent());
 
         userOptional = modelCache.getUser(organizationId01, projectId01, userId);

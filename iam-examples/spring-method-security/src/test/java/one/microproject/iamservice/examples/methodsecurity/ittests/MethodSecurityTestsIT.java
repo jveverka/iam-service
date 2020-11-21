@@ -9,6 +9,7 @@ import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
@@ -119,7 +120,8 @@ public class MethodSecurityTestsIT {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "Method Security Project",
                 clientId.getId(), "top-secret", appAdminUserId.getId(),  "secret", "admin@email.com",
-                Set.of("methodsecurity"), "http://localhost:" + iamServerPort + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect");
+                Set.of("methodsecurity"), "http://localhost:" + iamServerPort + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect",
+                UserProperties.getDefault());
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(iamAdminTokens.getAccessToken(), setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
     }
@@ -142,10 +144,10 @@ public class MethodSecurityTestsIT {
         CreateRole createWriterRole = new CreateRole(appUserRoleWriter.getId(), "Writer Role", writerPermissions);
         iamServiceProject.createRole(createWriterRole);
         IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(appAdminTokens.getAccessToken(), organizationId, projectId);
-        CreateUser createReaderUser = new CreateUser(appReaderUserId.getId(), "", 3600L, 3600L, "", "789456");
+        CreateUser createReaderUser = new CreateUser(appReaderUserId.getId(), "", 3600L, 3600L, "", "789456", UserProperties.getDefault());
         iamServiceUserManagerClient.createUser(createReaderUser);
         iamServiceUserManagerClient.addRoleToUser(appReaderUserId, appUserRoleReader);
-        CreateUser createWriterUser = new CreateUser(appWriterUserId.getId(), "", 3600L, 3600L, "", "456789");
+        CreateUser createWriterUser = new CreateUser(appWriterUserId.getId(), "", 3600L, 3600L, "", "456789", UserProperties.getDefault());
         iamServiceUserManagerClient.createUser(createWriterUser);
         iamServiceUserManagerClient.addRoleToUser(appWriterUserId, appUserRoleWriter);
     }

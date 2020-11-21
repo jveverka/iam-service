@@ -10,6 +10,7 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.CreateUserRequest;
@@ -33,11 +34,11 @@ public final class ProjectBuilder {
 
     public UserBuilder addUser(String name, String email) throws PKIException {
         UserId id = UserId.from(UUID.randomUUID().toString());
-        return addUser(id, name, email);
+        return addUser(id, name, email, UserProperties.getDefault());
     }
 
-    public UserBuilder addUser(UserId id, String name, String email) throws PKIException {
-        CreateUserRequest request = new CreateUserRequest(id, name, 3600*1000L, 24*3600*1000L, email);
+    public UserBuilder addUser(UserId id, String name, String email, UserProperties userProperties) throws PKIException {
+        CreateUserRequest request = new CreateUserRequest(id, name, 3600*1000L, 24*3600*1000L, email, userProperties);
         Optional<User> user = modelCache.add(organizationId, projectId, request);
         if (user.isPresent()) {
             return new UserBuilder(modelCache, this, organizationId, projectId, user.get().getId());

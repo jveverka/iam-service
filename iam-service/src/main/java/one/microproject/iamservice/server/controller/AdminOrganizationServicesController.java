@@ -123,7 +123,8 @@ public class AdminOrganizationServicesController {
             LOG.info("Client id={} created !", clientId.getId());
         }
 
-        CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L, request.getAdminUserEmail());
+        CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L,
+                request.getAdminUserEmail(), request.getAdminUserProperties());
         Optional<User> userOptional = userManagerService.create(organizationId, projectId, createUserRequest);
         UPCredentials credentials = new UPCredentials(userId, request.getAdminUserPassword());
         userManagerService.setCredentials(organizationId, projectId, userId, credentials);

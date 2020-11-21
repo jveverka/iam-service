@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import one.microproject.iamservice.core.model.UserProperties;
 
 public class CreateUser {
 
@@ -11,6 +12,7 @@ public class CreateUser {
     private final Long defaultRefreshTokenDuration;
     private final String email;
     private final String password;
+    private final UserProperties userProperties;
 
     @JsonCreator
     public CreateUser(@JsonProperty("id") String id,
@@ -18,13 +20,15 @@ public class CreateUser {
                       @JsonProperty("defaultAccessTokenDuration") Long defaultAccessTokenDuration,
                       @JsonProperty("defaultRefreshTokenDuration") Long defaultRefreshTokenDuration,
                       @JsonProperty("email") String email,
-                      @JsonProperty("password") String password) {
+                      @JsonProperty("password") String password,
+                      @JsonProperty("userProperties") UserProperties userProperties) {
         this.id = id;
         this.name = name;
         this.defaultAccessTokenDuration = defaultAccessTokenDuration;
         this.defaultRefreshTokenDuration = defaultRefreshTokenDuration;
         this.email = email;
         this.password = password;
+        this.userProperties = userProperties;
     }
 
     public String getId() {
@@ -49,6 +53,10 @@ public class CreateUser {
 
     public String getPassword() {
         return password;
+    }
+
+    public UserProperties getUserProperties() {
+        return userProperties;
     }
 
 }

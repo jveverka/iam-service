@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import one.microproject.iamservice.core.model.UserProperties;
 
 import java.util.Set;
 
@@ -18,6 +19,7 @@ public class SetupOrganizationRequest {
     private final String adminUserEmail;
     private final Set<String> projectAudience;
     private final String redirectURL;
+    private final UserProperties adminUserProperties;
 
     @JsonCreator
     public SetupOrganizationRequest(@JsonProperty("organizationId") String organizationId,
@@ -30,7 +32,8 @@ public class SetupOrganizationRequest {
                                     @JsonProperty("adminUserPassword") String adminUserPassword,
                                     @JsonProperty("adminUserEmail") String adminUserEmail,
                                     @JsonProperty("projectAudience") Set<String> projectAudience,
-                                    @JsonProperty("redirectURL") String redirectURL) {
+                                    @JsonProperty("redirectURL") String redirectURL,
+                                    @JsonProperty("adminUserProperties") UserProperties adminUserProperties) {
         this.organizationId = organizationId;
         this.organizationName = organizationName;
         this.adminProjectId = adminProjectId;
@@ -42,6 +45,7 @@ public class SetupOrganizationRequest {
         this.adminUserEmail = adminUserEmail;
         this.projectAudience = projectAudience;
         this.redirectURL = redirectURL;
+        this.adminUserProperties = adminUserProperties;
     }
 
     public String getOrganizationId() {
@@ -86,6 +90,10 @@ public class SetupOrganizationRequest {
 
     public String getRedirectURL() {
         return redirectURL;
+    }
+
+    public UserProperties getAdminUserProperties() {
+        return adminUserProperties;
     }
 
 }

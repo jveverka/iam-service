@@ -303,7 +303,8 @@ public class ModelCacheImpl implements ModelCache {
         User u = modelWrapper.getUser(userKey);
         if (project != null && u == null) {
             User user = new UserImpl(request.getId(), request.getName(), project.getId(),
-                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), project.getPrivateKey(), request.getEmail());
+                    request.getDefaultAccessTokenDuration(), request.getDefaultRefreshTokenDuration(), project.getPrivateKey(),
+                    request.getEmail(), request.getUserProperties());
             ModelKey<User> key = userKey(organizationId, projectId, user.getId());
             project.add(user.getId());
             modelWrapper.putUser(key, user);

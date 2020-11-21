@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import one.microproject.iamservice.core.model.UserProperties;
 
 import java.util.Set;
 
@@ -21,7 +22,8 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
                 request.getAdminUserPassword(),
                 request.getAdminUserEmail(),
                 request.getProjectAudience(),
-                request.getRedirectURL());
+                request.getRedirectURL(),
+                request.getAdminUserProperties());
         this.adminRoleId = adminRoleId;
         this.adminPermissions = adminPermissions;
     }
@@ -39,8 +41,9 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
                                      @JsonProperty("adminRoleId") String adminRoleId,
                                      @JsonProperty("adminUserEmail") String adminUserEmail,
                                      @JsonProperty("adminPermissions") Set<String> adminPermissions,
-                                     @JsonProperty("redirectURL") String redirectURL) {
-        super(organizationId, organizationName, adminProjectId, adminProjectName, adminClientId, adminClientSecret, adminUserId, adminUserPassword, adminUserEmail, projectAudience, redirectURL);
+                                     @JsonProperty("redirectURL") String redirectURL,
+                                     @JsonProperty("adminUserProperties") UserProperties adminUserProperties) {
+        super(organizationId, organizationName, adminProjectId, adminProjectName, adminClientId, adminClientSecret, adminUserId, adminUserPassword, adminUserEmail, projectAudience, redirectURL, adminUserProperties);
         this.adminRoleId = adminRoleId;
         this.adminPermissions = adminPermissions;
     }

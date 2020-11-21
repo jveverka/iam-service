@@ -9,6 +9,7 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -101,7 +102,7 @@ public class IAMModelBuildersTest {
                     .addClient(ClientId.from("client-001"), "test client", "http://localhost:8080")
                         .addRole(adminReadAccess.getId())
                     .and()
-                    .addUser(UserId.from("user-001"), "admin user", "admin@email.com")
+                    .addUser(UserId.from("user-001"), "admin user", "admin@email.com", UserProperties.getDefault())
                         .addRole(adminFullAccess.getId())
                         .addUserNamePasswordCredentials(UserId.from("user-001"), "secret")
                     .and()

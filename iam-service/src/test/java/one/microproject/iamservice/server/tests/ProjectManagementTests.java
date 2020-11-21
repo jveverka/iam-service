@@ -16,6 +16,7 @@ import one.microproject.iamservice.core.model.PermissionId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
@@ -103,7 +104,8 @@ public class ProjectManagementTests {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
                 projectId.getId(), "My Project 001",
                 adminClientId.getId(), adminClientSecret,
-                adminUserId.getId(), adminPassword, "user1@email.com", projectAudience, newClientProperties.getRedirectURL());
+                adminUserId.getId(), adminPassword, "user1@email.com", projectAudience,
+                newClientProperties.getRedirectURL(), UserProperties.getDefault());
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(jwt_admin_token, setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
         assertEquals(organizationId.getId(), setupOrganizationResponse.getOrganizationId());
@@ -161,7 +163,8 @@ public class ProjectManagementTests {
     @Test
     @Order(201)
     public void createNewUser() throws AuthenticationException, IOException {
-        CreateUser createUser = new CreateUser(newUserId.getId(),  "User 2", 3600L, 3600L, "user@email.com", "s3cr3t");
+        CreateUser createUser = new CreateUser(newUserId.getId(),  "User 2", 3600L, 3600L,
+                "user@email.com", "s3cr3t", UserProperties.getDefault());
         iamServiceUserManagerClient.createUser(createUser);
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(newUserId);
         assertEquals(userInfo.getId(), newUserId.getId());

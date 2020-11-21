@@ -46,4 +46,6 @@ public interface User {
 
     String getEmail();
 
+    UserProperties getProperties();
+
 }

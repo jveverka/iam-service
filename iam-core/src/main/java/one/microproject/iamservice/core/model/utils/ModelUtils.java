@@ -17,6 +17,7 @@ import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.RoleImpl;
 import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.builders.ClientBuilder;
 import one.microproject.iamservice.core.model.builders.ModelBuilder;
 import one.microproject.iamservice.core.model.builders.OrganizationBuilder;
@@ -114,7 +115,7 @@ public final class ModelUtils {
                     .addClient(IAM_ADMIN_CLIENT_ID, "Admin Client 01", iamClientSecret, properties)
                         .addRole(iamClientRole.getId())
                     .and()
-                    .addUser(IAM_ADMIN_USER, "IAM Admin Superuser", iamAdminEmail)
+                    .addUser(IAM_ADMIN_USER, "IAM Admin Superuser", iamAdminEmail, UserProperties.getDefault())
                         .addUserNamePasswordCredentials(IAM_ADMIN_USER, iamAdminPassword)
                         .addRole(iamGlobalAdminRole.getId())
                         .addRole(iamProjectAdminRole.getId())
@@ -218,7 +219,7 @@ public final class ModelUtils {
                 }
                 for (int userIndex=0; userIndex<users; userIndex++) {
                     UserId userId = UserId.from(userPrefix + userIndex);
-                    UserBuilder builder = projectBuilder.addUser(userId, "name", "user@email.com");
+                    UserBuilder builder = projectBuilder.addUser(userId, "name", "user@email.com", UserProperties.getDefault());
                     projectRoles.forEach(r->builder.addRole(r.getId()));
                     builder.addUserNamePasswordCredentials(userId, "secret");
                 }

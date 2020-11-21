@@ -3,15 +3,15 @@
 [![Gradle](https://img.shields.io/badge/gradle-v6.5-blue)](https://img.shields.io/badge/gradle-v6.5-blue)
 ![Build and Test](https://github.com/jveverka/iam-service/workflows/Build%20and%20Test/badge.svg)
 
-# IAM service
+![logo](docs/iam-icon.svg) 
+
+#IAM service
 Really simple standalone *Identity Access Management* (IAM) service, authentication and authorization server. 
 Project is compliant with subset of [OAuth2](https://tools.ietf.org/html/rfc6749) 
 and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) specifications. 
 Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519). 
 
 Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/IAM-users-manual.md) for more details.
-
-![logo](docs/iam-icon.svg)
 
 This project is __WIP__, stay tuned !   
 Estimated release date of MVP: __EOF Nov.2020__ 
@@ -24,6 +24,8 @@ Estimated release date of MVP: __EOF Nov.2020__
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
 * [x] Small build size - __iam-service__ (single jar: ~40Mb, docker: ~190Mb)
 * [x] Seamless integrations with [spring framework](https://spring.io/).
+* [x] In memory or [Redis](https://redis.io/) backed caches.
+* [x] Data model stored in single JSON file or [MongoDB](https://www.mongodb.com/).
 
 ## Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).

@@ -37,8 +37,10 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.security.PublicKey;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -315,7 +317,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 if (valid) {
                     Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
                     Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
-                    AuthorizationCode authorizationCode = codeCache.issue(issuerUri, organizationId, projectId, clientId, userId, state, filteredScopes, projectOptional.get().getAudience(), redirectURI);
+
+                    Code code = Code.from(UUID.randomUUID().toString());
+                    AuthorizationCodeContext authorizationCodeContext =
+                            new AuthorizationCodeContext(issuerUri, organizationId, projectId, clientId, userId, state, new Date(), filteredScopes, projectOptional.get().getAudience(), redirectURI);
+                    AuthorizationCode authorizationCode = codeCache.save(code, authorizationCodeContext);
                     return Optional.of(authorizationCode);
                 }
             }

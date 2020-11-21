@@ -1,63 +1,52 @@
 package one.microproject.iamservice.core.services.impl.caches;
 
-import one.microproject.iamservice.core.model.ClientId;
-import one.microproject.iamservice.core.model.OrganizationId;
-import one.microproject.iamservice.core.model.ProjectId;
-import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.services.dto.Scope;
 
-import java.net.URI;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
 
     private final Long maxDuration;
     private final TimeUnit timeUnit;
-    private Map<Code, AuthorizationCodeContext> codes;
+    private CacheHolder<AuthorizationCodeContext> codes;
 
-    public AuthorizationCodeCacheImpl(Long maxDuration, TimeUnit timeUnit) {
+    public AuthorizationCodeCacheImpl(Long maxDuration, TimeUnit timeUnit, CacheHolder<AuthorizationCodeContext> codes) {
         this.maxDuration = maxDuration;
         this.timeUnit = timeUnit;
-        this.codes = new ConcurrentHashMap<>();
+        this.codes = codes;
     }
 
     @Override
-    public AuthorizationCode issue(URI issuerUri, OrganizationId organizationId, ProjectId projectId, ClientId clientId, UserId userId, String state, Scope scope, Set<String> audience, String redirectURI) {
-        Code code = Code.from(UUID.randomUUID().toString());
-        AuthorizationCode authorizationCode = new AuthorizationCode(code, state, scope);
-        codes.put(code, new AuthorizationCodeContext(issuerUri, organizationId, projectId, clientId, userId, state, new Date(), scope, audience, redirectURI));
+    public AuthorizationCode save(Code code, AuthorizationCodeContext authorizationCodeContext) {
+        AuthorizationCode authorizationCode = new AuthorizationCode(code, authorizationCodeContext.getState(), authorizationCodeContext.getScope());
+        codes.put(code.getCodeValue(), authorizationCodeContext);
         return authorizationCode;
     }
 
     @Override
     public int purgeCodes() {
-        Map<Code, AuthorizationCodeContext> purgedCodes = new HashMap<>();
-        codes.forEach((code, date) -> {
-            Optional<AuthorizationCodeContext> verifiedCode = verifyAndRemove(code);
+        int purged = 0;
+        for (String key: codes.keys()) {
+            Optional<AuthorizationCodeContext> verifiedCode = verifyAndRemove(Code.from(key));
             if (verifiedCode.isPresent()) {
-                purgedCodes.put(code, date);
+                codes.remove(key);
+                purged++;
             }
-        });
-        int purged = codes.size() - purgedCodes.size();
-        codes = purgedCodes;
+        }
         return purged;
     }
 
     @Override
     public boolean setScope(Code code, Scope scope) {
-        AuthorizationCodeContext context = codes.get(code);
+        AuthorizationCodeContext context = codes.get(code.getCodeValue());
         if (context != null) {
             Set<String> filteredScopes = new HashSet<>();
             context.getScope().getValues().forEach(s->{
@@ -68,7 +57,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
             AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(context.getIssuerUri(),
                     context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
                     context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience(), context.getRedirectURI());
-            codes.put(code, updatedContext);
+            codes.put(code.getCodeValue(), updatedContext);
             return true;
         } else {
             return false;
@@ -77,7 +66,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
 
     @Override
     public Optional<AuthorizationCodeContext> verifyAndRemove(Code code) {
-        AuthorizationCodeContext context = codes.remove(code);
+        AuthorizationCodeContext context = codes.remove(code.getCodeValue());
         if (context != null) {
             return verify(context);
         }
@@ -86,7 +75,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
 
     @Override
     public Optional<AuthorizationCodeContext> get(Code code) {
-        AuthorizationCodeContext context = codes.get(code);
+        AuthorizationCodeContext context = codes.get(code.getCodeValue());
         if (context != null) {
             return verify(context);
         }

@@ -1,5 +1,6 @@
 package one.microproject.iamservice.core.tests;
 
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -9,6 +10,7 @@ import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
+import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -40,7 +43,7 @@ public class AuthorizationCodeCacheTests {
 
     @BeforeAll
     private static void init() throws URISyntaxException {
-        authorizationCodeCache = new AuthorizationCodeCacheImpl(maxDuration, timeUnit);
+        authorizationCodeCache = new AuthorizationCodeCacheImpl(maxDuration, timeUnit, new CacheHolderImpl<>());
         issuerUri = new URI("http://localhost:8080/issuer");
     }
 
@@ -54,8 +57,11 @@ public class AuthorizationCodeCacheTests {
     @Test
     @Order(2)
     public void testIssueCode() {
-        authorizationCode = authorizationCodeCache.issue(issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),
-                ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), scope, audience, "");
+        Code code = Code.from(UUID.randomUUID().toString());
+        AuthorizationCodeContext authorizationCodeContext =
+                new AuthorizationCodeContext(issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),
+                        ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), new Date(), scope, audience, "");
+        authorizationCode = authorizationCodeCache.save(code, authorizationCodeContext);
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());
         assertTrue(verifiedAuthorizationCode.isPresent());

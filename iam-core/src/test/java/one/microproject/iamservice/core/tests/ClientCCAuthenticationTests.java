@@ -21,6 +21,7 @@ import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
 import one.microproject.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import one.microproject.iamservice.core.services.caches.TokenCache;
+import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import one.microproject.iamservice.core.services.impl.caches.TokenCacheImpl;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.model.utils.TokenUtils;
@@ -70,9 +71,9 @@ public class ClientCCAuthenticationTests {
     @BeforeAll
     private static void init() throws PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
-        authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES);
+        authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES, new CacheHolderImpl<>());
         modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail);
-        tokenCache = new TokenCacheImpl(modelCache);
+        tokenCache = new TokenCacheImpl(modelCache,  new CacheHolderImpl<>());
         authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");

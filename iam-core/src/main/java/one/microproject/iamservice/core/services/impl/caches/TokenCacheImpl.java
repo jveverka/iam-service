@@ -12,43 +12,42 @@ import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.model.JWToken;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TokenCacheImpl implements TokenCache {
 
     private final ModelCache modelCache;
-    private Set<JWToken> revokedJWTokens;
+    private CacheHolder<JWToken> revokedJWTokens;
 
-    public TokenCacheImpl(ModelCache modelCache) {
-        this.revokedJWTokens = new HashSet<>();
+    public TokenCacheImpl(ModelCache modelCache, CacheHolder<JWToken> cacheHolder) {
+        this.revokedJWTokens = cacheHolder;
         this.modelCache = modelCache;
     }
 
     @Override
     public void addRevokedToken(JWToken jwToken) {
-        this.revokedJWTokens.add(jwToken);
+        this.revokedJWTokens.put(jwToken.getToken(), jwToken);
     }
 
     @Override
     public int purgeRevokedTokens() {
         int size = this.revokedJWTokens.size();
-        this.revokedJWTokens = this.revokedJWTokens.stream()
-                .filter(this::validateToken)
-                .collect(Collectors.toSet());
+        this.revokedJWTokens.remove(this::isTokenInvalid);
         return size - this.revokedJWTokens.size();
     }
 
     @Override
     public boolean isRevoked(JWToken jwToken) {
-        return this.revokedJWTokens.contains(jwToken);
+        return this.revokedJWTokens.get(jwToken.getToken()) != null;
     }
 
     @Override
     public int size() {
         return this.revokedJWTokens.size();
+    }
+
+    private boolean isTokenInvalid(JWToken jwToken) {
+        return !validateToken(jwToken);
     }
 
     private boolean validateToken(JWToken jwToken) {

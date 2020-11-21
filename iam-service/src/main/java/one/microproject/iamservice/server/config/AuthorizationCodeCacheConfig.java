@@ -1,7 +1,9 @@
 package one.microproject.iamservice.server.config;
 
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
+import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
+import one.microproject.iamservice.core.services.impl.caches.CacheHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,8 +31,8 @@ public class AuthorizationCodeCacheConfig {
 
     @Bean
     @Scope("singleton")
-    public AuthorizationCodeCache getCodeCache() {
-        return new AuthorizationCodeCacheImpl(getDuration(), getTimeUnit());
+    public AuthorizationCodeCache getCodeCache(CacheHolder<AuthorizationCodeContext> cache) {
+        return new AuthorizationCodeCacheImpl(getDuration(), getTimeUnit(), cache);
     }
 
     public long getDuration() {

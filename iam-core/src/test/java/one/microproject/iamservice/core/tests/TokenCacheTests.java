@@ -9,6 +9,7 @@ import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.dto.Scope;
+import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import one.microproject.iamservice.core.services.impl.caches.TokenCacheImpl;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.model.utils.TokenUtils;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,7 +60,7 @@ public class TokenCacheTests {
         Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
         modelCache = ModelUtils.createDefaultModelCache("top-secret", "top-secret", "admin@email.com");
-        tokenCache = new TokenCacheImpl(modelCache);
+        tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
         keyId = KeyId.from("key-001");
         issuerUri = new URI("http://localhost:8080/" + ORGANIZATION_ID.getId() + "/" + PROJECT_ID.getId());
         Map<String, Set<String>> roleClaims = new HashMap<>();
@@ -70,7 +72,7 @@ public class TokenCacheTests {
     @Order(1)
     public void afterInitializationTest() {
         int size = tokenCache.size();
-        assertTrue(size == 0);
+        assertEquals(0,size);
         assertFalse(tokenCache.isRevoked(jwToken));
     }
 
@@ -79,7 +81,7 @@ public class TokenCacheTests {
     public void addRevokedTokenTest() {
         assertFalse(tokenCache.isRevoked(jwToken));
         tokenCache.addRevokedToken(jwToken);
-        assertTrue(tokenCache.size() == 1);
+        assertEquals(1, tokenCache.size());
         assertTrue(tokenCache.isRevoked(jwToken));
     }
 
@@ -90,7 +92,7 @@ public class TokenCacheTests {
             Thread.sleep(1000);
         };
         int size = tokenCache.size();
-        assertTrue(size == 0);
+        assertEquals(0, size);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package one.microproject.iamservice.core;
 
+import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
@@ -13,7 +14,10 @@ import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.CacheCleanupScheduler;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
+import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
+import one.microproject.iamservice.core.services.impl.caches.CacheHolder;
+import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
 import one.microproject.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import one.microproject.iamservice.core.services.impl.ResourceServerServiceImpl;
@@ -73,8 +77,13 @@ public class IAMCoreBuilder {
         return this;
     }
 
+    public IAMCoreBuilder withAuthorizationCodeCache(Long maxDuration, TimeUnit timeUnit, CacheHolder<AuthorizationCodeContext> cache) {
+        this.authorizationCodeCache = new AuthorizationCodeCacheImpl(maxDuration, timeUnit, cache);
+        return this;
+    }
+
     public IAMCoreBuilder withDefaultAuthorizationCodeCache(Long maxDuration, TimeUnit timeUnit) {
-        this.authorizationCodeCache = new AuthorizationCodeCacheImpl(maxDuration, timeUnit);
+        this.authorizationCodeCache = new AuthorizationCodeCacheImpl(maxDuration, timeUnit, new CacheHolderImpl<>());
         return this;
     }
 
@@ -83,17 +92,22 @@ public class IAMCoreBuilder {
         return this;
     }
 
+    public IAMCoreBuilder withTokenCache(CacheHolder<JWToken> cache) {
+        this.tokenCache = new TokenCacheImpl(modelCache, cache);
+        return this;
+    }
+
     public IAMCoreBuilder withDefaultTokenCache() {
-        this.tokenCache = new TokenCacheImpl(modelCache);
+        this.tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
         return this;
     }
 
     public IAMCore build() {
         if (authorizationCodeCache == null) {
-            authorizationCodeCache = new AuthorizationCodeCacheImpl(20L, TimeUnit.MINUTES);
+            authorizationCodeCache = new AuthorizationCodeCacheImpl(20L, TimeUnit.MINUTES, new CacheHolderImpl<>());
         }
         if (tokenCache == null) {
-            tokenCache = new TokenCacheImpl(modelCache);
+            tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
         }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();

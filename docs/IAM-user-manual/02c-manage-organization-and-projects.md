@@ -7,9 +7,23 @@ All actions described below must be performed under project admin user identity.
 * [Terms and Vocabulary](Terms-and-Vocabulary.md)
 * [Default Configuration](Default-Access-Configuration.md) 
 
+##### Get Access Token to Manage your Organization/Project
+* Get you Organization/Project Admin Access tokens  
+  ```
+  curl --location --request POST 'http://localhost:8080/services/authentication/<organization-id>/<project-id>/token?grant_type=password&username=<admin-user>&password=<****>&scope=&client_id=<admin-client>&client_secret=<*****>'
+  
+  # example:
+  curl --location --request POST 'http://localhost:8080/services/authentication/test-org-001/project-001/token?grant_type=password&username=admin&password=some-top-sercret&scope=&client_id=cl-001&client_secret=cl-scrt'
+  ```
+
 ### Manage Roles
 * Create new Role with Permissions
 * Delete Role
+* Get Roles on project
+  ```
+  curl --location --request GET 'http://localhost:8080/services/management/<organization-id>/<project-id>/roles' \
+  --header 'Authorization: Bearer <ACCESS_TOKEN>'
+  ```
 
 ### Manage Permissions
 * Create new Permission

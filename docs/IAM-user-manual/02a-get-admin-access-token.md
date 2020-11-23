@@ -2,7 +2,7 @@
 
 In order to start using *iam-service* you have to get access as priviledged 
 "admin" user which belongs to dedicated *iam-admins* organization *and iam-admins* project.
-This special project will be called  __iam-admins__ project. Default login credentials and settings:
+This special project will be called __iam-admins__ project. Default login credentials and settings:
 
 | Parameter              | Value                                                                         | 
 |------------------------|-------------------------------------------------------------------------------|

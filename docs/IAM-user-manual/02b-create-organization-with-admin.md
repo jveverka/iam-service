@@ -18,7 +18,10 @@ isolated security realm with own group of users, clients, roles and permissions.
      "adminUserId": "admin",
      "adminUserPassword": "some*top+sercret",
      "adminEmail": "admin@project-001.com",
-     "projectAudience": []
+     "projectAudience": [],
+     "adminUserProperties": { 
+       "properties": {}
+     }
   }'
   ```
   This will single request will create:   

@@ -1,10 +1,7 @@
 # IAM-Service Terms and Vocabulary
-See also: [Data Model](../IAM-data-model.md)
-
-## IAM-ADMIN - The SuperUser
-* iam-admin organization
-* iam-admin project
-* admin user
+See also: 
+* [Default Configuration](Default-Access-Configuration.md) 
+* [Data Model](../IAM-data-model.md)
 
 ## Organizations
 Organization is just a logical group of projects.

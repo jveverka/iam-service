@@ -3,7 +3,9 @@ At this point new Organization / Projects has been already created, now it is
 necessary to create Application users, user identities which will access other microservices.
 It is also necessary to assign new roles and permissions to new users. 
 All actions described below must be performed under project admin user identity.
-[See also: Terms and Vocabulary](Terms-and-Vocabulary.md)
+##### See also: 
+* [Terms and Vocabulary](Terms-and-Vocabulary.md)
+* [Default Configuration](Default-Access-Configuration.md) 
 
 ### Manage Roles
 * Create new Role with Permissions

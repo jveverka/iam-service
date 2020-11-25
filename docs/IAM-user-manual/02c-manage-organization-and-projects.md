@@ -18,10 +18,39 @@ All actions described below must be performed under project admin user identity.
 
 ### Manage Roles
 * Create new Role with Permissions
+  ```
+  curl --location --request POST 'http://localhost:8080/services/management/test-org-001/project-001/roles' \
+  --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "id": "role-001",
+    "name": "Role 001",
+    "permissions": [
+        {
+            "service": "service1",
+            "resource": "resource1",
+            "action": "read"
+        },
+                {
+            "service": "service1",
+            "resource": "resource2",
+            "action": "write"
+        }
+    ]
+  }'  
+  ```
 * Delete Role
+  ```
+  curl --location --request DELETE 'http://localhost:8080/services/management/test-org-001/project-001/roles/role-001' \
+  --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+  ```
 * Get Roles on project
   ```
   curl --location --request GET 'http://localhost:8080/services/management/<organization-id>/<project-id>/roles' \
+  --header 'Authorization: Bearer <ACCESS_TOKEN>'
+  
+  # example:
+  curl --location --request GET 'http://localhost:8080/services/management/test-org-001/project-001/roles' \
   --header 'Authorization: Bearer <ACCESS_TOKEN>'
   ```
 

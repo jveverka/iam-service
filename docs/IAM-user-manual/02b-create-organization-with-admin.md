@@ -17,8 +17,9 @@ isolated security realm with own group of users, clients, roles and permissions.
      "adminClientSecret": "cl-scrt",
      "adminUserId": "admin",
      "adminUserPassword": "some-top-sercret",
-     "adminEmail": "admin@project-001.com",
+     "adminUserEmail": "admin@project-001.com",
      "projectAudience": [],
+     "redirectURL": "http://localhost:80",
      "adminUserProperties": { 
        "properties": {}
      }

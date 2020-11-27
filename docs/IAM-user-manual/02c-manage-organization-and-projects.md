@@ -60,6 +60,20 @@ All actions described below must be performed under project admin user identity.
 * Delete Permission
 * Add Permission to Role
 * Remove Permission from Role
+* Get Permissions on the Project
+  ```
+  #template:
+  #curl --location --request GET 'http://localhost:8080/services/management/{organization-id}/{project-id}/permissions' \
+  curl --location --request GET 'http://localhost:8080/services/management/test-org-001/project-001/permissions' \
+  --header 'Authorization: Bearer <ACCESS_TOKEN>'
+  ```
+* Get Roles on the Project
+  ```
+  #template:
+  #curl --location --request GET 'http://localhost:8080/services/management/{organization-id}/{project-id}/roles' \
+  curl --location --request GET 'http://localhost:8080/services/management/test-org-001/project-001/roles' \
+  --header 'Authorization: Bearer <ACCESS_TOKEN>'
+  ```
 
 ### Manage Clients
 * Create new Client 

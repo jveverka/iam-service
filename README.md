@@ -5,7 +5,7 @@
 
 ![logo](docs/iam-icon.svg) 
 
-#IAM service
+# IAM service
 Really simple standalone *Identity Access Management* (IAM) service, authentication and authorization server. 
 Project is compliant with subset of [OAuth2](https://tools.ietf.org/html/rfc6749) 
 and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) specifications. 

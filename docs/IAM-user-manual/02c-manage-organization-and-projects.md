@@ -47,19 +47,22 @@ All actions described below must be performed under project admin user identity.
   curl --location --request DELETE 'http://localhost:8080/services/management/test-org-001/project-001/roles/role-001' \
   --header 'Authorization: Bearer <ACCESS_TOKEN>' \
   ```
-* Get Roles on project
+
+### Manage Roles
+* Add Role to User
   ```
   #template:
-  #curl --location --request GET 'http://localhost:8080/services/management/{organization-id}/{project-id}/roles' \
-  curl --location --request GET 'http://localhost:8080/services/management/test-org-001/project-001/roles' \
+  #curl --location --request PUT 'http://localhost:8080/services/management/{organization-id}/{project-id}/users/{user-id}/roles/{role-id}
+  curl --location --request PUT 'http://localhost:8080/services/management/test-org-001/project-001/users/user-001/roles/role-001
   --header 'Authorization: Bearer <ACCESS_TOKEN>'
   ```
-
-### Manage Permissions
-* Create new Permission
-* Delete Permission
-* Add Permission to Role
-* Remove Permission from Role
+* Remove Role from User
+  ```
+  #template:
+  #curl --location --request DELETE 'http://localhost:8080/services/management/{organization-id}/{project-id}/users/{user-id}/roles/{role-id}
+  curl --location --request DELETE 'http://localhost:8080/services/management/test-org-001/project-001/users/user-001/roles/role-001
+  --header 'Authorization: Bearer <ACCESS_TOKEN>'
+  ```
 * Get Permissions on the Project
   ```
   #template:

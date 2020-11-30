@@ -3,7 +3,7 @@
 * Make sure all changes are committed and pushed.
 * Make sure the documentation is up-to date.
 * Make sure all tests are passing.
-* ``NEW_RELEASE_VERSION=1.3.0-RELEASE``
+* ``NEW_RELEASE_VERSION=2.0.0-SNAPSHOT``
 * Upgrade component version in script below.
   ```
   ./version-upgrade.sh

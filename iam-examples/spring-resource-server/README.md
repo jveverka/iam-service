@@ -12,15 +12,15 @@ JWT tokens issues by __iam-service__ are used to get access to resources hosted 
 ## Build and Run
 ```
 gradle clean build
-java -jar build/libs/spring-resource-server-1.3.0-RELEASE.jar
+java -jar build/libs/spring-resource-server-2.0.0-SNAPSHOT.jar
 ```
 ### Build Docker image 
 ```
-docker build . -t spring-resource-server:1.3.0-RELEASE
+docker build . -t spring-resource-server:2.0.0-SNAPSHOT
 docker image list
-docker save --output="build/spring-resource-server:1.3.0-RELEASE.tar" spring-resource-server:1.3.0-RELEASE
+docker save --output="build/spring-resource-server:2.0.0-SNAPSHOT.tar" spring-resource-server:2.0.0-SNAPSHOT
 docker image rm -f <imageid>
-docker run -p 8081:8081 spring-resource-server:1.3.0-RELEASE
+docker run -p 8081:8081 spring-resource-server:2.0.0-SNAPSHOT
 ```
 
 ### Reference Documentation

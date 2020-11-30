@@ -1,6 +1,6 @@
 
-## IAM Service release 1.2.0-SNAPSHOT
+## IAM Service release 1.3.0-RELEASE
 
 This is a test pre-release.
-* Download release file ``iam-service-release-1.2.0-SNAPSHOT.zip``
-* Unzip and follow [README.md](https://github.com/jveverka/iam-service/blob/master/release/README-release.md) instructions.
+* Download release file ``iam-service-release-1.3.0-RELEASE.zip``
+* Unzip and follow [README.md](https://github.com/jveverka/iam-service/blob/1.3.0-RELEASE/release/README-release.md) instructions.

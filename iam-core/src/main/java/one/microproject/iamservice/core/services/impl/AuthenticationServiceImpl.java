@@ -7,19 +7,18 @@ import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.Credentials;
-import one.microproject.iamservice.core.model.KeyPairData;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.TokenType;
-import one.microproject.iamservice.core.model.Tokens;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import one.microproject.iamservice.core.model.utils.TokenUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
+import one.microproject.iamservice.core.services.TokenGenerator;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
@@ -41,7 +40,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -50,11 +48,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ModelCache modelCache;
     private final TokenCache tokenCache;
     private final AuthorizationCodeCache codeCache;
+    private final TokenGenerator tokenGenerator;
 
-    public AuthenticationServiceImpl(ModelCache modelCache, TokenCache tokenCache, AuthorizationCodeCache codeCache) {
+    public AuthenticationServiceImpl(ModelCache modelCache, TokenCache tokenCache, AuthorizationCodeCache codeCache,
+                                     TokenGenerator tokenGenerator) {
         this.modelCache = modelCache;
         this.tokenCache = tokenCache;
         this.codeCache = codeCache;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Override
@@ -87,20 +88,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 boolean valid = credentials.get().verify(authenticationRequest);
                 if (valid) {
                     Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
-                    Scope filteredScopes = TokenUtils.filterScopes(userPermissions, authenticationRequest.getScope());
-                    KeyPairData keyPairData = user.getKeyPairData();
-                    JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
-                            user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                            null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                    JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
-                            user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                            null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                    JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, authenticationRequest.getClientCredentials().getId(),
-                            user.getId().getId(), user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                            keyPairData.getId(), keyPairData.getPrivateKey());
-                    Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                            user.getDefaultAccessTokenDuration()/1000L, user.getDefaultRefreshTokenDuration()/1000L, idToken);
-                    return Optional.of(getTokenResponse(tokens));
+                    return Optional.of(tokenGenerator.generate(issuerUri, organizationId, projectOptional.get(), user,
+                            userPermissions, authenticationRequest.getScope(), authenticationRequest.getClientCredentials().getId() , idTokenRequest));
                 }
             }
         } else {
@@ -125,20 +114,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     Client client = clientOptional.get();
                     Project project = projectOptional.get();
                     Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
-                    Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
-                    KeyPairData keyPairData = project.getKeyPairData();
-                    JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
-                            client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                            null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                    JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
-                            client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                            null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                    JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, client.getId(), client.getId().getId(),
-                            client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                            keyPairData.getId(), keyPairData.getPrivateKey());
-                    Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                            client.getDefaultAccessTokenDuration()/1000L, client.getDefaultRefreshTokenDuration()/1000L, idToken);
-                    return Optional.of(getTokenResponse(tokens));
+                    return Optional.of(tokenGenerator.generate(issuerUri, organizationId, project, clientPermissions, client, scope, idTokenRequest));
                 } else {
                     LOG.info("Client {} credentials invalid !", clientCredentials.getId());
                 }
@@ -180,20 +156,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         URI issuerUri = new URI(claims.getIssuer());
                         if (TokenType.REFRESH.getType().equals(tokenType)) {
                             Set<Permission> userPermissions = modelCache.getPermissions(organizationId, projectId, user.getId());
-                            Scope filteredScopes = TokenUtils.filterScopes(userPermissions, scope);
-                            KeyPairData keyPairData = user.getKeyPairData();
-                            JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
-                                    user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                    null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                            JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, projectOptional.get().getId(), projectOptional.get().getAudience(), user.getId(),
-                                    user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                    null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                            JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, clientCredentials.getId(), user.getId().getId(),
-                                    user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                                    keyPairData.getId(), keyPairData.getPrivateKey());
-                            Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                                    user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L, idToken);
-                            return Optional.of(getTokenResponse(tokens));
+                            return Optional.of(tokenGenerator.generate(issuerUri, organizationId, projectOptional.get(), user, userPermissions, scope, clientCredentials.getId(), idTokenRequest));
                         } else {
                             LOG.info("Invalid JWT type {}, expected type {}", tokenType, TokenType.BEARER.getType());
                         }
@@ -217,20 +180,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 Claims claims = claimsOptional.get().getBody();
                                 URI issuerUri = new URI(claims.getIssuer());
                                 Set<Permission> clientPermissions = modelCache.getPermissions(organizationId, projectId, client.getId());
-                                Scope filteredScopes = TokenUtils.filterScopes(clientPermissions, scope);
-                                KeyPairData keyPairData = project.getKeyPairData();
-                                JWToken accessToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
-                                        client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                        null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                                JWToken refreshToken = TokenUtils.issueToken(issuerUri, organizationId, project.getId(), project.getAudience(), client.getId(),
-                                        client.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, filteredScopes,
-                                        null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                                JWToken idToken = TokenUtils.issueIdToken(issuerUri, organizationId, projectId, client.getId(), client.getId().getId(),
-                                        client.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                                        keyPairData.getId(), keyPairData.getPrivateKey());
-                                Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                                        client.getDefaultAccessTokenDuration() / 1000L, client.getDefaultRefreshTokenDuration() / 1000L, idToken);
-                                return Optional.of(getTokenResponse(tokens));
+                                return Optional.of(tokenGenerator.generate(issuerUri, organizationId, project, clientPermissions, client, scope, idTokenRequest));
                             } else {
                                 LOG.warn("JWT is invalid !");
                             }
@@ -264,19 +214,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Optional<User> optionalUser = modelCache.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                KeyPairData keyPairData = user.getKeyPairData();
-                JWToken accessToken = TokenUtils.issueToken(context.getIssuerUri(), context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
-                        user.getDefaultAccessTokenDuration(), TimeUnit.MILLISECONDS, context.getScope(),
-                        null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.BEARER);
-                JWToken refreshToken = TokenUtils.issueToken(context.getIssuerUri(), context.getOrganizationId(), context.getProjectId(), context.getAudience(), user.getId(),
-                        user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, context.getScope(),
-                        null, keyPairData.getId(), keyPairData.getPrivateKey(), TokenType.REFRESH);
-                JWToken idToken = TokenUtils.issueIdToken(context.getIssuerUri(), context.getOrganizationId(), context.getProjectId(), context.getClientId(), user.getId().getId(),
-                        user.getDefaultRefreshTokenDuration(), TimeUnit.MILLISECONDS, idTokenRequest,
-                        keyPairData.getId(), keyPairData.getPrivateKey());
-                Tokens tokens = new Tokens(accessToken, refreshToken, TokenType.BEARER,
-                        user.getDefaultAccessTokenDuration() / 1000L, user.getDefaultRefreshTokenDuration() / 1000L, idToken);
-                return Optional.of(getTokenResponse(tokens));
+                return Optional.of(tokenGenerator.generate(context, user, idTokenRequest));
             } else {
                 LOG.info("User {} not found", context.getUserId());
             }
@@ -380,17 +318,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
         return Optional.empty();
-    }
-
-    private static TokenResponse getTokenResponse(Tokens tokens) {
-        return new TokenResponse(
-                tokens.getAccessToken().getToken(),
-                tokens.getExpiresIn(),
-                tokens.getRefreshExpiresIn(),
-                tokens.getRefreshToken().getToken(),
-                tokens.getTokenType().getType(),
-                tokens.getIdToken().getToken()
-        );
     }
 
 }

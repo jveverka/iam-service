@@ -6,6 +6,7 @@ import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.services.ResourceServerService;
+import one.microproject.iamservice.core.services.TokenGenerator;
 import one.microproject.iamservice.core.services.admin.ClientManagementService;
 import one.microproject.iamservice.core.services.admin.OrganizationManagerService;
 import one.microproject.iamservice.core.services.admin.ProjectManagerService;
@@ -16,6 +17,7 @@ import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
+import one.microproject.iamservice.core.services.impl.TokenGeneratorImpl;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolder;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
@@ -52,9 +54,15 @@ public class IAMCoreBuilder {
     private ProjectManagerService projectManagerService;
     private UserManagerService userManagerService;
     private ProviderConfigurationService providerConfigurationService;
+    private TokenGenerator tokenGenerator;
 
     public IAMCoreBuilder withBCProvider() {
         Security.addProvider(new BouncyCastleProvider());
+        return this;
+    }
+
+    public IAMCoreBuilder withTokenGenerator(TokenGenerator tokenGenerator) {
+        this.tokenGenerator = tokenGenerator;
         return this;
     }
 
@@ -109,9 +117,12 @@ public class IAMCoreBuilder {
         if (tokenCache == null) {
             tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
         }
+        if (tokenGenerator == null) {
+            tokenGenerator = new TokenGeneratorImpl();
+        }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();
-        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, tokenGenerator);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         clientManagementService = new ClientManagementServiceImpl(modelCache);
         organizationManagerService = new OrganizationManagerServiceImpl(modelCache);

@@ -2,6 +2,7 @@ package one.microproject.iamservice.server.config;
 
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
+import one.microproject.iamservice.core.services.TokenGenerator;
 import one.microproject.iamservice.core.services.admin.ClientManagementService;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.ModelCache;
@@ -13,6 +14,7 @@ import one.microproject.iamservice.core.services.admin.ProjectManagerService;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
 import one.microproject.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import one.microproject.iamservice.core.services.impl.ResourceServerServiceImpl;
+import one.microproject.iamservice.core.services.impl.TokenGeneratorImpl;
 import one.microproject.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import one.microproject.iamservice.core.services.impl.admin.UserManagerServiceImpl;
 import one.microproject.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
@@ -39,8 +41,14 @@ public class CoreServiceConfig {
 
     @Bean
     @Scope("singleton")
-    public AuthenticationService getAuthenticationService() {
-        return new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+    public TokenGenerator getTokenGenerator() {
+        return new TokenGeneratorImpl();
+    }
+
+    @Bean
+    @Scope("singleton")
+    public AuthenticationService getAuthenticationService(@Autowired TokenGenerator tokenGenerator) {
+        return new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, tokenGenerator);
     }
 
     @Bean

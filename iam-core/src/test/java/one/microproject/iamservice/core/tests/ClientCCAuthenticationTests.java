@@ -18,6 +18,7 @@ import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
+import one.microproject.iamservice.core.services.impl.TokenGeneratorImpl;
 import one.microproject.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import one.microproject.iamservice.core.services.caches.TokenCache;
@@ -74,7 +75,7 @@ public class ClientCCAuthenticationTests {
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES, new CacheHolderImpl<>());
         modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail);
         tokenCache = new TokenCacheImpl(modelCache,  new CacheHolderImpl<>());
-        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache);
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, new TokenGeneratorImpl());
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
         issuerUri = new URI("http://localhost:8080/issuer");

@@ -63,4 +63,5 @@ Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/README.
 * [RFC6749](https://tools.ietf.org/html/rfc6749) - The OAuth 2.0 Authorization Framework
 * [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
 * [RFC7517](https://tools.ietf.org/html/rfc7517) - JSON Web Key (JWK)
+* [RFC7009](https://tools.ietf.org/html/rfc7009) - OAuth 2.0 Token Revocation  
 * [References](docs/references.md)

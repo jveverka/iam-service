@@ -262,6 +262,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
+    //https://tools.ietf.org/html/rfc7009
     @PostMapping(path = "/{organization-id}/{project-id}/revoke", produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<Void> revoke(@PathVariable("organization-id") String organizationId,
                                        @PathVariable("project-id") String projectId,

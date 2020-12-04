@@ -1,8 +1,8 @@
 package one.microproject.iamservice.core.tests;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
+import one.microproject.iamservice.client.JWTUtils;
+import one.microproject.iamservice.client.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.Project;
@@ -163,11 +163,11 @@ public class ClientUPAuthenticationTests {
         assertTrue(projectInfo.isPresent());
         Optional<User> userInfo = resourceServerService.getUser(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
         assertTrue(userInfo.isPresent());
-        Optional<Jws<Claims>> claims = TokenUtils.verify(accessToken, userInfo.get().getCertificate().getPublicKey());
+        Optional<StandardTokenClaims> claims = JWTUtils.validateToken(userInfo.get().getCertificate().getPublicKey(), accessToken);
         assertTrue(claims.isPresent());
-        claims = TokenUtils.verify(accessToken, projectInfo.get().getCertificate().getPublicKey());
+        claims = JWTUtils.validateToken(projectInfo.get().getCertificate().getPublicKey(), accessToken);
         assertTrue(claims.isEmpty());
-        claims = TokenUtils.verify(accessToken, organizationOptional.get().getCertificate().getPublicKey());
+        claims = JWTUtils.validateToken(organizationOptional.get().getCertificate().getPublicKey(), accessToken);
         assertTrue(claims.isEmpty());
     }
 

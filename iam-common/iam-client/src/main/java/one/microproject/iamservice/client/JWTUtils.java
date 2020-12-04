@@ -14,6 +14,7 @@ import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.ProjectId;
+import one.microproject.iamservice.core.model.TokenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,11 @@ public final class JWTUtils {
         }
     }
 
+    public static Optional<StandardTokenClaims> validateToken(PublicKey key, JWToken token) {
+        KeyProvider keyProvider = keyId -> key;
+        return validateToken(keyProvider, token);
+    }
+
     public static Optional<StandardTokenClaims> validateToken(KeyProvider keyProvider, JWToken token) {
         try {
             ProviderSigningKeyResolver providerSigningKeyResolver = new ProviderSigningKeyResolver(keyProvider);
@@ -128,7 +134,8 @@ public final class JWTUtils {
         int projectIndex = split.length - 1;
         OrganizationId issOrganizationId = OrganizationId.from(split[organizationIndex]);
         ProjectId issProjectId = ProjectId.from(split[projectIndex]);
-        return new StandardTokenClaims(kid, iss, sub, aud, scopes, issOrganizationId, issProjectId);
+        String tokenType = (String) claims.get("typ");
+        return new StandardTokenClaims(kid, iss, sub, aud, scopes, issOrganizationId, issProjectId, TokenType.getTokenType(tokenType));
     }
 
 }

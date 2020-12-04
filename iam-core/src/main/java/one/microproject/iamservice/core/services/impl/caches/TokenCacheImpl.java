@@ -1,8 +1,8 @@
 package one.microproject.iamservice.core.services.impl.caches;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
+import one.microproject.iamservice.client.JWTUtils;
+import one.microproject.iamservice.client.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.User;
@@ -57,8 +57,8 @@ public class TokenCacheImpl implements TokenCache {
         UserId userId = UserId.from(defaultClaims.getSubject());
         Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
         if (userOptional.isPresent()) {
-            Optional<Jws<Claims>> verify = TokenUtils.verify(jwToken, userOptional.get().getCertificate().getPublicKey());
-            return verify.isPresent();
+            Optional<StandardTokenClaims> tokenClaims = JWTUtils.validateToken(userOptional.get().getCertificate().getPublicKey(), jwToken);
+            return tokenClaims.isPresent();
         }
         return false;
     }

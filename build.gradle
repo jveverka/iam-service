@@ -53,6 +53,7 @@ project(':iam-service-client') {
 project(':iam-core') {
     dependencies {
         implementation project(':iam-model')
+        implementation project(':iam-client')
     }
 }
 

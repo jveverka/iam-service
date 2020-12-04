@@ -1,8 +1,8 @@
 package one.microproject.iamservice.core.services.impl;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.impl.DefaultClaims;
+import one.microproject.iamservice.client.JWTUtils;
+import one.microproject.iamservice.client.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.User;
@@ -49,17 +49,17 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 UserId userId = UserId.from(defaultClaims.getSubject());
                 Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
                 if (userOptional.isPresent()) {
-                    Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), userOptional.get().getCertificate().getPublicKey());
-                    LOG.info("JWT verified={}", claimsJws.isPresent());
-                    return new IntrospectResponse(claimsJws.isPresent());
+                    Optional<StandardTokenClaims> tokenClaims = JWTUtils.validateToken(userOptional.get().getCertificate().getPublicKey(), request.getToken());
+                    LOG.info("JWT verified={}", tokenClaims.isPresent());
+                    return new IntrospectResponse(tokenClaims.isPresent());
                 } else {
                     ClientId clientId = ClientId.from(defaultClaims.getSubject());
                     Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
                     Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
                     if (projectOptional.isPresent() && clientOptional.isPresent()) {
-                        Optional<Jws<Claims>> claimsJws = TokenUtils.verify(request.getToken(), projectOptional.get().getCertificate().getPublicKey());
-                        LOG.info("JWT verified={}", claimsJws.isPresent());
-                        return new IntrospectResponse(claimsJws.isPresent());
+                        Optional<StandardTokenClaims> tokenClaims = JWTUtils.validateToken(projectOptional.get().getCertificate().getPublicKey(), request.getToken());
+                        LOG.info("JWT verified={}", tokenClaims.isPresent());
+                        return new IntrospectResponse(tokenClaims.isPresent());
                     }
                     LOG.info("JWT subject {} not found", userId);
                 }

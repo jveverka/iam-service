@@ -2,6 +2,7 @@ package one.microproject.iamservice.client.dto;
 
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
+import one.microproject.iamservice.core.model.TokenType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,9 +18,10 @@ public class StandardTokenClaims {
     private final ProjectId projectId;
     private final URI issuerUri;
     private final Set<String> scope;
+    private final TokenType type;
 
     public StandardTokenClaims(String keyId, String issuer, String subject, Set<String> audience, Set<String> scope,
-                               OrganizationId organizationId, ProjectId projectId) throws URISyntaxException {
+                               OrganizationId organizationId, ProjectId projectId, TokenType type) throws URISyntaxException {
         this.keyId = keyId;
         this.issuer = issuer;
         this.subject = subject;
@@ -28,6 +30,7 @@ public class StandardTokenClaims {
         this.organizationId = organizationId;
         this.projectId = projectId;
         this.issuerUri = new URI(issuer);
+        this.type = type;
     }
 
     public String getKeyId() {
@@ -60,6 +63,10 @@ public class StandardTokenClaims {
 
     public URI getIssuerUri() {
         return issuerUri;
+    }
+
+    public TokenType getType() {
+        return type;
     }
 
 }

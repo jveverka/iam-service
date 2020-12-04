@@ -1,7 +1,5 @@
 package one.microproject.iamservice.core.model.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -47,7 +45,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -152,15 +149,6 @@ public final class TokenUtils {
             customClaims.forEach((k, v) -> builder.claim(k, v));
         }
         return JWToken.from(builder.compact());
-    }
-
-    public static Optional<Jws<Claims>> verify(JWToken jwToken, PublicKey publicKey) {
-        try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jwToken.getToken());
-            return Optional.of(claimsJws);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
     }
 
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {

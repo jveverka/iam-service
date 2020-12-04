@@ -20,9 +20,9 @@ Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/README.
 * [x] Back Channels for JWT verification - backend libraries for resource servers. 
 * [x] Small memory footprint - __iam-service__ (32Mb JVM heap)
 * [x] Small build size - __iam-service__ (single jar: ~40Mb, docker: ~190Mb)
-* [x] Seamless integrations with [spring framework](https://spring.io/).
+* [x] Seamless integrations with [spring framework](https://spring.io/) - check [examples](iam-examples).
 * [x] In memory or [Redis](https://redis.io/) backed caches.
-* [x] Data model stored in single JSON file or [MongoDB](https://www.mongodb.com/).
+* [x] Data model stored in memory, single JSON file or [MongoDB](https://www.mongodb.com/).
 
 ## Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).

@@ -91,9 +91,13 @@ project(':iam-caches-redis') {
     }
 }
 
+// Spring EXAMPLES
+
 project(':spring-resource-server') {
     dependencies {
         testImplementation project(':iam-model')
+        testImplementation project(':iam-client')
+        testImplementation project(':iam-core')
         testImplementation project(':iam-service-client')
     }
 }

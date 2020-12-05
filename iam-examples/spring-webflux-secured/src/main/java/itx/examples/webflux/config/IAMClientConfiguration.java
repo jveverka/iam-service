@@ -1,8 +1,8 @@
-package one.microproject.iamservice.examples.methodsecurity.config;
+package itx.examples.webflux.config;
 
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.IAMClientBuilder;
-import one.microproject.iamservice.client.spring.IAMSecurityFilterConfiguration;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Scope;
 import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.security.Security;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -35,19 +35,19 @@ public class IAMClientConfiguration {
         LOG.info("## baseUrl={}", baseUrl);
         LOG.info("## pollingInterval={}", pollingInterval);
         LOG.info("## timeUnit={}", timeUnit);
+        LOG.info("#CONFIG: initializing Bouncy Castle Provider (BCP) ...");
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     @Bean
     @Scope("singleton")
-    public IAMSecurityFilterConfiguration createIAMSecurityFilterConfiguration() throws MalformedURLException {
+    public IAMClient createIAMClient() throws MalformedURLException {
         LOG.info("createIAMClient");
-        IAMClient iamClient = IAMClientBuilder.builder()
+        return IAMClientBuilder.builder()
                 .setOrganizationId(organizationId)
                 .setProjectId(projectId)
                 .withHttpProxy(new URL(baseUrl), pollingInterval, timeUnit)
                 .build();
-        Set<String> excludeEndpoints = Set.of("/services/public/**", "/swagger-ui/**", "/v3/api**");
-        return new IAMSecurityFilterConfiguration(iamClient, excludeEndpoints);
     }
 
     public void setOrganizationId(String organizationId) {

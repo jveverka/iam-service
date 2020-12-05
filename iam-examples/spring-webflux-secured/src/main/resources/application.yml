@@ -1,0 +1,18 @@
+server:
+  port: 8083
+
+iam-client:
+  organization-id: iam-admins
+  project-id: iam-admins
+  base-url: http://127.0.0.1:8080
+  polling-interval: 30
+  time-unit: SECONDS
+
+logging:
+  level:
+    root: INFO
+    one:
+      microproject:
+        iamservice:
+          client:
+            impl: DEBUG

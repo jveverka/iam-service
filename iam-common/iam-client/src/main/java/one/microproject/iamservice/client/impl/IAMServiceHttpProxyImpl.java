@@ -89,7 +89,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
                 if (response.isSuccessful()) {
                     providerConfigurationResponse = mapper.readValue(response.body().string(), ProviderConfigurationResponse.class);
                 } else {
-                    LOG.info("HTTP response failed");
+                    LOG.warn("HTTP response failed");
                 }
             } catch (Exception e) {
                 LOG.error("Error: ", e);
@@ -125,7 +125,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     protected synchronized void setJwkResponse(JWKResponse jwkResponse) {
-        LOG.info("JWK cache updated");
+        LOG.debug("JWK cache updated");
         this.jwkResponse = jwkResponse;
         this.cl.countDown();
     }

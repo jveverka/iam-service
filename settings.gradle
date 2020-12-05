@@ -18,7 +18,10 @@ project(":iam-persistence-mongo").projectDir = new File("iam-persistence/iam-per
 include "iam-caches-redis"
 project(":iam-caches-redis").projectDir = new File("iam-persistence/iam-caches-redis")
 
+// Spring EXAMPLES
 include "spring-resource-server"
 project(":spring-resource-server").projectDir = new File("iam-examples/spring-resource-server")
 include "spring-method-security"
 project(":spring-method-security").projectDir = new File("iam-examples/spring-method-security")
+include "spring-webflux-secured"
+project(":spring-webflux-secured").projectDir = new File("iam-examples/spring-webflux-secured")

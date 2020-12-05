@@ -112,4 +112,12 @@ project(':spring-method-security') {
     }
 }
 
+project(':spring-webflux-secured') {
+    dependencies {
+        implementation project(':iam-model')
+        implementation project(':iam-client')
+        testImplementation project(':iam-core')
+        testImplementation project(':iam-service-client')
+    }
+}
 

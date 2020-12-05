@@ -33,3 +33,13 @@ services:
       - "8081:8081"
     depends_on:
       - iam-service
+  spring-webflux-secured:
+    image: spring-webflux-secured:2.0.0-SNAPSHOT
+    build:
+      context: iam-examples/spring-webflux-secured
+      dockerfile: Dockerfile
+    network_mode: "host"
+    ports:
+      - "8083:8083"
+    depends_on:
+      - iam-service

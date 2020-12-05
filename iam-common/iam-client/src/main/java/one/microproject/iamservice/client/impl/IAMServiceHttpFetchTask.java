@@ -36,7 +36,7 @@ public class IAMServiceHttpFetchTask implements Runnable {
     @Override
     public void run() {
         String targetUrl = baseUrl.toString()  +  "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json";
-        LOG.info("Fetching iam-server {}", targetUrl);
+        LOG.debug("Fetching iam-server {}", targetUrl);
         Request request = new Request.Builder()
                 .url(targetUrl)
                 .method("GET", null)
@@ -46,7 +46,7 @@ public class IAMServiceHttpFetchTask implements Runnable {
                 JWKResponse jwkResponse = mapper.readValue(response.body().string(), JWKResponse.class);
                 iamServiceHttpProxy.setJwkResponse(jwkResponse);
             } else {
-                LOG.info("HTTP response failed {}", response.code());
+                LOG.warn("HTTP response failed {}", response.code());
             }
         } catch (Exception e) {
             LOG.error("Error: ", e);

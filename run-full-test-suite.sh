@@ -3,6 +3,8 @@
 NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+
 START_TIME=$(date +%s.%N)
 BUILD_RESULT="${RED}FAILED${NOCOLOR}"
 DOCKER_RESULT="${RED}FAILED${NOCOLOR}"
@@ -84,8 +86,13 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       echo "Waiting for spring-resource-server to start ..."
       sleep 1
    done
+   until [ $(curl --silent --output /dev/null -f http://127.0.0.1:8083/services/public/info -w '%{http_code}\n')  -eq  "200" ]; do
+      echo "Waiting for spring-resource-server to start ..."
+      sleep 1
+   done
 
    #4. Run Integration tests for 'spring-method-security' demo
+   echo -e "${YELLOW}TESTING EXAMPLE: spring-method-security${NOCOLOR}"
    gradle :spring-method-security:clean :spring-method-security:test -Dtest.profile=integration
    if [ $? -eq  0 ]; then
       TEST_METHOD_SECURITY_RESULT="${GREEN}OK${NOCOLOR}"
@@ -94,9 +101,19 @@ if [ $RESULT_COUNTER -eq 0 ]; then
    fi
 
    #5. Run Integration tests for 'spring-resource-server' demo
+   echo -e "${YELLOW}TESTING EXAMPLE: spring-resource-server${NOCOLOR}"
    gradle :spring-resource-server:clean :spring-resource-server:test -Dtest.profile=integration
    if [ $? -eq  0 ]; then
       TEST_RESOURCE_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+   else
+      RESULT_COUNTER=$((RESULT_COUNTER+1))
+   fi
+
+   #6. Run Integration tests for 'spring-webflux-secured' demo
+   echo -e "${YELLOW}TESTING EXAMPLE: spring-webflux-secured${NOCOLOR}"
+   gradle :spring-webflux-secured:clean :spring-webflux-secured:test -Dtest.profile=integration
+   if [ $? -eq  0 ]; then
+      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
    else
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
@@ -125,6 +142,7 @@ echo -e "gradle build and test      : $BUILD_RESULT"
 echo -e "docker compose             : $DOCKER_RESULT"
 echo -e "IT Tests (method security) : $TEST_METHOD_SECURITY_RESULT"
 echo -e "IT Tests (resource server) : $TEST_RESOURCE_SERVER_RESULT"
+echo -e "IT Tests (webflux server)  : $TEST_WEBFLUX_SERVER_RESULT"
 echo -e "docket stop and cleanup    : $CLEANUP_RESULT"
 echo -e "done in $DIFF_TIME s"
 

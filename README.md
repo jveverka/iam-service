@@ -11,7 +11,7 @@ Project is compliant with subset of [OAuth2](https://tools.ietf.org/html/rfc6749
 and [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) specifications. 
 Issued tokens comply with [JWT](https://tools.ietf.org/html/rfc7519). 
 
-Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/README.md) for more details.
+Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples__](iam-examples) for more details.
 
 ## Features & Mission
 * [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 

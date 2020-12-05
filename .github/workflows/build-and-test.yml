@@ -22,7 +22,9 @@ jobs:
         run: java -version
       - name: Check Gradle version
         run: gradle -version
-      - name: Run Gradle Build and tests
-        run: gradle clean build test -i
-#      - name: Run full test suite
-#        run: ./run-full-test-suite.sh
+      - name: Docker version
+        run: docker --version
+      - name: Docker Compose version
+        run: docker-compose --version
+      - name: Run full test suite
+        run: ./run-full-test-suite.sh

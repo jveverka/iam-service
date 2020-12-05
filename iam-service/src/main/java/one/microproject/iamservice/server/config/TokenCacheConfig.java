@@ -1,6 +1,7 @@
 package one.microproject.iamservice.server.config;
 
 import one.microproject.iamservice.core.model.JWToken;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolder;
@@ -13,16 +14,12 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class TokenCacheConfig {
 
-    private final ModelCache modelCache;
-
-    public TokenCacheConfig(@Autowired ModelCache modelCache) {
-        this.modelCache = modelCache;
-    }
-
     @Bean
     @Scope("singleton")
-    public TokenCache getTokenCache(CacheHolder<JWToken> cache) {
-        return new TokenCacheImpl(modelCache, cache);
+    public TokenCache getTokenCache(@Autowired ModelCache modelCache,
+                                    @Autowired CacheHolder<JWToken> cache,
+                                    @Autowired TokenValidator tokenValidator) {
+        return new TokenCacheImpl(modelCache, tokenValidator, cache);
     }
 
 }

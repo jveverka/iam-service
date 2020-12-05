@@ -9,6 +9,7 @@ import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.dto.Scope;
+import one.microproject.iamservice.client.impl.TokenValidatorImpl;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import one.microproject.iamservice.core.services.impl.caches.TokenCacheImpl;
 import one.microproject.iamservice.core.model.TokenType;
@@ -60,7 +61,7 @@ public class TokenCacheTests {
         Security.addProvider(new BouncyCastleProvider());
         keyPair = TokenUtils.generateKeyPair();
         modelCache = ModelUtils.createDefaultModelCache("top-secret", "top-secret", "admin@email.com");
-        tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
+        tokenCache = new TokenCacheImpl(modelCache, new TokenValidatorImpl(), new CacheHolderImpl<>());
         keyId = KeyId.from("key-001");
         issuerUri = new URI("http://localhost:8080/" + ORGANIZATION_ID.getId() + "/" + PROJECT_ID.getId());
         Map<String, Set<String>> roleClaims = new HashMap<>();

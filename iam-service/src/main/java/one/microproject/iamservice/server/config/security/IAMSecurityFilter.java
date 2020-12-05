@@ -1,6 +1,6 @@
 package one.microproject.iamservice.server.config.security;
 
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.client.spring.AuthenticationImpl;
 import one.microproject.iamservice.server.services.IAMSecurityException;
 import one.microproject.iamservice.server.services.IAMSecurityValidator;

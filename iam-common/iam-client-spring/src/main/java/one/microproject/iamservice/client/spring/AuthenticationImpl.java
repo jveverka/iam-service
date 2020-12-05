@@ -1,6 +1,6 @@
 package one.microproject.iamservice.client.spring;
 
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

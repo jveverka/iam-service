@@ -2,7 +2,7 @@ package one.microproject.iamservice.server.tests;
 
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.IAMClientBuilder;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.CreateClient;
 import one.microproject.iamservice.core.dto.CreateRole;
 import one.microproject.iamservice.core.dto.CreateUser;

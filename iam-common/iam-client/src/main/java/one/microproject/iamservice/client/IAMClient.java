@@ -1,6 +1,6 @@
 package one.microproject.iamservice.client;
 
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.model.JWToken;

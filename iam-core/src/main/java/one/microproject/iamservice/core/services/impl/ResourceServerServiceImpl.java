@@ -1,8 +1,7 @@
 package one.microproject.iamservice.core.services.impl;
 
 import io.jsonwebtoken.impl.DefaultClaims;
-import one.microproject.iamservice.client.JWTUtils;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.User;
@@ -11,6 +10,7 @@ import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.ProjectId;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.model.utils.TokenUtils;
@@ -34,10 +34,12 @@ public class ResourceServerServiceImpl implements ResourceServerService {
 
     private final ModelCache modelCache;
     private final TokenCache tokenCache;
+    private final TokenValidator tokenValidator;
 
-    public ResourceServerServiceImpl(ModelCache modelCache, TokenCache tokenCache) {
+    public ResourceServerServiceImpl(ModelCache modelCache, TokenCache tokenCache, TokenValidator tokenValidator) {
         this.modelCache = modelCache;
         this.tokenCache = tokenCache;
+        this.tokenValidator = tokenValidator;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 UserId userId = UserId.from(defaultClaims.getSubject());
                 Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
                 if (userOptional.isPresent()) {
-                    Optional<StandardTokenClaims> tokenClaims = JWTUtils.validateToken(userOptional.get().getCertificate().getPublicKey(), request.getToken());
+                    Optional<StandardTokenClaims> tokenClaims = tokenValidator.validateToken(userOptional.get().getCertificate().getPublicKey(), request.getToken());
                     LOG.info("JWT verified={}", tokenClaims.isPresent());
                     return new IntrospectResponse(tokenClaims.isPresent());
                 } else {
@@ -57,7 +59,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                     Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
                     Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
                     if (projectOptional.isPresent() && clientOptional.isPresent()) {
-                        Optional<StandardTokenClaims> tokenClaims = JWTUtils.validateToken(projectOptional.get().getCertificate().getPublicKey(), request.getToken());
+                        Optional<StandardTokenClaims> tokenClaims = tokenValidator.validateToken(projectOptional.get().getCertificate().getPublicKey(), request.getToken());
                         LOG.info("JWT verified={}", tokenClaims.isPresent());
                         return new IntrospectResponse(tokenClaims.isPresent());
                     }

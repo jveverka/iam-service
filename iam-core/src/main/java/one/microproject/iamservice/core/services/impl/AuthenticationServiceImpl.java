@@ -1,8 +1,7 @@
 package one.microproject.iamservice.core.services.impl;
 
 import io.jsonwebtoken.impl.DefaultClaims;
-import one.microproject.iamservice.client.JWTUtils;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
@@ -19,6 +18,7 @@ import one.microproject.iamservice.core.model.extensions.authentication.up.UPCre
 import one.microproject.iamservice.core.model.utils.TokenUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.TokenGenerator;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
@@ -49,13 +49,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final TokenCache tokenCache;
     private final AuthorizationCodeCache codeCache;
     private final TokenGenerator tokenGenerator;
+    private final TokenValidator tokenValidator;
 
     public AuthenticationServiceImpl(ModelCache modelCache, TokenCache tokenCache, AuthorizationCodeCache codeCache,
-                                     TokenGenerator tokenGenerator) {
+                                     TokenGenerator tokenGenerator, TokenValidator tokenValidator) {
         this.modelCache = modelCache;
         this.tokenCache = tokenCache;
         this.codeCache = codeCache;
         this.tokenGenerator = tokenGenerator;
+        this.tokenValidator = tokenValidator;
     }
 
     @Override
@@ -147,7 +149,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Optional<User> userOptional = modelCache.getUser(organizationId, projectId, UserId.from(subject));
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                Optional<StandardTokenClaims> claimsOptional = JWTUtils.validateToken(user.getCertificate().getPublicKey(), token);
+                Optional<StandardTokenClaims> claimsOptional = tokenValidator.validateToken(user.getCertificate().getPublicKey(), token);
                 LOG.info("JWT verified={}", claimsOptional.isPresent());
                 if (claimsOptional.isPresent()) {
                     try {
@@ -172,7 +174,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         try {
                             Client client = clientOptional.get();
                             Project project = projectOptional.get();
-                            Optional<StandardTokenClaims> claimsOptional = JWTUtils.validateToken(projectOptional.get().getCertificate().getPublicKey(), token);
+                            Optional<StandardTokenClaims> claimsOptional = tokenValidator.validateToken(projectOptional.get().getCertificate().getPublicKey(), token);
                             LOG.info("JWT verified={}", claimsOptional.isPresent());
                             if (claimsOptional.isPresent()) {
                                 StandardTokenClaims tokenClaims = claimsOptional.get();
@@ -273,7 +275,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String subject = defaultClaims.getSubject();
         Optional<User> userOptional = modelCache.getUser(organizationId, projectId, UserId.from(subject));
         if (userOptional.isPresent()) {
-            Optional<StandardTokenClaims> claimsOptional = JWTUtils.validateToken(userOptional.get().getCertificate().getPublicKey(), token);
+            Optional<StandardTokenClaims> claimsOptional = tokenValidator.validateToken(userOptional.get().getCertificate().getPublicKey(), token);
             LOG.info("JWT verified={}", claimsOptional.isPresent());
             if (claimsOptional.isPresent()) {
                 tokenCache.addRevokedToken(token);
@@ -284,7 +286,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Optional<Client> clientOptional = this.modelCache.getClient(organizationId, projectId, clientId);
             Optional<Project> projectOptional = this.modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent() && clientOptional.isPresent()) {
-                Optional<StandardTokenClaims> claimsOptional = JWTUtils.validateToken(projectOptional.get().getCertificate().getPublicKey(), token);
+                Optional<StandardTokenClaims> claimsOptional = tokenValidator.validateToken(projectOptional.get().getCertificate().getPublicKey(), token);
                 LOG.info("JWT verified={}", claimsOptional.isPresent());
                 if (claimsOptional.isPresent()) {
                     tokenCache.addRevokedToken(token);
@@ -304,7 +306,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Optional<User> userOptional = modelCache.getUser(organizationId, projectId, UserId.from(subject));
             if (userOptional.isPresent()) {
                 PublicKey publicKey = userOptional.get().getKeyPairData().getPublicKey();
-                Optional<StandardTokenClaims> claimsOptional = JWTUtils.validateToken(publicKey, token);
+                Optional<StandardTokenClaims> claimsOptional = tokenValidator.validateToken(publicKey, token);
                 if (claimsOptional.isPresent()) {
                     StandardTokenClaims tokenClaims = claimsOptional.get();
                     if (tokenClaims.getSubject().equals(userOptional.get().getId().getId()) &&

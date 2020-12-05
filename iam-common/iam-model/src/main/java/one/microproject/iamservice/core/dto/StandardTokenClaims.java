@@ -1,4 +1,4 @@
-package one.microproject.iamservice.client.dto;
+package one.microproject.iamservice.core.dto;
 
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;

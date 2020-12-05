@@ -1,13 +1,14 @@
 package one.microproject.iamservice.server.services.impl;
 
 import one.microproject.iamservice.client.JWTUtils;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
-import one.microproject.iamservice.client.impl.KeyProvider;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.KeyProvider;
 import one.microproject.iamservice.client.spring.AuthenticationImpl;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.server.services.IAMSecurityException;
 import one.microproject.iamservice.server.services.IAMSecurityValidator;
 import org.slf4j.Logger;
@@ -30,9 +31,12 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     private static final Logger LOG = LoggerFactory.getLogger(IAMSecurityValidatorImpl.class);
 
     private final ProviderConfigurationService providerConfigurationService;
+    private final TokenValidator tokenValidator;
 
-    public IAMSecurityValidatorImpl(@Autowired ProviderConfigurationService providerConfigurationService) {
+    public IAMSecurityValidatorImpl(@Autowired ProviderConfigurationService providerConfigurationService,
+                                    @Autowired TokenValidator tokenValidator) {
         this.providerConfigurationService = providerConfigurationService;
+        this.tokenValidator = tokenValidator;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
 
     @Override
     public StandardTokenClaims verifyToken(String authorization) throws IAMSecurityException {
-        JWToken token = JWTUtils.extractJwtToken(authorization);
+        JWToken token = tokenValidator.extractJwtToken(authorization);
         KeyProvider provider = keyId -> {
             Optional<PublicKey> key = providerConfigurationService.getKeyById(keyId);
             if (key.isPresent()) {
@@ -56,7 +60,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
                 throw new IAMSecurityException("JWT signing key not found !");
             }
         };
-        Optional<StandardTokenClaims> tokenClaimsOptional = JWTUtils.validateToken(provider, token);
+        Optional<StandardTokenClaims> tokenClaimsOptional = tokenValidator.validateToken(provider, token);
         if (tokenClaimsOptional.isPresent()) {
             return tokenClaimsOptional.get();
         } else {

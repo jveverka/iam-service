@@ -18,6 +18,7 @@ import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
 import one.microproject.iamservice.core.services.impl.TokenGeneratorImpl;
+import one.microproject.iamservice.client.impl.TokenValidatorImpl;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolder;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
 import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
@@ -36,6 +37,7 @@ import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapp
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static one.microproject.iamservice.core.model.utils.ModelUtils.DEFAULT_MODEL;
@@ -55,9 +57,15 @@ public class IAMCoreBuilder {
     private UserManagerService userManagerService;
     private ProviderConfigurationService providerConfigurationService;
     private TokenGenerator tokenGenerator;
+    private TokenValidator tokenValidator;
 
     public IAMCoreBuilder withBCProvider() {
         Security.addProvider(new BouncyCastleProvider());
+        return this;
+    }
+
+    public IAMCoreBuilder withTokenValidator(TokenValidator tokenValidator) {
+        this.tokenValidator = tokenValidator;
         return this;
     }
 
@@ -101,29 +109,34 @@ public class IAMCoreBuilder {
     }
 
     public IAMCoreBuilder withTokenCache(CacheHolder<JWToken> cache) {
-        this.tokenCache = new TokenCacheImpl(modelCache, cache);
+        Objects.requireNonNull(tokenValidator);
+        this.tokenCache = new TokenCacheImpl(modelCache, tokenValidator, cache);
         return this;
     }
 
     public IAMCoreBuilder withDefaultTokenCache() {
-        this.tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
+        Objects.requireNonNull(tokenValidator);
+        this.tokenCache = new TokenCacheImpl(modelCache, tokenValidator, new CacheHolderImpl<>());
         return this;
     }
 
     public IAMCore build() {
-        if (authorizationCodeCache == null) {
-            authorizationCodeCache = new AuthorizationCodeCacheImpl(20L, TimeUnit.MINUTES, new CacheHolderImpl<>());
-        }
-        if (tokenCache == null) {
-            tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
+        if (tokenValidator == null) {
+            tokenValidator = new TokenValidatorImpl();
         }
         if (tokenGenerator == null) {
             tokenGenerator = new TokenGeneratorImpl();
         }
+        if (authorizationCodeCache == null) {
+            authorizationCodeCache = new AuthorizationCodeCacheImpl(20L, TimeUnit.MINUTES, new CacheHolderImpl<>());
+        }
+        if (tokenCache == null) {
+            tokenCache = new TokenCacheImpl(modelCache, tokenValidator, new CacheHolderImpl<>());
+        }
         cacheCleanupScheduler = new CacheCleanupSchedulerImpl(10L, TimeUnit.MINUTES, authorizationCodeCache, tokenCache);
         cacheCleanupScheduler.start();
-        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, tokenGenerator);
-        resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, tokenGenerator, tokenValidator);
+        resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache, tokenValidator);
         clientManagementService = new ClientManagementServiceImpl(modelCache);
         organizationManagerService = new OrganizationManagerServiceImpl(modelCache);
         projectManagerService = new ProjectManagerServiceImpl(modelCache);

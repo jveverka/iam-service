@@ -1,8 +1,7 @@
 package one.microproject.iamservice.core.tests;
 
 import io.jsonwebtoken.impl.DefaultClaims;
-import one.microproject.iamservice.client.JWTUtils;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.Project;
@@ -10,6 +9,7 @@ import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.services.AuthenticationService;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.dto.IdTokenRequest;
@@ -20,6 +20,7 @@ import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
 import one.microproject.iamservice.core.services.impl.TokenGeneratorImpl;
+import one.microproject.iamservice.client.impl.TokenValidatorImpl;
 import one.microproject.iamservice.core.services.impl.caches.AuthorizationCodeCacheImpl;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.services.impl.caches.CacheHolderImpl;
@@ -68,15 +69,17 @@ public class ClientUPAuthenticationTests {
     private static JWToken refreshToken;
     private static IdTokenRequest idTokenRequest;
     private static URI issuerUri;
+    private static TokenValidator tokenValidator;
 
     @BeforeAll
     private static void init() throws PKIException, URISyntaxException {
         Security.addProvider(new BouncyCastleProvider());
+        tokenValidator = new TokenValidatorImpl();
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES, new CacheHolderImpl<>());
         modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail);
-        tokenCache = new TokenCacheImpl(modelCache, new CacheHolderImpl<>());
-        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, new TokenGeneratorImpl());
-        resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache);
+        tokenCache = new TokenCacheImpl(modelCache, tokenValidator, new CacheHolderImpl<>());
+        authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, new TokenGeneratorImpl(), tokenValidator);
+        resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache, tokenValidator);
         idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
         issuerUri = new URI("http://localhost:8080/issuer");
     }
@@ -163,11 +166,11 @@ public class ClientUPAuthenticationTests {
         assertTrue(projectInfo.isPresent());
         Optional<User> userInfo = resourceServerService.getUser(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, ModelUtils.IAM_ADMIN_USER);
         assertTrue(userInfo.isPresent());
-        Optional<StandardTokenClaims> claims = JWTUtils.validateToken(userInfo.get().getCertificate().getPublicKey(), accessToken);
+        Optional<StandardTokenClaims> claims = tokenValidator.validateToken(userInfo.get().getCertificate().getPublicKey(), accessToken);
         assertTrue(claims.isPresent());
-        claims = JWTUtils.validateToken(projectInfo.get().getCertificate().getPublicKey(), accessToken);
+        claims = tokenValidator.validateToken(projectInfo.get().getCertificate().getPublicKey(), accessToken);
         assertTrue(claims.isEmpty());
-        claims = JWTUtils.validateToken(organizationOptional.get().getCertificate().getPublicKey(), accessToken);
+        claims = tokenValidator.validateToken(organizationOptional.get().getCertificate().getPublicKey(), accessToken);
         assertTrue(claims.isEmpty());
     }
 

@@ -3,6 +3,7 @@ package one.microproject.iamservice.server.config;
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.services.TokenGenerator;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.admin.ClientManagementService;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
 import one.microproject.iamservice.core.services.caches.ModelCache;
@@ -15,6 +16,7 @@ import one.microproject.iamservice.core.services.impl.AuthenticationServiceImpl;
 import one.microproject.iamservice.core.services.impl.ProviderConfigurationServiceImpl;
 import one.microproject.iamservice.core.services.impl.ResourceServerServiceImpl;
 import one.microproject.iamservice.core.services.impl.TokenGeneratorImpl;
+import one.microproject.iamservice.client.impl.TokenValidatorImpl;
 import one.microproject.iamservice.core.services.impl.admin.ClientManagementServiceImpl;
 import one.microproject.iamservice.core.services.impl.admin.UserManagerServiceImpl;
 import one.microproject.iamservice.core.services.impl.admin.OrganizationManagerServiceImpl;
@@ -27,16 +29,10 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class CoreServiceConfig {
 
-    private final ModelCache modelCache;
-    private final TokenCache tokenCache;
-    private final AuthorizationCodeCache authorizationCodeCache;
-
-    public CoreServiceConfig(@Autowired ModelCache modelCache,
-                             @Autowired TokenCache tokenCache,
-                             @Autowired AuthorizationCodeCache authorizationCodeCache) {
-        this.modelCache = modelCache;
-        this.tokenCache = tokenCache;
-        this.authorizationCodeCache = authorizationCodeCache;
+    @Bean
+    @Scope("singleton")
+    public TokenValidator getTokenValidator()  {
+        return new TokenValidatorImpl();
     }
 
     @Bean
@@ -47,37 +43,43 @@ public class CoreServiceConfig {
 
     @Bean
     @Scope("singleton")
-    public AuthenticationService getAuthenticationService(@Autowired TokenGenerator tokenGenerator) {
-        return new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, tokenGenerator);
+    public AuthenticationService getAuthenticationService(@Autowired ModelCache modelCache,
+                                                          @Autowired TokenCache tokenCache,
+                                                          @Autowired AuthorizationCodeCache authorizationCodeCache,
+                                                          @Autowired TokenGenerator tokenGenerator,
+                                                          @Autowired TokenValidator tokenValidator) {
+        return new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, tokenGenerator, tokenValidator);
     }
 
     @Bean
     @Scope("singleton")
-    public ResourceServerService getResourceServerService() {
-        return new ResourceServerServiceImpl(modelCache, tokenCache);
+    public ResourceServerService getResourceServerService(@Autowired ModelCache modelCache,
+                                                          @Autowired TokenCache tokenCache,
+                                                          @Autowired TokenValidator tokenValidator) {
+        return new ResourceServerServiceImpl(modelCache, tokenCache, tokenValidator);
     }
 
     @Bean
     @Scope("singleton")
-    public OrganizationManagerService getOrganizationManagerService() {
+    public OrganizationManagerService getOrganizationManagerService(@Autowired ModelCache modelCache) {
         return new OrganizationManagerServiceImpl(modelCache);
     }
 
     @Bean
     @Scope("singleton")
-    public ProjectManagerService getProjectManagerService() {
+    public ProjectManagerService getProjectManagerService(@Autowired ModelCache modelCache) {
         return new ProjectManagerServiceImpl(modelCache);
     }
 
     @Bean
     @Scope("singleton")
-    public UserManagerService getClientManagerService() {
+    public UserManagerService getClientManagerService(@Autowired ModelCache modelCache) {
         return new UserManagerServiceImpl(modelCache);
     }
 
     @Bean
     @Scope("singleton")
-    public ClientManagementService getClientManagementService() {
+    public ClientManagementService getClientManagementService(@Autowired ModelCache modelCache) {
         return new ClientManagementServiceImpl(modelCache);
     }
 

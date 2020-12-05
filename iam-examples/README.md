@@ -7,4 +7,5 @@ Listed below are show-cases for various integration scenarios of __iam-service__
 * [x] [spring-webflux-secured](spring-webflux-secured) - Spring WebFlux and JWT validation demo.
 
 ## Advanced Examples
-* [x] [Override JWT generation](examples-docs/overriding-jwt-generation.md) - How to override JWT token generation on __iam-service__.
+* [x] [Override JWT generation](examples-docs/overriding-jwt-generation.md) - How to override JWT token generation in __iam-service__.
+* [x] [Override JWT validation](examples-docs/override-jwt-validation.md) - How to override JWT token validation in __iam-service__.

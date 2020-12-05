@@ -1,7 +1,7 @@
 package one.microproject.iamservice.client.spring;
 
 import one.microproject.iamservice.client.JWTUtils;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

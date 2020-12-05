@@ -3,6 +3,8 @@ package one.microproject.iamservice.client;
 import one.microproject.iamservice.client.impl.IAMClientImpl;
 import one.microproject.iamservice.client.impl.IAMServiceHttpProxyImpl;
 import one.microproject.iamservice.client.impl.IAMServiceProxy;
+import one.microproject.iamservice.client.impl.TokenValidatorImpl;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 
@@ -15,6 +17,7 @@ public class IAMClientBuilder {
     private IAMServiceProxy iamServiceProxy;
     private OrganizationId organizationId;
     private ProjectId projectId;
+    private TokenValidator tokenValidator;
 
     public IAMClientBuilder setOrganizationId(String organizationId) {
         this.organizationId = OrganizationId.from(organizationId);
@@ -40,11 +43,19 @@ public class IAMClientBuilder {
         return this;
     }
 
+    public IAMClientBuilder withTokenValidator(TokenValidator tokenValidator) {
+        this.tokenValidator = tokenValidator;
+        return this;
+    }
+
     public IAMClient build() {
+        if (tokenValidator == null) {
+            tokenValidator = new TokenValidatorImpl();
+        }
         Objects.requireNonNull(organizationId);
         Objects.requireNonNull(projectId);
         Objects.requireNonNull(iamServiceProxy);
-        return new IAMClientImpl(iamServiceProxy, organizationId, projectId);
+        return new IAMClientImpl(tokenValidator, iamServiceProxy, organizationId, projectId);
     }
 
     public static IAMClientBuilder builder() {

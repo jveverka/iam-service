@@ -1,14 +1,14 @@
 package one.microproject.iamservice.client.impl;
 
 import one.microproject.iamservice.client.IAMClient;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.TokenValidator;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.ProjectId;
-import one.microproject.iamservice.client.JWTUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +16,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.client.JWTUtils.validateToken;
-
 public class IAMClientImpl implements IAMClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMClientImpl.class);
 
+    private final TokenValidator tokenValidator;
     private final IAMServiceProxy iamServiceProxy;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
 
-    public IAMClientImpl(IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) {
+    public IAMClientImpl(TokenValidator tokenValidator, IAMServiceProxy iamServiceProxy, OrganizationId organizationId, ProjectId projectId) {
         this.iamServiceProxy = iamServiceProxy;
         this.organizationId = organizationId;
         this.projectId = projectId;
+        this.tokenValidator = tokenValidator;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class IAMClientImpl implements IAMClient {
     @Override
     public Optional<StandardTokenClaims> validate(OrganizationId organizationId, ProjectId projectId, JWToken token) {
         try {
-            return JWTUtils.validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), token);
+            return tokenValidator.validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), token);
         } catch (Exception e) {
             LOG.info("Exception: ", e);
         }
@@ -58,7 +58,7 @@ public class IAMClientImpl implements IAMClient {
                             Set<Permission> requiredAdminPermissions, Set<Permission> requiredApplicationPermissions,
                             JWToken token) {
         try {
-            return JWTUtils.validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), requiredAdminPermissions, requiredApplicationPermissions, token);
+            return tokenValidator.validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), requiredAdminPermissions, requiredApplicationPermissions, token);
         } catch (Exception e) {
             LOG.info("Exception: ", e);
         }

@@ -1,13 +1,13 @@
 package one.microproject.iamservice.core.services.impl.caches;
 
 import io.jsonwebtoken.impl.DefaultClaims;
-import one.microproject.iamservice.client.JWTUtils;
-import one.microproject.iamservice.client.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.model.JWToken;
@@ -17,10 +17,12 @@ import java.util.Optional;
 public class TokenCacheImpl implements TokenCache {
 
     private final ModelCache modelCache;
+    private final TokenValidator tokenValidator;
     private CacheHolder<JWToken> revokedJWTokens;
 
-    public TokenCacheImpl(ModelCache modelCache, CacheHolder<JWToken> cacheHolder) {
+    public TokenCacheImpl(ModelCache modelCache, TokenValidator tokenValidator, CacheHolder<JWToken> cacheHolder) {
         this.revokedJWTokens = cacheHolder;
+        this.tokenValidator =  tokenValidator;
         this.modelCache = modelCache;
     }
 
@@ -57,7 +59,7 @@ public class TokenCacheImpl implements TokenCache {
         UserId userId = UserId.from(defaultClaims.getSubject());
         Optional<User> userOptional = this.modelCache.getUser(organizationId, projectId, userId);
         if (userOptional.isPresent()) {
-            Optional<StandardTokenClaims> tokenClaims = JWTUtils.validateToken(userOptional.get().getCertificate().getPublicKey(), jwToken);
+            Optional<StandardTokenClaims> tokenClaims = tokenValidator.validateToken(userOptional.get().getCertificate().getPublicKey(), jwToken);
             return tokenClaims.isPresent();
         }
         return false;

@@ -58,10 +58,12 @@ Please check [__user's manual__ and __guidelines__](docs/IAM-user-manual/README.
 * [JWT mappings](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
 * [Project build & test instructions](docs/IAM-build-test.md) - how to build this project locally.
 
-#### Related RFCs and Specifications
-* [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0
-* [RFC6749](https://tools.ietf.org/html/rfc6749) - The OAuth 2.0 Authorization Framework
+#### RFCs and Specifications
+* [RFC6749](https://tools.ietf.org/html/rfc6749) - OAuth 2.0 Authorization Framework
+* [RFC7009](https://tools.ietf.org/html/rfc7009) - OAuth 2.0 Token Revocation  
+* [RFC7662](https://tools.ietf.org/html/rfc7662) - OAuth 2.0 Token Introspection
+* [RFC6750](https://tools.ietf.org/html/rfc6750) - OAuth 2.0 Bearer Token Usage  
 * [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
 * [RFC7517](https://tools.ietf.org/html/rfc7517) - JSON Web Key (JWK)
-* [RFC7009](https://tools.ietf.org/html/rfc7009) - OAuth 2.0 Token Revocation  
+* [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0
 * [References](docs/references.md)

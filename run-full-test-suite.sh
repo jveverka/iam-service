@@ -24,7 +24,7 @@ echo "            \/         \/                  \/     \/                    \/
 echo "Full Build & Integration Tests"
 echo ""
 
-#0. Check system dependencies.
+#00. Check system dependencies.
 which java
 if [ $? = 0  ]; then
   echo -e "Java           ${GREEN}OK${NOCOLOR}"
@@ -56,7 +56,7 @@ else
   exit 1
 fi
 
-#1. Build project and run JUnit tests
+#01. Build project and run JUnit tests
 gradle clean build test
 if [ $? -eq  0 ]; then
    BUILD_RESULT="${GREEN}OK${NOCOLOR}"
@@ -64,7 +64,7 @@ else
    RESULT_COUNTER=$((RESULT_COUNTER+1))
 fi
 
-#2. Create and deploy docker images
+#02. Create and deploy docker images
 docker-compose up --build -d
 if [ $? -eq  0 ]; then
    DOCKER_RESULT="${GREEN}OK${NOCOLOR}"
@@ -73,7 +73,7 @@ else
 fi
 
 if [ $RESULT_COUNTER -eq 0 ]; then
-   #3. Wait for all REST services to start.
+   #03. Wait for all REST services to start.
    until $(curl --silent --output /dev/null -f http://127.0.0.1:8080/services/authentication/iam-admins/iam-admins/.well-known/jwks.json ); do
       echo "Waiting for iam-service to start ..."
       sleep 1
@@ -91,7 +91,16 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       sleep 1
    done
 
-   #4. Run Integration tests for 'spring-method-security' demo
+   #04. Setup iam-service
+   echo -e "${YELLOW}TESTING EXAMPLE: iam-service SETUP${NOCOLOR}"
+   gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-setup
+   if [ $? -eq  0 ]; then
+      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+   else
+      RESULT_COUNTER=$((RESULT_COUNTER+1))
+   fi
+
+   #05. Run Integration tests for 'spring-method-security' demo
    echo -e "${YELLOW}TESTING EXAMPLE: spring-method-security${NOCOLOR}"
    gradle :spring-method-security:clean :spring-method-security:test -Dtest.profile=integration
    if [ $? -eq  0 ]; then
@@ -100,7 +109,7 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
 
-   #5. Run Integration tests for 'spring-resource-server' demo
+   #06. Run Integration tests for 'spring-resource-server' demo
    echo -e "${YELLOW}TESTING EXAMPLE: spring-resource-server${NOCOLOR}"
    gradle :spring-resource-server:clean :spring-resource-server:test -Dtest.profile=integration
    if [ $? -eq  0 ]; then
@@ -109,7 +118,7 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
 
-   #6. Run Integration tests for 'spring-webflux-secured' demo
+   #07. Run Integration tests for 'spring-webflux-secured' demo
    echo -e "${YELLOW}TESTING EXAMPLE: spring-webflux-secured${NOCOLOR}"
    gradle :spring-webflux-secured:clean :spring-webflux-secured:test -Dtest.profile=integration
    if [ $? -eq  0 ]; then
@@ -118,9 +127,18 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
 
+   #08. Cleanup iam-service
+   echo -e "${YELLOW}TESTING EXAMPLE: iam-service CLEANUP${NOCOLOR}"
+   gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-cleanup
+   if [ $? -eq  0 ]; then
+      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+   else
+      RESULT_COUNTER=$((RESULT_COUNTER+1))
+   fi
+
 fi
 
-#6. Shutdown and Cleanup docker
+#09. Shutdown and Cleanup docker
 docker-compose down -v --rmi all --remove-orphans
 if [ $? -eq  0 ]; then
    CLEANUP_RESULT="${GREEN}OK${NOCOLOR}"
@@ -128,7 +146,7 @@ else
    RESULT_COUNTER=$((RESULT_COUNTER+1))
 fi
 
-#7. Report results
+#10. Report results
 END_TIME=$(date +%s.%N)
 DIFF_TIME=$(echo "$END_TIME - $START_TIME" | bc)
 if [ $RESULT_COUNTER -eq  0 ]; then

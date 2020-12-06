@@ -32,4 +32,6 @@ public interface IAMServiceManagerClient {
 
     IAMServiceUserManagerClient getIAMServiceUserManagerClient(String accessToken, OrganizationId organizationId, ProjectId projectId);
 
+    boolean isServerAlive() throws IOException;
+
 }

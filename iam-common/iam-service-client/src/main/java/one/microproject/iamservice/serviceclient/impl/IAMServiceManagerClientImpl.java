@@ -107,6 +107,16 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     }
 
     @Override
+    public boolean isServerAlive() throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/actuator/info")
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        return (response.code() == 200);
+    }
+
+    @Override
     public Collection<OrganizationInfo> getOrganizations() throws IOException {
          Request request = new Request.Builder()
                  .url(baseURL + "/services/discovery")

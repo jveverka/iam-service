@@ -8,11 +8,6 @@ services:
     network_mode: "host"
     ports:
       - "8080:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/services/health/status"]
-      interval: 2s
-      timeout: 1s
-      retries: 5
   spring-method-security:
     image: spring-method-security:2.0.0-SNAPSHOT
     build:

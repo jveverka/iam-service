@@ -93,12 +93,22 @@ project(':iam-caches-redis') {
 
 // Spring EXAMPLES
 
+project(':integration-tests') {
+    dependencies {
+        implementation project(':iam-model')
+        implementation project(':iam-client')
+        implementation project(':iam-core')
+        implementation project(':iam-service-client')
+    }
+}
+
 project(':spring-resource-server') {
     dependencies {
         testImplementation project(':iam-model')
         testImplementation project(':iam-client')
         testImplementation project(':iam-core')
         testImplementation project(':iam-service-client')
+        testImplementation project(':integration-tests')
     }
 }
 
@@ -109,6 +119,7 @@ project(':spring-method-security') {
         implementation project(':iam-client-spring')
         testImplementation project(':iam-core')
         testImplementation project(':iam-service-client')
+        testImplementation project(':integration-tests')
     }
 }
 
@@ -118,6 +129,7 @@ project(':spring-webflux-secured') {
         implementation project(':iam-client')
         testImplementation project(':iam-core')
         testImplementation project(':iam-service-client')
+        testImplementation project(':integration-tests')
     }
 }
 

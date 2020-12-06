@@ -1,6 +1,9 @@
 # Examples and Use-Cases
 Listed below are show-cases for various integration scenarios of __iam-service__ in micro-service environment.
 
+## iam-client and automated setup examples
+* [x] [integration-tests](integration-tests) - Using iam-client and iam-service-client to programmatically setup and validate iam-service.
+
 ## Microservice Examples
 * [x] [spring-method-security](spring-method-security) - JWT validation and spring method security demo. 
 * [x] [spring-resource-server](spring-resource-server) - OAuth2 Spring Security and Resource Server demo.

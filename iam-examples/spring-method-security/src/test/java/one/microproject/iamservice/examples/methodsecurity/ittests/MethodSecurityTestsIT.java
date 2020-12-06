@@ -4,15 +4,9 @@ package one.microproject.iamservice.examples.methodsecurity.ittests;
 import one.microproject.iamservice.core.dto.CreateRole;
 import one.microproject.iamservice.core.dto.CreateUser;
 import one.microproject.iamservice.core.dto.PermissionInfo;
-import one.microproject.iamservice.core.model.ClientId;
-import one.microproject.iamservice.core.model.OrganizationId;
-import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
-import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
-import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.examples.methodsecurity.dto.ServerData;
 import one.microproject.iamservice.examples.methodsecurity.dto.SystemInfo;
@@ -42,8 +36,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMAdminTokens;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.organizationId;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.projectId;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.clientId;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.appAdminUserId;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MethodSecurityTestsIT {
@@ -53,15 +53,10 @@ public class MethodSecurityTestsIT {
     private static TestRestTemplate restTemplate;
     private static int iamServerPort;
     private static int resourceServerPort;
-    private static TokenResponse iamAdminTokens;
     private static TokenResponse appAdminTokens;
     private static TokenResponse appReaderTokens;
     private static TokenResponse appWriterTokens;
 
-    private final static OrganizationId organizationId = OrganizationId.from("it-testing-001");
-    private final static ProjectId projectId = ProjectId.from("spring-method-security");
-    private final static UserId appAdminUserId = UserId.from("user-001");
-    private final static ClientId clientId = ClientId.from("client-001");
     private final static RoleId appUserRoleReader = RoleId.from("role-reader");
     private final static RoleId appUserRoleWriter = RoleId.from("role-writer");
     private final static Set<PermissionInfo> readerPermissions = Set.of(
@@ -89,41 +84,11 @@ public class MethodSecurityTestsIT {
     }
 
     @Test
-    @Order(1)
-    public void checkIamServerIsAlive() {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://localhost:" + iamServerPort + "/actuator/info", String.class);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
     @Order(2)
     public void checkResourceServerIsAlive() {
         ResponseEntity<SystemInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/public/info", SystemInfo.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    @Order(3)
-    public void getIamAdminAccessTokens() throws AuthenticationException {
-        iamAdminTokens = iamServiceManagerClient
-                .getIAMAdminAuthorizerClient()
-                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
-        assertNotNull(iamAdminTokens);
-    }
-
-    @Test
-    @Order(4)
-    public void createOrganizationProjectAndAdminUser() throws AuthenticationException {
-        SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
-                projectId.getId(),  "Method Security Project",
-                clientId.getId(), "top-secret", appAdminUserId.getId(),  "secret", "admin@email.com",
-                Set.of("methodsecurity"), "http://localhost:" + iamServerPort + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect",
-                UserProperties.getDefault());
-        SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(iamAdminTokens.getAccessToken(), setupOrganizationRequest);
-        assertNotNull(setupOrganizationResponse);
     }
 
     @Test
@@ -192,7 +157,8 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(11)
-    public void testSecureAccessInvalidIAMAdminTokens() {
+    public void testSecureAccessInvalidIAMAdminTokens() throws AuthenticationException {
+        TokenResponse iamAdminTokens = getIAMAdminTokens(iamServiceManagerClient);
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + iamAdminTokens.getAccessToken()));
         HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);

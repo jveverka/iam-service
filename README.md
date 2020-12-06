@@ -62,7 +62,8 @@ Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples_
 * [RFC6749](https://tools.ietf.org/html/rfc6749) - OAuth 2.0 Authorization Framework
 * [RFC7009](https://tools.ietf.org/html/rfc7009) - OAuth 2.0 Token Revocation  
 * [RFC7662](https://tools.ietf.org/html/rfc7662) - OAuth 2.0 Token Introspection
-* [RFC6750](https://tools.ietf.org/html/rfc6750) - OAuth 2.0 Bearer Token Usage  
+* [RFC6750](https://tools.ietf.org/html/rfc6750) - OAuth 2.0 Bearer Token Usage
+* [RFC8414](https://tools.ietf.org/html/rfc8414) - OAuth 2.0 Authorization Server Metadata
 * [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
 * [RFC7517](https://tools.ietf.org/html/rfc7517) - JSON Web Key (JWK)
 * [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0

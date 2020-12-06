@@ -13,6 +13,7 @@ import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.services.ResourceServerService;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
+import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeGrantRequest;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.services.dto.ConsentRequest;
@@ -195,29 +196,35 @@ public class AuthenticationController {
                 authorizationCodeGrantRequest.getPassword(), scopes, authorizationCodeGrantRequest.getState(),
                 authorizationCodeGrantRequest.getRedirectUri());
         return ResponseEntity.of(authorizationCode);
-        //TODO: redirect to 'redirect URL ?' (redirect to URL associated with clientID which initiated flow ?)
     }
 
     @PostMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
-                                                        @RequestBody ConsentRequest request) {
+                                                        @RequestBody ConsentRequest request) throws URISyntaxException {
         LOG.info("consentProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
-        if (authenticationService.setScope(request.getCode(), scopes)) {
-            return ResponseEntity.ok().build();
+        Optional<AuthorizationCodeContext> authorizationCodeContext = authenticationService.setScope(request.getCode(), scopes);
+        if (authorizationCodeContext.isPresent()) {
+            //TODO: redirect to 'redirect URL ?' (redirect to URL associated with clientID which initiated flow ?)
+            //return ResponseEntity.ok().build();
+            AuthorizationCodeContext context = authorizationCodeContext.get();
+            LOG.info("redirecting to: {}", context.getRedirectURI());
+            URI redirectUri = new URI(context.getRedirectURI() + "?code=" + context.getCode().getCodeValue() + "&state=" + context.getState());
+            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectUri).build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
+    // Default redirect only for testing purposes.
     @GetMapping(path = "/{organization-id}/{project-id}/redirect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> redirect(@PathVariable("organization-id") String organizationId,
                                                       @PathVariable("project-id") String projectId,
                                                       @RequestParam("code") String code,
                                                       @RequestParam("state") String state,
                                                       HttpServletRequest request) throws URISyntaxException, MalformedURLException {
-        LOG.info("redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
+        LOG.info("default redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         RestTemplate restTemplate = new RestTemplate();
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
         String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;

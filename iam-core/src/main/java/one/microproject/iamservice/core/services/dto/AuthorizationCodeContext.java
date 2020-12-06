@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 public class AuthorizationCodeContext {
 
+    private final Code code;
     private final URI issuerUri;
     private final OrganizationId organizationId;
     private final ProjectId projectId;
@@ -26,6 +28,7 @@ public class AuthorizationCodeContext {
 
     @JsonCreator
     public AuthorizationCodeContext(
+            @JsonProperty("code") Code code,
             @JsonProperty("issuerUri") URI issuerUri,
             @JsonProperty("organizationId") OrganizationId organizationId,
             @JsonProperty("projectId") ProjectId projectId,
@@ -36,6 +39,7 @@ public class AuthorizationCodeContext {
             @JsonProperty("scope") Scope scope,
             @JsonProperty("audience") Set<String> audience,
             @JsonProperty("redirectURI") String redirectURI) {
+        this.code = code;
         this.issuerUri = issuerUri;
         this.organizationId = organizationId;
         this.projectId = projectId;
@@ -46,6 +50,10 @@ public class AuthorizationCodeContext {
         this.scope = scope;
         this.audience = audience;
         this.redirectURI = redirectURI;
+    }
+
+    public Code getCode() {
+        return code;
     }
 
     public URI getIssuerUri() {

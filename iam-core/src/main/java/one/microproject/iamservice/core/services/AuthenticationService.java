@@ -8,6 +8,7 @@ import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.dto.Code;
+import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.dto.IdTokenRequest;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
@@ -63,7 +64,7 @@ public interface AuthenticationService {
      * @param scope - updated scope
      * @return
      */
-    boolean setScope(Code code, Scope scope);
+    Optional<AuthorizationCodeContext> setScope(Code code, Scope scope);
 
     /**
      * Get new set of tokens using issued and valid refresh toke.

@@ -45,7 +45,7 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
     }
 
     @Override
-    public boolean setScope(Code code, Scope scope) {
+    public Optional<AuthorizationCodeContext> setScope(Code code, Scope scope) {
         AuthorizationCodeContext context = codes.get(code.getCodeValue());
         if (context != null) {
             Set<String> filteredScopes = new HashSet<>();
@@ -54,13 +54,13 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
                     filteredScopes.add(s);
                 }
             });
-            AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(context.getIssuerUri(),
+            AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(code, context.getIssuerUri(),
                     context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
                     context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience(), context.getRedirectURI());
             codes.put(code.getCodeValue(), updatedContext);
-            return true;
+            return Optional.of(context);
         } else {
-            return false;
+            return Optional.empty();
         }
     }
 

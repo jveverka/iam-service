@@ -222,7 +222,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public boolean setScope(Code code, Scope scope) {
+    public Optional<AuthorizationCodeContext> setScope(Code code, Scope scope) {
         return codeCache.setScope(code, scope);
     }
 
@@ -257,7 +257,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                     Code code = Code.from(UUID.randomUUID().toString());
                     AuthorizationCodeContext authorizationCodeContext =
-                            new AuthorizationCodeContext(issuerUri, organizationId, projectId, clientId, userId, state, new Date(), filteredScopes, projectOptional.get().getAudience(), redirectURI);
+                            new AuthorizationCodeContext(code, issuerUri, organizationId, projectId, clientId, userId, state, new Date(), filteredScopes, projectOptional.get().getAudience(), redirectURI);
                     AuthorizationCode authorizationCode = codeCache.save(code, authorizationCodeContext);
                     return Optional.of(authorizationCode);
                 }

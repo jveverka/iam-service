@@ -59,7 +59,7 @@ public class AuthorizationCodeCacheTests {
     public void testIssueCode() {
         Code code = Code.from(UUID.randomUUID().toString());
         AuthorizationCodeContext authorizationCodeContext =
-                new AuthorizationCodeContext(issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),
+                new AuthorizationCodeContext(code, issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),
                         ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), new Date(), scope, audience, "");
         authorizationCode = authorizationCodeCache.save(code, authorizationCodeContext);
         assertNotNull(authorizationCode);

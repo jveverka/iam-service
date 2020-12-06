@@ -66,7 +66,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(1)
     public void getLoginFormTest() {
-        redirectUri = "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/token";
+        redirectUri = "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/redirect";
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("response_type", "code");
         urlVariables.put("scope", "");
@@ -85,7 +85,8 @@ public class OAuth2AuthorizationCodeGrantTest {
     public void getAuthorizationCodeTest() throws MalformedURLException, AuthenticationException {
         authorizationCode = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .getAuthorizationCodeOAuth2AuthorizationCodeGrant("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, Set.of(), new URL("http://localhost:8080"), "123");
+                .getAuthorizationCodeOAuth2AuthorizationCodeGrant("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, Set.of(),
+                        new URL("http://localhost:" + port + "/services/authentication/" + ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId() + "/redirect"), "123");
         assertNotNull(authorizationCode);
     }
 

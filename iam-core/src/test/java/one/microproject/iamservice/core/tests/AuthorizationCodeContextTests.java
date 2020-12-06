@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -23,7 +24,7 @@ public class AuthorizationCodeContextTests {
     @Test
     public void serializationAndDeserialization() throws URISyntaxException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        AuthorizationCodeContext authCodeContext = new AuthorizationCodeContext(
+        AuthorizationCodeContext authCodeContext = new AuthorizationCodeContext(Code.from("code-001"),
                 new URI("http://localhost:8080"), OrganizationId.from("org-001"), ProjectId.from("proj-001"),
                 ClientId.from("cl-01"), UserId.from("usr-01"), "xxx", new Date(), Scope.empty(), Set.of(), "");
         String data = mapper.writeValueAsString(authCodeContext);

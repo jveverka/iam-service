@@ -13,7 +13,7 @@ public interface AuthorizationCodeCache {
 
     int purgeCodes();
 
-    boolean setScope(Code code, Scope scope);
+    Optional<AuthorizationCodeContext> setScope(Code code, Scope scope);
 
     Optional<AuthorizationCodeContext> verifyAndRemove(Code code);
 

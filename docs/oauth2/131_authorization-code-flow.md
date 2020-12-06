@@ -11,13 +11,13 @@
 6. Client sends login context and user's credentials ti IAM-service.
 7. IAM-service has now complete authentication and authorization request, claims and after verification, issues authorization code.
 8. Client received authorization code and the list of available scopes / permissions - consent screen.
-9. Client sends back list of approved scopes and gets redirected to redirect_uri.
+9. User sends back list of approved scopes and gets redirected to redirect_uri.
 10. 
 11. 
 12. 
 13.     
 14.
-15.
+15. Access resources using tokens.
 
 ### Test in Browser
 * Init login flow using web browser.

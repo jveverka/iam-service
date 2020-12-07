@@ -4,20 +4,22 @@
 ![flow](131_authorization-code-flow.svg)
 
 1. User initializes authentication and authorization flow.
-2. Client sends request.
+2. Client sends auth request, response_type=code.
 3. Request is verified by IAM-service.
 4. IAM-service responds, providing login context.
-5. User enters login credentials and confirms scope (consent)
-6. Client sends login context and user's credentials ti IAM-service.
-7. IAM-service has now complete authentication and authorization request, claims and after verification, issues authorization code.
-8. Client received authorization code and the list of available scopes / permissions - consent screen.
-9. User sends back list of approved scopes and gets redirected to redirect_uri.
-10. 
-11. 
-12. 
-13.     
-14.
-15. Access resources using tokens.
+5. User enters login credentials.
+6. Client sends login user's login credentials to IAM-service.
+7. IAM-service verifies login credentials and responds with scope data for user.
+8. Client received available scopes / permissions and presents consent screen to user.
+9. Selects scope for this auth action and confirm.
+10. Client sends back list of approved scopes. 
+11. Approved scopes are evaluated and authorization code is issued.
+12. Client is redirected to Callback URL handing over code.
+13. Resource server sends code to IAM-service.   
+14. IAM-service issues tokens and sends back access_token and refresh_token.
+15. access_token and refresh_token are forwarded to client.
+16. Login flow is finished.
+17. Access resources using issued access_token.
 
 ### Test in Browser
 * Init login flow using web browser.
@@ -26,23 +28,22 @@
   ``` 
 
 ### Test in Postman
+| Name                 | Value                                                                               |
+|----------------------|-------------------------------------------------------------------------------------|
+| __Grant Type__       | Authorization Code                                                                  |
+| __Callback URL__     | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/redirect```  |
+| __Auth URL__         | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize``` |
+| __Access Token URL__ | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```     |
+| __Client ID__        |  admin-client                                                                       |
+| __Client Secret__    |  top-secret                                                                         |
+| __Scope__            |  ""                                                                                 |
+| __State__            | <random-string>                                                                     |
 
-* __Grant Type__ : Authorization Code
-* __Callback URL__: ```http://localhost:8080/services/authentication/iam-admins/iam-admins/redirect```
-* __Auth URL__: ```http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize```
-* __Access Token URL__ : ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```
-* __Client ID__: admin-client
-* __Client Secret__: top-secret
-* __Scope__: ""
-* __State__: <random-string>
-
-![postman](131_flow-postman-01.png) 
 ![postman](131_flow-postman-02.png) 
 ![postman](131_flow-postman-03.png) 
 ![postman](131_flow-postman-04.png)
 
 ### Test in Insomnia
-![insomnia](131_flow-insomnia-01.png) 
 ![insomnia](131_flow-insomnia-02.png) 
 ![insomnia](131_flow-insomnia-03.png) 
 ![insomnia](131_flow-insomnia-04.png)

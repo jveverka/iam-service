@@ -6,8 +6,13 @@
 * __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/token``
   ``grant_type=password&username=<username>&password=<password>&scope=<scopes>&client_id=<id>&client_secret=<secret>``
 
-### Test in Postman
-![postman](133_flow-postman.png)
-
-### Test in Insomnia
-![insomnia](133_flow-insomnia.png)
+### Test in Postman or Insomnia
+| Name                 | Value                                                                               |
+|----------------------|-------------------------------------------------------------------------------------|
+| __Grant Type__       | Password Credentials                                                                | 
+| __Access Token URL__ | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```     |
+| __Username__         | admin                                                                               | 
+| __Password__         | secret                                                                              | 
+| __Client ID__        | admin-client                                                                        | 
+| __Client Secret__    | top-secret                                                                          | 
+| __Scope__            | ""                                                                                  |  

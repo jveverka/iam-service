@@ -1,4 +1,4 @@
-## JWT mappings
+## Default JWT mappings
 
 ### Header  
 * __typ__ - JWT
@@ -30,7 +30,11 @@
 Issued tokens are always signed using private key of issuer.
 __kid__ in JWT header must be used to get X.509 certificate via 
 back channel for JWT signature verification.
- 
+
+#### Overriding Defaults
+* [Override JWT generation](../iam-examples/examples-docs/overriding-jwt-generation.md) - How to override JWT token generation in __iam-service__.
+* [Override JWT validation](../iam-examples/examples-docs/override-jwt-validation.md) - How to override JWT token validation in __iam-service__.
+
 #### References
 * __Standard Claims__ - Data model mapping of [RFC7519 registered JWT claim names](https://tools.ietf.org/html/rfc7519#section-4):
 * __Data model__ mapping of [OpenID connect standard claims](https://openid.net/specs/openid-connect-core-1_0.html#Claims):

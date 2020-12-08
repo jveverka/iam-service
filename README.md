@@ -53,7 +53,7 @@ Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples_
 * __SpringBoot actuator__ - ``http://localhost:8080/actuator``
 
 ### Technical documentation
-* [Security Rules](docs/IAM-service-security.md) - accessing APIs.
+* [Security Rules](docs/IAM-user-manual/Default-Access-Configuration.md) - accessing APIs.
 * [Internal Data Model](docs/IAM-data-model.md) - internal data model description and glossary.
 * [JWT mappings](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
 * [Project build & test instructions](docs/IAM-build-test.md) - how to build this project locally.

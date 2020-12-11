@@ -219,7 +219,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 //TODO check callback URL ?
                 if (isPKCEEnabled(context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier())) {
                     if (verifyPKCE(context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier())) {
-                        LOG.info("PKCE enabled");
+                        LOG.info("PKCE OK code_challenge={} method={} code_verifier={}", context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier());
                         return Optional.of(tokenGenerator.generate(context, user, idTokenRequest));
                     } else {
                         LOG.info("PKCE verification failed for code_challenge={} method={} code_verifier={}",

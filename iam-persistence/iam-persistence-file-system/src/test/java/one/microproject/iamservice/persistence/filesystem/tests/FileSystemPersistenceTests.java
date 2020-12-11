@@ -38,7 +38,7 @@ public class FileSystemPersistenceTests {
         Path tempDirFile = Path.of(sharedTempDir.toString(), "model-data.json");
         FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(tempDirFile);
         ModelWrapper modelWrapper = new ModelWrapperImpl(ModelUtils.DEFAULT_MODEL, persistenceService, false);
-        createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, "secret", "top-secret", "admin@email.com", modelWrapper);
+        createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, "secret", "top-secret", "admin@email.com", modelWrapper, Boolean.FALSE);
         modelWrapper.flush();
 
         DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(tempDirFile);

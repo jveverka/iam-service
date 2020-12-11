@@ -80,11 +80,11 @@ public class IAMCoreBuilder {
         return this;
     }
 
-    public IAMCoreBuilder withDefaultModel(String iamAdminPassword, String iamClientSecret, String iamAdminEmail) throws PKIException {
+    public IAMCoreBuilder withDefaultModel(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, Boolean enableClientCredentialsFlow) throws PKIException {
         if (modelWrapper == null) {
             modelWrapper = new ModelWrapperImpl(DEFAULT_MODEL, new LoggingPersistenceServiceImpl(), false);
         }
-        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper);
+        this.modelCache = ModelUtils.createDefaultModelCache(iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper, enableClientCredentialsFlow);
         return this;
     }
 

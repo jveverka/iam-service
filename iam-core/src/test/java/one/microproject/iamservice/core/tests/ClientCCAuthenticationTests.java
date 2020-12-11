@@ -77,7 +77,7 @@ public class ClientCCAuthenticationTests {
         Security.addProvider(new BouncyCastleProvider());
         tokenValidator = new TokenValidatorImpl();
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES, new CacheHolderImpl<>());
-        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail);
+        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail, Boolean.FALSE);
         tokenCache = new TokenCacheImpl(modelCache, tokenValidator, new CacheHolderImpl<>());
         authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, new TokenGeneratorImpl(), tokenValidator);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache, tokenValidator);

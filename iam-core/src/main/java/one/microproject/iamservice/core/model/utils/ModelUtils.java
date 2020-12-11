@@ -74,16 +74,16 @@ public final class ModelUtils {
         return new ModelCacheImpl(modelWrapper);
     }
 
-    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail) throws PKIException {
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, Boolean enableClientCredentialsFlow) throws PKIException {
         ModelWrapper modelWrapper =  new ModelWrapperImpl(DEFAULT_MODEL, new LoggingPersistenceServiceImpl(), false);
-        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper);
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper, enableClientCredentialsFlow);
     }
 
-    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper) throws PKIException {
-        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper);
+    public static ModelCache createDefaultModelCache(String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper, Boolean enableClientCredentialsFlow) throws PKIException {
+        return createDefaultModelCache(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, iamAdminPassword, iamClientSecret, iamAdminEmail, modelWrapper, enableClientCredentialsFlow);
     }
 
-    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper) throws PKIException {
+    public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper, Boolean enableClientCredentialsFlow) throws PKIException {
 
         Role iamGlobalAdminRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-global"), "Manage IAM-Service")
                 .addPermission(ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL)
@@ -100,7 +100,7 @@ public final class ModelUtils {
                 .build();
 
         ClientProperties properties = new ClientProperties(getIamAdminsRedirectURL(),
-                true, true, false, new HashMap<>());
+                true, true, enableClientCredentialsFlow, new HashMap<>());
 
         LOG.info("#MODEL: Initializing default model id={} name={} ...", modelWrapper.getModel().getId(), modelWrapper.getModel().getName());
         LOG.info("#MODEL: Default organizationId={}, projectId={}", IAM_ADMINS_ORG.getId(), IAM_ADMINS_PROJECT.getId());

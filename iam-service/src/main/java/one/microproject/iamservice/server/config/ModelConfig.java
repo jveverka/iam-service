@@ -45,6 +45,7 @@ public class ModelConfig {
     private String mongoDatabase;
     private String mongoUsername;
     private String mongoPassword;
+    private Boolean enableClientCredentialsFlow;
 
     private ModelCache modelCache;
 
@@ -58,6 +59,7 @@ public class ModelConfig {
         LOG.info("#CONFIG: default admin email={}", defaultAdminEmail);
         LOG.info("#CONFIG: admin organization/project {}/{}", adminOrganization, adminProject);
         LOG.info("#CONFIG: persistence={}", persistence);
+        LOG.info("#CONFIG: enableClientCredentialsFlow={}", enableClientCredentialsFlow);
     }
 
     @Bean
@@ -79,7 +81,7 @@ public class ModelConfig {
                 LOG.info("#CONFIG: creating default model");
                 ModelWrapper modelWrapper = ModelUtils.createModelWrapper("default-model", new FileSystemPersistenceServiceImpl(Path.of(path)), false);
                 modelCache = ModelUtils.createDefaultModelCache(
-                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper, enableClientCredentialsFlow);
                 modelCache.flush();
                 LOG.info("#CONFIG: ModelCache with default model initialized OK");
                 return modelCache;
@@ -95,7 +97,7 @@ public class ModelConfig {
                 LOG.info("#CONFIG: initializing mongo-db with default model");
                 modelWrapper.setModel(new ModelImpl(ModelId.from("default-model"), ""));
                 modelCache = ModelUtils.createDefaultModelCache(
-                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
+                        OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper, enableClientCredentialsFlow);
             } else {
                 LOG.info("#CONFIG: mongo-db model is already initialized !");
                 modelCache = new ModelCacheImpl(modelWrapper);
@@ -105,7 +107,7 @@ public class ModelConfig {
             LOG.info("#CONFIG: default ModelWrapper created");
             ModelWrapper modelWrapper = ModelUtils.createInMemoryModelWrapper("default-model");
             modelCache = ModelUtils.createDefaultModelCache(
-                    OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper);
+                    OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper, enableClientCredentialsFlow);
             return modelCache;
         }
     }
@@ -178,5 +180,13 @@ public class ModelConfig {
 
     public void setMongoPassword(String mongoPassword) {
         this.mongoPassword = mongoPassword;
+    }
+
+    public Boolean getEnableClientCredentialsFlow() {
+        return enableClientCredentialsFlow;
+    }
+
+    public void setEnableClientCredentialsFlow(Boolean enableClientCredentialsFlow) {
+        this.enableClientCredentialsFlow = enableClientCredentialsFlow;
     }
 }

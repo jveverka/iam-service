@@ -12,7 +12,8 @@ All actions described below must be performed under project admin user identity.
   ```
   #template:
   #curl --location --request POST 'http://localhost:8080/services/authentication/{organization-id}/{project-id}/token?grant_type=password&username={admin-user}&password={****}&scope=&client_id={admin-client}&client_secret={*****}'
-  curl --location --request POST 'http://localhost:8080/services/authentication/test-org-001/project-001/token?grant_type=password&username=admin&password=some-top-sercret&scope=&client_id=cl-001&client_secret=cl-scrt'
+  curl --location --request POST 'http://localhost:8080/services/authentication/test-org-001/project-001/token?grant_type=password&username=admin&password=some-top-sercret&scope=&client_id=cl-001&client_secret=cl-scrt' \
+  --header 'Content-Type: application/x-www-form-urlencoded'
   ```
 
 ### Manage Clients

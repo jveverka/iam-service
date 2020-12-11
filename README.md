@@ -26,6 +26,7 @@ Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples_
 
 ## Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](docs/oauth2/131_authorization-code-flow.md).
+* [x] __Authorization Code (With PKCE)__ - [flow details](docs/oauth2/131_authorization-code-flow.md).
 * [x] __Password Credentials__ - [flow details](docs/oauth2/133_password-credentials-flow.md).
 * [x] __Client Credentials__ - [flow details](docs/oauth2/134_client-credentials-flow.md).
 * [x] __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-token.md).
@@ -64,6 +65,7 @@ Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples_
 * [RFC7662](https://tools.ietf.org/html/rfc7662) - OAuth 2.0 Token Introspection
 * [RFC6750](https://tools.ietf.org/html/rfc6750) - OAuth 2.0 Bearer Token Usage
 * [RFC8414](https://tools.ietf.org/html/rfc8414) - OAuth 2.0 Authorization Server Metadata
+* [RFC7636](https://tools.ietf.org/html/rfc7636) - OAuth 2.0 Proof Key for Code Exchange by OAuth Public Clients (PKCE) 
 * [RFC7519](https://tools.ietf.org/html/rfc7519) - JSON Web Token (JWT)
 * [RFC7517](https://tools.ietf.org/html/rfc7517) - JSON Web Key (JWK)
 * [OpenID](https://openid.net/specs/openid-connect-core-1_0.html) - OpenID Connect Core 1.0

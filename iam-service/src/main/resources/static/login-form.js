@@ -32,7 +32,9 @@ function submitLogin() {
        "clientId": client_id,
        "scopes": splitScopesToArray(scope),
        "state": state,
-       "redirectUri": redirect_uri
+       "redirectUri": redirect_uri,
+       "codeChallenge": code_challenge,
+        "codeChallengeMethod": code_challenge_method
     };
     xhttp.onreadystatechange = function() {
        if (this.readyState == 4 && this.status == 200) {
@@ -172,6 +174,8 @@ function onScopeSelect(input_element) {
 
 function onConsentOk() {
    console.log("on Consent OK  ...");
+   // This redirect is VERY important !
+   // It will end auth flow for clients like postman or insomnia.
    window.location.href = redirect_uri + "?state=" + authorization_code_response.state + "&code=" + authorization_code_response.code.code;
 };
 

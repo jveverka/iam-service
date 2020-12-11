@@ -25,6 +25,8 @@ public class AuthorizationCodeContext {
     private final Scope scope;
     private final Set<String> audience;
     private final String redirectURI;
+    private final String codeChallenge;
+    private final String codeChallengeMethod;
 
     @JsonCreator
     public AuthorizationCodeContext(
@@ -38,7 +40,9 @@ public class AuthorizationCodeContext {
             @JsonProperty("issued") Date issued,
             @JsonProperty("scope") Scope scope,
             @JsonProperty("audience") Set<String> audience,
-            @JsonProperty("redirectURI") String redirectURI) {
+            @JsonProperty("redirectURI") String redirectURI,
+            @JsonProperty("codeChallenge") String codeChallenge,
+            @JsonProperty("codeChallengeMethod") String codeChallengeMethod) {
         this.code = code;
         this.issuerUri = issuerUri;
         this.organizationId = organizationId;
@@ -50,6 +54,8 @@ public class AuthorizationCodeContext {
         this.scope = scope;
         this.audience = audience;
         this.redirectURI = redirectURI;
+        this.codeChallenge = codeChallenge;
+        this.codeChallengeMethod = codeChallengeMethod;
     }
 
     public Code getCode() {
@@ -94,6 +100,14 @@ public class AuthorizationCodeContext {
 
     public String getRedirectURI() {
         return redirectURI;
+    }
+
+    public String getCodeChallenge() {
+        return codeChallenge;
+    }
+
+    public String getCodeChallengeMethod() {
+        return codeChallengeMethod;
     }
 
 }

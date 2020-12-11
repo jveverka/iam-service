@@ -41,6 +41,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static one.microproject.iamservice.core.model.utils.TokenUtils.isPKCEEnabled;
+import static one.microproject.iamservice.core.model.utils.TokenUtils.verifyPKCE;
+
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
@@ -213,7 +216,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Optional<User> optionalUser = modelCache.getUser(context.getOrganizationId(), context.getProjectId(), context.getUserId());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                return Optional.of(tokenGenerator.generate(context, user, idTokenRequest));
+                //TODO check callback URL ?
+                if (isPKCEEnabled(context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier())) {
+                    if (verifyPKCE(context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier())) {
+                        LOG.info("PKCE enabled");
+                        return Optional.of(tokenGenerator.generate(context, user, idTokenRequest));
+                    } else {
+                        LOG.info("PKCE verification failed for code_challenge={} method={} code_verifier={}",
+                                context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier());
+                    }
+                } else {
+                    LOG.info("PKCE disabled");
+                    return Optional.of(tokenGenerator.generate(context, user, idTokenRequest));
+                }
             } else {
                 LOG.info("User {} not found", context.getUserId());
             }
@@ -227,7 +242,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI) {
+    public Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password,
+                                             Scope scope, String state, String redirectURI, String codeChallenge, String codeChallengeMethod) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> optionalClient = modelCache.getClient(organizationId, projectId, clientId);
@@ -257,7 +273,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                     Code code = Code.from(UUID.randomUUID().toString());
                     AuthorizationCodeContext authorizationCodeContext =
-                            new AuthorizationCodeContext(code, issuerUri, organizationId, projectId, clientId, userId, state, new Date(), filteredScopes, projectOptional.get().getAudience(), redirectURI);
+                            new AuthorizationCodeContext(code, issuerUri, organizationId, projectId, clientId, userId, state,
+                                    new Date(), filteredScopes, projectOptional.get().getAudience(), redirectURI, codeChallenge, codeChallengeMethod);
                     AuthorizationCode authorizationCode = codeCache.save(code, authorizationCodeContext);
                     return Optional.of(authorizationCode);
                 }

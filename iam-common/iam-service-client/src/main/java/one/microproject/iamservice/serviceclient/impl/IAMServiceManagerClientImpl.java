@@ -32,6 +32,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String AUTHORIZATION = "Authorization";
     public static final String APPLICATION_JSON = "application/json";
+    public static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
     private final URL baseURL;
     private final OkHttpClient client;

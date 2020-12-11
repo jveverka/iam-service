@@ -27,10 +27,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
@@ -308,6 +310,50 @@ public final class TokenUtils {
         System.arraycopy(bigBytes, startSrc, resizedBytes, startDst, len);
         return resizedBytes;
         */
+    }
+
+    public static boolean isPKCEEnabled(String codeChallenge, String codeChallengeMethod, String codeVerifier) {
+        if (codeChallenge == null && codeVerifier == null) {
+            return false;
+        }
+        if (codeChallenge.isEmpty() && codeVerifier == null) {
+            return false;
+        }
+        if (codeChallenge.isEmpty() && codeVerifier.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * PKCE verification as specified in https://tools.ietf.org/html/rfc7636
+     * @param codeChallenge - code_challenge
+     * @param codeChallengeMethod - code_challenge_method
+     * @param codeVerifier - code_verifier
+     * @return true if code_challenge is verified successfully according RFC7636.
+     */
+    public static boolean verifyPKCE(String codeChallenge, String codeChallengeMethod, String codeVerifier) {
+        if (codeVerifier == null) {
+            return false;
+        }
+        if (codeChallenge.length() < 43) {
+            return false;
+        }
+        if ("plain".equalsIgnoreCase(codeChallengeMethod)) {
+            return codeChallenge.equals(codeVerifier);
+        }
+        if ("S256".equalsIgnoreCase(codeChallengeMethod)) {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] encodedHash = digest.digest(codeVerifier.getBytes(Charset.forName("UTF-8")));
+                byte[] encodedBase64 = Base64.getUrlEncoder().withoutPadding().encode(encodedHash);
+                String calculatedVerifier = new String(encodedBase64, Charset.forName("UTF-8"));
+                return codeChallenge.equals(calculatedVerifier);
+            } catch (NoSuchAlgorithmException e) {
+                return false;
+            }
+        }
+        return false;
     }
 
 }

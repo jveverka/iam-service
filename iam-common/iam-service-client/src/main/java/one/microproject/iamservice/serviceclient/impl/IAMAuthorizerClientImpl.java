@@ -46,7 +46,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                             "&scope=" +
                             "&client_id=" + clientId.getId() +
                             "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
+                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
@@ -63,7 +63,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
         try {
             //1. Get AuthorizationCode
             AuthorizationCodeGrantRequest authorizationCodeGrantRequest =
-                    new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString());
+                    new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString(), "", "");
             Request request = new Request.Builder()
                     .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/authorize")
                     .post(RequestBody.create(mapper.writeValueAsString(authorizationCodeGrantRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
@@ -104,7 +104,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                     .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
                             "&code=" + code.getCodeValue())
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
+                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
@@ -127,7 +127,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                             "&password=" + password +
                             "&client_id=" + clientId.getId() +
                             "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
+                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
@@ -148,7 +148,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                             "&scope=" +
                             "&client_id=" + clientId.getId() +
                             "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
+                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {

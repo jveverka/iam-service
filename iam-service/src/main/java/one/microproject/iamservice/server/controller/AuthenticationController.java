@@ -226,10 +226,7 @@ public class AuthenticationController {
         Optional<AuthorizationCodeContext> authorizationCodeContext = authenticationService.setScope(request.getCode(), scopes);
         if (authorizationCodeContext.isPresent()) {
             // DO NOT redirect here ! User-Agent (Browser) will perform redirection.
-            //AuthorizationCodeContext context = authorizationCodeContext.get();
-            //LOG.info("redirecting to: {}", context.getRedirectURI());
-            //URI redirectUri = new URI(context.getRedirectURI() + "?code=" + context.getCode().getCodeValue() + "&state=" + context.getState());
-            //return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectUri).build();
+            // Redirection is done here static/login-form.js#onConsentOk()
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

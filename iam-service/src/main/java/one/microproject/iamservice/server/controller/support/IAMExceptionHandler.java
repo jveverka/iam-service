@@ -21,11 +21,4 @@ public class IAMExceptionHandler {
         return new ApiError(e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleExceptions(Exception e) {
-        LOG.info("handleExceptions {}", e.getMessage());
-        return new ApiError(e.getMessage());
-    }
-
 }

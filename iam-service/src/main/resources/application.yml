@@ -27,6 +27,7 @@ iam-service:
     default-admin-password: secret
     default-admin-client-secret: top-secret
     default-admin-email: admin@email.com
+    enable-client-credentials-flow: true
 
     #options: in-memory | file-system | mongo-db
     persistence: in-memory

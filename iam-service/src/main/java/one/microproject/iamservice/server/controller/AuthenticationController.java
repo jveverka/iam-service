@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +60,7 @@ import java.util.stream.Collectors;
 
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getBaseUrl;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getClientCredentials;
+import static one.microproject.iamservice.server.controller.support.ControllerUtils.getCodeVerifier;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getContextPath;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getIssuerUri;
 
@@ -85,7 +86,9 @@ public class AuthenticationController {
         this.resourceServerService = resourceServerService;
     }
 
-    @PostMapping(path = "/{organization-id}/{project-id}/token", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{organization-id}/{project-id}/token",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE )
     public ResponseEntity<TokenResponse> postGetTokens(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
                                                    @RequestParam("grant_type") String grantType,
@@ -98,16 +101,18 @@ public class AuthenticationController {
                                                    @RequestParam(name = "code", required = false) String code,
                                                    @RequestParam(name = "nonce", required = false) String nonce,
                                                    @RequestParam(name = "audience", required = false) String audience,
+                                                   @RequestBody MultiValueMap bodyValueMap,
                                                    HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         LOG.info("postGetTokens: query={}", request.getRequestURL());
         LOG.info("postGetTokens: parameters=[{}]", ControllerUtils.getParameters(request.getParameterNames()));
         LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        LOG.info("postGetTokens: IssuerUri={}", issuerUri);
+        String codeVerifier = getCodeVerifier(bodyValueMap);
+        LOG.info("postGetTokens: IssuerUri={} tokenVerifier={}", issuerUri, codeVerifier);
         GrantType grantTypeEnum = GrantType.getGrantType(grantType);
         OrganizationId orgId = OrganizationId.from(organizationId);
         ProjectId projId = ProjectId.from(projectId);
-        IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce);
+        IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce, codeVerifier);
         if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
             LOG.info("postGetTokens: grantType={} code={}", grantType, code);
             Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
@@ -162,11 +167,22 @@ public class AuthenticationController {
                                                @RequestParam("redirect_uri") String redirectUri,
                                                @RequestParam("state") String state,
                                                @RequestParam(name = "scope", required = false) String scope,
+                                               @RequestParam(name = "code_challenge", required = false) String codeChallenge,
+                                               @RequestParam(name = "code_challenge_method", required = false) String codeChallengeMethod,
                                                HttpServletRequest request) {
         LOG.info("getAuthorize: {}?{}", request.getRequestURL(), request.getQueryString());
         LOG.info("getAuthorize: {}/{} responseType={} clientId={} redirectUri={} state={} scope={}", organizationId, projectId, responseType, clientId, redirectUri, state, scope);
-        if (scope==null) {
+        if (codeChallenge != null) {
+            LOG.info("getAuthorize: PKCE code_challenge={} code_challenge_method={}", codeChallenge, codeChallengeMethod);
+        }
+        if (scope == null) {
             scope = "";
+        }
+        if (codeChallenge == null) {
+            codeChallenge = "";
+        }
+        if (codeChallengeMethod == null) {
+            codeChallengeMethod = "";
         }
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");
         String result = new BufferedReader(new InputStreamReader(is))
@@ -179,6 +195,8 @@ public class AuthenticationController {
         result = result.replace("__redirect_uri__", redirectUri);
         result = result.replace("__state__", state);
         result = result.replace("__scope__", scope);
+        result = result.replace("__code_challenge__", codeChallenge);
+        result = result.replace("__code_challenge_method__", codeChallengeMethod);
         result = result.replace("__random__", UUID.randomUUID().toString()); //to prevent form caching
         return ResponseEntity.ok(result);
     }
@@ -194,7 +212,8 @@ public class AuthenticationController {
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId),
                 UserId.from(authorizationCodeGrantRequest.getUsername()), ClientId.from(authorizationCodeGrantRequest.getClientId()),
                 authorizationCodeGrantRequest.getPassword(), scopes, authorizationCodeGrantRequest.getState(),
-                authorizationCodeGrantRequest.getRedirectUri());
+                authorizationCodeGrantRequest.getRedirectUri(),
+                authorizationCodeGrantRequest.getCodeChallenge(), authorizationCodeGrantRequest.getCodeChallengeMethod());
         return ResponseEntity.of(authorizationCode);
     }
 
@@ -206,12 +225,9 @@ public class AuthenticationController {
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         Optional<AuthorizationCodeContext> authorizationCodeContext = authenticationService.setScope(request.getCode(), scopes);
         if (authorizationCodeContext.isPresent()) {
-            //TODO: redirect to 'redirect URL ?' (redirect to URL associated with clientID which initiated flow ?)
-            //return ResponseEntity.ok().build();
-            AuthorizationCodeContext context = authorizationCodeContext.get();
-            LOG.info("redirecting to: {}", context.getRedirectURI());
-            URI redirectUri = new URI(context.getRedirectURI() + "?code=" + context.getCode().getCodeValue() + "&state=" + context.getState());
-            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(redirectUri).build();
+            // DO NOT redirect here ! User-Agent (Browser) will perform redirection.
+            // Redirection is done here static/login-form.js#onConsentOk()
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -220,11 +236,14 @@ public class AuthenticationController {
     // Default redirect only for testing purposes.
     @GetMapping(path = "/{organization-id}/{project-id}/redirect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> redirect(@PathVariable("organization-id") String organizationId,
-                                                      @PathVariable("project-id") String projectId,
-                                                      @RequestParam("code") String code,
-                                                      @RequestParam("state") String state,
-                                                      HttpServletRequest request) throws URISyntaxException, MalformedURLException {
+                                                  @PathVariable("project-id") String projectId,
+                                                  @RequestParam("code") String code,
+                                                  @RequestParam("state") String state,
+                                                  @RequestBody MultiValueMap bodyValueMap,
+                                                  HttpServletRequest request) throws URISyntaxException, MalformedURLException {
+        String codeVerifier = getCodeVerifier(bodyValueMap);
         LOG.info("default redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
+        LOG.info("default redirect: codeVerifier={}", codeVerifier);
         RestTemplate restTemplate = new RestTemplate();
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
         String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;

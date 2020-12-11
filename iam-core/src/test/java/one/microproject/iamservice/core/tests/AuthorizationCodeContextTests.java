@@ -26,7 +26,8 @@ public class AuthorizationCodeContextTests {
         ObjectMapper mapper = new ObjectMapper();
         AuthorizationCodeContext authCodeContext = new AuthorizationCodeContext(Code.from("code-001"),
                 new URI("http://localhost:8080"), OrganizationId.from("org-001"), ProjectId.from("proj-001"),
-                ClientId.from("cl-01"), UserId.from("usr-01"), "xxx", new Date(), Scope.empty(), Set.of(), "");
+                ClientId.from("cl-01"), UserId.from("usr-01"), "xxx", new Date(), Scope.empty(), Set.of(),
+                "", "", "");
         String data = mapper.writeValueAsString(authCodeContext);
         assertNotNull(data);
         AuthorizationCodeContext deserialized = mapper.readValue(data, AuthorizationCodeContext.class);

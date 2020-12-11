@@ -91,7 +91,8 @@ public interface AuthenticationService {
      * @param state
      * @return
      */
-    Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password, Scope scope, String state, String redirectURI);
+    Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password,
+                                      Scope scope, String state, String redirectURI, String codeChallenge, String codeChallengeMethod);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

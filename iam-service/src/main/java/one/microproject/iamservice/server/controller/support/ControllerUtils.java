@@ -3,6 +3,7 @@ package one.microproject.iamservice.server.controller.support;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
+import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -79,6 +80,18 @@ public final class ControllerUtils {
             return Optional.of(new ClientCredentials(ClientId.from(usernamePassword[0]), usernamePassword[1]));
         }
         return Optional.empty();
+    }
+
+    public static String getCodeVerifier(MultiValueMap bodyValueMap) {
+        if (bodyValueMap == null) {
+            return null;
+        }
+        Object codeVerifier = bodyValueMap.getFirst("code_verifier");
+        if (codeVerifier == null) {
+            return null;
+        } else {
+            return codeVerifier.toString();
+        }
     }
 
 }

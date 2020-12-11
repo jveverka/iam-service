@@ -76,11 +76,11 @@ public class ClientUPAuthenticationTests {
         Security.addProvider(new BouncyCastleProvider());
         tokenValidator = new TokenValidatorImpl();
         authorizationCodeCache = new AuthorizationCodeCacheImpl(10L, TimeUnit.MINUTES, new CacheHolderImpl<>());
-        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail);
+        modelCache = ModelUtils.createDefaultModelCache(adminPassword, adminSecret, adminEmail, Boolean.FALSE);
         tokenCache = new TokenCacheImpl(modelCache, tokenValidator, new CacheHolderImpl<>());
         authenticationService = new AuthenticationServiceImpl(modelCache, tokenCache, authorizationCodeCache, new TokenGeneratorImpl(), tokenValidator);
         resourceServerService = new ResourceServerServiceImpl(modelCache, tokenCache, tokenValidator);
-        idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s");
+        idTokenRequest = new IdTokenRequest("http://localhost:8080/iam-service", "ad4u64s", "");
         issuerUri = new URI("http://localhost:8080/issuer");
     }
 

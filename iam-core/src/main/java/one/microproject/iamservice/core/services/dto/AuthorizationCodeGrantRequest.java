@@ -13,6 +13,8 @@ public class AuthorizationCodeGrantRequest {
     private final Collection<String> scopes;
     private final String state;
     private final String redirectUri;
+    private final String codeChallenge;
+    private final String codeChallengeMethod;
 
     @JsonCreator
     public AuthorizationCodeGrantRequest(@JsonProperty("username") String username,
@@ -20,13 +22,17 @@ public class AuthorizationCodeGrantRequest {
                                          @JsonProperty("clientId") String clientId,
                                          @JsonProperty("scopes") Collection<String> scopes,
                                          @JsonProperty("state") String state,
-                                         @JsonProperty("redirectUri") String redirectUri) {
+                                         @JsonProperty("redirectUri") String redirectUri,
+                                         @JsonProperty("codeChallenge") String codeChallenge,
+                                         @JsonProperty("codeChallengeMethod") String codeChallengeMethod) {
         this.username = username;
         this.password = password;
         this.clientId = clientId;
         this.scopes = scopes;
         this.state = state;
         this.redirectUri = redirectUri;
+        this.codeChallenge = codeChallenge;
+        this.codeChallengeMethod = codeChallengeMethod;
     }
 
     public String getUsername() {
@@ -52,4 +58,13 @@ public class AuthorizationCodeGrantRequest {
     public String getRedirectUri() {
         return redirectUri;
     }
+
+    public String getCodeChallenge() {
+        return codeChallenge;
+    }
+
+    public String getCodeChallengeMethod() {
+        return codeChallengeMethod;
+    }
+
 }

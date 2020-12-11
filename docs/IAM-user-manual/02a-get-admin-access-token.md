@@ -24,7 +24,8 @@ See also: [Default Access Rules](Default-Access-Configuration.md) and [Terms and
 
 * Get Admin Access tokens  
   ```
-  curl --location --request POST 'http://localhost:8080/services/authentication/iam-admins/iam-admins/token?grant_type=password&username=admin&password=secret&scope=&client_id=admin-client&client_secret=top-secret'
+  curl --location --request POST 'http://localhost:8080/services/authentication/iam-admins/iam-admins/token?grant_type=password&username=admin&password=secret&scope=&client_id=admin-client&client_secret=top-secret' \
+  --header 'Content-Type: application/x-www-form-urlencoded' 
   ```
 
 

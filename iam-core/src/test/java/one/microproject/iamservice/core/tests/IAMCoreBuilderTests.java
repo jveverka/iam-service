@@ -13,7 +13,7 @@ public class IAMCoreBuilderTests {
     public void testMinimalBuilder() throws Exception {
         IAMCoreBuilder.IAMCore iamCore = IAMCoreBuilder.builder()
                 .withBCProvider()
-                .withDefaultModel("secret", "top-secret", "admin@email.com")
+                .withDefaultModel("secret", "top-secret", "admin@email.com", Boolean.FALSE)
                 .build();
         assertNotNull(iamCore);
         assertNotNull(iamCore.getClientManagementService());
@@ -30,7 +30,7 @@ public class IAMCoreBuilderTests {
     public void testBuilder() throws Exception {
         IAMCoreBuilder.IAMCore iamCore = IAMCoreBuilder.builder()
                 .withBCProvider()
-                .withDefaultModel("secret", "top-secret", "admin@email.com")
+                .withDefaultModel("secret", "top-secret", "admin@email.com", Boolean.FALSE)
                 .withDefaultAuthorizationCodeCache(20L, TimeUnit.MINUTES)
                 .build();
         assertNotNull(iamCore);

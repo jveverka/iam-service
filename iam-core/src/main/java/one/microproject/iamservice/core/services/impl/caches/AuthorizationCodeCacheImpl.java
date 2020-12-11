@@ -56,7 +56,8 @@ public class AuthorizationCodeCacheImpl implements AuthorizationCodeCache {
             });
             AuthorizationCodeContext updatedContext = new AuthorizationCodeContext(code, context.getIssuerUri(),
                     context.getOrganizationId(), context.getProjectId(), context.getClientId(), context.getUserId(),
-                    context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience(), context.getRedirectURI());
+                    context.getState(), context.getIssued(), new Scope(filteredScopes), context.getAudience(),
+                    context.getRedirectURI(), context.getCodeChallenge(), context.getCodeChallengeMethod());
             codes.put(code.getCodeValue(), updatedContext);
             return Optional.of(context);
         } else {

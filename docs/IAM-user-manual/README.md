@@ -15,6 +15,7 @@ authentication and authorization OAuth2 server.
 
 ### Supported OAuth2 flows
 * [x] __Authorization Code__ - [flow details](../oauth2/131_authorization-code-flow.md).
+* [x] __Authorization Code (With PKCE)__ - [flow details](../oauth2/131_authorization-code-flow.md).
 * [x] __Password Credentials__ - [flow details](../oauth2/133_password-credentials-flow.md).
 * [x] __Client Credentials__ - [flow details](../oauth2/134_client-credentials-flow.md).
 * [x] __Refresh Token__ - [flow detail](../oauth2/15_refresh-token.md).

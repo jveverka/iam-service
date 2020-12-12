@@ -76,8 +76,8 @@ public class IAMClientImpl implements IAMClient {
     }
 
     @Override
-    public Optional<TokenResponse> getCode(Code code) {
-        return iamServiceProxy.getCode(code);
+    public Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) {
+        return iamServiceProxy.getCode(code, state);
     }
 
     @Override

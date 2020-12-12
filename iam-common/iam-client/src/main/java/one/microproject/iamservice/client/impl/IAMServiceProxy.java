@@ -24,6 +24,6 @@ public interface IAMServiceProxy extends AutoCloseable {
 
     void updateKeyCache();
 
-    Optional<TokenResponse> getCode(Code code);
+    Optional<TokenResponse> getCode(Code code, String state);
 
 }

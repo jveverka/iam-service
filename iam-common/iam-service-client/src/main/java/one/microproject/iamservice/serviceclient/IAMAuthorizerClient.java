@@ -38,7 +38,7 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @return set of tokens (access_token, refresh_token, id_token)
      * @throws AuthenticationException in case provided credentials and user/client IDs are invalid or not recognized.
      */
-    TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code) throws AuthenticationException;
+    TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws AuthenticationException;
 
     /**
      * OAuth2UsernamePassword flow - get access tokens

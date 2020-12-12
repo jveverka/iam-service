@@ -42,6 +42,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     private static TokenResponse tokenResponse;
     private static AuthorizationCode authorizationCode;
     private static String redirectUri;
+    private static String state = "1234";
 
     @LocalServerPort
     private int port;
@@ -70,7 +71,7 @@ public class OAuth2AuthorizationCodeGrantTest {
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("response_type", "code");
         urlVariables.put("scope", "");
-        urlVariables.put("state", "1234");
+        urlVariables.put("state", state);
         urlVariables.put("client_id", "admin-client");
         urlVariables.put("redirect_uri", redirectUri);
         ResponseEntity<String> response = restTemplate.getForEntity(
@@ -103,7 +104,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     public void getTokensTest() throws AuthenticationException {
         tokenResponse = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .getAccessTokensOAuth2AuthorizationCodeGrant(authorizationCode.getCode());
+                .getAccessTokensOAuth2AuthorizationCodeGrant(authorizationCode.getCode(), state);
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

@@ -97,13 +97,13 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     }
 
     @Override
-    public TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code) throws AuthenticationException {
+    public TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws AuthenticationException {
         try {
             //3. get access tokens
             Request request = new Request.Builder()
                     .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
-                            "&code=" + code.getCodeValue())
+                            "&code=" + code.getCodeValue() + "&state=" + state)
                     .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();

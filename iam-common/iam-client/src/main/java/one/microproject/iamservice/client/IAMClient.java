@@ -86,6 +86,6 @@ public interface IAMClient extends AutoCloseable {
      * @param code authorization_code.
      * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
      */
-    Optional<TokenResponse> getCode(Code code);
+    Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state);
 
 }

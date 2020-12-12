@@ -32,6 +32,8 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     private static final Logger LOG = LoggerFactory.getLogger(IAMServiceHttpProxyImpl.class);
 
     private static final long INITIAL_DELAY = 1;
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
     private final URL baseUrl;
     private final OrganizationId organizationId;
@@ -73,7 +75,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         String postBody = mapper.writeValueAsString(introspectRequest);
         Request request = new Request.Builder()
                 .url(baseUrl.toString() + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/introspect")
-                .post(RequestBody.create(postBody, MediaType.parse("application/json")))
+                .post(RequestBody.create(postBody, MediaType.parse(APPLICATION_JSON)))
                 .build();
         Response response = client.newCall(request).execute();
         return mapper.readValue(response.body().string(), IntrospectResponse.class);
@@ -105,13 +107,13 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     @Override
-    public Optional<TokenResponse> getCode(Code code) {
+    public Optional<TokenResponse> getCode(Code code, String state) {
         try {
             Request request = new Request.Builder()
                     .url(baseUrl + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
-                            "&code=" + code.getCodeValue())
-                    .post(RequestBody.create("{}", MediaType.parse("application/json")))
+                            "&code=" + code.getCodeValue() + "&state=" + state)
+                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {

@@ -8,12 +8,12 @@ This client library makes JWT verification easier for springboot micro-services 
      <dependency>
        <groupId>one.microproject.iamservice</groupId>
        <artifactId>iam-client-spring</artifactId>
-       <version>2.1.0-SNAPSHOT</version>
+       <version>2.2.0-SNAPSHOT</version>
      <dependency/>
      ```
    * gradle dependency
      ```
-     implementation 'one.microproject.iamservice:iam-client-spring:2.1.0-SNAPSHOT'
+     implementation 'one.microproject.iamservice:iam-client-spring:2.2.0-SNAPSHOT'
      ```
 2. See [this spring-method-security example](../../iam-examples/spring-method-security)
    * How to configure http security.

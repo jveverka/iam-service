@@ -19,12 +19,14 @@
 14. IAM-service issues tokens and sends back access_token and refresh_token.
 15. access_token and refresh_token are forwarded to client.
 16. Login flow is finished.
-17. Access resources using issued access_token.
+17. [Token Verification process, back channel](token-verification-back-channel.md). 
+18. Access resources using issued access_token.
+19. [Refresh Tokens flow](15_refresh-tokens-flow.md).
 
 ### Test in Browser
 * Init login flow using web browser.
   ```
-  http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize?response_type=code&state=123444&client_id=admin-client&scope=&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fservices%2Fauthentication%2Fiam-admins%2Fiam-admins%2Fredirect
+  curl --location --request GET 'http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize?response_type=code&state={state}&client_id={client-id}&client_secret={client-secret}&scope=&redirect_uri={redirect-uri}'
   ``` 
 
 ### Test in Postman

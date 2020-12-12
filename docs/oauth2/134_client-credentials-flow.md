@@ -3,8 +3,19 @@
 
 ![flow](134_client-credentials-flow.svg)
 
-* __POST__ ``http://localhost:8080/services/authentication/{organization-id}/{project-id}/token``
-  ``grant_type=client_credentials&scope=<scopes>&client_id=<id>&client_secret=<secret>``
+* Get tokens using Client Credentials Flow. 
+  ```
+  curl --location --request POST 'http://localhost:8080/services/authentication/{organization-id}/{project-id}/token?grant_type=client_credentials&scope={scopes}&client_id={id}&client_secret={secret}' \
+  --header 'Content-Type: application/x-www-form-urlencoded'   
+  ```
+
+1. Client application sends __POST__ request above with client credentials.
+2. iam-service verifies organization / project, client credentials.
+3. iam-service issues tokens if verification above is successful.
+4. tokens are provided to client application.
+5. [Token Verification process, back channel](token-verification-back-channel.md).   
+6. client application use access_token to access resources.
+7. [Refresh Tokens flow](15_refresh-tokens-flow.md).
 
 ### Test in Postman or Insomnia
 | Name                 | Value                                                                               |

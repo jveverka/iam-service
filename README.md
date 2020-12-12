@@ -29,7 +29,7 @@ Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples_
 * [x] __Authorization Code (With PKCE)__ - [flow details](docs/oauth2/131_authorization-code-flow.md).
 * [x] __Password Credentials__ - [flow details](docs/oauth2/133_password-credentials-flow.md).
 * [x] __Client Credentials__ - [flow details](docs/oauth2/134_client-credentials-flow.md).
-* [x] __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-token.md).
+* [x] __Refresh Token__ - [flow detail](docs/oauth2/15_refresh-tokens-flow.md).
 
 ## Architecture
 ![architecture](docs/IAM-service-architecture-simple.svg)

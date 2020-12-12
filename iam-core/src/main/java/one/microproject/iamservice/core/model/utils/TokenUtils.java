@@ -8,6 +8,7 @@ import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.KeyPairData;
 import one.microproject.iamservice.core.model.KeyId;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -312,7 +313,7 @@ public final class TokenUtils {
         */
     }
 
-    public static boolean isPKCEEnabled(String codeChallenge, String codeChallengeMethod, String codeVerifier) {
+    public static boolean isPKCEEnabled(String codeChallenge, String codeVerifier) {
         if (codeChallenge == null && codeVerifier == null) {
             return false;
         }
@@ -323,37 +324,6 @@ public final class TokenUtils {
             return false;
         }
         return true;
-    }
-
-    /**
-     * PKCE verification as specified in https://tools.ietf.org/html/rfc7636
-     * @param codeChallenge - code_challenge
-     * @param codeChallengeMethod - code_challenge_method
-     * @param codeVerifier - code_verifier
-     * @return true if code_challenge is verified successfully according RFC7636.
-     */
-    public static boolean verifyPKCE(String codeChallenge, String codeChallengeMethod, String codeVerifier) {
-        if (codeVerifier == null) {
-            return false;
-        }
-        if (codeChallenge.length() < 43) {
-            return false;
-        }
-        if ("plain".equalsIgnoreCase(codeChallengeMethod)) {
-            return codeChallenge.equals(codeVerifier);
-        }
-        if ("S256".equalsIgnoreCase(codeChallengeMethod)) {
-            try {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] encodedHash = digest.digest(codeVerifier.getBytes(Charset.forName("UTF-8")));
-                byte[] encodedBase64 = Base64.getUrlEncoder().withoutPadding().encode(encodedHash);
-                String calculatedVerifier = new String(encodedBase64, Charset.forName("UTF-8"));
-                return codeChallenge.equals(calculatedVerifier);
-            } catch (NoSuchAlgorithmException e) {
-                return false;
-            }
-        }
-        return false;
     }
 
 }

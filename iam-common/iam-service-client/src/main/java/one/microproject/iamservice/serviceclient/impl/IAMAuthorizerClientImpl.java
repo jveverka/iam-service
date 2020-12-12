@@ -1,8 +1,10 @@
 package one.microproject.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.FormBody;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeGrantRequest;
@@ -19,6 +21,8 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
+
+import static one.microproject.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED;
 
 public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
 
@@ -46,7 +50,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                             "&scope=" +
                             "&client_id=" + clientId.getId() +
                             "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
+                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
@@ -60,10 +64,16 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
 
     @Override
     public AuthorizationCode getAuthorizationCodeOAuth2AuthorizationCodeGrant(String userName, String password, ClientId clientId, Set<String> scopes, URL redirectUri, String state) throws AuthenticationException {
+        //1. Get AuthorizationCode
+        return getAuthorizationCodeOAuth2AuthorizationCodeGrant(userName, password, clientId, scopes, redirectUri, state, "", PKCEMethod.PLAIN);
+    }
+
+    @Override
+    public AuthorizationCode getAuthorizationCodeOAuth2AuthorizationCodeGrant(String userName, String password, ClientId clientId, Set<String> scopes, URL redirectUri, String state, String codeChallenge, PKCEMethod method) throws AuthenticationException {
         try {
-            //1. Get AuthorizationCode
+            //1. Get AuthorizationCode - with PKCE
             AuthorizationCodeGrantRequest authorizationCodeGrantRequest =
-                    new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString(), "", "");
+                    new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString(), codeChallenge, method);
             Request request = new Request.Builder()
                     .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/authorize")
                     .post(RequestBody.create(mapper.writeValueAsString(authorizationCodeGrantRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
@@ -98,19 +108,31 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
 
     @Override
     public TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws AuthenticationException {
+        //3. get access tokens
+        return getAccessTokensOAuth2AuthorizationCodeGrant(code, state,  "");
+    }
+
+    @Override
+    public TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws AuthenticationException {
         try {
-            //3. get access tokens
+            //3. get access tokens - with PKCE
+            FormBody.Builder builder = new FormBody.Builder();
+            if (!codeVerifier.isEmpty()) {
+                builder.add("code_verifier", codeVerifier);
+            }
             Request request = new Request.Builder()
+                    .header("Content-Type", APPLICATION_FORM_URLENCODED)
                     .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
                             "&code=" + code.getCodeValue() + "&state=" + state)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
+                    .post(builder.build())
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
                 return mapper.readValue(response.body().string(), TokenResponse.class);
+            } else {
+                throw new AuthenticationException("Authentication failed: " + response.code());
             }
-            throw new AuthenticationException("Authentication failed: " + response.code());
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
@@ -127,7 +149,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                             "&password=" + password +
                             "&client_id=" + clientId.getId() +
                             "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
+                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {
@@ -148,7 +170,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
                             "&scope=" +
                             "&client_id=" + clientId.getId() +
                             "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED)))
+                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {

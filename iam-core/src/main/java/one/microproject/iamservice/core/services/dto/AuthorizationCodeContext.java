@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 
@@ -26,7 +27,7 @@ public class AuthorizationCodeContext {
     private final Set<String> audience;
     private final String redirectURI;
     private final String codeChallenge;
-    private final String codeChallengeMethod;
+    private final PKCEMethod codeChallengeMethod;
 
     @JsonCreator
     public AuthorizationCodeContext(
@@ -42,7 +43,7 @@ public class AuthorizationCodeContext {
             @JsonProperty("audience") Set<String> audience,
             @JsonProperty("redirectURI") String redirectURI,
             @JsonProperty("codeChallenge") String codeChallenge,
-            @JsonProperty("codeChallengeMethod") String codeChallengeMethod) {
+            @JsonProperty("codeChallengeMethod") PKCEMethod codeChallengeMethod) {
         this.code = code;
         this.issuerUri = issuerUri;
         this.organizationId = organizationId;
@@ -106,7 +107,7 @@ public class AuthorizationCodeContext {
         return codeChallenge;
     }
 
-    public String getCodeChallengeMethod() {
+    public PKCEMethod getCodeChallengeMethod() {
         return codeChallengeMethod;
     }
 

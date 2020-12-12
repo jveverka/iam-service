@@ -3,6 +3,7 @@ package one.microproject.iamservice.core.services;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
@@ -92,7 +93,7 @@ public interface AuthenticationService {
      * @return
      */
     Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password,
-                                      Scope scope, String state, String redirectURI, String codeChallenge, String codeChallengeMethod);
+                                      Scope scope, String state, String redirectURI, String codeChallenge, PKCEMethod codeChallengeMethod);
 
     /**
      * Logout client action revokes validity of issued {@link JWToken}.

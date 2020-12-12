@@ -1,6 +1,7 @@
 package one.microproject.iamservice.client.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.FormBody;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.IntrospectRequest;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
@@ -107,13 +108,41 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     @Override
-    public Optional<TokenResponse> getCode(Code code, String state) {
+    public Optional<TokenResponse> getTokens(Code code, String state) {
+        /*
         try {
             Request request = new Request.Builder()
                     .url(baseUrl + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
                             "&code=" + code.getCodeValue() + "&state=" + state)
                     .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return Optional.of(mapper.readValue(response.body().string(), TokenResponse.class));
+            } else {
+                return Optional.empty();
+            }
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+        */
+        return getTokens(code, state, "");
+    }
+
+    @Override
+    public Optional<TokenResponse> getTokens(Code code, String state, String codeVerifier) {
+        try {
+            FormBody.Builder builder = new FormBody.Builder();
+            if (!codeVerifier.isEmpty()) {
+                builder.add("code_verifier", codeVerifier);
+            }
+            Request request = new Request.Builder()
+                    .header("Content-Type", APPLICATION_FORM_URLENCODED)
+                    .url(baseUrl + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                            "?grant_type=authorization_code" +
+                            "&code=" + code.getCodeValue() + "&state=" + state)
+                    .post(builder.build())
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {

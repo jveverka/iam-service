@@ -2,6 +2,7 @@ package one.microproject.iamservice.core.services.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import one.microproject.iamservice.core.model.PKCEMethod;
 
 import java.util.Collection;
 
@@ -14,7 +15,7 @@ public class AuthorizationCodeGrantRequest {
     private final String state;
     private final String redirectUri;
     private final String codeChallenge;
-    private final String codeChallengeMethod;
+    private final PKCEMethod codeChallengeMethod;
 
     @JsonCreator
     public AuthorizationCodeGrantRequest(@JsonProperty("username") String username,
@@ -24,7 +25,7 @@ public class AuthorizationCodeGrantRequest {
                                          @JsonProperty("state") String state,
                                          @JsonProperty("redirectUri") String redirectUri,
                                          @JsonProperty("codeChallenge") String codeChallenge,
-                                         @JsonProperty("codeChallengeMethod") String codeChallengeMethod) {
+                                         @JsonProperty("codeChallengeMethod") PKCEMethod codeChallengeMethod) {
         this.username = username;
         this.password = password;
         this.clientId = clientId;
@@ -63,7 +64,7 @@ public class AuthorizationCodeGrantRequest {
         return codeChallenge;
     }
 
-    public String getCodeChallengeMethod() {
+    public PKCEMethod getCodeChallengeMethod() {
         return codeChallengeMethod;
     }
 

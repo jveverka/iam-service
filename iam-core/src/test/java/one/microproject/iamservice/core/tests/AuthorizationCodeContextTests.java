@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
@@ -27,7 +28,7 @@ public class AuthorizationCodeContextTests {
         AuthorizationCodeContext authCodeContext = new AuthorizationCodeContext(Code.from("code-001"),
                 new URI("http://localhost:8080"), OrganizationId.from("org-001"), ProjectId.from("proj-001"),
                 ClientId.from("cl-01"), UserId.from("usr-01"), "xxx", new Date(), Scope.empty(), Set.of(),
-                "", "", "");
+                "", "", PKCEMethod.PLAIN);
         String data = mapper.writeValueAsString(authCodeContext);
         assertNotNull(data);
         AuthorizationCodeContext deserialized = mapper.readValue(data, AuthorizationCodeContext.class);

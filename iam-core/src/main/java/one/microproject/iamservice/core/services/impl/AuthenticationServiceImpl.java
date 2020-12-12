@@ -7,6 +7,7 @@ import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.Credentials;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -41,8 +42,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static one.microproject.iamservice.core.IAMUtils.verifyPKCE;
 import static one.microproject.iamservice.core.model.utils.TokenUtils.isPKCEEnabled;
-import static one.microproject.iamservice.core.model.utils.TokenUtils.verifyPKCE;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -217,7 +218,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 //TODO check callback URL ?
-                if (isPKCEEnabled(context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier())) {
+                if (isPKCEEnabled(context.getCodeChallenge(), idTokenRequest.getCodeVerifier())) {
                     if (verifyPKCE(context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier())) {
                         LOG.info("PKCE OK code_challenge={} method={} code_verifier={}", context.getCodeChallenge(), context.getCodeChallengeMethod(), idTokenRequest.getCodeVerifier());
                         return Optional.of(tokenGenerator.generate(context, user, idTokenRequest));
@@ -243,7 +244,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password,
-                                             Scope scope, String state, String redirectURI, String codeChallenge, String codeChallengeMethod) {
+                                             Scope scope, String state, String redirectURI, String codeChallenge, PKCEMethod codeChallengeMethod) {
         Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
         if (projectOptional.isPresent()) {
             Optional<Client> optionalClient = modelCache.getClient(organizationId, projectId, clientId);

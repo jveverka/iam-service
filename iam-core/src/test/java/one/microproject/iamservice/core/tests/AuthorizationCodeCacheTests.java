@@ -3,6 +3,7 @@ package one.microproject.iamservice.core.tests;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.caches.AuthorizationCodeCache;
@@ -61,7 +62,7 @@ public class AuthorizationCodeCacheTests {
         AuthorizationCodeContext authorizationCodeContext =
                 new AuthorizationCodeContext(code, issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),
                         ClientId.from("cl01"), UserId.from("usr01"), UUID.randomUUID().toString(), new Date(), scope, audience,
-                        "", "", "");
+                        "", "", PKCEMethod.PLAIN);
         authorizationCode = authorizationCodeCache.save(code, authorizationCodeContext);
         assertNotNull(authorizationCode);
         Optional<AuthorizationCodeContext> verifiedAuthorizationCode = authorizationCodeCache.verifyAndRemove(authorizationCode.getCode());

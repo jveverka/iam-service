@@ -84,8 +84,19 @@ public interface IAMClient extends AutoCloseable {
     /**
      * Get tokens in exchange for authorization_code. This call is used to finish OAuth2 authorization code grant flow.
      * @param code authorization_code.
+     * @param state state used to initiate OAuth2 authorization code grant flow.
      * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
      */
     Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state);
+
+    /**
+     * Get tokens in exchange for authorization_code. This call is used to finish OAuth2 authorization code grant flow with PKCE.
+     * https://tools.ietf.org/html/rfc7636
+     * @param code authorization_code.
+     * @param state state used to initiate OAuth2 authorization code grant flow.
+     * @param codeVerifier code_verifier as specified in https://tools.ietf.org/html/rfc7636#section-4.1
+     * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
+     */
+    Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier);
 
 }

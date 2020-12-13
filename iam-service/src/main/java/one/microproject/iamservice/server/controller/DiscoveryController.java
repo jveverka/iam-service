@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.Organization;
@@ -39,18 +40,21 @@ public class DiscoveryController {
         this.resourceServerService = resourceServerService;
     }
 
+    @Operation(description = "Get list of all organizations managed by this service.")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<OrganizationInfo>> getOrganizationsInfo() throws CertificateEncodingException {
         Collection<OrganizationInfo> info = organizationManagerService.getAllInfo();
         return ResponseEntity.ok(info);
     }
 
+    @Operation(description = "Get single organization info by organization-id.")
     @GetMapping(path = "/{organization-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrganizationInfo> getOrganizationInfo(@PathVariable("organization-id") String organizationId) throws CertificateEncodingException {
         Optional<OrganizationInfo> info = organizationManagerService.getInfo(OrganizationId.from(organizationId));
         return ResponseEntity.of(info);
     }
 
+    @Operation(description = "Get single project info by organization-id and project-id.")
     @GetMapping(path = "/{organization-id}/{project-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectInfo> getProject(@PathVariable("organization-id") String organizationId,
                                                   @PathVariable("project-id") String projectId) throws CertificateEncodingException {
@@ -62,6 +66,7 @@ public class DiscoveryController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(description = "Get single User info by organization-id, project-id and user-id.")
     @GetMapping(path = "/{organization-id}/{project-id}/users/{user-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserInfo> getUsers(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
@@ -74,6 +79,7 @@ public class DiscoveryController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(description = "Get single Client info by organization-id, project-id and client-id.")
     @GetMapping(path = "/{organization-id}/{project-id}/clients/{client-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientInfo> getClient(@PathVariable("organization-id") String organizationId,
                                                 @PathVariable("project-id") String projectId,

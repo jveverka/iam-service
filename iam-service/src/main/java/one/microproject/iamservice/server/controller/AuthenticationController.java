@@ -93,12 +93,13 @@ public class AuthenticationController {
     }
 
     @Operation(description =
+            "This endpoint represents the end of all authorizations flows when if successful, tokens are issued.\n" +
             "Get Access Tokens for authorizations flows: \n" +
-            "- grant_type=refresh_token https://tools.ietf.org/html/rfc6749#section-2.3.1 \n" +
-            "- grant_type=authorization_code https://tools.ietf.org/html/rfc6749#section-4.1.3 \n" +
-            "- grant_type=password https://tools.ietf.org/html/rfc6749#section-4.3.2 \n" +
-            "- grant_type=client_credentials https://tools.ietf.org/html/rfc6749#section-4.4.2 \n" +
-            "- grant_type=refresh_token https://tools.ietf.org/html/rfc6749#section-6 \n",
+            "- [grant_type=refresh_token](https://tools.ietf.org/html/rfc6749#section-2.3.1) \n" +
+            "- [grant_type=authorization_code](https://tools.ietf.org/html/rfc6749#section-4.1.3) \n" +
+            "- [grant_type=password](https://tools.ietf.org/html/rfc6749#section-4.3.2) \n" +
+            "- [grant_type=client_credentials](https://tools.ietf.org/html/rfc6749#section-4.4.2) \n" +
+            "- [grant_type=refresh_token](https://tools.ietf.org/html/rfc6749#section-6) \n",
             parameters = {
                     @Parameter(name = "organization-id", description = "Unique organization identifier.", in = ParameterIn.PATH, required = true),
                     @Parameter(name = "project-id", description = "Unique project identifier.", in = ParameterIn.PATH, required = true),
@@ -194,9 +195,10 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @Operation(description = "Start Authorization Code Grant flow \n" +
-            "- https://tools.ietf.org/html/rfc6749#section-4.1.1 \n" +
-            "- https://tools.ietf.org/html/rfc6749#section-4.2.1 \n")
+    @Operation(description = "__Start Authorization Code Grant flow__ \n" +
+            "This endpoint starts Authorization flow by serving login page.\n" +
+            "- [Authorization Code Grant flow](https://tools.ietf.org/html/rfc6749#section-4.1.1) \n" +
+            "- [Implicit Grant flow](https://tools.ietf.org/html/rfc6749#section-4.2.1) \n")
     @GetMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> getAuthorize(@PathVariable("organization-id") String organizationId,
                                                @PathVariable("project-id") String projectId,
@@ -239,6 +241,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(description = "This endpoint performs programmatic authorization of end-user using Authorization Code Grant flow.")
     @PostMapping(path = "/{organization-id}/{project-id}/authorize", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorizationCode> authorizeProgrammatically(@PathVariable("organization-id") String organizationId,
                                                                        @PathVariable("project-id") String projectId,
@@ -255,6 +258,7 @@ public class AuthenticationController {
         return ResponseEntity.of(authorizationCode);
     }
 
+    @Operation(description = "This endpoint performs programmatic consent confirmation for end-user using Authorization Code Grant flow.")
     @PostMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
@@ -271,7 +275,7 @@ public class AuthenticationController {
         }
     }
 
-    // Default redirect only for testing purposes.
+    @Operation(description = "Default redirect endpoint, only for testing purposes.")
     @GetMapping(path = "/{organization-id}/{project-id}/redirect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> redirect(@PathVariable("organization-id") String organizationId,
                                                   @PathVariable("project-id") String projectId,
@@ -285,6 +289,7 @@ public class AuthenticationController {
         RestTemplate restTemplate = new RestTemplate();
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
         String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
+        //TODO: replace with OKHTTP3
         ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
         if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
             return ResponseEntity.ok(tokenResponseResponseEntity.getBody());
@@ -293,8 +298,9 @@ public class AuthenticationController {
         }
     }
 
-    @Operation(description = "OpenID Connect Discovery \n" +
-            "- https://openid.net/specs/openid-connect-discovery-1_0.html")
+    @Operation(description = "__OpenID Connect Discovery__ \n" +
+            "Get information about this OAuth2 server configuration. \n" +
+            "- [OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)")
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/openid-configuration", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProviderConfigurationResponse> getConfiguration(@PathVariable("organization-id") String organizationId,
                                                                           @PathVariable("project-id") String projectId,
@@ -306,8 +312,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(configuration);
     }
 
-    @Operation(description = "JSON Web Key (JWK) \n" +
-            "- https://tools.ietf.org/html/rfc7517")
+    @Operation(description = "__Get JSON Web Keys (JWK)__ \n" +
+            "Get all available public keys on the project. A JSON Web Key (JWK) is a JavaScript Object Notation (JSON) data\n" +
+            "structure that represents a cryptographic key. \n" +
+            "- [RFC7517](https://tools.ietf.org/html/rfc7517)")
     @GetMapping(path = "/{organization-id}/{project-id}/.well-known/jwks.json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JWKResponse> getCerts(@PathVariable("organization-id") String organizationId,
                                                 @PathVariable("project-id") String projectId) {
@@ -316,8 +324,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(jwkData);
     }
 
-    @Operation(description = "OAuth 2.0 Token Introspection \n" +
-            "- https://tools.ietf.org/html/rfc7662")
+    @Operation(description = "__OAuth 2.0 Token Introspection__ \n" +
+            "Get active state about provided token." +
+            "- [RFC7662](https://tools.ietf.org/html/rfc7662)")
     @PostMapping(path = "/{organization-id}/{project-id}/introspect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IntrospectResponse> introspectToken(@PathVariable("organization-id") String organizationId,
                                                               @PathVariable("project-id") String projectId,
@@ -329,8 +338,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(description = "OAuth 2.0 Token Revocation\n" +
-            "- https://tools.ietf.org/html/rfc7009")
+    @Operation(description = "__OAuth 2.0 Token Revocation__ \n" +
+            "Revoke issued and valid token which is no longer needed." +
+            "- [RFC7009](https://tools.ietf.org/html/rfc7009)")
     @PostMapping(path = "/{organization-id}/{project-id}/revoke", produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<Void> revoke(@PathVariable("organization-id") String organizationId,
                                        @PathVariable("project-id") String projectId,
@@ -341,8 +351,9 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(description = "UserInfo Request\n" +
-            "- https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest")
+    @Operation(description = "__UserInfo Request__ \n" +
+            "Get info about User\n" +
+            "- [OICD/UserInfoRequest](https://openid.net/specs/openid-connect-core-1_0.html#UserInfoRequest)")
     @GetMapping(path = "/{organization-id}/{project-id}/userinfo", produces = MediaType.APPLICATION_JSON_VALUE )
     @PostMapping(path = "/{organization-id}/{project-id}/userinfo", produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable("organization-id") String organizationId,

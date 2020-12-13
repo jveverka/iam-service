@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import one.microproject.iamservice.core.dto.CreateClient;
 import one.microproject.iamservice.core.model.ClientCredentials;
@@ -36,6 +37,7 @@ public class ProjectClientManagementController {
         this.iamSecurityValidator = iamSecurityValidator;
     }
 
+    @Operation(description = "Create new client. Provided client ID must not exist in target project.")
     @PostMapping("/{organization-id}/{project-id}/clients")
     public ResponseEntity<Void> createClient(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,
@@ -53,6 +55,7 @@ public class ProjectClientManagementController {
         }
     }
 
+    @Operation(description = "Assign existing role to existing client.")
     @PutMapping("/{organization-id}/{project-id}/clients/{client-id}/roles/{role-id}")
     public ResponseEntity<Void> addRoleToClient(@PathVariable("organization-id") String organizationId,
                                                 @PathVariable("project-id") String projectId,
@@ -66,6 +69,7 @@ public class ProjectClientManagementController {
         }
     }
 
+    @Operation(description = "Remove previously assigne role from client.")
     @DeleteMapping("/{organization-id}/{project-id}/clients/{client-id}/roles/{role-id}")
     public ResponseEntity<Void> removeRoleFromClient(@PathVariable("organization-id") String organizationId,
                                                      @PathVariable("project-id") String projectId,
@@ -79,6 +83,7 @@ public class ProjectClientManagementController {
         }
     }
 
+    @Operation(description = "Delete client, this action removes client from project completely.")
     @DeleteMapping("/{organization-id}/{project-id}/clients/{client-id}")
     public ResponseEntity<Void> deleteClient(@PathVariable("organization-id") String organizationId,
                                              @PathVariable("project-id") String projectId,

@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import one.microproject.iamservice.core.dto.CreateUser;
 import one.microproject.iamservice.core.model.OrganizationId;
@@ -38,6 +39,7 @@ public class ProjectUserManagementController {
         this.iamSecurityValidator = iamSecurityValidator;
     }
 
+    @Operation(description = "Create new project user.")
     @PostMapping("/{organization-id}/{project-id}/users")
     public ResponseEntity<Void> createUser(@PathVariable("organization-id") String organizationId,
                                            @PathVariable("project-id") String projectId,
@@ -58,6 +60,7 @@ public class ProjectUserManagementController {
         }
     }
 
+    @Operation(description = "Delete project user.")
     @DeleteMapping("/{organization-id}/{project-id}/users/{user-id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("organization-id") String organizationId,
                                            @PathVariable("project-id") String projectId,
@@ -72,6 +75,7 @@ public class ProjectUserManagementController {
         }
     }
 
+    @Operation(description = "Change user's password.")
     @PutMapping("/{organization-id}/{project-id}/users/{user-id}/change-password")
     public ResponseEntity<Void> changeUserPassword(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
@@ -80,6 +84,7 @@ public class ProjectUserManagementController {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
+    @Operation(description = "Add existing role to existing user.")
     @PutMapping("/{organization-id}/{project-id}/users/{user-id}/roles/{role-id}")
     public ResponseEntity<Void> addRoleToUser(@PathVariable("organization-id") String organizationId,
                                               @PathVariable("project-id") String projectId,
@@ -95,6 +100,7 @@ public class ProjectUserManagementController {
         }
     }
 
+    @Operation(description = "Remove role from user.")
     @DeleteMapping("/{organization-id}/{project-id}/users/{user-id}/roles/{role-id}")
     public ResponseEntity<Void> removeRoleFromUser(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,

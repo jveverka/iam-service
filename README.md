@@ -10,7 +10,14 @@ Really simple standalone *Identity Access Management* (IAM) service, [OAuth2](ht
 Project is compliant with subset of [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) 
 and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com/jveverka/iam-service#rfcs-and-specifications) related specifications. 
 
-Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples__](iam-examples) for more details.
+* Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples__](iam-examples) for more details.
+* Check [__Docker Hub releases__](https://hub.docker.com/r/jurajveverka/iam-service).
+  ```
+  docker run -d -p 8080:8080 jurajveverka/iam-service:2.2.0-SNAPSHOT
+  curl --location --request GET 'http://localhost:8080/services/discovery'
+  curl --location --request GET 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/.well-known/openid-configuration'
+    ```
+* OpenAPI documentation: ``http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/``  
 
 ## Features & Mission
 * [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 
@@ -47,10 +54,7 @@ Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples_
 * [__Authorization / Authentication APIs__](docs/apis/IAM-authorization-and-authentication-apis.md) - login flows, issuing JWT, revoking JWT.
 * [__Admin APIs__](docs/apis/IAM-admin-apis.md) - manage organization / project / users and credentials.
 * [__Back-Channel APIs__](docs/apis/IAM-back-channel-apis.md) - discover organization / project / user configuration, get public keys.
-* __OpenAPI / Swagger JSON__ - ```http://localhost:8080/v3/api-docs```
-* __OpenAPI / Swagger YAML__ - ```http://localhost:8080/v3/api-docs.yaml```
-* __OpenAPI / Swagger UI__ - ```http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs```
-* __SpringBoot actuator__ - ``http://localhost:8080/actuator``
+* [__Swagger and Actuator APIs__](docs/apis/IAM-swagger-and-actuator-links.md)
 
 ### Technical documentation
 * [Security Rules](docs/IAM-user-manual/Default-Access-Configuration.md) - accessing APIs.

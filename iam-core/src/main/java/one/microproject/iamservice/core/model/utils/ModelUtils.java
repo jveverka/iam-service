@@ -127,7 +127,7 @@ public final class ModelUtils {
     }
 
     public static String getRedirectURL(OrganizationId organizationId, ProjectId projectId) {
-        return "http://loclahost:8080/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect";
+        return "http://loclahost:8080/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/redirect";
     }
 
     public static OrganizationInfo createOrganizationInfo(Organization organization) throws CertificateEncodingException {

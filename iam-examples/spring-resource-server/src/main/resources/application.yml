@@ -7,8 +7,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/services/authentication/iam-admins/iam-admins
-          jwk-set-uri: http://127.0.0.1:8080/services/authentication/iam-admins/iam-admins/.well-known/jwks.json
+          issuer-uri: http://localhost:8080/services/oauth2/iam-admins/iam-admins
+          jwk-set-uri: http://127.0.0.1:8080/services/oauth2/iam-admins/iam-admins/.well-known/jwks.json
           jws-algorithm: RS256
   lifecycle:
     timeout-per-shutdown-phase: 20s

@@ -5,7 +5,7 @@
 
 * Get tokens using Client Credentials Flow. 
   ```
-  curl --location --request POST 'http://localhost:8080/services/authentication/{organization-id}/{project-id}/token?grant_type=client_credentials&scope={scopes}&client_id={id}&client_secret={secret}' \
+  curl --location --request POST 'http://localhost:8080/services/oauth2/{organization-id}/{project-id}/token?grant_type=client_credentials&scope={scopes}&client_id={id}&client_secret={secret}' \
   --header 'Content-Type: application/x-www-form-urlencoded'   
   ```
 
@@ -18,10 +18,10 @@
 7. [Refresh Tokens flow](15_refresh-tokens-flow.md).
 
 ### Test in Postman or Insomnia
-| Name                 | Value                                                                               |
-|----------------------|-------------------------------------------------------------------------------------|
-| __Grant Type__       | Client Credentials                                                                  | 
-| __Access Token URL__ | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```     |
-| __Client ID__        | admin-client                                                                        | 
-| __Client Secret__    | top-secret                                                                          | 
-| __Scope__            | ""                                                                                  |  
+| Name                 | Value                                                                   |
+|----------------------|-------------------------------------------------------------------------|
+| __Grant Type__       | Client Credentials                                                      | 
+| __Access Token URL__ | ```http://localhost:8080/services/oauth2/iam-admins/iam-admins/token``` |
+| __Client ID__        | admin-client                                                            | 
+| __Client Secret__    | top-secret                                                              | 
+| __Scope__            | ""                                                                      |  

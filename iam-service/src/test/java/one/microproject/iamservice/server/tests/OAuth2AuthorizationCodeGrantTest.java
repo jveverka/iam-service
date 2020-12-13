@@ -67,7 +67,7 @@ public class OAuth2AuthorizationCodeGrantTest {
     @Test
     @Order(1)
     public void getLoginFormTest() {
-        redirectUri = "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/redirect";
+        redirectUri = "http://localhost:" + port + "/services/oauth2/iam-admins/iam-admins/redirect";
         Map<String, String> urlVariables = new HashMap<>();
         urlVariables.put("response_type", "code");
         urlVariables.put("scope", "");
@@ -75,7 +75,7 @@ public class OAuth2AuthorizationCodeGrantTest {
         urlVariables.put("client_id", "admin-client");
         urlVariables.put("redirect_uri", redirectUri);
         ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/services/authentication/iam-admins/iam-admins/authorize?response_type={response_type}&scope={scope}&state={state}&client_id={client_id}&redirect_uri={redirect_uri}",
+                "http://localhost:" + port + "/services/oauth2/iam-admins/iam-admins/authorize?response_type={response_type}&scope={scope}&state={state}&client_id={client_id}&redirect_uri={redirect_uri}",
                 String.class, urlVariables);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -87,7 +87,7 @@ public class OAuth2AuthorizationCodeGrantTest {
         authorizationCode = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAuthorizationCodeOAuth2AuthorizationCodeGrant("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, Set.of(),
-                        new URL("http://localhost:" + port + "/services/authentication/" + ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId() + "/redirect"), "123");
+                        new URL("http://localhost:" + port + "/services/oauth2/" + ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId() + "/redirect"), "123");
         assertNotNull(authorizationCode);
     }
 

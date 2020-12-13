@@ -156,7 +156,7 @@ function showElement(element) {
 };
 
 function getBaseUrl() {
-   return window.location.origin + "/services/authentication/" + organization_id + "/" + project_id;
+   return window.location.origin + "/services/oauth2/" + organization_id + "/" + project_id;
 };
 
 function onScopeSelect(input_element) {

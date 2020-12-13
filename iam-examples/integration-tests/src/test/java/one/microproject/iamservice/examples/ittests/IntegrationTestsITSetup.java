@@ -69,7 +69,7 @@ public class IntegrationTestsITSetup {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "Method Security Project",
                 clientId.getId(), "top-secret", appAdminUserId.getId(),  "secret", "admin@email.com",
-                Set.of("methodsecurity"), iamServerBaseURL.toString() + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/redirect",
+                Set.of("methodsecurity"), iamServerBaseURL.toString() + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/redirect",
                 UserProperties.getDefault());
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(iamAdminTokens.getAccessToken(), setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);

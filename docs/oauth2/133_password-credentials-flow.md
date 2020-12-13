@@ -5,7 +5,7 @@
 
 * Get tokens using Password Credentials Flow.
   ```
-  curl --location --request POST 'http://localhost:8080/services/authentication/{organization-id}/{project-id}/token?grant_type=password&username={username}&password={password}&scope={scopes}&client_id={id}&client_secret={secret}' \
+  curl --location --request POST 'http://localhost:8080/services/oauth2/{organization-id}/{project-id}/token?grant_type=password&username={username}&password={password}&scope={scopes}&client_id={id}&client_secret={secret}' \
   --header 'Content-Type: application/x-www-form-urlencoded'   
   ```
 1. User enters client and user credentials.
@@ -19,12 +19,12 @@
 9. [Refresh Tokens flow](15_refresh-tokens-flow.md).
 
 ### Test in Postman or Insomnia
-| Name                 | Value                                                                               |
-|----------------------|-------------------------------------------------------------------------------------|
-| __Grant Type__       | Password Credentials                                                                | 
-| __Access Token URL__ | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```     |
-| __Username__         | admin                                                                               | 
-| __Password__         | secret                                                                              | 
-| __Client ID__        | admin-client                                                                        | 
-| __Client Secret__    | top-secret                                                                          | 
-| __Scope__            | ""                                                                                  |  
+| Name                 | Value                                                                    |
+|----------------------|--------------------------------------------------------------------------|
+| __Grant Type__       | Password Credentials                                                     | 
+| __Access Token URL__ | ```http://localhost:8080/services/oauth2/iam-admins/iam-admins/token```  |
+| __Username__         | admin                                                                    | 
+| __Password__         | secret                                                                   | 
+| __Client ID__        | admin-client                                                             | 
+| __Client Secret__    | top-secret                                                               | 
+| __Scope__            | ""                                                                       |  

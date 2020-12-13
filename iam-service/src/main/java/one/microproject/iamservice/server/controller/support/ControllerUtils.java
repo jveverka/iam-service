@@ -36,16 +36,16 @@ public final class ControllerUtils {
     public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request) throws MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
-        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication";
+        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2";
     }
 
     public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId) throws URISyntaxException, MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
         if (projectId != null) {
-            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication/" + organizationId + "/" + projectId);
+            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2/" + organizationId + "/" + projectId);
         } else {
-            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/authentication/" + organizationId);
+            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2/" + organizationId);
         }
     }
 

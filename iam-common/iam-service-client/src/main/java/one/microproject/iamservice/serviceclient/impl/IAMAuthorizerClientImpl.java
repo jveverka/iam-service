@@ -44,7 +44,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     public TokenResponse refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=refresh_token" +
                             "&refresh_token=" + refreshToken +
                             "&scope=" +
@@ -75,7 +75,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
             AuthorizationCodeGrantRequest authorizationCodeGrantRequest =
                     new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString(), codeChallenge, method);
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/authorize")
+                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/authorize")
                     .post(RequestBody.create(mapper.writeValueAsString(authorizationCodeGrantRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -94,7 +94,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
             //2. provide consent
             ConsentRequest consentRequest = new ConsentRequest(authorizationCode.getCode(), authorizationCode.getAvailableScopes().getValues());
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/consent")
+                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/consent")
                     .post(RequestBody.create(mapper.writeValueAsString(consentRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -122,7 +122,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
             }
             Request request = new Request.Builder()
                     .header("Content-Type", APPLICATION_FORM_URLENCODED)
-                    .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
                             "&code=" + code.getCodeValue() + "&state=" + state)
                     .post(builder.build())
@@ -142,7 +142,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     public TokenResponse getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=password" +
                             "&username=" + userName +
                             "&scope=" +
@@ -165,7 +165,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     public TokenResponse getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=client_credentials" +
                             "&scope=" +
                             "&client_id=" + clientId.getId() +

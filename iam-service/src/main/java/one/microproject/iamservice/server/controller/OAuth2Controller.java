@@ -71,21 +71,21 @@ import static one.microproject.iamservice.server.controller.support.ControllerUt
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getIssuerUri;
 
 @RestController
-@RequestMapping(path = "/services/authentication")
+@RequestMapping(path = "/services/oauth2")
 @Tag(name = "Authentication", description = "APIs providing OAuth2 authentication flows.")
-public class AuthenticationController {
+public class OAuth2Controller {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OAuth2Controller.class);
 
     private final ServletContext servletContext;
     private final AuthenticationService authenticationService;
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
 
-    public AuthenticationController(@Autowired ServletContext servletContext,
-                                    @Autowired AuthenticationService authenticationService,
-                                    @Autowired ProviderConfigurationService providerConfigurationService,
-                                    @Autowired ResourceServerService resourceServerService) {
+    public OAuth2Controller(@Autowired ServletContext servletContext,
+                            @Autowired AuthenticationService authenticationService,
+                            @Autowired ProviderConfigurationService providerConfigurationService,
+                            @Autowired ResourceServerService resourceServerService) {
         this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;

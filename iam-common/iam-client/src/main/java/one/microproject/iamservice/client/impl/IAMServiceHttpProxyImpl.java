@@ -75,7 +75,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         IntrospectRequest introspectRequest = new IntrospectRequest(token, typeHint);
         String postBody = mapper.writeValueAsString(introspectRequest);
         Request request = new Request.Builder()
-                .url(baseUrl.toString() + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/introspect")
+                .url(baseUrl.toString() + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/introspect")
                 .post(RequestBody.create(postBody, MediaType.parse(APPLICATION_JSON)))
                 .build();
         Response response = client.newCall(request).execute();
@@ -86,7 +86,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     public ProviderConfigurationResponse getConfiguration() {
         if (providerConfigurationResponse == null) {
             Request request = new Request.Builder()
-                    .url(baseUrl.toString() + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
+                    .url(baseUrl.toString() + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
@@ -109,24 +109,6 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
 
     @Override
     public Optional<TokenResponse> getTokens(Code code, String state) {
-        /*
-        try {
-            Request request = new Request.Builder()
-                    .url(baseUrl + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
-                            "?grant_type=authorization_code" +
-                            "&code=" + code.getCodeValue() + "&state=" + state)
-                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return Optional.of(mapper.readValue(response.body().string(), TokenResponse.class));
-            } else {
-                return Optional.empty();
-            }
-        } catch (IOException e) {
-            return Optional.empty();
-        }
-        */
         return getTokens(code, state, "");
     }
 
@@ -139,7 +121,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
             }
             Request request = new Request.Builder()
                     .header("Content-Type", APPLICATION_FORM_URLENCODED)
-                    .url(baseUrl + "/services/authentication/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                    .url(baseUrl + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
                             "?grant_type=authorization_code" +
                             "&code=" + code.getCodeValue() + "&state=" + state)
                     .post(builder.build())

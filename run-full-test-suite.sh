@@ -74,7 +74,7 @@ fi
 
 if [ $RESULT_COUNTER -eq 0 ]; then
    #03. Wait for all REST services to start.
-   until $(curl --silent --output /dev/null -f http://127.0.0.1:8080/services/authentication/iam-admins/iam-admins/.well-known/jwks.json ); do
+   until $(curl --silent --output /dev/null -f http://127.0.0.1:8080/services/oauth2/iam-admins/iam-admins/.well-known/jwks.json ); do
       echo "Waiting for iam-service to start ..."
       sleep 1
    done

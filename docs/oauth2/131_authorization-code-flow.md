@@ -26,20 +26,20 @@
 ### Test in Browser
 * Init login flow using web browser.
   ```
-  curl --location --request GET 'http://localhost:8080/services/authentication/{organization-id}/{project-id}/authorize?response_type=code&state={state}&client_id={client-id}&client_secret={client-secret}&scope=&redirect_uri={redirect-uri}'
+  curl --location --request GET 'http://localhost:8080/services/oauth2/{organization-id}/{project-id}/authorize?response_type=code&state={state}&client_id={client-id}&client_secret={client-secret}&scope=&redirect_uri={redirect-uri}'
   ``` 
 
 ### Test in Postman
-| Name                 | Value                                                                               |
-|----------------------|-------------------------------------------------------------------------------------|
-| __Grant Type__       | Authorization Code                                                                  |
-| __Callback URL__     | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/redirect```  |
-| __Auth URL__         | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/authorize``` |
-| __Access Token URL__ | ```http://localhost:8080/services/authentication/iam-admins/iam-admins/token```     |
-| __Client ID__        |  admin-client                                                                       |
-| __Client Secret__    |  top-secret                                                                         |
-| __Scope__            |  ""                                                                                 |
-| __State__            | <random-string>                                                                     |
+| Name                 | Value                                                                       |
+|----------------------|-----------------------------------------------------------------------------|
+| __Grant Type__       | Authorization Code                                                          |
+| __Callback URL__     | ```http://localhost:8080/services/oauth2/iam-admins/iam-admins/redirect```  |
+| __Auth URL__         | ```http://localhost:8080/services/oauth2/iam-admins/iam-admins/authorize``` |
+| __Access Token URL__ | ```http://localhost:8080/services/oauth2/iam-admins/iam-admins/token```     |
+| __Client ID__        |  admin-client                                                               |
+| __Client Secret__    |  top-secret                                                                 |
+| __Scope__            |  ""                                                                         |
+| __State__            | <random-string>                                                             |
 
 ![postman](131_flow-postman-02.png) 
 ![postman](131_flow-postman-03.png) 

@@ -77,7 +77,7 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
         authorizationCode = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAuthorizationCodeOAuth2AuthorizationCodeGrant("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, Set.of(),
-                        new URL("http://localhost:" + port + "/services/authentication/" + ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId() + "/redirect"), "123",
+                        new URL("http://localhost:" + port + "/services/oauth2/" + ModelUtils.IAM_ADMINS_ORG.getId() + "/" + ModelUtils.IAM_ADMINS_PROJECT.getId() + "/redirect"), "123",
                         codeChallenge, PKCEMethod.S256
                 );
         assertNotNull(authorizationCode);

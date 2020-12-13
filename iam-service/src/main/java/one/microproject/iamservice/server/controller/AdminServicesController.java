@@ -50,19 +50,19 @@ import static one.microproject.iamservice.core.ModelCommons.createProjectAdminRo
 @RestController
 @RequestMapping(path = "/services/admin")
 @Tag(name = "Admin Services", description = "APIs for privileged admin users to perform basic Organization and Project actions.")
-public class AdminOrganizationServicesController {
+public class AdminServicesController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminOrganizationServicesController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminServicesController.class);
 
     private final OrganizationManagerService organizationManagerService;
     private final ProjectManagerService projectManagerService;
     private final ClientManagementService clientManagementService;
     private final UserManagerService userManagerService;
 
-    public AdminOrganizationServicesController(OrganizationManagerService organizationManagerService,
-                                               ProjectManagerService projectManagerService,
-                                               ClientManagementService clientManagementService,
-                                               UserManagerService userManagerService) {
+    public AdminServicesController(OrganizationManagerService organizationManagerService,
+                                   ProjectManagerService projectManagerService,
+                                   ClientManagementService clientManagementService,
+                                   UserManagerService userManagerService) {
         this.organizationManagerService = organizationManagerService;
         this.projectManagerService = projectManagerService;
         this.clientManagementService = clientManagementService;

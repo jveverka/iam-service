@@ -7,7 +7,7 @@
 
 # IAM service
 Really simple standalone *Identity Access Management* (IAM) service, [OAuth2](https://tools.ietf.org/html/rfc6749) authentication and authorization server. 
-Project is compliant with subset of [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html)  
+Project is compliant with subset of [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) 
 and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com/jveverka/iam-service#rfcs-and-specifications) related specifications. 
 
 Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples__](iam-examples) for more details.

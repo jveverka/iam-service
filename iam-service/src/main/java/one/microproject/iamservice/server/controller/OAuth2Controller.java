@@ -222,7 +222,7 @@ public class OAuth2Controller {
             codeChallenge = "";
         }
         if (codeChallengeMethod == null) {
-            codeChallengeMethod = "";
+            codeChallengeMethod = "PLAIN";
         }
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("html/login-form.html");
         String result = new BufferedReader(new InputStreamReader(is))

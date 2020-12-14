@@ -14,8 +14,8 @@ and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com
 * Check [__Docker Hub releases__](https://hub.docker.com/r/jurajveverka/iam-service).
   ```
   docker run -d -p 8080:8080 jurajveverka/iam-service:2.2.0-SNAPSHOT
-  curl --location --request GET 'http://localhost:8080/services/discovery'
-  curl --location --request GET 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/.well-known/openid-configuration'
+  curl 'http://localhost:8080/services/discovery'
+  curl 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/.well-known/openid-configuration'
     ```
 * OpenAPI documentation: ``http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/``  
 

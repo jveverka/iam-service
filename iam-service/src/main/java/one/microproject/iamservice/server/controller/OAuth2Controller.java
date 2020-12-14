@@ -72,7 +72,7 @@ import static one.microproject.iamservice.server.controller.support.ControllerUt
 
 @RestController
 @RequestMapping(path = "/services/oauth2")
-@Tag(name = "Authentication", description = "APIs providing OAuth2 authentication flows.")
+@Tag(name = "OAuth2", description = "APIs providing OAuth2 authentication flows.")
 public class OAuth2Controller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OAuth2Controller.class);

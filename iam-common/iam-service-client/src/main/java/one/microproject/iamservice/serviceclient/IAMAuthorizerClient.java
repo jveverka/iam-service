@@ -1,15 +1,15 @@
 package one.microproject.iamservice.serviceclient;
 
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.dto.Code;
-import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import one.microproject.iamservice.serviceclient.impl.ProjectInfoProvider;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.Set;
 
 public interface IAMAuthorizerClient extends ProjectInfoProvider {
@@ -55,9 +55,8 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * 3. OAuth2AuthorizationCodeGrant - get access tokens
      * @param code valid authorization code.
      * @return set of tokens (access_token, refresh_token, id_token)
-     * @throws AuthenticationException in case provided credentials and user/client IDs are invalid or not recognized.
      */
-    TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws AuthenticationException;
+    TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws IOException;
 
     /**
      * 3. OAuth2AuthorizationCodeGrant - get access tokens with PKCE
@@ -66,9 +65,9 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @param code authorization_code.
      * @param state state used to initiate OAuth2 authorization code grant flow.
      * @param codeVerifier code_verifier as specified in https://tools.ietf.org/html/rfc7636#section-4.1
-     * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
+     * @return set of tokens (access_token, refresh_token, id_token) or an error message.
      */
-    TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws AuthenticationException;
+    TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException;
 
     /**
      * OAuth2UsernamePassword flow - get access tokens
@@ -76,28 +75,25 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @param password user's password.
      * @param clientId unique client ID.
      * @param clientSecret client secret for client ID.
-     * @return set of tokens (access_token, refresh_token, id_token)
-     * @throws AuthenticationException in case provided credentials and user/client IDs are invalid or not recognized.
+     * @return set of tokens (access_token, refresh_token, id_token) or an error message.
      */
-    TokenResponse getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws AuthenticationException;
+    TokenResponseWrapper getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws IOException;
 
     /**
      * OAuth2ClientCredentials flow - get access tokens
      * @param clientId unique client ID.
      * @param clientSecret client secret for client ID.
-     * @return set of tokens (access_token, refresh_token, id_token)
-     * @throws AuthenticationException in case provided credentials and user/client IDs are invalid or not recognized.
+     * @return set of tokens (access_token, refresh_token, id_token) or an error message.
      */
-    TokenResponse getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws AuthenticationException;
+    TokenResponseWrapper getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws IOException;
 
     /**
      * Refresh tokens - get access tokens
      * @param refreshToken valid, previously issued refresh_token
      * @param clientId unique client ID.
      * @param clientSecret client secret for client ID.
-     * @return set of tokens (access_token, refresh_token, id_token)
-     * @throws AuthenticationException in case provided credentials and user/client IDs are invalid or not recognized.
+     * @return set of tokens (access_token, refresh_token, id_token) or an error message.
      */
-    TokenResponse refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws AuthenticationException;
+    TokenResponseWrapper refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws IOException;
 
 }

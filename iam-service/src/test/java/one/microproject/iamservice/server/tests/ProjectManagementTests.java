@@ -8,6 +8,7 @@ import one.microproject.iamservice.core.dto.CreateRole;
 import one.microproject.iamservice.core.dto.CreateUser;
 import one.microproject.iamservice.core.dto.PermissionInfo;
 import one.microproject.iamservice.core.dto.RoleInfo;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.JWToken;
@@ -41,7 +42,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -85,15 +85,18 @@ public class ProjectManagementTests {
 
     @Test
     @Order(101)
-    public void initTest() throws AuthenticationException, MalformedURLException, InterruptedException {
+    public void initTest() throws IOException {
         baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
-        jwt_admin_token = iamServiceManagerClient
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret").getAccessToken();
+                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        TokenResponse tokenResponse = tokenResponseWrapper.getTokenResponse();
+        jwt_admin_token = tokenResponse.getAccessToken();
         LOG.info("JSW  access_token: {}", jwt_admin_token);
     }
 
@@ -119,10 +122,14 @@ public class ProjectManagementTests {
 
     @Test
     @Order(103)
-    public void getTokenOrganizationForAdminUser() throws AuthenticationException {
-        jwt_organization_admin_token = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId).getAccessTokensOAuth2UsernamePassword(adminUserId.getId(), adminPassword,
-                adminClientId, adminClientSecret).getAccessToken();
-        assertNotNull(jwt_organization_admin_token);
+    public void getTokenOrganizationForAdminUser() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
+                .getIAMAuthorizerClient(organizationId, projectId)
+                .getAccessTokensOAuth2UsernamePassword(adminUserId.getId(), adminPassword,
+                adminClientId, adminClientSecret);
+        assertTrue(tokenResponseWrapper.isOk());
+        TokenResponse tokenResponse = tokenResponseWrapper.getTokenResponse();
+        jwt_organization_admin_token = tokenResponse.getAccessToken();
         iamServiceProjectManagerClient = iamServiceManagerClient.getIAMServiceProject(jwt_organization_admin_token, organizationId, projectId);
         iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(jwt_organization_admin_token, organizationId, projectId);
     }
@@ -196,9 +203,12 @@ public class ProjectManagementTests {
 
     @Test
     @Order(203)
-    public void getTokensForUser() throws AuthenticationException, IOException {
+    public void getTokensForUser() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
-        TokenResponse newUserTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(newUserId.getId(), "s3cr3t", newClientId, "top-s3cre3t");
+        TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient
+                .getAccessTokensOAuth2UsernamePassword(newUserId.getId(), "s3cr3t", newClientId, "top-s3cre3t");
+        assertTrue(tokenResponseWrapper.isOk());
+        TokenResponse newUserTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(newUserTokens);
         assertNotNull(newUserTokens.getAccessToken());
         assertNotNull(newUserTokens.getRefreshToken());

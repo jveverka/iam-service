@@ -1,6 +1,7 @@
 package one.microproject.iamservice.examples.ittests;
 
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
@@ -57,8 +58,10 @@ public class IntegrationTestsITSetup {
 
     @Test
     @Order(2)
-    public void getIamAdminAccessTokens() throws AuthenticationException {
-        iamAdminTokens = getIAMAdminTokens(iamServiceManagerClient);
+    public void getIamAdminAccessTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = getIAMAdminTokens(iamServiceManagerClient);
+        assertTrue(tokenResponseWrapper.isOk());
+        iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(iamAdminTokens);
         LOG.info("IAM ADMIN access_token  {}", iamAdminTokens.getAccessToken());
     }

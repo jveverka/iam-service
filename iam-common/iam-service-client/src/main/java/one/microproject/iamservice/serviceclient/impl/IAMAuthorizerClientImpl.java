@@ -2,6 +2,8 @@ package one.microproject.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.FormBody;
+import one.microproject.iamservice.core.dto.TokenResponseError;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKCEMethod;
@@ -41,24 +43,21 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     }
 
     @Override
-    public TokenResponse refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws AuthenticationException {
-        try {
-            Request request = new Request.Builder()
-                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
-                            "?grant_type=refresh_token" +
-                            "&refresh_token=" + refreshToken +
-                            "&scope=" +
-                            "&client_id=" + clientId.getId() +
-                            "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), TokenResponse.class);
-            }
-            throw new AuthenticationException("Authentication failed: " + response.code());
-        } catch (IOException e) {
-            throw new AuthenticationException(e);
+    public TokenResponseWrapper refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                        "?grant_type=refresh_token" +
+                        "&refresh_token=" + refreshToken +
+                        "&scope=" +
+                        "&client_id=" + clientId.getId() +
+                        "&client_secret=" + clientSecret)
+                .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return TokenResponseWrapper.ok(mapper.readValue(response.body().string(), TokenResponse.class));
+        } else {
+            return TokenResponseWrapper.error(mapper.readValue(response.body().string(), TokenResponseError.class));
         }
     }
 
@@ -107,80 +106,69 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     }
 
     @Override
-    public TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws AuthenticationException {
+    public TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws IOException {
         //3. get access tokens
         return getAccessTokensOAuth2AuthorizationCodeGrant(code, state,  "");
     }
 
     @Override
-    public TokenResponse getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws AuthenticationException {
-        try {
-            //3. get access tokens - with PKCE
-            FormBody.Builder builder = new FormBody.Builder();
-            if (!codeVerifier.isEmpty()) {
-                builder.add("code_verifier", codeVerifier);
-            }
-            Request request = new Request.Builder()
-                    .header("Content-Type", APPLICATION_FORM_URLENCODED)
-                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
-                            "?grant_type=authorization_code" +
-                            "&code=" + code.getCodeValue() + "&state=" + state)
-                    .post(builder.build())
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), TokenResponse.class);
-            } else {
-                throw new AuthenticationException("Authentication failed: " + response.code());
-            }
-        } catch (IOException e) {
-            throw new AuthenticationException(e);
+    public TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException {
+        //3. get access tokens - with PKCE
+        FormBody.Builder builder = new FormBody.Builder();
+        if (!codeVerifier.isEmpty()) {
+            builder.add("code_verifier", codeVerifier);
+        }
+        Request request = new Request.Builder()
+                .header("Content-Type", APPLICATION_FORM_URLENCODED)
+                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                        "?grant_type=authorization_code" +
+                        "&code=" + code.getCodeValue() + "&state=" + state)
+                .post(builder.build())
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return TokenResponseWrapper.ok(mapper.readValue(response.body().string(), TokenResponse.class));
+        } else {
+            return TokenResponseWrapper.error(mapper.readValue(response.body().string(), TokenResponseError.class));
         }
     }
 
     @Override
-    public TokenResponse getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws AuthenticationException {
-        try {
-            Request request = new Request.Builder()
-                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
-                            "?grant_type=password" +
-                            "&username=" + userName +
-                            "&scope=" +
-                            "&password=" + password +
-                            "&client_id=" + clientId.getId() +
-                            "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), TokenResponse.class);
-            }
-            throw new AuthenticationException("Authentication failed: " + response.code());
-        } catch (IOException e) {
-            throw new AuthenticationException(e);
+    public TokenResponseWrapper getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                        "?grant_type=password" +
+                        "&username=" + userName +
+                        "&scope=" +
+                        "&password=" + password +
+                        "&client_id=" + clientId.getId() +
+                        "&client_secret=" + clientSecret)
+                .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return TokenResponseWrapper.ok(mapper.readValue(response.body().string(), TokenResponse.class));
+        } else {
+            return TokenResponseWrapper.error(mapper.readValue(response.body().string(), TokenResponseError.class));
         }
     }
 
     @Override
-    public TokenResponse getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws AuthenticationException {
-        try {
-            Request request = new Request.Builder()
-                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
-                            "?grant_type=client_credentials" +
-                            "&scope=" +
-                            "&client_id=" + clientId.getId() +
-                            "&client_secret=" + clientSecret)
-                    .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return mapper.readValue(response.body().string(), TokenResponse.class);
-            }
-            throw new AuthenticationException("Authentication failed: " + response.code());
-        } catch (IOException e) {
-            throw new AuthenticationException(e);
+    public TokenResponseWrapper getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                        "?grant_type=client_credentials" +
+                        "&scope=" +
+                        "&client_id=" + clientId.getId() +
+                        "&client_secret=" + clientSecret)
+                .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return TokenResponseWrapper.ok(mapper.readValue(response.body().string(), TokenResponse.class));
+        } else {
+            return TokenResponseWrapper.error(mapper.readValue(response.body().string(), TokenResponseError.class));
         }
-
     }
 
     @Override

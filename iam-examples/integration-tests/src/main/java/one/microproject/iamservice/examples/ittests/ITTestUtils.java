@@ -1,14 +1,14 @@
 package one.microproject.iamservice.examples.ittests;
 
-import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
-import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -29,7 +29,7 @@ public final  class ITTestUtils {
         return new URL("http://localhost:" + iamServerPort);
     }
 
-    public static TokenResponse getIAMAdminTokens(IAMServiceManagerClient iamServiceManagerClient) throws AuthenticationException {
+    public static TokenResponseWrapper getIAMAdminTokens(IAMServiceManagerClient iamServiceManagerClient) throws IOException {
         return iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");

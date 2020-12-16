@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import one.microproject.iamservice.core.dto.ErrorType;
+import one.microproject.iamservice.core.dto.TokenResponseError;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.JWToken;
@@ -35,6 +37,7 @@ import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
 import one.microproject.iamservice.server.controller.support.ControllerUtils;
+import one.microproject.iamservice.server.controller.support.OAuth2TokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,73 +129,97 @@ public class OAuth2Controller {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE )
     public ResponseEntity<TokenResponse> postGetTokens(@PathVariable("organization-id") String organizationId,
-                                                   @PathVariable("project-id") String projectId,
-                                                   @RequestParam(name = "grant_type", required = true) String grantType,
-                                                   @RequestParam(name = "username", required = false) String username,
-                                                   @RequestParam(name = "password", required = false) String password,
-                                                   @RequestParam(name = "scope", required = false) String scope,
-                                                   @RequestParam(name = "client_id", required = false) String clientId,
-                                                   @RequestParam(name = "client_secret",  required = false) String clientSecret,
-                                                   @RequestParam(name = "refresh_token", required = false) String refreshToken,
-                                                   @RequestParam(name = "code", required = false) String code,
-                                                   @RequestParam(name = "nonce", required = false) String nonce,
-                                                   @RequestParam(name = "audience", required = false) String audience,
-                                                   @RequestBody MultiValueMap bodyValueMap,
-                                                   HttpServletRequest request) throws MalformedURLException, URISyntaxException {
-        LOG.info("postGetTokens: query={}", request.getRequestURL());
-        LOG.info("postGetTokens: parameters=[{}]", ControllerUtils.getParameters(request.getParameterNames()));
-        LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
-        String codeVerifier = getCodeVerifier(bodyValueMap);
-        LOG.info("postGetTokens: IssuerUri={} tokenVerifier={}", issuerUri, codeVerifier);
-        GrantType grantTypeEnum = GrantType.getGrantType(grantType);
-        OrganizationId orgId = OrganizationId.from(organizationId);
-        ProjectId projId = ProjectId.from(projectId);
-        IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce, codeVerifier);
-        if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
-            LOG.info("postGetTokens: grantType={} code={}", grantType, code);
-            Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
-            return ResponseEntity.of(tokensOptional);
-        } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
-            Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
-            if (ccOptional.isPresent()) {
-                ClientCredentials clientCredentials = ccOptional.get();
-                LOG.info("postGetTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientCredentials.getId().getId());
-                Scope scopes = ModelUtils.getScopes(scope);
-                UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
-                Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
-                return ResponseEntity.of(tokensOptional);
+                                                       @PathVariable("project-id") String projectId,
+                                                       @RequestParam(name = "grant_type", required = true) String grantType,
+                                                       @RequestParam(name = "username", required = false) String username,
+                                                       @RequestParam(name = "password", required = false) String password,
+                                                       @RequestParam(name = "scope", required = false) String scope,
+                                                       @RequestParam(name = "client_id", required = false) String clientId,
+                                                       @RequestParam(name = "client_secret",  required = false) String clientSecret,
+                                                       @RequestParam(name = "refresh_token", required = false) String refreshToken,
+                                                       @RequestParam(name = "code", required = false) String code,
+                                                       @RequestParam(name = "nonce", required = false) String nonce,
+                                                       @RequestParam(name = "audience", required = false) String audience,
+                                                       @RequestBody MultiValueMap bodyValueMap,
+                                                       HttpServletRequest request) throws OAuth2TokenException {
+        try {
+            LOG.info("postGetTokens: query={}", request.getRequestURL());
+            LOG.info("postGetTokens: parameters=[{}]", ControllerUtils.getParameters(request.getParameterNames()));
+            LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
+            URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+            String codeVerifier = getCodeVerifier(bodyValueMap);
+            LOG.info("postGetTokens: IssuerUri={} tokenVerifier={}", issuerUri, codeVerifier);
+            GrantType grantTypeEnum = GrantType.getGrantType(grantType);
+            OrganizationId orgId = OrganizationId.from(organizationId);
+            ProjectId projId = ProjectId.from(projectId);
+            IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce, codeVerifier);
+            if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
+                LOG.info("postGetTokens: grantType={} code={}", grantType, code);
+                Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
+                if (tokensOptional.isPresent()) {
+                    return ResponseEntity.ok(tokensOptional.get());
+                } else {
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                }
+            } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
+                Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
+                if (ccOptional.isPresent()) {
+                    ClientCredentials clientCredentials = ccOptional.get();
+                    LOG.info("postGetTokens: grantType={} username={} scope={} clientId={}", grantType, username, scope, clientCredentials.getId().getId());
+                    Scope scopes = ModelUtils.getScopes(scope);
+                    UPAuthenticationRequest upAuthenticationRequest = new UPAuthenticationRequest(UserId.from(username), password, scopes, clientCredentials);
+                    Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, upAuthenticationRequest, idTokenRequest);
+                    if (tokensOptional.isPresent()) {
+                        return ResponseEntity.ok(tokensOptional.get());
+                    } else {
+                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                    }
+                } else {
+                    LOG.warn("Can't get client credentials !");
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.unauthorized_client, "Can't get client credentials !"));
+                }
+            } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
+                Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
+                if (ccOptional.isPresent()) {
+                    ClientCredentials clientCredentials = ccOptional.get();
+                    LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientCredentials.getId().getId());
+                    Scope scopes = ModelUtils.getScopes(scope);
+                    Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, idTokenRequest);
+                    if (tokensOptional.isPresent()) {
+                        return ResponseEntity.ok(tokensOptional.get());
+                    } else {
+                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                    }
+                } else {
+                    LOG.warn("Can't get client credentials !");
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.unauthorized_client, "Can't get client credentials !"));
+                }
+            } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
+                Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
+                if (ccOptional.isPresent()) {
+                    ClientCredentials clientCredentials = ccOptional.get();
+                    LOG.info("postGetTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientCredentials.getId().getId(), refreshToken);
+                    JWToken jwToken = new JWToken(refreshToken);
+                    Scope scopes = ModelUtils.getScopes(scope);
+                    Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(orgId, projId, jwToken, clientCredentials, scopes, idTokenRequest);
+                    if (tokensOptional.isPresent()) {
+                        return ResponseEntity.ok(tokensOptional.get());
+                    } else {
+                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                    }
+                } else {
+                    LOG.warn("Can't get client credentials !");
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.unauthorized_client, "Can't get client credentials !"));
+                }
             } else {
-                LOG.warn("Can't get client credentials !");
+                LOG.warn("Unsupported grant_type={} !", grantType);
+                throw new OAuth2TokenException(TokenResponseError.from(ErrorType.invalid_request, "Unsupported grant_type=", grantType));
             }
-        } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
-            Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
-            if (ccOptional.isPresent()) {
-                ClientCredentials clientCredentials = ccOptional.get();
-                LOG.info("postGetTokens: grantType={} scope={} clientId={}", grantType, scope, clientCredentials.getId().getId());
-                Scope scopes = ModelUtils.getScopes(scope);
-                Optional<TokenResponse> tokensOptional = authenticationService.authenticate(issuerUri, orgId, projId, clientCredentials, scopes, idTokenRequest);
-                return ResponseEntity.of(tokensOptional);
-            } else {
-                LOG.warn("Can't get client credentials !");
-            }
-        } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
-            Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
-            if (ccOptional.isPresent()) {
-                ClientCredentials clientCredentials = ccOptional.get();
-                LOG.info("postGetTokens: grantType={} scope={} clientId={} refreshToken={}", grantType, scope, clientCredentials.getId().getId(), refreshToken);
-                JWToken jwToken = new JWToken(refreshToken);
-                Scope scopes = ModelUtils.getScopes(scope);
-                Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(orgId, projId, jwToken, clientCredentials, scopes, idTokenRequest);
-                return ResponseEntity.of(tokensOptional);
-            } else {
-                LOG.warn("Can't get client credentials !");
-            }
-        } else {
-            LOG.warn("Unsupported grant_type={} !", grantType);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (URISyntaxException e) {
+            throw new OAuth2TokenException(e, TokenResponseError.from(ErrorType.invalid_request, "Callback URI invalid syntax."));
+        } catch (MalformedURLException e) {
+            throw new OAuth2TokenException(e, TokenResponseError.from(ErrorType.invalid_request, "Callback URI malformed."));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @Operation(description = "__Start Authorization Code Grant flow__ \n" +

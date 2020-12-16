@@ -3,6 +3,7 @@ package one.microproject.iamservice.server.tests;
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.IAMClientBuilder;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
@@ -12,7 +13,6 @@ import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
-import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
@@ -85,10 +86,12 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(2)
-    public void getTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient
+    public void getTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

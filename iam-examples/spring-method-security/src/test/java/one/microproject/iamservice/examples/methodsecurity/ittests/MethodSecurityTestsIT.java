@@ -4,6 +4,7 @@ package one.microproject.iamservice.examples.methodsecurity.ittests;
 import one.microproject.iamservice.core.dto.CreateRole;
 import one.microproject.iamservice.core.dto.CreateUser;
 import one.microproject.iamservice.core.dto.PermissionInfo;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -44,6 +46,7 @@ import static one.microproject.iamservice.examples.ittests.ITTestUtils.organizat
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.projectId;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.clientId;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.appAdminUserId;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MethodSecurityTestsIT {
@@ -93,9 +96,11 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(5)
-    public void getAppAdminUserTokens() throws AuthenticationException {
+    public void getAppAdminUserTokens() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
-        appAdminTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appAdminUserId.getId(), "secret", clientId, "top-secret");
+        TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appAdminUserId.getId(), "secret", clientId, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        appAdminTokens = tokenResponseWrapper.getTokenResponse();
         LOG.info("App admin: ACCESS_TOKEN {}", appAdminTokens.getAccessToken());
         assertNotNull(appAdminTokens);
     }
@@ -127,18 +132,22 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(8)
-    public void getAppReaderTokens() throws AuthenticationException {
+    public void getAppReaderTokens() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
-        appReaderTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appReaderUserId.getId(), "789456", clientId, "top-secret");
+        TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appReaderUserId.getId(), "789456", clientId, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        appReaderTokens = tokenResponseWrapper.getTokenResponse();
         LOG.info("App READER: ACCESS_TOKEN {}", appReaderTokens.getAccessToken());
         assertNotNull(appReaderTokens);
     }
 
     @Test
     @Order(9)
-    public void getAppWriterTokens() throws AuthenticationException {
+    public void getAppWriterTokens() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
-        appWriterTokens = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appWriterUserId.getId(), "456789", clientId, "top-secret");
+        TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appWriterUserId.getId(), "456789", clientId, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        appWriterTokens = tokenResponseWrapper.getTokenResponse();
         LOG.info("App WRITER: ACCESS_TOKEN {}", appWriterTokens.getAccessToken());
         assertNotNull(appWriterTokens);
     }
@@ -157,8 +166,9 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(11)
-    public void testSecureAccessInvalidIAMAdminTokens() throws AuthenticationException {
-        TokenResponse iamAdminTokens = getIAMAdminTokens(iamServiceManagerClient);
+    public void testSecureAccessInvalidIAMAdminTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = getIAMAdminTokens(iamServiceManagerClient);
+        TokenResponse iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + iamAdminTokens.getAccessToken()));
         HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);

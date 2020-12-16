@@ -5,6 +5,7 @@ import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
@@ -12,6 +13,7 @@ import one.microproject.iamservice.core.model.ProjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -76,12 +78,12 @@ public class IAMClientImpl implements IAMClient {
     }
 
     @Override
-    public Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) {
+    public TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws IOException {
         return iamServiceProxy.getTokens(code, state);
     }
 
     @Override
-    public Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) {
+    public TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException {
         return iamServiceProxy.getTokens(code, state, codeVerifier);
     }
 

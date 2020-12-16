@@ -3,10 +3,10 @@ package itx.examples.webflux.tests;
 import itx.examples.webflux.dto.CreateUserData;
 import itx.examples.webflux.dto.UserData;
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
-import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -20,12 +20,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -60,10 +62,12 @@ public class SecuredUserControllerTestsIT {
     @Test
     @Order(0)
     @DisplayName("Get Access Token")
-    void getAccessToken() throws AuthenticationException {
-        iamAdminTokens = iamServiceManagerClient
+    void getAccessToken() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(iamAdminTokens);
         LOG.info("TOKEN: {}", iamAdminTokens.getAccessToken());
     }

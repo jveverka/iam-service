@@ -6,9 +6,9 @@ import one.microproject.iamservice.server.services.IAMSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class IAMExceptionHandler {
@@ -16,18 +16,15 @@ public class IAMExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IAMExceptionHandler.class);
 
     @ExceptionHandler(IAMSecurityException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError handleIAMSecurityException(IAMSecurityException e) {
+    public ResponseEntity<ApiError> handleIAMSecurityException(IAMSecurityException e) {
         LOG.info("handleIAMSecurityException: {}", e.getMessage());
-        return new ApiError(e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(e.getMessage()));
     }
 
     @ExceptionHandler(OAuth2TokenException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public TokenResponseError handleOAuth2TokenException(OAuth2TokenException e) {
+    public ResponseEntity<TokenResponseError> handleOAuth2TokenException(OAuth2TokenException e) {
         LOG.info("handleOAuth2TokenException: {}", e.getTokenResponseError().getError());
-        return e.getTokenResponseError();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getTokenResponseError());
     }
-
 
 }

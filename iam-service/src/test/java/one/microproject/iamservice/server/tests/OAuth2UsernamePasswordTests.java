@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.tests;
 
+import one.microproject.iamservice.core.dto.TokenResponseError;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
@@ -140,6 +141,28 @@ public class OAuth2UsernamePasswordTests {
                 .tokenIntrospection(tokenResponse.getRefreshToken());
         assertNotNull(response);
         assertFalse(response.getActive());
+    }
+
+    @Test
+    @Order(8)
+    public void testInvalidPasswordLogin() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2UsernamePassword("admin", "bad-password", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isError());
+        TokenResponseError error = tokenResponseWrapper.getTokenResponseError();
+        assertNotNull(error);
+    }
+
+    @Test
+    @Order(9)
+    public void testInvalidUserLogin() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2UsernamePassword("nobody", "bad-password", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isError());
+        TokenResponseError error = tokenResponseWrapper.getTokenResponseError();
+        assertNotNull(error);
     }
 
 }

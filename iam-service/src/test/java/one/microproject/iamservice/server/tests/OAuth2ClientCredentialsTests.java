@@ -1,6 +1,7 @@
 package one.microproject.iamservice.server.tests;
 
 import one.microproject.iamservice.core.dto.CreateClient;
+import one.microproject.iamservice.core.dto.TokenResponseError;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.ClientProperties;
@@ -144,5 +145,26 @@ public class OAuth2ClientCredentialsTests {
         assertNotNull(response);
         assertFalse(response.getActive());
     }
+
+    @Test
+    @Order(7)
+    public void testInvalidClientSecretLogin() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2ClientCredentials(newClientId, "invalid-client-secret");
+        assertTrue(tokenResponseWrapper.isError());
+        TokenResponseError error = tokenResponseWrapper.getTokenResponseError();
+        assertNotNull(error);
+    }
+
+    @Test
+    @Order(8)
+    public void testInvalidClientIdLogin() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2ClientCredentials(ClientId.from("invalid-client-id"), newClientSecret);
+        assertTrue(tokenResponseWrapper.isError());
+        TokenResponseError error = tokenResponseWrapper.getTokenResponseError();
+        assertNotNull(error);
+    }
+
 
 }

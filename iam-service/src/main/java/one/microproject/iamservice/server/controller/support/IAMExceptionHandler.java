@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.controller.support;
 
+import one.microproject.iamservice.core.dto.TokenResponseError;
 import one.microproject.iamservice.server.dto.ApiError;
 import one.microproject.iamservice.server.services.IAMSecurityException;
 import org.slf4j.Logger;
@@ -17,8 +18,16 @@ public class IAMExceptionHandler {
     @ExceptionHandler(IAMSecurityException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiError handleIAMSecurityException(IAMSecurityException e) {
-        LOG.info("handleIAMSecurityException {}", e.getMessage());
+        LOG.info("handleIAMSecurityException: {}", e.getMessage());
         return new ApiError(e.getMessage());
     }
+
+    @ExceptionHandler(OAuth2TokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public TokenResponseError handleOAuth2TokenException(OAuth2TokenException e) {
+        LOG.info("handleOAuth2TokenException: {}", e.getTokenResponseError().getError());
+        return e.getTokenResponseError();
+    }
+
 
 }

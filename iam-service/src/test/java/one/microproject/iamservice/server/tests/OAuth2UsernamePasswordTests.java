@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.tests;
 
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
@@ -7,7 +8,6 @@ import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
-import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -47,10 +47,12 @@ public class OAuth2UsernamePasswordTests {
 
     @Test
     @Order(1)
-    public void getTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient
+    public void getTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());
@@ -86,9 +88,11 @@ public class OAuth2UsernamePasswordTests {
 
     @Test
     @Order(4)
-    public void getRefreshTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+    public void getRefreshTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
                 .refreshTokens(tokenResponse.getRefreshToken(), ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

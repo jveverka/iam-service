@@ -1,12 +1,12 @@
 package one.microproject.iamservice.examples.resourceserver.ittests;
 
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.examples.resourceserver.dto.ServerData;
 import one.microproject.iamservice.examples.resourceserver.dto.SystemInfo;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
-import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -21,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ResourceServerTestsIT {
@@ -72,10 +74,12 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(3)
-    public void getIamAdminAccessTokens() throws AuthenticationException {
-        iamAdminTokens = iamServiceManagerClient
+    public void getIamAdminAccessTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(iamAdminTokens);
         LOG.info("TOKEN: {}", iamAdminTokens.getAccessToken());
     }

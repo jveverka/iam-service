@@ -3,11 +3,13 @@ package one.microproject.iamservice.client;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.ProjectId;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +89,7 @@ public interface IAMClient extends AutoCloseable {
      * @param state state used to initiate OAuth2 authorization code grant flow.
      * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
      */
-    Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state);
+    TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws IOException;
 
     /**
      * Get tokens in exchange for authorization_code. This call is used to finish OAuth2 authorization code grant flow with PKCE.
@@ -97,6 +99,6 @@ public interface IAMClient extends AutoCloseable {
      * @param codeVerifier code_verifier as specified in https://tools.ietf.org/html/rfc7636#section-4.1
      * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
      */
-    Optional<TokenResponse> getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier);
+    TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException;
 
 }

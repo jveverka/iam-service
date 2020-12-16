@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.tests;
 
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
@@ -101,10 +102,12 @@ public class OAuth2AuthorizationCodeGrantTest {
 
     @Test
     @Order(4)
-    public void getTokensTest() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient
+    public void getTokensTest() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2AuthorizationCodeGrant(authorizationCode.getCode(), state);
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());
@@ -140,9 +143,11 @@ public class OAuth2AuthorizationCodeGrantTest {
 
     @Test
     @Order(7)
-    public void getRefreshTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+    public void getRefreshTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
                 .refreshTokens(tokenResponse.getRefreshToken(), ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

@@ -8,6 +8,8 @@ import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.dto.JWKResponse;
 import one.microproject.iamservice.core.dto.ProviderConfigurationResponse;
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseError;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -108,32 +110,28 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     @Override
-    public Optional<TokenResponse> getTokens(Code code, String state) {
+    public TokenResponseWrapper getTokens(Code code, String state) throws IOException {
         return getTokens(code, state, "");
     }
 
     @Override
-    public Optional<TokenResponse> getTokens(Code code, String state, String codeVerifier) {
-        try {
-            FormBody.Builder builder = new FormBody.Builder();
-            if (!codeVerifier.isEmpty()) {
-                builder.add("code_verifier", codeVerifier);
-            }
-            Request request = new Request.Builder()
-                    .header("Content-Type", APPLICATION_FORM_URLENCODED)
-                    .url(baseUrl + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
-                            "?grant_type=authorization_code" +
-                            "&code=" + code.getCodeValue() + "&state=" + state)
-                    .post(builder.build())
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() == 200) {
-                return Optional.of(mapper.readValue(response.body().string(), TokenResponse.class));
-            } else {
-                return Optional.empty();
-            }
-        } catch (IOException e) {
-            return Optional.empty();
+    public TokenResponseWrapper getTokens(Code code, String state, String codeVerifier) throws IOException {
+        FormBody.Builder builder = new FormBody.Builder();
+        if (!codeVerifier.isEmpty()) {
+            builder.add("code_verifier", codeVerifier);
+        }
+        Request request = new Request.Builder()
+                .header("Content-Type", APPLICATION_FORM_URLENCODED)
+                .url(baseUrl + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                        "?grant_type=authorization_code" +
+                        "&code=" + code.getCodeValue() + "&state=" + state)
+                .post(builder.build())
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return TokenResponseWrapper.ok(mapper.readValue(response.body().string(), TokenResponse.class));
+        } else {
+            return TokenResponseWrapper.error(mapper.readValue(response.body().string(), TokenResponseError.class));
         }
     }
 

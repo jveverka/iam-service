@@ -2,6 +2,7 @@ package one.microproject.iamservice.server.tests;
 
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.dto.TokenResponse;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.model.utils.ModelUtils;
@@ -19,15 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -93,10 +90,12 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(4)
-    public void getTokensTest() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient
+    public void getTokensTest() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2AuthorizationCodeGrant(authorizationCode.getCode(), state, codeVerifier);
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());
@@ -132,9 +131,11 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(7)
-    public void getRefreshTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+    public void getRefreshTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
                 .refreshTokens(tokenResponse.getRefreshToken(), ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

@@ -1,6 +1,7 @@
 package one.microproject.iamservice.server.tests;
 
 import one.microproject.iamservice.core.dto.CreateClient;
+import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.TokenType;
@@ -19,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -42,15 +42,16 @@ public class OAuth2ClientCredentialsTests {
 
     @Test
     @Order(0)
-    public void initTests() throws MalformedURLException, AuthenticationException {
+    public void initTests() throws IOException, AuthenticationException {
         URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
-        tokenResponse = iamServiceManagerClient
-                .getIAMAdminAuthorizerClient()
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         IAMServiceProjectManagerClient iamServiceProject = iamServiceManagerClient.getIAMServiceProject(tokenResponse.getAccessToken(), ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
         ClientProperties properties = new ClientProperties("", false,  false, true, new HashMap<>());
         CreateClient createClient = new CreateClient(newClientId.getId(),  "",  3600L, 3600L, newClientSecret, properties);
@@ -59,9 +60,11 @@ public class OAuth2ClientCredentialsTests {
 
     @Test
     @Order(1)
-    public void getTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+    public void getTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2ClientCredentials(newClientId, newClientSecret);
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());
@@ -87,9 +90,12 @@ public class OAuth2ClientCredentialsTests {
 
     @Test
     @Order(3)
-    public void getRefreshTokens() throws AuthenticationException {
-        tokenResponse = iamServiceManagerClient.getIAMAdminAuthorizerClient()
+    public void getRefreshTokens() throws IOException {
+        TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
                 .refreshTokens(tokenResponse.getRefreshToken(), newClientId, newClientSecret);
+        assertTrue(tokenResponseWrapper.isOk());
+        tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
         assertNotNull(tokenResponse.getAccessToken());
         assertNotNull(tokenResponse.getRefreshToken());

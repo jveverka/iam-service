@@ -1,6 +1,7 @@
 package one.microproject.iamservice.serviceclient;
 
 import one.microproject.iamservice.core.dto.CreateUser;
+import one.microproject.iamservice.core.dto.UserCredentialsChangeRequest;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.dto.UserInfo;
@@ -20,5 +21,7 @@ public interface IAMServiceUserManagerClient extends ProjectInfoProvider  {
     void addRoleToUser(UserId userId, RoleId roleId) throws AuthenticationException;
 
     void removeRoleFromUser(UserId userId, RoleId roleId) throws AuthenticationException;
+
+    void changeUserCredentials(UserId userId, String userAccessToken, UserCredentialsChangeRequest request) throws AuthenticationException;
 
 }

@@ -2,6 +2,7 @@ package one.microproject.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.iamservice.core.dto.CreateUser;
+import one.microproject.iamservice.core.dto.UserCredentialsChangeRequest;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
@@ -109,6 +110,24 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
                     .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId())
                     .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
                     .delete()
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return;
+            }
+            throw new AuthenticationException("Authentication failed: " + response.code());
+        } catch (IOException e) {
+            throw new AuthenticationException(e);
+        }
+    }
+
+    @Override
+    public void changeUserCredentials(UserId userId, String userAccessToken, UserCredentialsChangeRequest userCredentialsChangeRequest) throws AuthenticationException {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId() + "/change-password")
+                    .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + userAccessToken)
+                    .put(RequestBody.create(mapper.writeValueAsString(userCredentialsChangeRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
             if (response.code() == 200) {

@@ -3,6 +3,8 @@ package one.microproject.iamservice.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import one.microproject.iamservice.core.dto.CreateUser;
+import one.microproject.iamservice.core.dto.UserCredentialsChangeRequest;
+import one.microproject.iamservice.core.model.Credentials;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -79,9 +81,15 @@ public class ProjectUserManagementController {
     @PutMapping("/{organization-id}/{project-id}/users/{user-id}/change-password")
     public ResponseEntity<Void> changeUserPassword(@PathVariable("organization-id") String organizationId,
                                                    @PathVariable("project-id") String projectId,
-                                                   @PathVariable("user-id") String userId) {
-        //TODO: add missing implementation
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+                                                   @PathVariable("user-id") String userId,
+                                                   @RequestBody UserCredentialsChangeRequest userCredentialsChangeRequest) throws PKIException {
+        OrganizationId orgId = OrganizationId.from(organizationId);
+        ProjectId projId = ProjectId.from(projectId);
+        UserId uId = UserId.from(userId);
+        iamSecurityValidator.verifyUserAccess(orgId, projId, uId);
+        Credentials credentials = new UPCredentials(uId, userCredentialsChangeRequest.getNewPassword());
+        userManagerService.setCredentials(orgId, projId, uId, credentials);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Operation(description = "Add existing role to existing user.")

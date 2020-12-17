@@ -7,6 +7,7 @@ import one.microproject.iamservice.client.spring.AuthenticationImpl;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
+import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.server.services.IAMSecurityException;
@@ -40,7 +41,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     }
 
     @Override
-    public StandardTokenClaims verifyAdminAccess(String authorization) throws IAMSecurityException {
+    public StandardTokenClaims verifyGlobalAdminAccess(String authorization) throws IAMSecurityException {
         StandardTokenClaims standardTokenClaims = verifyToken(authorization);
         boolean result = JWTUtils.validatePermissions(standardTokenClaims, ADMIN_PROJECT_SET, Set.of());
         if (!result) {
@@ -74,6 +75,19 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
         StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
         LOG.info("JWT iss: {}", standardTokenClaims.getIssuer());
         if (!verifyProjectAdminPermissions(organizationId, projectId, standardTokenClaims.getScope())) {
+            throw new IAMSecurityException("Authorization token validation has failed.");
+        }
+    }
+
+    @Override
+    public void verifyUserAccess(OrganizationId organizationId, ProjectId projectId, UserId userId) throws IAMSecurityException {
+        AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
+        StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
+        if (organizationId.equals(standardTokenClaims.getOrganizationId())
+                && projectId.equals(standardTokenClaims.getProjectId())
+                && userId.getId().equals(standardTokenClaims.getSubject())) {
+            LOG.debug("User Access: OK");
+        } else {
             throw new IAMSecurityException("Authorization token validation has failed.");
         }
     }

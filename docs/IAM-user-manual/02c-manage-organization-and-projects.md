@@ -75,6 +75,17 @@ All actions described below must be performed under project admin user identity.
       }
   }'
   ```
+* Change user's credentials
+  ```
+  #template:
+  #curl --location --request PUT 'http://localhost:8080/services/management/{organization-id}/{project-id}/users/{user-id}/change-password' \
+  curl --location --request PUT 'http://localhost:8080/services/management/test-org-001/project-001/users/user-001/change-password' \
+  --header 'Authorization: Bearer <USER_ACCESS_TOKEN>' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "newPassword": "new-secret-password"
+  }' 
+  ```
 * Delete User
   ```
   #template:

@@ -37,7 +37,7 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
             if (authorization != null) {
                 try {
                     LOG.info("doAdminFilter: {} {} {}", requestUri, requestUrl, authorization);
-                    StandardTokenClaims standardTokenClaims = iamSecurityValidator.verifyAdminAccess(authorization);
+                    StandardTokenClaims standardTokenClaims = iamSecurityValidator.verifyGlobalAdminAccess(authorization);
                     SecurityContextHolder.getContext().setAuthentication(new AuthenticationImpl(standardTokenClaims));
                     filterChain.doFilter(httpServletRequest, httpServletResponse);
                 } catch (IAMSecurityException iamSecurityException) {

@@ -3,7 +3,7 @@
 * Make sure all changes are committed and pushed.
 * Make sure the documentation is up-to date.
 * Make sure all tests are passing.
-* ``NEW_RELEASE_VERSION=2.2.0-SNAPSHOT``
+* ``NEW_RELEASE_VERSION=2.3.0-SNAPSHOT``
 * Upgrade component version in script below.
   ```
   ./version-upgrade.sh
@@ -30,4 +30,10 @@
 * Publish artefacts to as [described here](https://central.sonatype.org/pages/gradle.html).
   ```
   gradle uploadArchives
+  ```
+* Publish docker image to dockerhub.
+  ```
+  cd build/iam-service-<NEW_RELEASE_VERSION>
+  docker build -t jurajveverka/iam-service:<NEW_RELEASE_VERSION> --file Dockerfile.x86_64 .
+  docker push jurajveverka/iam-service:<NEW_RELEASE_VERSION>  
   ```

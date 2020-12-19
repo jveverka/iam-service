@@ -1,5 +1,6 @@
 # Compatible with Architecture: x86_64 systems (Intel, AMD)
 
+# https://hub.docker.com/r/adoptopenjdk/openjdk11
 FROM adoptopenjdk/openjdk11:alpine-jre
 COPY iam-service-2.3.0-SNAPSHOT.jar /iam-service-2.3.0-SNAPSHOT.jar
 COPY iam-service-start.sh /iam-service-start.sh

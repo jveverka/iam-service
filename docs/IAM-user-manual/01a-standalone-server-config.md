@@ -18,8 +18,8 @@
 * Build Docker Image for target platform.
   ```
   docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.x86_64 .
-  docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.armv7l .
-  docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.aarch64 .
+  docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.arm32v7 .
+  docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.arm64v8 .
   ```
 * Start __iam-service__ as Docker Container with custom configuration.
   ```

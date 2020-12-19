@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.9_11-alpine
+FROM adoptopenjdk/openjdk11:alpine-jre
 COPY build/libs/iam-service-2.3.0-SNAPSHOT.jar /iam-service-2.3.0-SNAPSHOT.jar
 COPY iam-service-start.sh /iam-service-start.sh
 RUN chmod +x /iam-service-start.sh

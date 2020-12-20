@@ -29,6 +29,7 @@ cp release/Dockerfile.* ${RELEASE_DIR}
 cp release/docker-compose* ${RELEASE_DIR}
 cp iam-service/src/main/resources/application.yml ${RELEASE_DIR}
 cp iam-service/iam-service-start.sh ${RELEASE_DIR}
+cp iam-service/Dockerfile ${RELEASE_DIR}/Dockerfile.x86_64
 
 cd build
 

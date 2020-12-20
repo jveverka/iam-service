@@ -88,6 +88,7 @@ public interface IAMClient extends AutoCloseable {
      * @param code authorization_code.
      * @param state state used to initiate OAuth2 authorization code grant flow.
      * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
+     * @throws IOException in case of data serialization problem.
      */
     TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws IOException;
 
@@ -98,6 +99,7 @@ public interface IAMClient extends AutoCloseable {
      * @param state state used to initiate OAuth2 authorization code grant flow.
      * @param codeVerifier code_verifier as specified in https://tools.ietf.org/html/rfc7636#section-4.1
      * @return {@link Optional} of {@link TokenResponse} a valid access, refresh and id tokens, empty if authorization_code is invalid.
+     * @throws IOException in case of data serialization problem.
      */
     TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException;
 

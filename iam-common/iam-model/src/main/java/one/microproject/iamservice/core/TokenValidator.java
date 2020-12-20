@@ -38,23 +38,23 @@ public interface TokenValidator {
 
     /**
      * Validate JWT for organization and project.
-     * @param organizationId
-     * @param projectId
-     * @param response
-     * @param token
-     * @return
+     * @param organizationId - unique organization ID
+     * @param projectId - unique project ID
+     * @param response - collection of JWKs
+     * @param token - JWT token to validate.
+     * @return {@link Optional} of {@link StandardTokenClaims} in case token validation is OK, empty otherwise.
      */
     Optional<StandardTokenClaims> validateToken(OrganizationId organizationId, ProjectId projectId, JWKResponse response, JWToken token);
 
     /**
      * Validate JWT for organization and project.
-     * @param organizationId
-     * @param projectId
-     * @param response
-     * @param requiredAdminPermissions
-     * @param requiredApplicationPermissions
-     * @param token
-     * @return
+     * @param organizationId - unique organization ID
+     * @param projectId - unique project ID
+     * @param response - collection of JWKs
+     * @param requiredAdminPermissions - expected set of admin permissions.
+     * @param requiredApplicationPermissions - expected set of application permissions.
+     * @param token - JWT token to validate.
+     * @return true in case token validation is OK, false otherwise.
      */
     boolean validateToken(OrganizationId organizationId, ProjectId projectId, JWKResponse response, Set<Permission> requiredAdminPermissions, Set<Permission> requiredApplicationPermissions, JWToken token);
 

@@ -41,4 +41,12 @@ public class Scope {
     public int hashCode() {
         return Objects.hash(values);
     }
+
+    @Override
+    public String toString() {
+        return "Scope{" +
+                "values=" + values +
+                '}';
+    }
+
 }

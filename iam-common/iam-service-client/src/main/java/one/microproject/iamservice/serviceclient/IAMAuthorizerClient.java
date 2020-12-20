@@ -54,7 +54,9 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
     /**
      * 3. OAuth2AuthorizationCodeGrant - get access tokens
      * @param code valid authorization code.
+     * @param state state used to initiate OAuth2 authorization code grant flow.
      * @return set of tokens (access_token, refresh_token, id_token)
+     * @throws IOException in case of data serialization error.
      */
     TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state) throws IOException;
 
@@ -66,6 +68,7 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @param state state used to initiate OAuth2 authorization code grant flow.
      * @param codeVerifier code_verifier as specified in https://tools.ietf.org/html/rfc7636#section-4.1
      * @return set of tokens (access_token, refresh_token, id_token) or an error message.
+     * @throws IOException in case of data serialization error.
      */
     TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException;
 
@@ -76,6 +79,7 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @param clientId unique client ID.
      * @param clientSecret client secret for client ID.
      * @return set of tokens (access_token, refresh_token, id_token) or an error message.
+     * @throws IOException in case of data serialization error.
      */
     TokenResponseWrapper getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws IOException;
 
@@ -84,6 +88,7 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @param clientId unique client ID.
      * @param clientSecret client secret for client ID.
      * @return set of tokens (access_token, refresh_token, id_token) or an error message.
+     * @throws IOException in case of data serialization error.
      */
     TokenResponseWrapper getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws IOException;
 
@@ -93,6 +98,7 @@ public interface IAMAuthorizerClient extends ProjectInfoProvider {
      * @param clientId unique client ID.
      * @param clientSecret client secret for client ID.
      * @return set of tokens (access_token, refresh_token, id_token) or an error message.
+     * @throws IOException in case of data serialization error.
      */
     TokenResponseWrapper refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws IOException;
 

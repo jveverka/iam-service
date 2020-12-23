@@ -6,7 +6,7 @@ import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
-import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.utils.TokenUtils;
 import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;

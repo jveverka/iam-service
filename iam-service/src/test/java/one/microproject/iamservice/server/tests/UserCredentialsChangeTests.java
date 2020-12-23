@@ -4,7 +4,7 @@ import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.dto.UserCredentialsChangeRequest;
 import one.microproject.iamservice.core.model.TokenType;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceUserManagerClient;

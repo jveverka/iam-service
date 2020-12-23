@@ -18,7 +18,7 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.ProjectInfo;

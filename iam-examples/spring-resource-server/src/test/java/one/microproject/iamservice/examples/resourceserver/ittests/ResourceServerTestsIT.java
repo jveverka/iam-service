@@ -2,7 +2,7 @@ package one.microproject.iamservice.examples.resourceserver.ittests;
 
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.examples.resourceserver.dto.ServerData;
 import one.microproject.iamservice.examples.resourceserver.dto.SystemInfo;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;

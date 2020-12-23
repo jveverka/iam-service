@@ -1,4 +1,4 @@
-package one.microproject.iamservice.core.model.utils;
+package one.microproject.iamservice.core.utils;
 
 import one.microproject.iamservice.core.IAMModelBuilders;
 import one.microproject.iamservice.core.model.ClientId;
@@ -56,6 +56,7 @@ public final class ModelUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelUtils.class);
 
+    public static final String MODEL_VERSION = "2.3.0-SNAPSHOT";
     public static final Model DEFAULT_MODEL = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
     public static final String IAM_ADMINS_NAME = "iam-admins";
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);

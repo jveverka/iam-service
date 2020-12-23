@@ -4,7 +4,7 @@ import one.microproject.iamservice.core.model.ModelId;
 import one.microproject.iamservice.core.model.ModelImpl;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.impl.caches.ModelCacheImpl;
 import one.microproject.iamservice.core.services.persistence.DataLoadService;

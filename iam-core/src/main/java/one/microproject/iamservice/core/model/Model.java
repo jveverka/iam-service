@@ -12,4 +12,6 @@ public interface Model {
 
     String getName();
 
+    String getVersion();
+
 }

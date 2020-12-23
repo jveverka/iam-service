@@ -1,7 +1,6 @@
 package one.microproject.iamservice.persistence.filesystem;
 
-import one.microproject.iamservice.core.model.utils.ModelUtils;
-import one.microproject.iamservice.core.services.impl.persistence.LoggingPersistenceServiceImpl;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.persistence.DataLoadService;
 import one.microproject.iamservice.core.services.persistence.PersistenceService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;

@@ -1,7 +1,7 @@
 package one.microproject.iamservice.persistence.filesystem.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.persistence.DataLoadService;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapperImpl;
@@ -15,9 +15,9 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
 import java.security.Security;
 
-import static one.microproject.iamservice.core.model.utils.ModelUtils.IAM_ADMINS_ORG;
-import static one.microproject.iamservice.core.model.utils.ModelUtils.IAM_ADMINS_PROJECT;
-import static one.microproject.iamservice.core.model.utils.ModelUtils.createDefaultModelCache;
+import static one.microproject.iamservice.core.utils.ModelUtils.IAM_ADMINS_ORG;
+import static one.microproject.iamservice.core.utils.ModelUtils.IAM_ADMINS_PROJECT;
+import static one.microproject.iamservice.core.utils.ModelUtils.createDefaultModelCache;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

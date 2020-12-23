@@ -2,7 +2,7 @@ package one.microproject.iamservice.server.tests;
 
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.TokenType;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.dto.TokenResponse;

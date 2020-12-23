@@ -32,8 +32,8 @@ import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import one.microproject.iamservice.core.model.keys.ModelKey;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
-import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.TokenUtils;
 import one.microproject.iamservice.core.services.persistence.wrappers.OrganizationWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Assertions;
@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static one.microproject.iamservice.core.utils.ModelUtils.MODEL_VERSION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -69,11 +70,13 @@ public class ModelSerializationTests {
     @Test
     public void serializeAndDeserializeModel() throws JsonProcessingException {
         Model model = new ModelImpl(ModelId.from("model-001"), "model1");
+        assertEquals(MODEL_VERSION, model.getVersion());
         String serialized = mapper.writeValueAsString(model);
         Model modelDeserialized = mapper.readValue(serialized, Model.class);
         assertNotNull(modelDeserialized);
         assertEquals(ModelId.from("model-001"), modelDeserialized.getId());
         assertEquals("model1", modelDeserialized.getName());
+        assertEquals(MODEL_VERSION, modelDeserialized.getVersion());
     }
 
     @Test

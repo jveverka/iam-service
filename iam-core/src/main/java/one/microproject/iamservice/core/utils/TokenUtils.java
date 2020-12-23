@@ -1,4 +1,4 @@
-package one.microproject.iamservice.core.model.utils;
+package one.microproject.iamservice.core.utils;
 
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtBuilder;
@@ -8,7 +8,6 @@ import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.KeyPairData;
 import one.microproject.iamservice.core.model.KeyId;
 import one.microproject.iamservice.core.model.OrganizationId;
-import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -28,12 +27,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;

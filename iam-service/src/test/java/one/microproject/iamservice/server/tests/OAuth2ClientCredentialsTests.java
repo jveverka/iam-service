@@ -7,7 +7,7 @@ import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.ClientProperties;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;

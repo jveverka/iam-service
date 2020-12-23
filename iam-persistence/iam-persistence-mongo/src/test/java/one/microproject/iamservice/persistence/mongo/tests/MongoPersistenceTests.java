@@ -20,7 +20,7 @@ import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
 import one.microproject.iamservice.core.model.keys.ModelKey;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.dto.CreateClientRequest;
 import one.microproject.iamservice.core.services.dto.CreateProjectRequest;

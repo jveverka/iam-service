@@ -1,6 +1,6 @@
 package one.microproject.iamservice.server.tests;
 
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.ProjectInfo;

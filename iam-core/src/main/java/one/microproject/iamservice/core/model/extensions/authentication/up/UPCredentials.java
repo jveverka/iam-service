@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.Credentials;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

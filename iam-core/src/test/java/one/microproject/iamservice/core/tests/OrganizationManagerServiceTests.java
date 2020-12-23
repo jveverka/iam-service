@@ -4,7 +4,7 @@ import one.microproject.iamservice.core.model.ModelId;
 import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKIException;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.admin.OrganizationManagerService;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.dto.CreateOrganizationRequest;

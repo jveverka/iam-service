@@ -8,7 +8,7 @@ import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.Role;
 import one.microproject.iamservice.core.model.RoleId;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.admin.OrganizationManagerService;
 import one.microproject.iamservice.core.services.admin.ProjectManagerService;
 import one.microproject.iamservice.core.services.caches.ModelCache;

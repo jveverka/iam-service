@@ -3,8 +3,8 @@ package one.microproject.iamservice.core.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
-import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.TokenUtils;
 
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;

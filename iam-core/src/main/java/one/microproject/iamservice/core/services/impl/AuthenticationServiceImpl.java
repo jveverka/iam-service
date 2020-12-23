@@ -16,7 +16,7 @@ import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPCredentials;
-import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.utils.TokenUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.TokenGenerator;
 import one.microproject.iamservice.core.TokenValidator;
@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static one.microproject.iamservice.core.IAMUtils.verifyPKCE;
-import static one.microproject.iamservice.core.model.utils.TokenUtils.isPKCEEnabled;
+import static one.microproject.iamservice.core.utils.TokenUtils.isPKCEEnabled;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
 

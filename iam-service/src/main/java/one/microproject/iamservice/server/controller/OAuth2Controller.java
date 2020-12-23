@@ -16,7 +16,7 @@ import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.extensions.authentication.up.UPAuthenticationRequest;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.services.ResourceServerService;

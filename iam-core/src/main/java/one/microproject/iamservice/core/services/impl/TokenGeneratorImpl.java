@@ -11,7 +11,7 @@ import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.core.model.Tokens;
 import one.microproject.iamservice.core.model.User;
-import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.utils.TokenUtils;
 import one.microproject.iamservice.core.services.TokenGenerator;
 import one.microproject.iamservice.core.services.dto.AuthorizationCodeContext;
 import one.microproject.iamservice.core.services.dto.IdTokenRequest;

@@ -5,7 +5,7 @@ import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 
 import java.io.IOException;

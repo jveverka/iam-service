@@ -2,7 +2,7 @@ package one.microproject.iamservice.core;
 
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.PKIException;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.AuthenticationService;
 import one.microproject.iamservice.core.services.ProviderConfigurationService;
 import one.microproject.iamservice.core.services.ResourceServerService;
@@ -40,7 +40,7 @@ import java.security.Security;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.core.model.utils.ModelUtils.DEFAULT_MODEL;
+import static one.microproject.iamservice.core.utils.ModelUtils.DEFAULT_MODEL;
 
 public class IAMCoreBuilder {
 

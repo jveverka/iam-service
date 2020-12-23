@@ -13,7 +13,7 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
-import one.microproject.iamservice.core.model.utils.TokenUtils;
+import one.microproject.iamservice.core.utils.TokenUtils;
 import one.microproject.iamservice.core.services.ResourceServerService;
 import one.microproject.iamservice.core.dto.IntrospectRequest;
 import one.microproject.iamservice.core.dto.IntrospectResponse;

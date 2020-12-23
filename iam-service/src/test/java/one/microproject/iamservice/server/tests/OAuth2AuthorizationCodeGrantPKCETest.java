@@ -5,7 +5,7 @@ import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.PKCEMethod;
 import one.microproject.iamservice.core.model.TokenType;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.AuthorizationCode;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;

@@ -2,7 +2,6 @@ package one.microproject.iamservice.core.tests;
 
 import one.microproject.iamservice.core.IAMModelBuilders;
 import one.microproject.iamservice.core.model.ClientId;
-import one.microproject.iamservice.core.model.ModelId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKIException;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -11,7 +10,6 @@ import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.services.caches.ModelCache;
-import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -22,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import java.security.Security;
 import java.util.Set;
 
-import static one.microproject.iamservice.core.model.utils.ModelUtils.createInMemoryModelWrapper;
+import static one.microproject.iamservice.core.utils.ModelUtils.createInMemoryModelWrapper;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

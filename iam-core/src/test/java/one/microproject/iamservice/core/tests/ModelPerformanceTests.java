@@ -1,7 +1,6 @@
 package one.microproject.iamservice.core.tests;
 
 import one.microproject.iamservice.core.model.ClientId;
-import one.microproject.iamservice.core.model.Model;
 import one.microproject.iamservice.core.model.Organization;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PKIException;
@@ -9,7 +8,7 @@ import one.microproject.iamservice.core.model.PermissionId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
-import one.microproject.iamservice.core.model.utils.ModelUtils;
+import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.persistence.wrappers.ModelWrapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -25,7 +24,7 @@ import java.security.Security;
 import java.util.Collection;
 import java.util.Optional;
 
-import static one.microproject.iamservice.core.model.utils.ModelUtils.createInMemoryModelWrapper;
+import static one.microproject.iamservice.core.utils.ModelUtils.createInMemoryModelWrapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

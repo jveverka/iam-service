@@ -25,6 +25,8 @@ subprojects {
             }
         }
     }
+
+    task allDeps(type: DependencyReportTask) {}
 }
 
 project(':iam-model') {

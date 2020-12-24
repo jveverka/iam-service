@@ -1,7 +1,7 @@
 version: '3'
 services:
   iam-service:
-    image: iam-service:2.3.0-SNAPSHOT
+    image: iam-service:2.4.0-SNAPSHOT
     build:
       context: iam-service
       dockerfile: Dockerfile
@@ -9,7 +9,7 @@ services:
     ports:
       - "8080:8080"
   spring-method-security:
-    image: spring-method-security:2.3.0-SNAPSHOT
+    image: spring-method-security:2.4.0-SNAPSHOT
     build:
       context: iam-examples/spring-method-security
       dockerfile: Dockerfile
@@ -19,7 +19,7 @@ services:
     depends_on:
       - iam-service
   spring-resource-server:
-    image: spring-resource-server:2.3.0-SNAPSHOT
+    image: spring-resource-server:2.4.0-SNAPSHOT
     build:
       context: iam-examples/spring-resource-server
       dockerfile: Dockerfile
@@ -29,7 +29,7 @@ services:
     depends_on:
       - iam-service
   spring-webflux-secured:
-    image: spring-webflux-secured:2.3.0-SNAPSHOT
+    image: spring-webflux-secured:2.4.0-SNAPSHOT
     build:
       context: iam-examples/spring-webflux-secured
       dockerfile: Dockerfile

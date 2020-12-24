@@ -1,8 +1,7 @@
-# Tested on AWS (a1.large)  ARM (Cortex-A72), Architecture: aarch64
-# Tested on RaspberryPI 3,4 Model B+, ARM (Cortex-A53), Architecture: armv7l
+# Compatible with Architecture: x86_64 systems (Intel, AMD)
 
-#https://hub.docker.com/r/arm32v7/adoptopenjdk
-FROM arm32v7/adoptopenjdk:11-jre-hotspot-focal
+# https://hub.docker.com/r/adoptopenjdk/openjdk11
+FROM adoptopenjdk/openjdk11:alpine-jre
 COPY iam-service-2.4.0-SNAPSHOT.jar /iam-service-2.4.0-SNAPSHOT.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY application-filesystem.yml /application.yml

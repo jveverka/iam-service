@@ -13,35 +13,35 @@
   ```
 * Start __iam-service__ as standalone server.
   ```
-  java -Xms32m -Xmx128m -jar iam-service-2.3.0-SNAPSHOT.jar --spring.config.location=file:application.yml
+  java -Xms32m -Xmx128m -jar iam-service-2.4.0-SNAPSHOT.jar --spring.config.location=file:application.yml
   ```
 * Build Docker Image locally and run, in case you prefer downloading image from dockerhub please  skip this section.
   * Supported platforms are: AMD64  or Intel, ARM32v7 and ARM64v8.
     ```
-    docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.x86_64 .
-    docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.arm32v7 .
-    docker build -t iam-service:2.3.0-SNAPSHOT --file Dockerfile.arm64v8 .
+    docker build -t iam-service:2.4.0-SNAPSHOT --file Dockerfile.x86_64 .
+    docker build -t iam-service:2.4.0-SNAPSHOT --file Dockerfile.arm32v7 .
+    docker build -t iam-service:2.4.0-SNAPSHOT --file Dockerfile.arm64v8 .
     ```
   * Start __iam-service__ as Docker Container with custom configuration.
     ```
-    docker run -d --name iam-service-2.3.0-SNAPSHOT \
+    docker run -d --name iam-service-2.4.0-SNAPSHOT \
       -e APP_CONFIG_PATH=/opt/iam-service/application.yml \
       -e XMX=128m \
       -v `pwd`:/opt/iam-service \
-      -p 8080:8080 iam-service:2.3.0-SNAPSHOT  
+      -p 8080:8080 iam-service:2.4.0-SNAPSHOT  
     ```
 * Use public docker image at dockerhub [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
   ```
-  docker run -d --name iam-service-2.3.0-SNAPSHOT \
+  docker run -d --name iam-service-2.4.0-SNAPSHOT \
     -e APP_CONFIG_PATH=/opt/iam-service/application.yml \
     -e XMX=128m \
     -v `pwd`:/opt/iam-service \
-    -p 8080:8080 jurajveverka/iam-service:2.3.0-SNAPSHOT
+    -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT
   ```
 * Check docker logs
   ```
-  docker attach iam-service-2.3.0-SNAPSHOT
-  docker logs --follow iam-service-2.3.0-SNAPSHOT
+  docker attach iam-service-2.4.0-SNAPSHOT
+  docker logs --follow iam-service-2.4.0-SNAPSHOT
   ```
 * Verify Service state, check OpenAPI documentation.
   ```
@@ -54,9 +54,9 @@
   ```
 * Stop and cleanup Docker
   ```
-  docker stop iam-service-2.3.0-SNAPSHOT
-  docker rm iam-service-2.3.0-SNAPSHOT
-  docker image rm -f iam-service:2.3.0-SNAPSHOT
+  docker stop iam-service-2.4.0-SNAPSHOT
+  docker rm iam-service-2.4.0-SNAPSHOT
+  docker image rm -f iam-service:2.4.0-SNAPSHOT
   ```
 
 * [next step: Setup Persistence Layer](01b_setup-persitence-layer.md)

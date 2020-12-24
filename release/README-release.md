@@ -1,6 +1,6 @@
-# IAM Service 2.3.0-SNAPSHOT
+# IAM Service 2.4.0-SNAPSHOT
 Really simple standalone OAuth2/OIDC
-[*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service/tree/2.3.0-SNAPSHOT), 
+[*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service/tree/2.4.0-SNAPSHOT), 
 authentication and authorization server. 
 
 ## TL;DR - The quick startup guide
@@ -11,7 +11,7 @@ authentication and authorization server.
   ``` 
 * Start __iam-service__.
   ```
-  java -Xms32m -Xmx128m -jar iam-service-2.3.0-SNAPSHOT.jar --spring.config.location=file:application.yml
+  java -Xms32m -Xmx128m -jar iam-service-2.4.0-SNAPSHOT.jar --spring.config.location=file:application.yml
   ```
 
 ### Next Steps

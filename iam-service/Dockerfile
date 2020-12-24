@@ -2,8 +2,9 @@
 
 # https://hub.docker.com/r/adoptopenjdk/openjdk11
 FROM adoptopenjdk/openjdk11:alpine-jre
-COPY build/libs/iam-service-2.3.0-SNAPSHOT.jar /iam-service-2.3.0-SNAPSHOT.jar
+COPY build/libs/iam-service-2.4.0-SNAPSHOT.jar /iam-service-2.4.0-SNAPSHOT.jar
 COPY iam-service-start.sh /iam-service-start.sh
+COPY src/main/resources/application.yml /application.yml
 RUN chmod +x /iam-service-start.sh
 RUN mkdir -p /opt/data
 ENV XMX 128m

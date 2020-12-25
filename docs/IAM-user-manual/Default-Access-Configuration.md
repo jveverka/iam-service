@@ -4,7 +4,7 @@ Default data model contains one organization and one project: __iam-admins__ wit
 as described below. Using this admin identity, you can create your own organization(s) and 
 project(s). Each project should have own 'admin' user capable of managing just it's own project.
 
-## 1. ADMIN - The SuperUser
+## 1. ADMIN - Global SuperUser
 This is how default data model looks like:
 * __iam-admins__ - organization containing admin project
   * __iam-admins__ - project containing admin user(s)

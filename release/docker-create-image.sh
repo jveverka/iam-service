@@ -12,6 +12,12 @@ ARCH=`lscpu  | grep Architecture | awk '{ print $2 }'`
 if [ "${ARCH}" = "x86_64" ]; then
   ARCH=amd64
 fi
+if [ "${ARCH}" = "aarch64" ]; then
+  ARCH=arm64v8
+fi
+if [ "${ARCH}" = "armv7l" ]; then
+  ARCH=arm32v7
+fi
 
 echo "ARCH         : ${ARCH}"
 echo "VERSION      : ${VERSION}"
@@ -31,11 +37,6 @@ docker stop ${DOCKER_NAME}-${VERSION}
 docker rm ${DOCKER_NAME}-${VERSION}
 docker image rm ${DOCKER_IMAGE}:${VERSION}-${ARCH}
 
-cd build
-rm -rf iam-service-${VERSION}
-unzip iam-service-${VERSION}.zip
-cd iam-service-${VERSION}
-
 cp application.yml application-filesystem.yml
 sed -i "s/persistence: in-memory/#persistence: in-memory/g" application-filesystem.yml
 sed -i "s/#persistence: file-system/persistence: file-system/g" application-filesystem.yml
@@ -49,7 +50,7 @@ else
   exit 1
 fi
 
-docker run -d --name ${DOCKER_NAME}-${VERSION} -p 8080:8080 ${DOCKER_IMAGE}:${VERSION}-${ARCH}
+docker run -d --restart unless-stopped --name ${DOCKER_NAME}-${VERSION} -p 8080:8080 ${DOCKER_IMAGE}:${VERSION}-${ARCH}
 if [ $? = 0  ]; then
   echo -e "Docker container started ${GREEN}OK${NOCOLOR}"
 else

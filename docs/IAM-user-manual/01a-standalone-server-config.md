@@ -25,9 +25,9 @@
   ```
   docker run -d --name iam-service-2.4.0-SNAPSHOT \
     --restart unless-stopped \
-    -e APP_CONFIG_PATH=/opt/iam-service/application.yml \
+    -e APP_CONFIG_PATH=/opt/data/application.yml \
     -e XMX=128m \
-    -v `pwd`:/opt/iam-service \
+    -v 'pwd':/opt/data \
     -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT-amd64
   ```
 * Check docker status and logs

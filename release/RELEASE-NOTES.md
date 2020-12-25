@@ -5,6 +5,7 @@ Simple standalone OAuth2/OIDC  [*Identity Access Management* (IAM) service](http
 1. Start OAuth2 server in default configuration [dockerhub project](https://hub.docker.com/r/jurajveverka/iam-service).
    ```
    docker run --name iam-service-2.4.0-SNAPSHOT \
+      --restart unless-stopped \
       -d -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT-amd64
    curl 'http://localhost:8080/services/discovery' | json_pp
    curl 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/.well-known/openid-configuration' | json_pp

@@ -17,7 +17,7 @@ authentication and authorization server.
 * Start __iam-service__ as docker container.
   ```
   docker run -d --name iam-service-2.4.0-SNAPSHOT \
-     -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT
+     -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT-amd64
   ```
 
 ### Next Steps

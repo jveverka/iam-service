@@ -28,7 +28,7 @@
     -e APP_CONFIG_PATH=/opt/iam-service/application.yml \
     -e XMX=128m \
     -v `pwd`:/opt/iam-service \
-    -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT
+    -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT-amd64
   ```
 * Check docker status and logs
   ```

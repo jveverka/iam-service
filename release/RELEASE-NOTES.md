@@ -1,7 +1,7 @@
 # IAM service - OAuth2 server
 Simple standalone OAuth2/OIDC  [*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service/tree/v2.4.0-SNAPSHOT), authentication and authorization server.
 
-## The quick startup guide
+## Quick startup guide
 1. Start OAuth2 server in default configuration [dockerhub project](https://hub.docker.com/r/jurajveverka/iam-service).
    ```
    docker run -d -p 8080:8080 jurajveverka/iam-service:2.4.0-SNAPSHOT
@@ -14,6 +14,5 @@ Simple standalone OAuth2/OIDC  [*Identity Access Management* (IAM) service](http
    ```
 ## Advanced configurations
 1. Download release file ``iam-service-release-2.4.0-SNAPSHOT.zip``
-2. Unzip and follow [README.md](https://github.com/jveverka/iam-service/blob/2.x.x/release/README-release.md) instructions.
-3. Please check [__User's Guide__](https://github.com/jveverka/iam-service/tree/2.x.x/docs/IAM-user-manual) and
+2. Please check [__User's Guide__](https://github.com/jveverka/iam-service/tree/2.x.x/docs/IAM-user-manual) and
    [__Examples__](https://github.com/jveverka/iam-service/tree/2.x.x/iam-examples) for more details.

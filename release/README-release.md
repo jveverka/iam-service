@@ -3,23 +3,24 @@ Really simple standalone OAuth2/OIDC
 [*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service/tree/2.4.0-SNAPSHOT), 
 authentication and authorization server. 
 
-## TL;DR - The quick startup guide
-* Modify __application.yml__ if necessary.
-* Start MongoDB and Redis as docker containers if necessary.
+## Quick startup guide
+* Modify __application.yml__ if necessary, 
+  see [user's manual](https://github.com/jveverka/iam-service/tree/2.x.x/docs/IAM-user-manual/README.md). 
+* Start MongoDB and Redis as docker containers only if necessary.
   ```
   docker-compose up -d
   ``` 
-* Start __iam-service__.
+* Start __iam-service__ (Requires JVM installed).
   ```
   java -Xms32m -Xmx128m -jar iam-service-2.4.0-SNAPSHOT.jar --spring.config.location=file:application.yml
+  ```
+* Start __iam-service__ as docker container.
+  ```
+  docker run -d -p 8080:8080 jurajveverka/iam-service:2.3.0-SNAPSHOT
   ```
 
 ### Next Steps
 * Check [user's manual](https://github.com/jveverka/iam-service/tree/2.x.x/docs/IAM-user-manual/README.md) for the next steps:
-  * How to use, install and configure __iam-service__.
-  * How to create/manage organizations and projects.
-  * How to create/manage and manage clients and users.
-  * How  to assign roles and permissions to clients and users.
 * See [examples how to integrate](https://github.com/jveverka/iam-service/tree/2.x.x/iam-examples) __iam-service__ in microservice environment.
 
 ### Cleanup

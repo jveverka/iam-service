@@ -25,8 +25,8 @@ All actions described below must be performed under project admin user identity.
   --header 'Authorization: Bearer <ACCESS_TOKEN>' \
   --header 'Content-Type: application/json' \
   --data-raw '{
-      "id": "client-001",
-      "name": "First Client",
+      "id": "client-002",
+      "name": "Second Client",
       "defaultAccessTokenDuration": 3600,
       "defaultRefreshTokenDuration": 3600,
       "secret": "s3cr3t",
@@ -44,14 +44,14 @@ All actions described below must be performed under project admin user identity.
   ```
   #template:
   #curl --location --request DELETE 'http://localhost:8080/services/management/{organization-id}/{project-id}/clients/{client-id}' \
-  curl --location --request DELETE 'http://localhost:8080/services/management/test-org-001/project-001/clients/client-001' \
+  curl --location --request DELETE 'http://localhost:8080/services/management/test-org-001/project-001/clients/client-002' \
   --header 'Authorization: Bearer <ACCESS_TOKEN>'
   ```
 * Get Client on Project
   ```
   #template:
   #curl --location --request GET 'http://localhost:8080/services/discovery/{organization-id}/{project-id}/clients/{client-id}' \
-  curl --location --request GET 'http://localhost:8080/services/discovery/test-org-001/project-001/clients/client-001' \
+  curl --location --request GET 'http://localhost:8080/services/discovery/test-org-001/project-001/clients/client-002' \
   --header 'Authorization: Bearer <ACCESS_TOKEN>'
   ```
 

@@ -31,6 +31,9 @@ test {
     if (System.properties['test.profile'] != 'integration-cleanup') {
         exclude '**/*TestsITCleanup*'
     }
+    if (System.properties['test.profile'] != 'integration-user-manual') {
+        exclude '**/*TestsITUserManual*'
+    }
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"

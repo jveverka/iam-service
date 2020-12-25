@@ -136,6 +136,15 @@ if [ $RESULT_COUNTER -eq 0 ]; then
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
 
+   #09. User Manual tests
+   echo -e "${YELLOW}TESTING USER MANUAL: iam-service${NOCOLOR}"
+   gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-user-manual
+   if [ $? -eq  0 ]; then
+      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+   else
+      RESULT_COUNTER=$((RESULT_COUNTER+1))
+   fi
+
 fi
 
 #09. Shutdown and Cleanup docker

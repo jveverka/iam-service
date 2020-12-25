@@ -13,7 +13,8 @@
   ```
 * Start __iam-service__ as standalone server. You can skip this step if you would like to used iam-service as docker container.
   ```
-  java -Xms32m -Xmx128m -jar iam-service-2.4.0-SNAPSHOT.jar --spring.config.location=file:application.yml
+  java -Xms32m -Xmx128m -jar iam-service-2.4.0-SNAPSHOT.jar \
+    --spring.config.location=file:application.yml
   ```
 * Build Docker Image locally and run, in case you prefer downloading image from dockerhub please  skip this step.
   Supported platforms are: AMD64  or Intel, ARM32v7 and ARM64v8.
@@ -23,6 +24,7 @@
 * Use public docker image at dockerhub [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
   ```
   docker run -d --name iam-service-2.4.0-SNAPSHOT \
+    --restart unless-stopped \
     -e APP_CONFIG_PATH=/opt/iam-service/application.yml \
     -e XMX=128m \
     -v `pwd`:/opt/iam-service \

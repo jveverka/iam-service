@@ -19,5 +19,5 @@ However, for real deployment is recommended to use __redis__ backed caches.
       port: 6379
   ``` 
 
-* [Redis cheat sheet](Redis-cheat-sheet.md)
 * [next step: Getting Admin access](02a-get-admin-access-token.md)
+* [Redis cheat sheet](Redis-cheat-sheet.md)

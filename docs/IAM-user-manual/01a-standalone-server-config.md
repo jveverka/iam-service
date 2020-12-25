@@ -1,6 +1,6 @@
 ## IAM Server Configuration
 
-* Create custom __application.yml__ configuration before you start.
+* Customize [__application.yml__](../../iam-service/src/main/resources/application.yml) configuration before you start.
   Default configuration is fully operational, however it is recommended 
   to override default admin user's password, email and client secret.
   ```
@@ -11,11 +11,11 @@
       default-admin-email: admin@email.com
       enable-client-credentials-flow: true 
   ```
-* Start __iam-service__ as standalone server.
+* Start __iam-service__ as standalone server. You can skip this step if you would like to used iam-service as docker container.
   ```
   java -Xms32m -Xmx128m -jar iam-service-2.4.0-SNAPSHOT.jar --spring.config.location=file:application.yml
   ```
-* Build Docker Image locally and run, in case you prefer downloading image from dockerhub please  skip this section.
+* Build Docker Image locally and run, in case you prefer downloading image from dockerhub please  skip this step.
   Supported platforms are: AMD64  or Intel, ARM32v7 and ARM64v8.
   ```
   ./docker-create-image.sh

@@ -20,3 +20,5 @@ curl --location --request POST 'http://localhost:8080/services/oauth2/test-org-0
 ```
 
 * [next step: Examples - How to secure your microservices](../../iam-examples)
+* [Terms and Vocabulary](Terms-and-Vocabulary.md)
+* [Default Access Rules](Default-Access-Configuration.md)

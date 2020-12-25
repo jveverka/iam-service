@@ -30,5 +30,5 @@ However, for real deployment is recommended to use __file-system__ or __mongo-db
       mongo-password: secret
   ``` 
 
-* [MongoDB cheat sheet](MongoDB-cheat-sheet.md)
 * [next step: Setup Cache Layer](01c_setup-cache-layer.md)
+* [MongoDB cheat sheet](MongoDB-cheat-sheet.md)

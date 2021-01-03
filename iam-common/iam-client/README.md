@@ -8,12 +8,12 @@ This client library makes JWT verification easier for clients and micro-services
      <dependency>
        <groupId>one.microproject.iamservice</groupId>
        <artifactId>iam-client</artifactId>
-       <version>2.4.0-SNAPSHOT</version>
+       <version>2.4.0-RELEASE</version>
      <dependency/>
      ```
    * gradle dependency
      ```
-     implementation 'one.microproject.iamservice:iam-client:2.4.0-SNAPSHOT'
+     implementation 'one.microproject.iamservice:iam-client:2.4.0-RELEASE'
      ```
 2. Create client instance programmatically.
    ```

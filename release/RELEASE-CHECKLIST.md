@@ -3,12 +3,17 @@
 * Make sure all changes are committed and pushed.
 * Make sure the documentation is up-to date.
 * Make sure all tests are passing.
-* ``NEW_RELEASE_VERSION=2.4.0-SNAPSHOT``
+* ``NEW_RELEASE_VERSION=2.4.0-RELEASE``
 * Upgrade component version in script below.
   ```
   ./version-upgrade.sh
   ```
-* Commit changes related to version upgrade.
+* Commit changes related to version upgrade and push to origin.
+  ```
+  git add .
+  git commit -m  "creating release <NEW_RELEASE_VERSION>"
+  git push origin <RELEASE_BRANCH>
+  ```
 * Create release tag and push the tag to origin.
   ```
   git tag -l 
@@ -39,8 +44,8 @@
   ```
 * Test created docker image.
   ```
-  docker logs --follow iam-service-2.4.0-SNAPSHOT 
-  docker exec -it iam-service-2.4.0-SNAPSHOT /bin/sh
+  docker logs --follow iam-service-2.4.0-RELEASE 
+  docker exec -it iam-service-2.4.0-RELEASE /bin/sh
   ```
 * Publish docker image to dockerhub.
   ```

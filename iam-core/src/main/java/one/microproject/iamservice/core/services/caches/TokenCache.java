@@ -11,7 +11,7 @@ public interface TokenCache {
 
     /**
      * Add revoked token into cache.
-     * @param jwToken
+     * @param jwToken issued JWT
      */
     void addRevokedToken(JWToken jwToken);
 

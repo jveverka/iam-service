@@ -25,11 +25,14 @@ public interface AuthenticationService {
     /**
      * Authenticate end-user in username/password credentials flow.
      * grant_type=password
-     * @param organizationId
-     * @param projectId
-     * @param upAuthenticationRequest
-     * @param idTokenRequest
-     * @return
+     * @param issuerUri unique URI of token issuer.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param clientCredentials credentials for existing client.
+     * @param scope requested scope.
+     * @param upAuthenticationRequest username - password authentication request.
+     * @param idTokenRequest ID Token request.
+     * @return Optional of {@link TokenResponse} if authentication is success, empty otherwise.
      */
     Optional<TokenResponse> authenticate(URI issuerUri, OrganizationId organizationId, ProjectId projectId,
                                          ClientCredentials clientCredentials, Scope scope,
@@ -39,12 +42,13 @@ public interface AuthenticationService {
     /**
      * Authenticate end-user in client credentials flow.
      * grant_type=client_credentials
-     * @param organizationId
-     * @param projectId
-     * @param clientCredentials
-     * @param scope
-     * @param idTokenRequest
-     * @return
+     * @param issuerUri unique URI of token issuer.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param clientCredentials {@link ClientCredentials} for existing client.
+     * @param scope requested scope.
+     * @param idTokenRequest ID Token request.
+     * @return Optional of {@link TokenResponse} if authentication is success, empty otherwise.
      */
     Optional<TokenResponse> authenticate(URI issuerUri, OrganizationId organizationId, ProjectId projectId,
                                          ClientCredentials clientCredentials, Scope scope,
@@ -53,29 +57,29 @@ public interface AuthenticationService {
     /**
      * Authenticate end-user authorization code grant.
      * grant_type=authorization_code
-     * @param code
-     * @param idTokenRequest
-     * @return
+     * @param code previously issued {@link Code}
+     * @param idTokenRequest ID Token request.
+     * @return Optional of {@link TokenResponse} if authentication is success, empty otherwise.
      */
     Optional<TokenResponse> authenticate(Code code, IdTokenRequest idTokenRequest);
 
     /**
      * Set scope in existing authorization code grant flow.
-     * @param code
+     * @param code previously issued {@link Code}
      * @param scope - updated scope
-     * @return
+     * @return Optional of {@link AuthorizationCodeContext} if setScope is success, empty otherwise.
      */
     Optional<AuthorizationCodeContext> setScope(Code code, Scope scope);
 
     /**
      * Get new set of tokens using issued and valid refresh toke.
-     * @param organizationId
-     * @param projectId
-     * @param refreshToken
-     * @param clientCredentials
-     * @param scope
-     * @param idTokenRequest
-     * @return
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param refreshToken previously issued refresh_token {@link JWToken}
+     * @param clientCredentials {@link ClientCredentials} for existing client.
+     * @param scope requested scope.
+     * @param idTokenRequest ID Token request.
+     * @return Optional of {@link TokenResponse} if refresh tokens is success, empty otherwise.
      */
     Optional<TokenResponse> refreshTokens(OrganizationId organizationId, ProjectId projectId, JWToken refreshToken,
                                          ClientCredentials clientCredentials, Scope scope, IdTokenRequest idTokenRequest);
@@ -83,14 +87,18 @@ public interface AuthenticationService {
     /**
      * Get short-lived authorization_code based on clientId, username=userId and password
      * grant_type=authorization_code
-     * @param organizationId
-     * @param projectId
-     * @param userId
-     * @param clientId
-     * @param password
-     * @param scope
-     * @param state
-     * @return
+     * @param issuerUri unique URI of token issuer.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param userId {@link UserId} unique user's ID.
+     * @param clientId {@link ClientId} unique client's ID.
+     * @param password user's password.
+     * @param scope requested scope.
+     * @param state client state.
+     * @param redirectURI auth flow URI redirection.
+     * @param codeChallenge code challenge only used for PKCE.
+     * @param codeChallengeMethod code challenge method, only used for PKCE.
+     * @return Optional of {@link AuthorizationCode} if login is success, empty otherwise.
      */
     Optional<AuthorizationCode> login(URI issuerUri, OrganizationId organizationId, ProjectId projectId, UserId userId, ClientId clientId, String password,
                                       Scope scope, String state, String redirectURI, String codeChallenge, PKCEMethod codeChallengeMethod);
@@ -110,7 +118,7 @@ public interface AuthenticationService {
      * @param organizationId {@link OrganizationId} unique organization ID.
      * @param projectId {@link ProjectId} unique project ID.
      * @param token issued and valid {@link JWToken}
-     * @return {@link UserInfoResponse} in case user exists and provided {@link JWToken} is valid.
+     * @return Optional of {@link UserInfoResponse} in case user exists and provided {@link JWToken} is valid, empty otherwise.
      */
     Optional<UserInfoResponse> getUserInfo(OrganizationId organizationId, ProjectId projectId, JWToken token);
 

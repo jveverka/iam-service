@@ -25,9 +25,12 @@
     ```
     build/iam-service-<NEW_RELEASE_VERSION>.zip
     ```
-* Publish artefacts to as [described here](https://central.sonatype.org/pages/gradle.html).
+* Publish artefacts to 
+  [oss.sonatype.org SNAPSHOT](https://oss.sonatype.org/content/repositories/snapshots) public repository or
+  [oss.sonatype.org stage](https://oss.sonatype.org/service/local/staging/deploy/maven2).
   ```
-  gradle uploadArchives
+  gradle publishToMavenLocal
+  gradle publish
   ```
 * Create docker image locally.
   ```

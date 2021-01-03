@@ -21,37 +21,37 @@ public interface TokenGenerator {
 
     /**
      * Generate {@link TokenResponse} for Password Credentials flow or Refresh Token flow;
-     * @param issuerUri
-     * @param organizationId
-     * @param project
-     * @param user
-     * @param userPermissions
-     * @param scope
-     * @param clientId
-     * @param idTokenRequest
-     * @return
+     * @param issuerUri unique URI of token issuer.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param project {@link Project} data model.
+     * @param user {@link User} data model.
+     * @param userPermissions user's permissions.
+     * @param scope requested scope.
+     * @param clientId {@link ClientId} unique client's ID.
+     * @param idTokenRequest ID Token request.
+     * @return instance of {@link TokenResponse}.
      */
     TokenResponse generate(URI issuerUri, OrganizationId organizationId, Project project, User user, Set<Permission> userPermissions, Scope scope, ClientId clientId, IdTokenRequest idTokenRequest);
 
     /**
      * Generate {@link TokenResponse} for Client Credentials flow or Refresh Token flow;
-     * @param issuerUri
-     * @param organizationId
-     * @param project
-     * @param clientPermissions
-     * @param client
-     * @param scope
-     * @param idTokenRequest
-     * @return
+     * @param issuerUri unique URI of token issuer.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param project {@link Project} data model.
+     * @param clientPermissions client's permissions.
+     * @param client {@link Client} data model.
+     * @param scope requested scope.
+     * @param idTokenRequest ID Token request.
+     * @return instance of {@link TokenResponse}.
      */
     TokenResponse generate(URI issuerUri, OrganizationId organizationId, Project project, Set<Permission> clientPermissions, Client client, Scope scope, IdTokenRequest idTokenRequest);
 
     /**
      * Generate {@link TokenResponse} for Authorization Code Grant flow;
-     * @param context
-     * @param user
-     * @param idTokenRequest
-     * @return
+     * @param context previously created {@link AuthorizationCodeContext}
+     * @param user {@link User} data model.
+     * @param idTokenRequest ID Token request.
+     * @return instance of {@link TokenResponse}.
      */
     TokenResponse generate(AuthorizationCodeContext context, User user, IdTokenRequest idTokenRequest);
 

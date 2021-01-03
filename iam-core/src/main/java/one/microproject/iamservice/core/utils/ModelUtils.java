@@ -155,8 +155,8 @@ public final class ModelUtils {
     }
 
     /**
-     * Parse set of scopes from {@ling String} containing space delimited, case sensitive scopes.
-     * @param scope {@ling String} containing scopes.
+     * Parse set of scopes from {@link String} containing space delimited, case sensitive scopes.
+     * @param scope {@link String} containing scopes.
      * @return parsed set od {@link Scope}(s).
      */
     public static Scope getScopes(String scope) {
@@ -182,9 +182,9 @@ public final class ModelUtils {
      * @param users - number of users in project
      * @param permissions - number of permissions in project
      * @param roles - number of roles in project
-     * @param modelWrapper
-     * @return
-     * @throws PKIException
+     * @param modelWrapper - wrapped model data
+     * @return populated instance of {@link ModelCache}
+     * @throws PKIException in case of key or certificate generation error.
      */
     public static ModelCache createModel(int organizations, int projects, int clients, int users, int permissions, int roles, ModelWrapper modelWrapper) throws PKIException {
         ModelBuilder modelBuilder = IAMModelBuilders.modelBuilder(modelWrapper);

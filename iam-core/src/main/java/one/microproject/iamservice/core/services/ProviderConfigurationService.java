@@ -22,34 +22,34 @@ public interface ProviderConfigurationService {
     ProviderConfigurationResponse getConfiguration(ProviderConfigurationRequest request);
 
     /**
-     * Get JWK data for project
-     * @param organizationId
-     * @param projectId
-     * @return
+     * Get JWK data for project.
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @return instance of {@link JWKResponse}.
      */
     JWKResponse getJWKData(OrganizationId organizationId, ProjectId projectId);
 
     /**
      * Search for key by Key-ID.
-     * @param organizationId
-     * @param projectId
-     * @param kid
-     * @return
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param projectId {@link ProjectId} unique project ID.
+     * @param kid unique key identifier.
+     * @return instance of {@link PublicKey} identified by KID or empty if not found.
      */
     Optional<PublicKey> getKeyById(OrganizationId organizationId, ProjectId projectId, String kid);
 
     /**
      * Search for key by Key-ID.
-     * @param organizationId
-     * @param kid
-     * @return
+     * @param organizationId {@link OrganizationId} unique organization ID.
+     * @param kid unique key identifier.
+     * @return instance of {@link PublicKey} identified by KID or empty if not found.
      */
     Optional<PublicKey> getKeyById(OrganizationId organizationId, String kid);
 
     /**
      * Search for key by Key-ID.
-     * @param kid
-     * @return
+     * @param kid unique key identifier.
+     * @return instance of {@link PublicKey} identified by KID or empty if not found.
      */
     Optional<PublicKey> getKeyById(String kid);
 

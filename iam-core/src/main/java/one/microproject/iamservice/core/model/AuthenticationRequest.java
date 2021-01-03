@@ -5,7 +5,7 @@ import one.microproject.iamservice.core.services.dto.Scope;
 
 /**
  * Authentication Request from user (subject).
- * @param <C>
+ * @param <C> extends {@link Credentials}
  */
 public interface AuthenticationRequest<C extends Credentials> {
 
@@ -23,13 +23,13 @@ public interface AuthenticationRequest<C extends Credentials> {
 
     /**
      * Scope requested by user (subject).
-     * @return
+     * @return requested scope.
      */
     Scope getScope();
 
     /**
      * Get client's credentials.
-     * @return
+     * @return client's credentials.
      */
     ClientCredentials getClientCredentials();
 

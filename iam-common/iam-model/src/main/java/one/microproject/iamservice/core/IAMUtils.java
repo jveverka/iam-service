@@ -26,7 +26,7 @@ public final class IAMUtils {
      * @param codeVerifier - code_verifier
      * @param codeChallengeMethod - code_challenge_method
      * @return code_challenge
-     * @throws NoSuchAlgorithmException
+     * @throws NoSuchAlgorithmException thrown in case of SHA-256 message digest is not available.
      */
     public static String generateCodeChallenge(String codeVerifier, PKCEMethod codeChallengeMethod) throws NoSuchAlgorithmException {
         if (PKCEMethod.PLAIN.equals(codeChallengeMethod)) {

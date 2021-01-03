@@ -59,7 +59,7 @@ public interface ResourceServerService {
      * @param projectId {@link ProjectId} - unique id of the project.
      * @param clientId {@link ClientId} - unique id of the client.
      * @return Optional of {@link ClientInfo} instance if project, organization and client exists, empty otherwise.
-     * @throws CertificateEncodingException
+     * @throws CertificateEncodingException in case certificate can't be encoded.
      */
     Optional<ClientInfo> getClientInfo(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws CertificateEncodingException;
 

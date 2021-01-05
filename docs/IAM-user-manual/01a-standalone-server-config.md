@@ -13,7 +13,7 @@
   ```
 * Start __iam-service__ as standalone server. You can skip this step if you would like to used iam-service as docker container.
   ```
-  java -Xms32m -Xmx128m -jar iam-service-2.4.0-RELEASE.jar \
+  java -Xms32m -Xmx128m -jar iam-service-2.4.1-RELEASE.jar \
     --spring.config.location=file:application.yml
   ```
 * Build Docker Image locally and run, in case you prefer downloading image from dockerhub please  skip this step.
@@ -23,18 +23,18 @@
   ```
 * Use public docker image at dockerhub [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
   ```
-  docker run -d --name iam-service-2.4.0-RELEASE \
+  docker run -d --name iam-service-2.4.1-RELEASE \
     --restart unless-stopped \
     -e APP_CONFIG_PATH=/opt/data/application.yml \
     -e XMX=128m \
     -v 'pwd':/opt/data \
-    -p 8080:8080 jurajveverka/iam-service:2.4.0-RELEASE-amd64
+    -p 8080:8080 jurajveverka/iam-service:2.4.1-RELEASE-amd64
   ```
 * Check docker status and logs
   ```
   docker ps -a 
-  docker exec -ti iam-service-2.4.0-RELEASE /bin/sh
-  docker logs --follow iam-service-2.4.0-RELEASE
+  docker exec -ti iam-service-2.4.1-RELEASE /bin/sh
+  docker logs --follow iam-service-2.4.1-RELEASE
   ```
 * Verify Service state, check OpenAPI documentation.
   ```
@@ -47,9 +47,9 @@
   ```
 * Stop and cleanup Docker
   ```
-  docker stop iam-service-2.4.0-RELEASE
-  docker rm iam-service-2.4.0-RELEASE
-  docker image rm -f iam-service:2.4.0-RELEASE
+  docker stop iam-service-2.4.1-RELEASE
+  docker rm iam-service-2.4.1-RELEASE
+  docker image rm -f iam-service:2.4.1-RELEASE
   ```
 
 * [next step: Setup Persistence Layer](01b_setup-persitence-layer.md)

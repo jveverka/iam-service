@@ -8,8 +8,11 @@ YELLOW='\033[1;33m'
 START_TIME=$(date +%s.%N)
 BUILD_RESULT="${RED}FAILED${NOCOLOR}"
 DOCKER_RESULT="${RED}FAILED${NOCOLOR}"
+TEST_SETUP_IAMSERVICE_RESULT="${RED}FAILED${NOCOLOR}"
 TEST_METHOD_SECURITY_RESULT="${RED}FAILED${NOCOLOR}"
 TEST_RESOURCE_SERVER_RESULT="${RED}FAILED${NOCOLOR}"
+TEST_CLEANUP_SERVER_RESULT="${RED}FAILED${NOCOLOR}"
+TEST_USER_MANUAL_RESULT="${RED}FAILED${NOCOLOR}"
 CLEANUP_RESULT="${RED}FAILED${NOCOLOR}"
 CUMULATIVE_RESULT="${RED}FAILED${NOCOLOR}"
 RESULT_COUNTER=0
@@ -95,7 +98,7 @@ if [ $RESULT_COUNTER -eq 0 ]; then
    echo -e "${YELLOW}TESTING EXAMPLE: iam-service SETUP${NOCOLOR}"
    gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-setup
    if [ $? -eq  0 ]; then
-      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+      TEST_SETUP_IAMSERVICE_RESULT="${GREEN}OK${NOCOLOR}"
    else
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
@@ -131,7 +134,7 @@ if [ $RESULT_COUNTER -eq 0 ]; then
    echo -e "${YELLOW}TESTING EXAMPLE: iam-service CLEANUP${NOCOLOR}"
    gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-cleanup
    if [ $? -eq  0 ]; then
-      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+      TEST_CLEANUP_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
    else
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
@@ -140,7 +143,7 @@ if [ $RESULT_COUNTER -eq 0 ]; then
    echo -e "${YELLOW}TESTING USER MANUAL: iam-service${NOCOLOR}"
    gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-user-manual
    if [ $? -eq  0 ]; then
-      TEST_WEBFLUX_SERVER_RESULT="${GREEN}OK${NOCOLOR}"
+      TEST_USER_MANUAL_RESULT="${GREEN}OK${NOCOLOR}"
    else
       RESULT_COUNTER=$((RESULT_COUNTER+1))
    fi
@@ -167,10 +170,13 @@ echo -e "Full Test Suite Results    : $CUMULATIVE_RESULT"
 echo -e "============================"
 echo -e "gradle build and test      : $BUILD_RESULT"
 echo -e "docker compose             : $DOCKER_RESULT"
+echo -e "IT Tests (iam setup)       : $TEST_SETUP_IAMSERVICE_RESULT"
 echo -e "IT Tests (method security) : $TEST_METHOD_SECURITY_RESULT"
 echo -e "IT Tests (resource server) : $TEST_RESOURCE_SERVER_RESULT"
 echo -e "IT Tests (webflux server)  : $TEST_WEBFLUX_SERVER_RESULT"
-echo -e "docket stop and cleanup    : $CLEANUP_RESULT"
+echo -e "IT Tests (cleanup)         : $TEST_CLEANUP_SERVER_RESULT"
+echo -e "IT Tests (user-manual)     : $TEST_USER_MANUAL_RESULT"
+echo -e "docker stop and cleanup    : $CLEANUP_RESULT"
 echo -e "done in $DIFF_TIME s"
 
 exit $RESULT_COUNTER

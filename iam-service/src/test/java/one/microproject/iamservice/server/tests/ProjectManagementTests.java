@@ -247,6 +247,19 @@ public class ProjectManagementTests {
     }
 
     @Test
+    @Order(207)
+    public void setAudienceTest() throws AuthenticationException, IOException {
+        Set<String> audience1 = Set.of("a1", "a2");
+        Set<String> audience2 = Set.of("a5", "a6");
+        iamServiceProjectManagerClient.setAudience(audience1);
+        ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
+        assertEquals(audience1, projectInfo.getAudience());
+        iamServiceProjectManagerClient.setAudience(audience2);
+        projectInfo = iamServiceProjectManagerClient.getInfo();
+        assertEquals(audience2, projectInfo.getAudience());
+    }
+
+    @Test
     @Order(807)
     public void deleteRole() throws AuthenticationException {
         iamServiceProjectManagerClient.deleteRole(newRoleId);

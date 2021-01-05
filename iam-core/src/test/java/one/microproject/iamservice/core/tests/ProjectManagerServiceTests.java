@@ -28,6 +28,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import java.security.Security;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -119,6 +120,21 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(6)
+    public void setAudienceTest() {
+        Set<String> audience1 = Set.of("a1", "a2");
+        Set<String> audience2 = Set.of("a5", "a6");
+        projectManagerService.setAudience(oid001, pId001, audience1);
+        Optional<Project> project = projectManagerService.get(oid001, pId001);
+        assertTrue(project.isPresent());
+        assertEquals(audience1, project.get().getAudience());
+        projectManagerService.setAudience(oid001, pId001, audience2);
+        project = projectManagerService.get(oid001, pId001);
+        assertTrue(project.isPresent());
+        assertEquals(audience2, project.get().getAudience());
+    }
+
+    @Test
+    @Order(7)
     public void removeFirstProject() {
         boolean result = projectManagerService.remove(oid001, pId001);
         assertTrue(result);
@@ -127,7 +143,7 @@ public class ProjectManagerServiceTests {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void removeSecondProject() {
         boolean result = projectManagerService.remove(oid002, pId001);
         assertTrue(result);

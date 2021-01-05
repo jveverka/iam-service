@@ -14,6 +14,7 @@ import one.microproject.iamservice.core.services.dto.CreateRoleRequest;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ProjectManagerService {
 
@@ -48,5 +49,7 @@ public interface ProjectManagerService {
     void setProperty(OrganizationId id, ProjectId projectId, String key, String value);
 
     void removeProperty(OrganizationId id, ProjectId projectId, String key);
+
+    void setAudience(OrganizationId id, ProjectId projectId, Set<String> audience);
 
 }

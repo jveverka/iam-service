@@ -4,7 +4,7 @@ NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 
-VERSION=2.4.0-RELEASE
+VERSION=2.4.1-RELEASE
 DOCKER_IMAGE=jurajveverka/iam-service
 DOCKER_NAME=iam-service
 

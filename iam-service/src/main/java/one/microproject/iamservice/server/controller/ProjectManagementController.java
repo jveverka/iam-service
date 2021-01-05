@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -125,6 +126,18 @@ public class ProjectManagementController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    @Operation(description = "Set audience for project.")
+    @PutMapping("/{organization-id}/{project-id}/audience")
+    public ResponseEntity<Void> setAudience(@PathVariable("organization-id") String organizationId,
+                                            @PathVariable("project-id") String projectId,
+                                            @RequestBody Set<String> audience) {
+        OrganizationId orgId = OrganizationId.from(organizationId);
+        ProjectId projId = ProjectId.from(projectId);
+        iamSecurityValidator.verifyProjectAdminAccess(orgId, projId);
+        projectManagerService.setAudience(orgId, projId, audience);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -15,12 +15,13 @@ public class ProjectInfo {
     private final String name;
     private final CertificateInfo organizationCertificate;
     private final CertificateInfo projectCertificate;
+    private final Set<String> audience;
     private final Set<String> clients;
     private final Set<String> users;
 
     public ProjectInfo(String id, String organizationId, String name,
                        KeyPairData organizationKeyPairData, KeyPairData projectKeyPairData,
-                       Set<String> clients, Set<String> users) throws CertificateEncodingException {
+                       Set<String> audience, Set<String> clients, Set<String> users) throws CertificateEncodingException {
         this.id = id;
         this.organizationId = organizationId;
         this.name = name;
@@ -28,6 +29,7 @@ public class ProjectInfo {
                 Base64.getEncoder().encodeToString(organizationKeyPairData.getX509Certificate().getEncoded()));
         this.projectCertificate = new CertificateInfo(projectKeyPairData.getId().getId(),
                 Base64.getEncoder().encodeToString(projectKeyPairData.getX509Certificate().getEncoded()));
+        this.audience = audience;
         this.clients = clients;
         this.users = users;
     }
@@ -38,6 +40,7 @@ public class ProjectInfo {
                        @JsonProperty("name") String name,
                        @JsonProperty("organizationCertificate") CertificateInfo organizationCertificate,
                        @JsonProperty("projectCertificate") CertificateInfo projectCertificate,
+                       @JsonProperty("audience") Set<String> audience,
                        @JsonProperty("clients") Set<String> clients,
                        @JsonProperty("users") Set<String> users) {
         this.id = id;
@@ -45,6 +48,7 @@ public class ProjectInfo {
         this.name = name;
         this.organizationCertificate = organizationCertificate;
         this.projectCertificate = projectCertificate;
+        this.audience = audience;
         this.clients = clients;
         this.users = users;
     }
@@ -67,6 +71,10 @@ public class ProjectInfo {
 
     public CertificateInfo getProjectCertificate() {
         return projectCertificate;
+    }
+
+    public Set<String> getAudience() {
+        return audience;
     }
 
     public Set<String> getClients() {

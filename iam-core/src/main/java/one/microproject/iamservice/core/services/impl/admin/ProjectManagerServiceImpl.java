@@ -17,6 +17,7 @@ import one.microproject.iamservice.core.services.dto.CreateRoleRequest;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public class ProjectManagerServiceImpl implements ProjectManagerService {
 
@@ -105,6 +106,11 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     @Override
     public void removeProperty(OrganizationId id, ProjectId projectId, String key) {
         modelCache.removeProperty(id, projectId, key);
+    }
+
+    @Override
+    public void setAudience(OrganizationId id, ProjectId projectId, Set<String> audience) {
+        modelCache.setAudience(id, projectId, audience);
     }
 
 }

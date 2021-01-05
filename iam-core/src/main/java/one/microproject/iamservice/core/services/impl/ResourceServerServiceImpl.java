@@ -84,7 +84,8 @@ public class ResourceServerServiceImpl implements ResourceServerService {
                 Set<String> userIds = modelCache.getUsers(organizationId, projectId).stream().map(user -> user.getId().getId()).collect(Collectors.toSet());
                 Set<String> clientIds = project.getClients().stream().map(c -> c.getId()).collect(Collectors.toSet());
                 ProjectInfo projectInfo = new ProjectInfo(project.getId().getId(), project.getOrganizationId().getId(),
-                        project.getName(), organizationOptional.get().getKeyPairData(), project.getKeyPairData(), clientIds, userIds);
+                        project.getName(), organizationOptional.get().getKeyPairData(), project.getKeyPairData(),
+                        project.getAudience(), clientIds, userIds);
                 return Optional.of(projectInfo);
             }
         }

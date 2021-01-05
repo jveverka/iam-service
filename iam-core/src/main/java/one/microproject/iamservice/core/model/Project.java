@@ -63,4 +63,6 @@ public interface Project {
 
     void removeProperty(String key);
 
+    void setAudience(Set<String> audience);
+
 }

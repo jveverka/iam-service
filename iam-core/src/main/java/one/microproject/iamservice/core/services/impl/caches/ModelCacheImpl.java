@@ -296,6 +296,16 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
+    public synchronized void setAudience(OrganizationId id, ProjectId projectId, Set<String> audience) {
+        ModelKey<Project> projectKey = projectKey(id, projectId);
+        Project project = modelWrapper.getProject(projectKey);
+        if (project != null) {
+            project.setAudience(audience);
+            modelWrapper.putProject(projectKey, project);
+        }
+    }
+
+    @Override
     public synchronized Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException {
         ModelKey<Project> projectKey = projectKey(organizationId, projectId);
         ModelKey<User> userKey = userKey(organizationId, projectId, request.getId());

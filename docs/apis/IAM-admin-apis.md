@@ -12,6 +12,7 @@
 * __GET__ ``http://localhost:8080/services/management/{organization-id}/{project-id}/permissions``
 * __DELETE__ ``http://localhost:8080/services/management/{organization-id}/{project-id}/permissions/{permission-id}``
 * __DELETE__ ``http://localhost:8080/services/management/{organization-id}/{project-id}/roles/{role-id}``  
+* __PUT__ ``http://localhost:8080/services/management/{organization-id}/{project-id}/audience``
 
 ### Project User Management
 * __POST__ ``http://localhost:8080/services/management/{organization-id}/{project-id}/users``

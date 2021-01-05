@@ -65,6 +65,8 @@ public interface ModelCache {
 
     void removeProperty(OrganizationId id, ProjectId projectId, String key);
 
+    void setAudience(OrganizationId id, ProjectId projectId, Set<String> audience);
+
     //USER
     Optional<User> add(OrganizationId organizationId, ProjectId projectId, CreateUserRequest request) throws PKIException;
 

@@ -40,4 +40,6 @@ public interface IAMServiceProjectManagerClient extends ProjectInfoProvider {
 
     void deleteClient(ClientId clientId) throws AuthenticationException;
 
+    void setAudience(Set<String> audience) throws AuthenticationException;
+
 }

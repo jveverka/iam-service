@@ -214,4 +214,10 @@ public class ProjectImpl implements Project {
         properties.remove(key);
     }
 
+    @Override
+    public void setAudience(Set<String> audience) {
+        this.audience.clear();
+        this.audience.addAll(audience);
+    }
+
 }

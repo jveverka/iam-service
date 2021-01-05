@@ -234,6 +234,24 @@ public class IAMServiceProjectManagerClientImpl implements IAMServiceProjectMana
     }
 
     @Override
+    public void setAudience(Set<String> audience) throws AuthenticationException {
+        try {
+            Request request = new Request.Builder()
+                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/audience")
+                    .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
+                    .put(RequestBody.create(mapper.writeValueAsString(audience), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
+                    .build();
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
+                return;
+            }
+            throw new AuthenticationException("Authentication failed: " + response.code());
+        } catch (IOException e) {
+            throw new AuthenticationException(e);
+        }
+    }
+
+    @Override
     public OrganizationId getOrganizationId() {
         return organizationId;
     }

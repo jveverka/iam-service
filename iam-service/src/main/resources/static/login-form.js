@@ -156,7 +156,10 @@ function showElement(element) {
 };
 
 function getBaseUrl() {
-   return window.location.origin + "/services/oauth2/" + organization_id + "/" + project_id;
+   prefix = window.location.pathname.split("/oauth2")[0];
+   baseUrl = window.location.origin + prefix + "/oauth2/" + organization_id + "/" + project_id;
+   console.log("BASE-URL: " + baseUrl);
+   return baseUrl;
 };
 
 function onScopeSelect(input_element) {

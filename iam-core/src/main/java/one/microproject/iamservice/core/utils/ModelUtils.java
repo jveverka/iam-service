@@ -86,11 +86,8 @@ public final class ModelUtils {
 
     public static ModelCache createDefaultModelCache(OrganizationId organizationId, ProjectId projectId, String iamAdminPassword, String iamClientSecret, String iamAdminEmail, ModelWrapper modelWrapper, Boolean enableClientCredentialsFlow) throws PKIException {
 
-        Role iamGlobalAdminRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-global"), "Manage IAM-Service")
-                .addPermission(ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL)
-                .addPermission(ModelCommons.IAM_SERVICE_PROJECTS_RESOURCE_ACTION_ALL)
-                .addPermission(ModelCommons.IAM_SERVICE_USERS_RESOURCE_ACTION_ALL)
-                .addPermission(ModelCommons.IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL)
+        Role iamGlobalAdminRole = IAMModelBuilders.roleBuilder(RoleId.from("iam-admin-global"), "Global IAM-Service admin role.")
+                .addPermissions(ModelCommons.GLOBAL_ADMIN_PERMISSIONS)
                 .build();
 
         Role iamProjectAdminRole = new RoleImpl(RoleId.from("iam-admin-project"), "",

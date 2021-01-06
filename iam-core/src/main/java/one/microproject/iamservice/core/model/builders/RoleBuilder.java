@@ -7,6 +7,7 @@ import one.microproject.iamservice.core.model.RoleImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 public final class RoleBuilder {
@@ -33,6 +34,11 @@ public final class RoleBuilder {
 
     public RoleBuilder addPermission(Permission permission) {
         permissions.add(permission);
+        return this;
+    }
+
+    public RoleBuilder addPermissions(Set<Permission> permissions) {
+        permissions.forEach(this.permissions::add);
         return this;
     }
 

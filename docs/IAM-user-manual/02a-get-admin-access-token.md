@@ -1,7 +1,7 @@
-## Getting Admin Access
+## Getting Global Admin Access
 
 In order to start using *iam-service* you have to get access as priviledged 
-"admin" user which belongs to dedicated *iam-admins* organization *and iam-admins* project.
+__global admin__ user which belongs to dedicated *iam-admins* organization *and iam-admins* project.
 This special project will be called __iam-admins__ project. Default login credentials and settings:
 
 | Parameter              | Value                                                                 | 
@@ -17,12 +17,12 @@ This special project will be called __iam-admins__ project. Default login creden
 | Access token url       | http://localhost:8080/services/oauth2/iam-admins/iam-admins/token     |
 | Redirect URL           | http://localhost:8080/services/oauth2/iam-admins/iam-admins/redirect  |
 
-To get 'admin' access tokens, please [use one of supported](README.md) OAuth2 flows. 
+To get __global admin__ access tokens, please [use one of supported](README.md) OAuth2 flows. 
 Once you get access tokens for privileged 'admin' user, you can use iam-service to 
 create your own organizations and projects with users and clients.
 See also: [Security Model](IAM-Service-Security-Model.md) and [Terms and Vocabulary](Terms-and-Vocabulary.md)
 
-* Get Admin Access tokens  
+* Get Global Admin Access tokens  
   ```
   curl --location --request POST 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/token?grant_type=password&username=admin&password=secret&scope=&client_id=admin-client&client_secret=top-secret' \
   --header 'Content-Type: application/x-www-form-urlencoded' 

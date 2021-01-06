@@ -2,7 +2,7 @@
 
 * Customize [__application.yml__](../../iam-service/src/main/resources/application.yml) configuration before you start.
   Default configuration is fully operational, however it is recommended 
-  to override default admin user's password, email and client secret.
+  to override default admin user's password, email and admin-client secret.
   ```
   iam-service:
     data-model:
@@ -11,7 +11,7 @@
       default-admin-email: admin@email.com
       enable-client-credentials-flow: true 
   ```
-* Start __iam-service__ as standalone server. You can skip this step if you would like to used iam-service as docker container.
+* Start __iam-service__ as standalone server. You can skip this step if you would like to use *iam-service* in docker container.
   ```
   java -Xms32m -Xmx128m -jar iam-service-2.4.1-RELEASE.jar \
     --spring.config.location=file:application.yml
@@ -21,15 +21,16 @@
   ```
   ./docker-create-image.sh
   ```
-* Use public docker image at dockerhub [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
+* Use public docker dockerhub image [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
   ```
   docker run -d --name iam-service-2.4.1-RELEASE \
     --restart unless-stopped \
     -e APP_CONFIG_PATH=/opt/data/application.yml \
     -e XMX=128m \
-    -v 'pwd':/opt/data \
+    -v '${IAM_DATA_DIR}':/opt/data \
     -p 8080:8080 jurajveverka/iam-service:2.4.1-RELEASE-amd64
   ```
+  ``IAM_DATA_DIR`` points to directory where customized ``application.yml`` file is located. 
 * Check docker status and logs
   ```
   docker ps -a 

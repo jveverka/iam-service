@@ -31,4 +31,4 @@ authentication and authorization OAuth2 server.
 
 ### References
 * [Terms and Vocabulary](Terms-and-Vocabulary.md)
-* [Access Configuration](Default-Access-Configuration.md)
+* [Security Model](IAM-Service-Security-Model.md)

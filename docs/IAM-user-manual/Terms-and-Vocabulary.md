@@ -1,7 +1,5 @@
 # IAM-Service Terms and Vocabulary
-See also: 
-* [Default Configuration](Default-Access-Configuration.md) 
-* [Data Model](../IAM-data-model.md)
+This chapter describes common used terms and entities.
 
 ## Organizations
 Organization is just a logical group of projects.
@@ -32,7 +30,7 @@ Unique identity of end-user (person) with email, username and credentials.
 
 #### Role
 Role is just a logical group (a set) of permissions. One Role contains
-onr or more permissions.
+one or more permissions.
 
 #### Permission
 Permission is a definition of service + resource + action. One permission 
@@ -48,3 +46,7 @@ this service and resource. Examples:
 
 Implementation and security model in target resource-server (microservice) always depends
 on target implementation and security approach.
+
+See also:
+* [Security Model](IAM-Service-Security-Model.md)
+* [Data Model](../IAM-data-model.md)

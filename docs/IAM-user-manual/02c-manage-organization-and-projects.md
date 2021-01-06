@@ -5,7 +5,7 @@ It is also necessary to assign new roles and permissions to new users.
 All actions described below must be performed under project admin user identity.
 ##### See also: 
 * [Terms and Vocabulary](Terms-and-Vocabulary.md)
-* [Default Configuration](Default-Access-Configuration.md) 
+* [Security Model](IAM-Service-Security-Model.md) 
 
 ##### Get Access Token to Manage your Organization/Project
 * Get you Organization/Project Admin Access tokens  

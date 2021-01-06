@@ -57,7 +57,7 @@ and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com
 * [__Swagger and Actuator APIs__](docs/apis/IAM-swagger-and-actuator-links.md)
 
 ### Technical documentation
-* [Security Rules](docs/IAM-user-manual/Default-Access-Configuration.md) - accessing APIs.
+* [Security Rules](docs/IAM-user-manual/IAM-Service-Security-Model.md) - accessing APIs.
 * [Internal Data Model](docs/IAM-data-model.md) - internal data model description and glossary.
 * [JWT mappings](docs/JWT-mapping-details.md) - mapping details between data model and issued JWT.
 * [Project build & test instructions](docs/IAM-build-test.md) - how to build this project locally.

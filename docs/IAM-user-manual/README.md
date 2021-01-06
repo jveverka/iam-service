@@ -1,4 +1,4 @@
-# IAM User's Guide
+# IAM Service User's Guide
 This guide shows how to setup really simple standalone *Identity Access Management* (IAM) service, 
 authentication and authorization OAuth2 server.
 
@@ -23,8 +23,12 @@ authentication and authorization OAuth2 server.
 
 ### Examples and Client Libraries
 * [Examples](../../iam-examples) - how to consume iam-service in your microservices.
-* [IAM-Client java library](../../iam-common/iam-client) - remote iam-client.
-* [IAM-Service-Client java library](../../iam-common/iam-service-client) - remote admin client.
+* [IAM-Client for java](../../iam-common/iam-client) - remote iam-client.
+* [IAM-Service-Client for java](../../iam-common/iam-service-client) - remote admin client.
 
-[Terms and Vocabulary](Terms-and-Vocabulary.md)
-[Access Configuration](Default-Access-Configuration.md)
+### Advanced Configuration
+* [Running IAM-Service behind proxy](Advanced-Config-Running-Behind-Proxy.md)
+
+### References
+* [Terms and Vocabulary](Terms-and-Vocabulary.md)
+* [Access Configuration](Default-Access-Configuration.md)

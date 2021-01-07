@@ -36,6 +36,7 @@ import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
+import one.microproject.iamservice.server.config.BaseUrlMapperConfig;
 import one.microproject.iamservice.server.controller.support.ControllerUtils;
 import one.microproject.iamservice.server.controller.support.OAuth2TokenException;
 import org.slf4j.Logger;
@@ -86,15 +87,18 @@ public class OAuth2Controller {
     private final AuthenticationService authenticationService;
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
+    private final BaseUrlMapperConfig baseUrlMapperConfig;
 
     public OAuth2Controller(@Autowired ServletContext servletContext,
                             @Autowired AuthenticationService authenticationService,
                             @Autowired ProviderConfigurationService providerConfigurationService,
-                            @Autowired ResourceServerService resourceServerService) {
+                            @Autowired ResourceServerService resourceServerService,
+                            @Autowired BaseUrlMapperConfig baseUrlMapperConfig) {
         this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
         this.resourceServerService = resourceServerService;
+        this.baseUrlMapperConfig = baseUrlMapperConfig;
     }
 
     @Operation(description =
@@ -335,7 +339,7 @@ public class OAuth2Controller {
                                                                           @PathVariable("project-id") String projectId,
                                                                           HttpServletRequest request) throws MalformedURLException {
         LOG.info("getConfiguration: {}", request.getRequestURL());
-        String baseUrl = getBaseUrl(servletContext, request);
+        String baseUrl = getBaseUrl(servletContext, request, baseUrlMapperConfig);
         ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
         ProviderConfigurationResponse configuration = providerConfigurationService.getConfiguration(providerConfigurationRequest);
         return ResponseEntity.ok(configuration);

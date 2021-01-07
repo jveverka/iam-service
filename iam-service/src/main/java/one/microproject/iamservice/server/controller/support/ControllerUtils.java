@@ -3,6 +3,7 @@ package one.microproject.iamservice.server.controller.support;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
+import one.microproject.iamservice.server.config.BaseUrlMapperConfig;
 import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletContext;
@@ -35,10 +36,14 @@ public final class ControllerUtils {
         }
     }
 
-    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request) throws MalformedURLException {
+    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request, BaseUrlMapperConfig baseUrlMapperConfig) throws MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
-        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2";
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath;
+        if (baseUrl.equals(baseUrlMapperConfig.getBaseUrl())) {
+            baseUrl = baseUrlMapperConfig.getMappedUrl();
+        }
+        return baseUrl + "/services/oauth2";
     }
 
     public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId) throws URISyntaxException, MalformedURLException {

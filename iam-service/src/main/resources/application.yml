@@ -8,6 +8,9 @@ spring:
     timeout-per-shutdown-phase: 20s
 
 iam-service:
+  #base-url-mapping:
+  #  base-url: http://localhost:8080
+  #  mapped-url: https://mydomain.com
   #Auth. Code duration interval
   authorization-code-cache:
     duration: 10

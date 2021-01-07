@@ -15,6 +15,14 @@ server:
     context-path: /auth
 ...    
 ```
+Base URL mapping may be defined additionally if required. 
+This is useful in cases when reverse proxy is used for TLS termination.
+```
+iam-service:
+  base-url-mapping:
+    base-url: http://localhost:8080
+    mapped-url: https://mydomain.com
+```
 
 ### Example NGINX configuration
 This is recommended NGINX configuration snippet.

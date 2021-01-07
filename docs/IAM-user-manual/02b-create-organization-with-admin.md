@@ -11,8 +11,8 @@ isolated security realm with own group of users, clients, roles and permissions.
   --data-raw '{ 
      "organizationId": "test-org-001", 
      "organizationName": "Test Organization 001", 
-     "adminProjectId": "project-001",
-     "adminProjectName": "Project 001",
+     "projectId": "project-001",
+     "projectName": "Project 001",
      "adminClientId": "cl-001",
      "adminClientSecret": "cl-scrt",
      "adminUserId": "admin",

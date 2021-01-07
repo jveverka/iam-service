@@ -10,8 +10,8 @@ public class SetupOrganizationRequest {
 
     private final String organizationId;
     private final String organizationName;
-    private final String adminProjectId;
-    private final String adminProjectName;
+    private final String projectId;
+    private final String projectName;
     private final String adminClientId;
     private final String adminClientSecret;
     private final String adminUserId;
@@ -24,8 +24,8 @@ public class SetupOrganizationRequest {
     @JsonCreator
     public SetupOrganizationRequest(@JsonProperty("organizationId") String organizationId,
                                     @JsonProperty("organizationName") String organizationName,
-                                    @JsonProperty("adminProjectId") String adminProjectId,
-                                    @JsonProperty("adminProjectName") String adminProjectName,
+                                    @JsonProperty("projectId") String projectId,
+                                    @JsonProperty("projectName") String projectName,
                                     @JsonProperty("adminClientId") String adminClientId,
                                     @JsonProperty("adminClientSecret") String adminClientSecret,
                                     @JsonProperty("adminUserId") String adminUserId,
@@ -36,8 +36,8 @@ public class SetupOrganizationRequest {
                                     @JsonProperty("adminUserProperties") UserProperties adminUserProperties) {
         this.organizationId = organizationId;
         this.organizationName = organizationName;
-        this.adminProjectId = adminProjectId;
-        this.adminProjectName = adminProjectName;
+        this.projectId = projectId;
+        this.projectName = projectName;
         this.adminClientId = adminClientId;
         this.adminClientSecret = adminClientSecret;
         this.adminUserId = adminUserId;
@@ -56,12 +56,12 @@ public class SetupOrganizationRequest {
         return organizationName;
     }
 
-    public String getAdminProjectId() {
-        return adminProjectId;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public String getAdminProjectName() {
-        return adminProjectName;
+    public String getProjectName() {
+        return projectName;
     }
 
     public String getAdminClientId() {

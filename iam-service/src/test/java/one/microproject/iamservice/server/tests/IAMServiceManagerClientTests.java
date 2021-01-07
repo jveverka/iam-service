@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.core.ModelCommons.ADMIN_ORGANIZATION_SET;
+import static one.microproject.iamservice.core.ModelCommons.GLOBAL_ADMIN_PERMISSIONS;
 import static one.microproject.iamservice.core.ModelCommons.IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL;
 import static one.microproject.iamservice.core.ModelCommons.IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL;
 import static one.microproject.iamservice.core.ModelCommons.IAM_SERVICE_PROJECTS_RESOURCE_ACTION_ALL;
@@ -141,9 +141,9 @@ public class IAMServiceManagerClientTests {
     @Test
     @Order(6)
     public void testValidateTokensForOrganizationAndProjectWithPermissionsOK() {
-        boolean result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, ADMIN_ORGANIZATION_SET, JWToken.from(tokenResponse.getAccessToken()));
+        boolean result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, GLOBAL_ADMIN_PERMISSIONS, JWToken.from(tokenResponse.getAccessToken()));
         assertTrue(result);
-        result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, ADMIN_ORGANIZATION_SET, JWToken.from(tokenResponse.getRefreshToken()));
+        result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, GLOBAL_ADMIN_PERMISSIONS, JWToken.from(tokenResponse.getRefreshToken()));
         assertTrue(result);
     }
 

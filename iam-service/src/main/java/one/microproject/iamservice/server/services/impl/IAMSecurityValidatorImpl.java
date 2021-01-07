@@ -22,7 +22,7 @@ import java.security.PublicKey;
 import java.util.Optional;
 import java.util.Set;
 
-import static one.microproject.iamservice.core.ModelCommons.ADMIN_PROJECT_SET;
+import static one.microproject.iamservice.core.ModelCommons.GLOBAL_ADMIN_PERMISSIONS;
 import static one.microproject.iamservice.core.ModelCommons.verifyProjectAdminPermissions;
 
 
@@ -43,7 +43,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     @Override
     public StandardTokenClaims verifyGlobalAdminAccess(String authorization) throws IAMSecurityException {
         StandardTokenClaims standardTokenClaims = verifyToken(authorization);
-        boolean result = JWTUtils.validatePermissions(standardTokenClaims, ADMIN_PROJECT_SET, Set.of());
+        boolean result = JWTUtils.validatePermissions(standardTokenClaims, GLOBAL_ADMIN_PERMISSIONS, Set.of());
         if (!result) {
             throw new IAMSecurityException("Authorization token validation has failed: token is invalid!");
         }

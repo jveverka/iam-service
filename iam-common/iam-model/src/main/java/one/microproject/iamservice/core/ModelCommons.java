@@ -34,15 +34,9 @@ public final class ModelCommons {
 
     public static final Permission IAM_SERVICE_ORGANIZATION_RESOURCE_ACTION_READ = new Permission(IAM_SERVICE, ORGANIZATION_RESOURCE,  ACTION_READ);
 
-    public static final Set<Permission> ADMIN_ORGANIZATION_SET = Set.of(
+    public static final Set<Permission> GLOBAL_ADMIN_PERMISSIONS = Set.of(
             IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL,
             IAM_SERVICE_PROJECTS_RESOURCE_ACTION_ALL,
-            IAM_SERVICE_USERS_RESOURCE_ACTION_ALL,
-            IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL
-    );
-
-    public static final Set<Permission> ADMIN_PROJECT_SET = Set.of(
-            IAM_SERVICE_ORGANIZATIONS_RESOURCE_ACTION_ALL,
             IAM_SERVICE_USERS_RESOURCE_ACTION_ALL,
             IAM_SERVICE_CLIENTS_RESOURCE_ACTION_ALL
     );

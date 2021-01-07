@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static one.microproject.iamservice.client.JWTUtils.AUTHORIZATION;
+
 @Component
 public class IAMSecurityFilter extends OncePerRequestFilter {
 
@@ -31,9 +33,9 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String requestUrl = httpServletRequest.getRequestURL().toString();
-        String requestUri =  httpServletRequest.getRequestURI();
+        String requestUri =  normalizeRequestUri(httpServletRequest);
         if (requestUri.startsWith("/services/admin/")) {
-            String authorization = httpServletRequest.getHeader("Authorization");
+            String authorization = httpServletRequest.getHeader(AUTHORIZATION);
             if (authorization != null) {
                 try {
                     LOG.info("doAdminFilter: {} {} {}", requestUri, requestUrl, authorization);
@@ -50,7 +52,7 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
             }
             return;
         } else if  (requestUri.startsWith("/services/management/")) {
-            String authorization = httpServletRequest.getHeader("Authorization");
+            String authorization = httpServletRequest.getHeader(AUTHORIZATION);
             if (authorization != null) {
                 try {
                     LOG.info("doFilter: {} {} {}", requestUri, requestUrl, authorization);
@@ -68,6 +70,16 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
             return;
         } else {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
+    }
+
+    private String normalizeRequestUri(HttpServletRequest httpServletRequest) {
+        String requestUri =  httpServletRequest.getRequestURI();
+        String contextPath = httpServletRequest.getContextPath();
+        if ("".equals(contextPath) || "/".equals(contextPath) || contextPath == null) {
+            return requestUri;
+        } else {
+            return requestUri.substring(contextPath.length());
         }
     }
 

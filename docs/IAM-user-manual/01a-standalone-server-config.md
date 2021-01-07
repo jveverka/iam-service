@@ -2,7 +2,7 @@
 
 * Customize [__application.yml__](../../iam-service/src/main/resources/application.yml) configuration before you start.
   Default configuration is fully operational, however it is recommended 
-  to override default admin user's password, email and client secret.
+  to override default admin user's password, email and admin-client secret.
   ```
   iam-service:
     data-model:
@@ -11,9 +11,9 @@
       default-admin-email: admin@email.com
       enable-client-credentials-flow: true 
   ```
-* Start __iam-service__ as standalone server. You can skip this step if you would like to used iam-service as docker container.
+* Start __iam-service__ as standalone server. You can skip this step if you would like to use *iam-service* in docker container.
   ```
-  java -Xms32m -Xmx128m -jar iam-service-2.4.1-RELEASE.jar \
+  java -Xms32m -Xmx128m -jar iam-service-2.4.2-RELEASE.jar \
     --spring.config.location=file:application.yml
   ```
 * Build Docker Image locally and run, in case you prefer downloading image from dockerhub please  skip this step.
@@ -21,20 +21,21 @@
   ```
   ./docker-create-image.sh
   ```
-* Use public docker image at dockerhub [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
+* Use public docker dockerhub image [jurajveverka/iam-service](https://hub.docker.com/r/jurajveverka/iam-service)
   ```
-  docker run -d --name iam-service-2.4.1-RELEASE \
+  docker run -d --name iam-service-2.4.2-RELEASE \
     --restart unless-stopped \
     -e APP_CONFIG_PATH=/opt/data/application.yml \
     -e XMX=128m \
-    -v 'pwd':/opt/data \
-    -p 8080:8080 jurajveverka/iam-service:2.4.1-RELEASE-amd64
+    -v '${IAM_DATA_DIR}':/opt/data \
+    -p 8080:8080 jurajveverka/iam-service:2.4.2-RELEASE-amd64
   ```
+  ``IAM_DATA_DIR`` points to directory where customized ``application.yml`` file is located. 
 * Check docker status and logs
   ```
   docker ps -a 
-  docker exec -ti iam-service-2.4.1-RELEASE /bin/sh
-  docker logs --follow iam-service-2.4.1-RELEASE
+  docker exec -ti iam-service-2.4.2-RELEASE /bin/sh
+  docker logs --follow iam-service-2.4.2-RELEASE
   ```
 * Verify Service state, check OpenAPI documentation.
   ```
@@ -47,9 +48,9 @@
   ```
 * Stop and cleanup Docker
   ```
-  docker stop iam-service-2.4.1-RELEASE
-  docker rm iam-service-2.4.1-RELEASE
-  docker image rm -f iam-service:2.4.1-RELEASE
+  docker stop iam-service-2.4.2-RELEASE
+  docker rm iam-service-2.4.2-RELEASE
+  docker image rm -f iam-service:2.4.2-RELEASE
   ```
 
 * [next step: Setup Persistence Layer](01b_setup-persitence-layer.md)

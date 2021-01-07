@@ -3,6 +3,7 @@ package one.microproject.iamservice.server.controller.support;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
+import one.microproject.iamservice.server.config.BaseUrlMapperConfig;
 import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletContext;
@@ -14,6 +15,8 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Optional;
+
+import static one.microproject.iamservice.client.JWTUtils.AUTHORIZATION;
 
 public final class ControllerUtils {
 
@@ -33,10 +36,14 @@ public final class ControllerUtils {
         }
     }
 
-    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request) throws MalformedURLException {
+    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request, BaseUrlMapperConfig baseUrlMapperConfig) throws MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
-        return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2";
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath;
+        if (baseUrl.equals(baseUrlMapperConfig.getBaseUrl())) {
+            baseUrl = baseUrlMapperConfig.getMappedUrl();
+        }
+        return baseUrl + "/services/oauth2";
     }
 
     public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId) throws URISyntaxException, MalformedURLException {
@@ -71,7 +78,7 @@ public final class ControllerUtils {
         if (clientId != null && clientSecret != null) {
             return Optional.of(new ClientCredentials(ClientId.from(clientId), clientSecret));
         }
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader(AUTHORIZATION);
         if (authorization != null && authorization.startsWith("Basic ")) {
             String[] authorizations = authorization.split(" ");
             byte[] decoded = Base64.getDecoder().decode(authorizations[1]);

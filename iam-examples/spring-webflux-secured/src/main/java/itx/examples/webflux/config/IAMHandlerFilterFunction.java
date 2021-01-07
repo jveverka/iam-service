@@ -13,6 +13,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+import static one.microproject.iamservice.client.JWTUtils.AUTHORIZATION;
+
 public class IAMHandlerFilterFunction implements HandlerFilterFunction<ServerResponse, ServerResponse> {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMHandlerFilterFunction.class);
@@ -25,7 +27,7 @@ public class IAMHandlerFilterFunction implements HandlerFilterFunction<ServerRes
 
     @Override
     public Mono<ServerResponse> filter(ServerRequest serverRequest, HandlerFunction<ServerResponse> handlerFunction) {
-        Optional<String> authorization = serverRequest.headers().header("Authorization").stream().findFirst();
+        Optional<String> authorization = serverRequest.headers().header(AUTHORIZATION).stream().findFirst();
         if (authorization.isPresent()) {
             String[] tokens = authorization.get().split(" ");
             if (iamClient.validate(new JWToken(tokens[1])).isPresent()) {

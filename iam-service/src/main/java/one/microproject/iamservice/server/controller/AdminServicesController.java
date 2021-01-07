@@ -84,7 +84,7 @@ public class AdminServicesController {
     @PostMapping("/organization/setup")
     public ResponseEntity<SetupOrganizationResponse> setUpOrganization(@RequestBody SetupOrganizationRequest request) throws PKIException {
         OrganizationId organizationId = OrganizationId.from(request.getOrganizationId());
-        ProjectId projectId = ProjectId.from(request.getAdminProjectId());
+        ProjectId projectId = ProjectId.from(request.getProjectId());
         ClientId clientId = ClientId.from(request.getAdminClientId());
         UserId userId = UserId.from(request.getAdminUserId());
         RoleId adminRoleId = createProjectAdminRoleId(organizationId, projectId);
@@ -101,7 +101,7 @@ public class AdminServicesController {
             }
         }
         if (projectManagerService.get(organizationId, projectId).isEmpty()) {
-            CreateProjectRequest createProjectRequest = new CreateProjectRequest(projectId, request.getAdminProjectName(), request.getProjectAudience());
+            CreateProjectRequest createProjectRequest = new CreateProjectRequest(projectId, request.getProjectName(), request.getProjectAudience());
             Optional<Project> projectOptional = projectManagerService.create(organizationId, createProjectRequest);
             if (projectOptional.isEmpty()) {
                 LOG.warn("Error: create Project id={} failed !", projectId.getId());

@@ -14,8 +14,8 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
     public SetupOrganizationResponse(SetupOrganizationRequest request, String adminRoleId, Set<String> adminPermissions) {
         super(request.getOrganizationId(),
                 request.getOrganizationName(),
-                request.getAdminProjectId(),
-                request.getAdminProjectName(),
+                request.getProjectId(),
+                request.getProjectName(),
                 request.getAdminClientId(),
                 request.getAdminClientSecret(),
                 request.getAdminUserId(),
@@ -31,8 +31,8 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
     @JsonCreator
     public SetupOrganizationResponse(@JsonProperty("organizationId") String organizationId,
                                      @JsonProperty("organizationName") String organizationName,
-                                     @JsonProperty("adminProjectId") String adminProjectId,
-                                     @JsonProperty("adminProjectName") String adminProjectName,
+                                     @JsonProperty("projectId") String projectId,
+                                     @JsonProperty("projectName") String projectName,
                                      @JsonProperty("adminClientId") String adminClientId,
                                      @JsonProperty("adminClientSecret") String adminClientSecret,
                                      @JsonProperty("adminUserId") String adminUserId,
@@ -43,7 +43,7 @@ public class SetupOrganizationResponse extends SetupOrganizationRequest {
                                      @JsonProperty("adminPermissions") Set<String> adminPermissions,
                                      @JsonProperty("redirectURL") String redirectURL,
                                      @JsonProperty("adminUserProperties") UserProperties adminUserProperties) {
-        super(organizationId, organizationName, adminProjectId, adminProjectName, adminClientId, adminClientSecret, adminUserId, adminUserPassword, adminUserEmail, projectAudience, redirectURL, adminUserProperties);
+        super(organizationId, organizationName, projectId, projectName, adminClientId, adminClientSecret, adminUserId, adminUserPassword, adminUserEmail, projectAudience, redirectURL, adminUserProperties);
         this.adminRoleId = adminRoleId;
         this.adminPermissions = adminPermissions;
     }

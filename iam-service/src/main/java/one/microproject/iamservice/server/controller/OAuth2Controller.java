@@ -67,6 +67,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static one.microproject.iamservice.client.JWTUtils.AUTHORIZATION;
+import static one.microproject.iamservice.client.JWTUtils.BEARER_PREFIX;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getBaseUrl;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getClientCredentials;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getCodeVerifier;
@@ -386,9 +388,9 @@ public class OAuth2Controller {
     public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
                                                         HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring("Bearer ".length());
+        String authorization = request.getHeader(AUTHORIZATION);
+        if (authorization != null && authorization.startsWith(BEARER_PREFIX)) {
+            String token = authorization.substring(BEARER_PREFIX.length());
             Optional<UserInfoResponse> response = authenticationService.getUserInfo(OrganizationId.from(organizationId), ProjectId.from(projectId), JWToken.from(token));
             return ResponseEntity.of(response);
         } else {

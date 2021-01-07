@@ -15,6 +15,8 @@ import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Optional;
 
+import static one.microproject.iamservice.client.JWTUtils.AUTHORIZATION;
+
 public final class ControllerUtils {
 
     private ControllerUtils() {
@@ -71,7 +73,7 @@ public final class ControllerUtils {
         if (clientId != null && clientSecret != null) {
             return Optional.of(new ClientCredentials(ClientId.from(clientId), clientSecret));
         }
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader(AUTHORIZATION);
         if (authorization != null && authorization.startsWith("Basic ")) {
             String[] authorizations = authorization.split(" ");
             byte[] decoded = Base64.getDecoder().decode(authorizations[1]);

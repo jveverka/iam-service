@@ -19,7 +19,6 @@ import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
-import one.microproject.iamservice.core.services.dto.ProjectInfo;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
@@ -46,7 +45,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMAdminTokens;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminClientSecret;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminPassword;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminTokens;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMServiceURL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -60,7 +61,7 @@ public class IntegrationTestsITUserManual {
     private static OrganizationId organizationId = OrganizationId.from("test-org-001");
     private static ProjectId projectId = ProjectId.from("project-001");
     private static ClientId projectAdminClientId = ClientId.from("cl-001");
-    private static String projedtAdminClientSecret = "cl-scrt";
+    private static String projectAdminClientSecret = "cl-scrt";
     private static UserId projectAdminUserId = UserId.from("admin");
     private static String projectAdminUserPassword = "some-top-sercret";
     private static String projectAdminEmail = "admin@project-001.com";
@@ -77,10 +78,15 @@ public class IntegrationTestsITUserManual {
     private static TokenResponse readUserTokens;
     private static TokenResponse writeUserTokens;
 
+    private static String globalAdminPassword;
+    private static String globalAdminClientSecret;
+
     @BeforeAll
     public static void init() throws MalformedURLException {
         Security.addProvider(new BouncyCastleProvider());
         iamServerBaseURL = getIAMServiceURL();
+        globalAdminPassword = getGlobalAdminPassword();
+        globalAdminClientSecret = getGlobalAdminClientSecret();
         LOG.info("IAM BASE URL: {}", iamServerBaseURL);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(iamServerBaseURL)
@@ -102,7 +108,7 @@ public class IntegrationTestsITUserManual {
     @Test
     @Order(2)
     public void getIamAdminAccessTokens() throws IOException {
-        TokenResponseWrapper tokenResponseWrapper = getIAMAdminTokens(iamServiceManagerClient);
+        TokenResponseWrapper tokenResponseWrapper = getGlobalAdminTokens(iamServiceManagerClient, globalAdminPassword, globalAdminClientSecret);
         assertTrue(tokenResponseWrapper.isOk());
         globalAdminTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(globalAdminTokens);
@@ -114,7 +120,7 @@ public class IntegrationTestsITUserManual {
     public void createOrganizationProjectAndAdminUser() throws AuthenticationException, IOException {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "User Manual Example Project",
-                projectAdminClientId.getId(), projedtAdminClientSecret, projectAdminUserId.getId(),  projectAdminUserPassword, projectAdminEmail,
+                projectAdminClientId.getId(), projectAdminClientSecret, projectAdminUserId.getId(),  projectAdminUserPassword, projectAdminEmail,
                 Set.of(), iamServerBaseURL.toString() + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/redirect",
                 UserProperties.getDefault());
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(globalAdminTokens.getAccessToken(), setupOrganizationRequest);
@@ -129,7 +135,7 @@ public class IntegrationTestsITUserManual {
     @Order(4)
     public void getProjectAdminTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId)
-                .getAccessTokensOAuth2UsernamePassword(projectAdminUserId.getId(), projectAdminUserPassword, projectAdminClientId, projedtAdminClientSecret);
+                .getAccessTokensOAuth2UsernamePassword(projectAdminUserId.getId(), projectAdminUserPassword, projectAdminClientId, projectAdminClientSecret);
         assertTrue(tokenResponseWrapper.isOk());
         projectAdminTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(projectAdminTokens);

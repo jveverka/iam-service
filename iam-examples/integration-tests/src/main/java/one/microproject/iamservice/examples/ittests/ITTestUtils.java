@@ -23,6 +23,8 @@ public final  class ITTestUtils {
 
     public static final int IAM_SERVER_PORT = 8080;
     public static final String IAM_SERVICE_PROPERTY = "iamservice.url";
+    public static final String IAM_ADMIN_PASSWORD_PROPERTY = "admin.pwd";
+    public static final String IAM_CLIENT_SECRET_PROPERTY = "client.secret";
 
     public static final OrganizationId organizationId = OrganizationId.from("it-testing-001");
     public static final ProjectId projectId = ProjectId.from("spring-method-security");
@@ -33,10 +35,34 @@ public final  class ITTestUtils {
         return new URL("http://localhost:" + IAM_SERVER_PORT);
     }
 
-    public static TokenResponseWrapper getIAMAdminTokens(IAMServiceManagerClient iamServiceManagerClient) throws IOException {
+    public static TokenResponseWrapper getGlobalAdminTokens(IAMServiceManagerClient iamServiceManagerClient) throws IOException {
         return iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+    }
+
+    public static TokenResponseWrapper getGlobalAdminTokens(IAMServiceManagerClient iamServiceManagerClient, String adminPassword, String clientSecret) throws IOException {
+        return iamServiceManagerClient
+                .getIAMAdminAuthorizerClient()
+                .getAccessTokensOAuth2UsernamePassword("admin", adminPassword, ModelUtils.IAM_ADMIN_CLIENT_ID, clientSecret);
+    }
+
+    public static String getGlobalAdminPassword() {
+        String adminPassword = System.getProperty(IAM_ADMIN_PASSWORD_PROPERTY);
+        if (adminPassword != null && !"".equals(adminPassword)) {
+            return adminPassword;
+        }
+        LOG.info("using default IAM Admin password");
+        return "secret";
+    }
+
+    public static String getGlobalAdminClientSecret() {
+        String clientSecret = System.getProperty(IAM_CLIENT_SECRET_PROPERTY);
+        if (clientSecret != null && !"".equals(clientSecret)) {
+            return clientSecret;
+        }
+        LOG.info("using default IAM Client secret");
+        return "top-secret";
     }
 
     public static URL getIAMServiceURL() throws MalformedURLException {

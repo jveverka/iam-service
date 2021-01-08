@@ -41,4 +41,6 @@ test {
     }
     testLogging.showStandardStreams = true
     systemProperty "iamservice.url", System.getProperty("iamservice.url")
+    systemProperty "admin.pwd", System.getProperty("admin.pwd")
+    systemProperty "client.secret", System.getProperty("client.secret")
 }

@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMAdminTokens;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminTokens;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMServiceURL;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.organizationId;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.projectId;
@@ -59,7 +59,7 @@ public class IntegrationTestsITSetup {
     @Test
     @Order(2)
     public void getIamAdminAccessTokens() throws IOException {
-        TokenResponseWrapper tokenResponseWrapper = getIAMAdminTokens(iamServiceManagerClient);
+        TokenResponseWrapper tokenResponseWrapper = getGlobalAdminTokens(iamServiceManagerClient);
         assertTrue(tokenResponseWrapper.isOk());
         iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         assertNotNull(iamAdminTokens);

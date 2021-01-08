@@ -3,7 +3,7 @@ package one.microproject.iamservice.server.controller.support;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
-import one.microproject.iamservice.server.config.BaseUrlMapperConfig;
+import one.microproject.iamservice.server.services.BaseUrlMapper;
 import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletContext;
@@ -36,13 +36,11 @@ public final class ControllerUtils {
         }
     }
 
-    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request, BaseUrlMapperConfig baseUrlMapperConfig) throws MalformedURLException {
+    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request, BaseUrlMapper baseUrlMapper) throws MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
         String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath;
-        if (baseUrl.equals(baseUrlMapperConfig.getBaseUrl())) {
-            baseUrl = baseUrlMapperConfig.getMappedUrl();
-        }
+        baseUrl = baseUrlMapper.mapIfEquals(baseUrl);
         return baseUrl + "/services/oauth2";
     }
 

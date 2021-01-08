@@ -7,6 +7,8 @@ import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,19 +16,21 @@ import java.net.URL;
 
 public final  class ITTestUtils {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ITTestUtils.class);
+
     private ITTestUtils() {
     }
 
-    public final static int iamServerPort = 8080;
-    public final static String IAM_SERVICE_PROPERTY = "iamservice.url";
+    public static final int IAM_SERVER_PORT = 8080;
+    public static final String IAM_SERVICE_PROPERTY = "iamservice.url";
 
-    public final static OrganizationId organizationId = OrganizationId.from("it-testing-001");
-    public final static ProjectId projectId = ProjectId.from("spring-method-security");
-    public final static UserId appAdminUserId = UserId.from("user-001");
-    public final static ClientId clientId = ClientId.from("client-001");
+    public static final OrganizationId organizationId = OrganizationId.from("it-testing-001");
+    public static final ProjectId projectId = ProjectId.from("spring-method-security");
+    public static final UserId appAdminUserId = UserId.from("user-001");
+    public static final ClientId clientId = ClientId.from("client-001");
 
     public static URL getDefaultIamServerURL() throws MalformedURLException {
-        return new URL("http://localhost:" + iamServerPort);
+        return new URL("http://localhost:" + IAM_SERVER_PORT);
     }
 
     public static TokenResponseWrapper getIAMAdminTokens(IAMServiceManagerClient iamServiceManagerClient) throws IOException {
@@ -42,8 +46,9 @@ public final  class ITTestUtils {
                 return new URL(iamServerURL);
             }
         } catch (MalformedURLException e) {
-            //e.printStackTrace();
+            LOG.debug("ERROR: ", e);
         }
+        LOG.info("using default IAM-Service URL");
         return getDefaultIamServerURL();
     }
 

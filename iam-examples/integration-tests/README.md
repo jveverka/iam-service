@@ -12,3 +12,8 @@ gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integrati
 ```
 gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-cleanup #-Diamservice.url=http://my-iam-service.com
 ```
+
+### 3. User Manual test suite
+```
+gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-user-manual #-Diamservice.url=http://my-iam-service.com
+```

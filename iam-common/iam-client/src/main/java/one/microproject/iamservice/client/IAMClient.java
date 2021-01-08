@@ -80,8 +80,9 @@ public interface IAMClient extends AutoCloseable {
 
     /**
      * Force update of internal JWK key cache.
+     * @return true if cache has been updated successfully;
      */
-    void updateKeyCache();
+    boolean updateKeyCache();
 
     /**
      * Get tokens in exchange for authorization_code. This call is used to finish OAuth2 authorization code grant flow.

@@ -18,6 +18,7 @@ import one.microproject.iamservice.core.model.RoleId;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.UserProperties;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
+import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Security;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -65,7 +67,6 @@ public class IntegrationTestsITUserManual {
 
     private static URL iamServerBaseURL;
     private static IAMServiceManagerClient iamServiceManagerClient;
-    private static IAMServiceProjectManagerClient iamServiceProject;
     private static IAMServiceProjectManagerClient iamServiceProjectClient;
     private static IAMServiceUserManagerClient iamServiceUserManagerClient;
     private static IAMClient iamClient;
@@ -109,7 +110,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(3)
-    public void createOrganizationProjectAndAdminUser() throws AuthenticationException {
+    public void createOrganizationProjectAndAdminUser() throws AuthenticationException, IOException {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "User Manual Example Project",
                 projectAdminClientId.getId(), projedtAdminClientSecret, projectAdminUserId.getId(),  projectAdminUserPassword, projectAdminEmail,
@@ -117,6 +118,10 @@ public class IntegrationTestsITUserManual {
                 UserProperties.getDefault());
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(globalAdminTokens.getAccessToken(), setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
+
+        Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();
+        Optional<OrganizationInfo> organizationInfo = organizations.stream().filter(o->o.getId().equals(organizationId.getId())).findFirst();
+        assertTrue(organizationInfo.isPresent());
     }
 
     @Test
@@ -133,12 +138,12 @@ public class IntegrationTestsITUserManual {
     @Test
     @Order(5)
     public void createProjectClient() throws IOException, AuthenticationException {
-        iamServiceProject = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), organizationId, projectId);
+        iamServiceProjectClient = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), organizationId, projectId);
         ClientProperties clientProperties =  new ClientProperties("", true, true, true, Map.of());
         CreateClient createClient = new CreateClient(projectClientId.getId(), "Second Client", 3600L,  3600L, "ds65f",  clientProperties);
-        iamServiceProject.createClient(createClient);
+        iamServiceProjectClient.createClient(createClient);
 
-        ClientInfo clientInfo = iamServiceProject.getClientInfo(projectClientId);
+        ClientInfo clientInfo = iamServiceProjectClient.getClientInfo(projectClientId);
         assertNotNull(clientInfo);
         assertEquals(projectClientId.getId(), clientInfo.getId());
     }
@@ -207,7 +212,8 @@ public class IntegrationTestsITUserManual {
     @Test
     @Order(12)
     public void reloadKeyCache() {
-        iamClient.updateKeyCache();
+        boolean result = iamClient.updateKeyCache();
+        assertTrue(result);
     }
 
     @Test
@@ -237,7 +243,31 @@ public class IntegrationTestsITUserManual {
     @Test
     @Order(80)
     public void deleteProjectClient() throws AuthenticationException {
-        iamServiceProject.deleteClient(projectClientId);
+        iamServiceProjectClient.deleteClient(projectClientId);
+    }
+
+    @Test
+    @Order(81)
+    public void deleteReadUser() throws AuthenticationException {
+        iamServiceUserManagerClient.deleteUser(UserId.from("read-user"));
+    }
+
+    @Test
+    @Order(82)
+    public void deleteWriteUser() throws AuthenticationException {
+        iamServiceUserManagerClient.deleteUser(UserId.from("write-user"));
+    }
+
+    @Test
+    @Order(83)
+    public void deleteOrganization() throws AuthenticationException, IOException {
+        iamServiceManagerClient.deleteOrganizationRecursively(globalAdminTokens.getAccessToken(), organizationId);
+        Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();
+        Optional<OrganizationInfo> organizationInfo = organizations.stream().filter(o->o.getId().equals(organizationId.getId())).findFirst();
+        assertTrue(organizationInfo.isEmpty());
+        organizations = iamServiceManagerClient.getOrganizations();
+        organizationInfo = organizations.stream().filter(o->o.getId().equals("iam-admins")).findFirst();
+        assertTrue(organizationInfo.isPresent());
     }
 
 }

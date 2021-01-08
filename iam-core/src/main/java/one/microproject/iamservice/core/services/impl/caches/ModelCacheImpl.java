@@ -45,12 +45,12 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public void onInit(PersistenceService persistenceService, boolean flushOnChange) throws Exception {
+    public synchronized void onInit(PersistenceService persistenceService, boolean flushOnChange) throws Exception {
         modelWrapper.onInit(persistenceService, flushOnChange);
     }
 
     @Override
-    public void flush() throws Exception {
+    public synchronized void flush() throws Exception {
         modelWrapper.flush();
     }
 
@@ -60,7 +60,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public void setModel(Model model) {
+    public synchronized void setModel(Model model) {
         this.modelWrapper.setModel(model);
     }
 
@@ -100,7 +100,7 @@ public class ModelCacheImpl implements ModelCache {
     }
 
     @Override
-    public boolean removeWithDependencies(OrganizationId organizationId) {
+    public synchronized boolean removeWithDependencies(OrganizationId organizationId) {
         ModelKey<Organization> organizationKey = organizationKey(organizationId);
         for (ModelKey<Project> key: modelWrapper.getProjectKeys()) {
             if (key.startsWith(organizationKey)) {

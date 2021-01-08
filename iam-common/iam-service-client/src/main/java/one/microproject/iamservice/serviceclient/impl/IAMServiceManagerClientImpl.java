@@ -2,8 +2,13 @@ package one.microproject.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
+import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.services.dto.ClientInfo;
+import one.microproject.iamservice.core.services.dto.ProjectInfo;
+import one.microproject.iamservice.core.services.dto.UserInfo;
 import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
@@ -129,6 +134,34 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
          } else {
              return Collections.emptyList();
          }
+    }
+
+    @Override
+    public ClientInfo getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), ClientInfo.class);
+        } else {
+            throw new IOException();
+        }
+    }
+
+    @Override
+    public UserInfo getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), UserInfo.class);
+        } else {
+            throw new IOException();
+        }
     }
 
     @Override

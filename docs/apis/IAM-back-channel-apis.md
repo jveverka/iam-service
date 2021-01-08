@@ -29,4 +29,4 @@
   __GET__ ``http://localhost:8080/services/discovery/{organization-id}/{project-id}/users/{user-id}``
 
 * Get client info for organization and project and client with unique id provided.  
-  __GET__ ``http://localhost:8080/services/discovery/{organization-id}/{project-id}/clients/{user-id}``
+  __GET__ ``http://localhost:8080/services/discovery/{organization-id}/{project-id}/clients/{client-id}``

@@ -1,10 +1,15 @@
 package one.microproject.iamservice.serviceclient;
 
+import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
+import one.microproject.iamservice.core.model.UserId;
+import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
+import one.microproject.iamservice.core.services.dto.ProjectInfo;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
+import one.microproject.iamservice.core.services.dto.UserInfo;
 import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 
 import java.io.IOException;
@@ -17,6 +22,10 @@ public interface IAMServiceManagerClient {
     void deleteOrganizationRecursively(String accessToken, OrganizationId organizationId) throws AuthenticationException;
 
     Collection<OrganizationInfo> getOrganizations() throws IOException;
+
+    ClientInfo getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws IOException;
+
+    UserInfo getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) throws IOException;
 
     OrganizationInfo getOrganization(OrganizationId organizationId) throws IOException;
 

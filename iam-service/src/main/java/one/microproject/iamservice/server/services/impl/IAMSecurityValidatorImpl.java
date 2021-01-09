@@ -52,6 +52,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
 
     @Override
     public StandardTokenClaims verifyToken(String authorization) throws IAMSecurityException {
+        LOG.debug("verifyToken: {}", authorization);
         JWToken token = tokenValidator.extractJwtToken(authorization);
         KeyProvider provider = keyId -> {
             Optional<PublicKey> key = providerConfigurationService.getKeyById(keyId);
@@ -63,6 +64,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
         };
         Optional<StandardTokenClaims> tokenClaimsOptional = tokenValidator.validateToken(provider, token);
         if (tokenClaimsOptional.isPresent()) {
+            LOG.debug("verifyToken: OK");
             return tokenClaimsOptional.get();
         } else {
             throw new IAMSecurityException("Authorization token validation has failed.");

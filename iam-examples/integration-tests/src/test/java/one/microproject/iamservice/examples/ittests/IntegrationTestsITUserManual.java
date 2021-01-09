@@ -22,6 +22,7 @@ import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
 import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
+import one.microproject.iamservice.core.services.dto.UserInfo;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceProjectManagerClient;
@@ -52,6 +53,7 @@ import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobal
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMServiceURL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -67,6 +69,9 @@ public class IntegrationTestsITUserManual {
     private static String projectAdminUserPassword = "some-top-sercret";
     private static String projectAdminEmail = "admin@project-001.com";
     private static ClientId projectClientId = ClientId.from("client-002");
+
+    private static UserId readerUserId = UserId.from("read-user");
+    private static UserId writerUserId = UserId.from("writer-user");
 
     private static URL iamServerBaseURL;
     private static IAMServiceManagerClient iamServiceManagerClient;
@@ -186,69 +191,90 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(7)
-    public void createReadUser() throws IOException, AuthenticationException {
-        CreateUser createReadOnlyUser = new CreateUser("read-user", "", 3600L, 3600L, "", "as87d6a", new UserProperties(Map.of()));
-        iamServiceUserManagerClient.createUser(createReadOnlyUser);
+    public void testUsersExist() {
+        assertThrows(IOException.class, () -> iamServiceUserManagerClient.getUserInfo(readerUserId));
+        assertThrows(IOException.class, () -> iamServiceUserManagerClient.getUserInfo(writerUserId));
     }
 
     @Test
     @Order(8)
-    public void createWriteUser() throws IOException, AuthenticationException {
-        CreateUser createReadWriteUser = new CreateUser("write-user", "", 3600L, 3600L, "", "6a57dfa", new UserProperties(Map.of()));
-        iamServiceUserManagerClient.createUser(createReadWriteUser);
+    public void createReadUser() throws IOException, AuthenticationException {
+        CreateUser createReadOnlyUser = new CreateUser(readerUserId.getId(), "", 3600L, 3600L, "", "as87d6a", new UserProperties(Map.of()));
+        iamServiceUserManagerClient.createUser(createReadOnlyUser);
+
+        UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(readerUserId);
+        assertEquals(readerUserId.getId(), userInfo.getId());
     }
 
     @Test
     @Order(9)
-    public void assignRoles() throws IOException, AuthenticationException {
-        iamServiceUserManagerClient.addRoleToUser(UserId.from("read-user"), RoleId.from("reader-role"));
-        iamServiceUserManagerClient.addRoleToUser(UserId.from("write-user"), RoleId.from("writer-role"));
-        iamServiceUserManagerClient.addRoleToUser(UserId.from("admin"), RoleId.from("admin-role"));
+    public void createWriteUser() throws IOException, AuthenticationException {
+        CreateUser createReadWriteUser = new CreateUser(writerUserId.getId(), "", 3600L, 3600L, "", "6a57dfa", new UserProperties(Map.of()));
+        iamServiceUserManagerClient.createUser(createReadWriteUser);
+
+        UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(writerUserId);
+        assertEquals(writerUserId.getId(), userInfo.getId());
     }
 
     @Test
     @Order(10)
+    public void assignRoles() throws IOException, AuthenticationException {
+        iamServiceUserManagerClient.addRoleToUser(readerUserId, RoleId.from("reader-role"));
+        iamServiceUserManagerClient.addRoleToUser(writerUserId, RoleId.from("writer-role"));
+        iamServiceUserManagerClient.addRoleToUser(projectAdminUserId, RoleId.from("admin-role"));
+
+        UserInfo readerUserInfo = iamServiceUserManagerClient.getUserInfo(readerUserId);
+        assertEquals(readerUserInfo.getId(), readerUserId.getId());
+        assertEquals(1L, readerUserInfo.getRoles().stream().filter(r->r.equals("reader-role")).count());
+
+        UserInfo writerUserInfo = iamServiceUserManagerClient.getUserInfo(writerUserId);
+        assertEquals(writerUserInfo.getId(), writerUserId.getId());
+        assertEquals(1L, writerUserInfo.getRoles().stream().filter(r->r.equals("writer-role")).count());
+    }
+
+    @Test
+    @Order(11)
     public void getReadUserTokens() throws IOException {
         TokenResponseWrapper readUserWrapper = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId)
-                .getAccessTokensOAuth2UsernamePassword("read-user", "as87d6a", projectClientId, "ds65f");
+                .getAccessTokensOAuth2UsernamePassword(readerUserId.getId(), "as87d6a", projectClientId, "ds65f");
         assertTrue(readUserWrapper.isOk());
         readUserTokens = readUserWrapper.getTokenResponse();
         LOG.info("READ USER: {}", readUserTokens.getAccessToken());
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     public void getWriteUserTokens() throws IOException {
         TokenResponseWrapper writeUserWrapper = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId)
-                .getAccessTokensOAuth2UsernamePassword("write-user", "6a57dfa", projectClientId, "ds65f");
+                .getAccessTokensOAuth2UsernamePassword(writerUserId.getId(), "6a57dfa", projectClientId, "ds65f");
         assertTrue(writeUserWrapper.isOk());
         writeUserTokens = writeUserWrapper.getTokenResponse();
         LOG.info("WRITE USER: {}", writeUserTokens.getAccessToken());
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     public void reloadKeyCache() {
         boolean result = iamClient.updateKeyCache();
         assertTrue(result);
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     public void validateProjectAdminTokens() {
         Optional<StandardTokenClaims> adminUserClaims = iamClient.validate(new JWToken(projectAdminTokens.getAccessToken()));
         assertTrue(adminUserClaims.isPresent());
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     public void validateReadUserTokens() {
         Optional<StandardTokenClaims> readUserClaims = iamClient.validate(new JWToken(readUserTokens.getAccessToken()));
         assertTrue(readUserClaims.isPresent());
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     public void validateWriteUserTokens() {
         Optional<StandardTokenClaims> writeUserClaims = iamClient.validate(new JWToken(writeUserTokens.getAccessToken()));
         assertTrue(writeUserClaims.isPresent());
@@ -266,22 +292,24 @@ public class IntegrationTestsITUserManual {
     @Test
     @Order(81)
     public void deleteReadUser() throws AuthenticationException {
-        iamServiceUserManagerClient.deleteUser(UserId.from("read-user"));
+        iamServiceUserManagerClient.deleteUser(readerUserId);
     }
 
     @Test
     @Order(82)
     public void deleteWriteUser() throws AuthenticationException {
-        iamServiceUserManagerClient.deleteUser(UserId.from("write-user"));
+        iamServiceUserManagerClient.deleteUser(writerUserId);
     }
 
     @Test
     @Order(83)
     public void deleteOrganization() throws AuthenticationException, IOException {
         iamServiceManagerClient.deleteOrganizationRecursively(globalAdminTokens.getAccessToken(), organizationId);
+
         Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();
         Optional<OrganizationInfo> organizationInfo = organizations.stream().filter(o->o.getId().equals(organizationId.getId())).findFirst();
         assertTrue(organizationInfo.isEmpty());
+
         organizations = iamServiceManagerClient.getOrganizations();
         organizationInfo = organizations.stream().filter(o->o.getId().equals("iam-admins")).findFirst();
         assertTrue(organizationInfo.isPresent());

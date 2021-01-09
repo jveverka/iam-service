@@ -15,7 +15,10 @@ server:
     context-path: /auth
 ...    
 ```
-Base URL mapping may be defined additionally if required. 
+Server URL is required for some server responses. 
+When running behind reverse proxy, server does not have knowledge of real 
+Server URL visible to public clients. Base URL mapping may be defined additionally if internal 
+Server URL mapping to public Server URL is required. 
 This is useful in cases when reverse proxy is used for TLS termination.
 ```
 iam-service:
@@ -23,6 +26,7 @@ iam-service:
     base-url: http://localhost:8080
     mapped-url: https://mydomain.com
 ```
+In case *base-url-mapping* is not defined at all, no mapping is performed.
 
 ### Example NGINX configuration
 This is recommended NGINX configuration snippet.

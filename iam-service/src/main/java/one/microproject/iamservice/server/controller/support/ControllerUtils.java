@@ -44,13 +44,15 @@ public final class ControllerUtils {
         return baseUrl + "/services/oauth2";
     }
 
-    public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId) throws URISyntaxException, MalformedURLException {
+    public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId, BaseUrlMapper baseUrlMapper) throws URISyntaxException, MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath;
+        baseUrl = baseUrlMapper.mapIfEquals(baseUrl);
         if (projectId != null) {
-            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2/" + organizationId + "/" + projectId);
+            return new URI(baseUrl + "/services/oauth2/" + organizationId + "/" + projectId);
         } else {
-            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2/" + organizationId);
+            return new URI(baseUrl + "/services/oauth2/" + organizationId);
         }
     }
 

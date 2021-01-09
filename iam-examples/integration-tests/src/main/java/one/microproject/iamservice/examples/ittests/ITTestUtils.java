@@ -78,4 +78,8 @@ public final  class ITTestUtils {
         return getDefaultIamServerURL();
     }
 
+    public static String getIssuerURI(String baseURL, OrganizationId organizationId, ProjectId projectId) {
+        return baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId();
+    }
+
 }

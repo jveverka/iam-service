@@ -51,6 +51,7 @@ import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobal
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminPassword;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminTokens;
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMServiceURL;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIssuerURI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -271,6 +272,10 @@ public class IntegrationTestsITUserManual {
     public void validateReadUserTokens() {
         Optional<StandardTokenClaims> readUserClaims = iamClient.validate(new JWToken(readUserTokens.getAccessToken()));
         assertTrue(readUserClaims.isPresent());
+        assertEquals(readerUserId.getId(), readUserClaims.get().getSubject());
+        String issuerUri = getIssuerURI(iamServerBaseURL.toString(), organizationId, projectId);
+        LOG.info("ISSUER {} {}", issuerUri, readUserClaims.get().getIssuer());
+        assertEquals(issuerUri, readUserClaims.get().getIssuer());
     }
 
     @Test
@@ -278,6 +283,10 @@ public class IntegrationTestsITUserManual {
     public void validateWriteUserTokens() {
         Optional<StandardTokenClaims> writeUserClaims = iamClient.validate(new JWToken(writeUserTokens.getAccessToken()));
         assertTrue(writeUserClaims.isPresent());
+        assertEquals(writerUserId.getId(), writeUserClaims.get().getSubject());
+        String issuerUri = getIssuerURI(iamServerBaseURL.toString(), organizationId, projectId);
+        LOG.info("ISSUER {} {}", issuerUri, writeUserClaims.get().getIssuer());
+        assertEquals(issuerUri, writeUserClaims.get().getIssuer());
     }
 
     /*

@@ -287,18 +287,21 @@ public class IntegrationTestsITUserManual {
     @Order(80)
     public void deleteProjectClient() throws AuthenticationException {
         iamServiceProjectClient.deleteClient(projectClientId);
+        assertThrows(IOException.class, () -> iamServiceProjectClient.getClientInfo(projectClientId));
     }
 
     @Test
     @Order(81)
     public void deleteReadUser() throws AuthenticationException {
         iamServiceUserManagerClient.deleteUser(readerUserId);
+        assertThrows(IOException.class, () -> iamServiceProjectClient.getUserInfo(readerUserId));
     }
 
     @Test
     @Order(82)
     public void deleteWriteUser() throws AuthenticationException {
         iamServiceUserManagerClient.deleteUser(writerUserId);
+        assertThrows(IOException.class, () -> iamServiceProjectClient.getUserInfo(writerUserId));
     }
 
     @Test

@@ -11,8 +11,10 @@ import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.PermissionId;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.model.RoleId;
+import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.ProjectInfo;
+import one.microproject.iamservice.core.services.dto.UserInfo;
 import one.microproject.iamservice.serviceclient.IAMServiceProjectManagerClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -159,6 +161,20 @@ public class IAMServiceProjectManagerClientImpl implements IAMServiceProjectMana
             return mapper.readValue(response.body().string(), ClientInfo.class);
         }
         throw new IOException();
+    }
+
+    @Override
+    public UserInfo getUserInfo(UserId userId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), UserInfo.class);
+        } else {
+            throw new IOException();
+        }
     }
 
     @Override

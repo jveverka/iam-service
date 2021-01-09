@@ -15,7 +15,7 @@ else
   exit 1
 fi
 
-VERSION=2.4.2-RELEASE
+VERSION=2.4.3-RELEASE
 RELEASE_DIR=build/iam-service-${VERSION}
 
 cd ${HOME_DIR}

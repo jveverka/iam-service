@@ -56,7 +56,7 @@ public final class ModelUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelUtils.class);
 
-    public static final String MODEL_VERSION = "2.4.2-RELEASE";
+    public static final String MODEL_VERSION = "2.4.3-RELEASE";
     public static final Model DEFAULT_MODEL = new ModelImpl(ModelId.from("default-model-001"), "Default Model");
     public static final String IAM_ADMINS_NAME = "iam-admins";
     public static final OrganizationId IAM_ADMINS_ORG = OrganizationId.from(IAM_ADMINS_NAME);

@@ -32,3 +32,6 @@ authentication and authorization OAuth2 server.
 ### References
 * [Terms and Vocabulary](Terms-and-Vocabulary.md)
 * [Security Model](IAM-Service-Security-Model.md)
+* [Data Model](../IAM-data-model.md)
+* [Architecture Reference](../IAM-architecture-details.md)
+* [Default JWT Mapping](../JWT-mapping-details.md)

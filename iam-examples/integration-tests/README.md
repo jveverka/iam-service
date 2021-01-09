@@ -12,3 +12,14 @@ gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integrati
 ```
 gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-cleanup #-Diamservice.url=http://my-iam-service.com
 ```
+
+### 3. IAM-Service certification test suite
+This test suite is designed to test deployed *iam-service* instance.
+Input parameters are very important for this test suite. 
+Default values are used in example below.
+```
+gradle :integration-tests:clean :integration-tests:test -Dtest.profile=integration-user-manual \
+  -Diamservice.url=http://localhost:8080 \
+  -Dadmin.pwd=secret \
+  -Dclient.secret=top-secret
+```

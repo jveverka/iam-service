@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'one.microproject.iamservice'
-version = '2.4.2-RELEASE'
+version = '2.4.3-RELEASE'
 sourceCompatibility = '11'
 
 repositories {
@@ -19,6 +19,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
     implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

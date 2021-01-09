@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,6 +34,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     private static final Logger LOG = LoggerFactory.getLogger(IAMServiceHttpProxyImpl.class);
 
     private static final long INITIAL_DELAY = 1;
+    private static final String OAUTH2_URI = "/services/oauth2/";
     public static final String APPLICATION_JSON = "application/json";
     public static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
@@ -77,7 +77,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         IntrospectRequest introspectRequest = new IntrospectRequest(token, typeHint);
         String postBody = mapper.writeValueAsString(introspectRequest);
         Request request = new Request.Builder()
-                .url(baseUrl.toString() + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/introspect")
+                .url(baseUrl.toString() + OAUTH2_URI + organizationId.getId() + "/" + projectId.getId() + "/introspect")
                 .post(RequestBody.create(postBody, MediaType.parse(APPLICATION_JSON)))
                 .build();
         Response response = client.newCall(request).execute();
@@ -88,7 +88,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     public ProviderConfigurationResponse getConfiguration() {
         if (providerConfigurationResponse == null) {
             Request request = new Request.Builder()
-                    .url(baseUrl.toString() + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
+                    .url(baseUrl.toString() + OAUTH2_URI + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
@@ -104,9 +104,9 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
     }
 
     @Override
-    public void updateKeyCache() {
+    public boolean updateKeyCache() {
         IAMServiceHttpFetchTask task = new IAMServiceHttpFetchTask(baseUrl, organizationId, projectId, client, mapper, this);
-        task.run();
+        return task.updateCache();
     }
 
     @Override
@@ -122,7 +122,7 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
         }
         Request request = new Request.Builder()
                 .header("Content-Type", APPLICATION_FORM_URLENCODED)
-                .url(baseUrl + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                .url(baseUrl + OAUTH2_URI + organizationId.getId() + "/" + projectId.getId() + "/token" +
                         "?grant_type=authorization_code" +
                         "&code=" + code.getCodeValue() + "&state=" + state)
                 .post(builder.build())

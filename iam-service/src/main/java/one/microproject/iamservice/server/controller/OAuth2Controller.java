@@ -36,7 +36,7 @@ import one.microproject.iamservice.core.services.dto.RevokeTokenRequest;
 import one.microproject.iamservice.core.services.dto.Scope;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.services.dto.UserInfoResponse;
-import one.microproject.iamservice.server.config.BaseUrlMapperConfig;
+import one.microproject.iamservice.server.services.BaseUrlMapper;
 import one.microproject.iamservice.server.controller.support.ControllerUtils;
 import one.microproject.iamservice.server.controller.support.OAuth2TokenException;
 import org.slf4j.Logger;
@@ -87,18 +87,18 @@ public class OAuth2Controller {
     private final AuthenticationService authenticationService;
     private final ProviderConfigurationService providerConfigurationService;
     private final ResourceServerService resourceServerService;
-    private final BaseUrlMapperConfig baseUrlMapperConfig;
+    private final BaseUrlMapper baseUrlMapper;
 
     public OAuth2Controller(@Autowired ServletContext servletContext,
                             @Autowired AuthenticationService authenticationService,
                             @Autowired ProviderConfigurationService providerConfigurationService,
                             @Autowired ResourceServerService resourceServerService,
-                            @Autowired BaseUrlMapperConfig baseUrlMapperConfig) {
+                            @Autowired BaseUrlMapper baseUrlMapper) {
         this.servletContext = servletContext;
         this.authenticationService = authenticationService;
         this.providerConfigurationService = providerConfigurationService;
         this.resourceServerService = resourceServerService;
-        this.baseUrlMapperConfig = baseUrlMapperConfig;
+        this.baseUrlMapper = baseUrlMapper;
     }
 
     @Operation(description =
@@ -152,13 +152,13 @@ public class OAuth2Controller {
             LOG.info("postGetTokens: query={}", request.getRequestURL());
             LOG.info("postGetTokens: parameters=[{}]", ControllerUtils.getParameters(request.getParameterNames()));
             LOG.info("postGetTokens: nonce={} audience={}", nonce, audience);
-            URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+            URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId, baseUrlMapper);
             String codeVerifier = getCodeVerifier(bodyValueMap);
             LOG.info("postGetTokens: IssuerUri={} tokenVerifier={}", issuerUri, codeVerifier);
             GrantType grantTypeEnum = GrantType.getGrantType(grantType);
             OrganizationId orgId = OrganizationId.from(organizationId);
             ProjectId projId = ProjectId.from(projectId);
-            IdTokenRequest idTokenRequest = new IdTokenRequest(request.getRequestURL().toString(), nonce, codeVerifier);
+            IdTokenRequest idTokenRequest = new IdTokenRequest(issuerUri.toString(), nonce, codeVerifier);
             if (GrantType.AUTHORIZATION_CODE.equals(grantTypeEnum)) {
                 LOG.info("postGetTokens: grantType={} code={}", grantType, code);
                 Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
@@ -282,7 +282,7 @@ public class OAuth2Controller {
                                                                        HttpServletRequest request) throws MalformedURLException, URISyntaxException {
         LOG.info("authorizeProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(authorizationCodeGrantRequest.getScopes()));
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId, baseUrlMapper);
         Optional<AuthorizationCode> authorizationCode = authenticationService.login(issuerUri, OrganizationId.from(organizationId), ProjectId.from(projectId),
                 UserId.from(authorizationCodeGrantRequest.getUsername()), ClientId.from(authorizationCodeGrantRequest.getClientId()),
                 authorizationCodeGrantRequest.getPassword(), scopes, authorizationCodeGrantRequest.getState(),
@@ -320,7 +320,7 @@ public class OAuth2Controller {
         LOG.info("default redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         LOG.info("default redirect: codeVerifier={}", codeVerifier);
         RestTemplate restTemplate = new RestTemplate();
-        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId);
+        URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId, baseUrlMapper);
         String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
         //TODO: replace with OKHTTP3
         ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
@@ -339,7 +339,7 @@ public class OAuth2Controller {
                                                                           @PathVariable("project-id") String projectId,
                                                                           HttpServletRequest request) throws MalformedURLException {
         LOG.info("getConfiguration: {}", request.getRequestURL());
-        String baseUrl = getBaseUrl(servletContext, request, baseUrlMapperConfig);
+        String baseUrl = getBaseUrl(servletContext, request, baseUrlMapper);
         ProviderConfigurationRequest providerConfigurationRequest = new ProviderConfigurationRequest(baseUrl, OrganizationId.from(organizationId), ProjectId.from(projectId));
         ProviderConfigurationResponse configuration = providerConfigurationService.getConfiguration(providerConfigurationRequest);
         return ResponseEntity.ok(configuration);

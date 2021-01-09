@@ -50,3 +50,6 @@ iam-service:
 logging:
   level:
     root: INFO
+    one:
+      microproject:
+        iamservice: DEBUG

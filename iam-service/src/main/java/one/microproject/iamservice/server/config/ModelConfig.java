@@ -31,6 +31,7 @@ import java.security.Security;
 public class ModelConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelConfig.class);
+    private static final  Boolean FLUSH_ON_CHANGE = Boolean.TRUE;
 
     private String adminOrganization = ModelUtils.IAM_ADMINS_ORG.getId();
     private String adminProject = ModelUtils.IAM_ADMINS_PROJECT.getId();
@@ -70,7 +71,7 @@ public class ModelConfig {
                 LOG.info("#CONFIG: populating ModelCache from file: {}", path);
                 DataLoadService dataLoadService = new FileSystemDataLoadServiceImpl(Path.of(path));
                 ModelWrapper modelWrapper = dataLoadService.populateCache();
-                modelWrapper.onInit(new FileSystemPersistenceServiceImpl(Path.of(path)), false);
+                modelWrapper.onInit(new FileSystemPersistenceServiceImpl(Path.of(path)), FLUSH_ON_CHANGE);
                 modelCache = new ModelCacheImpl(modelWrapper);
                 LOG.info("#CONFIG: ModelCache loaded from file OK");
                 return modelCache;
@@ -79,7 +80,7 @@ public class ModelConfig {
             }
             try {
                 LOG.info("#CONFIG: creating default model");
-                ModelWrapper modelWrapper = ModelUtils.createModelWrapper("default-model", new FileSystemPersistenceServiceImpl(Path.of(path)), false);
+                ModelWrapper modelWrapper = ModelUtils.createModelWrapper("default-model", new FileSystemPersistenceServiceImpl(Path.of(path)), FLUSH_ON_CHANGE);
                 modelCache = ModelUtils.createDefaultModelCache(
                         OrganizationId.from(adminOrganization), ProjectId.from(adminProject), defaultAdminPassword, defaultAdminClientSecret, defaultAdminEmail, modelWrapper, enableClientCredentialsFlow);
                 modelCache.flush();

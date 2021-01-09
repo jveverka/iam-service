@@ -3,7 +3,7 @@ package one.microproject.iamservice.server.controller.support;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
-import one.microproject.iamservice.server.config.BaseUrlMapperConfig;
+import one.microproject.iamservice.server.services.BaseUrlMapper;
 import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletContext;
@@ -36,23 +36,23 @@ public final class ControllerUtils {
         }
     }
 
-    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request, BaseUrlMapperConfig baseUrlMapperConfig) throws MalformedURLException {
+    public static String getBaseUrl(ServletContext servletContext, HttpServletRequest request, BaseUrlMapper baseUrlMapper) throws MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
         String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath;
-        if (baseUrl.equals(baseUrlMapperConfig.getBaseUrl())) {
-            baseUrl = baseUrlMapperConfig.getMappedUrl();
-        }
+        baseUrl = baseUrlMapper.mapIfEquals(baseUrl);
         return baseUrl + "/services/oauth2";
     }
 
-    public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId) throws URISyntaxException, MalformedURLException {
+    public static URI getIssuerUri(ServletContext servletContext, HttpServletRequest request, String organizationId, String projectId, BaseUrlMapper baseUrlMapper) throws URISyntaxException, MalformedURLException {
         String contextPath = getContextPath(servletContext);
         URL url = new URL(request.getRequestURL().toString());
+        String baseUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath;
+        baseUrl = baseUrlMapper.mapIfEquals(baseUrl);
         if (projectId != null) {
-            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2/" + organizationId + "/" + projectId);
+            return new URI(baseUrl + "/services/oauth2/" + organizationId + "/" + projectId);
         } else {
-            return new URI(url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + contextPath + "/services/oauth2/" + organizationId);
+            return new URI(baseUrl + "/services/oauth2/" + organizationId);
         }
     }
 

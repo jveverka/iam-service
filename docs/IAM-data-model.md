@@ -52,12 +52,8 @@
         |   +--"production.project.list"
         |   
         +--"ProjectManager"   
-        |   |
-        |   +--"production.project.create"   
-        |   +--"production.project.report"   
-        |   +--"production.project.close"   
-        |
-        +--"Worker"   
             |
+            +--"production.project.create"   
             +--"production.project.report"   
+            +--"production.project.close"   
 ```

@@ -102,7 +102,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(102)
-    public void createNewOrganizationWithAdminUser() throws AuthenticationException, InterruptedException {
+    public void createNewOrganizationWithAdminUser() throws AuthenticationException, InterruptedException, IOException {
         Set<String> projectAudience = new HashSet<>();
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
                 projectId.getId(), "My Project 001",
@@ -112,6 +112,11 @@ public class ProjectManagementTests {
         SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(jwt_admin_token, setupOrganizationRequest);
         assertNotNull(setupOrganizationResponse);
         assertEquals(organizationId.getId(), setupOrganizationResponse.getOrganizationId());
+
+        Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();
+        Optional<OrganizationInfo> organizationOptional = organizations.stream().filter(o -> o.getId().equals(organizationId.getId())).findFirst();
+        assertTrue(organizationOptional.isPresent());
+
         iamClient = IAMClientBuilder.builder()
                 .setOrganizationId(organizationId.getId())
                 .setProjectId(projectId.getId())

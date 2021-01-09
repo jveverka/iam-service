@@ -38,16 +38,17 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
             String authorization = httpServletRequest.getHeader(AUTHORIZATION);
             if (authorization != null) {
                 try {
-                    LOG.info("doAdminFilter: {} {} {}", requestUri, requestUrl, authorization);
+                    LOG.debug("doAdminFilter: {} {} {}", requestUri, requestUrl, authorization);
                     StandardTokenClaims standardTokenClaims = iamSecurityValidator.verifyGlobalAdminAccess(authorization);
                     SecurityContextHolder.getContext().setAuthentication(new AuthenticationImpl(standardTokenClaims));
+                    LOG.debug("doAdminFilter: OK");
                     filterChain.doFilter(httpServletRequest, httpServletResponse);
                 } catch (IAMSecurityException iamSecurityException) {
-                    LOG.info("Unauthorized: invalid Authorization token !");
+                    LOG.debug("Unauthorized: invalid Authorization token !");
                     httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             } else {
-                LOG.info("Unauthorized: missing Authorization token !");
+                LOG.debug("Unauthorized: missing Authorization token !");
                 httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
             return;
@@ -55,16 +56,17 @@ public class IAMSecurityFilter extends OncePerRequestFilter {
             String authorization = httpServletRequest.getHeader(AUTHORIZATION);
             if (authorization != null) {
                 try {
-                    LOG.info("doFilter: {} {} {}", requestUri, requestUrl, authorization);
+                    LOG.debug("doFilter: {} {} {}", requestUri, requestUrl, authorization);
                     StandardTokenClaims standardTokenClaims = iamSecurityValidator.verifyToken(authorization);
                     SecurityContextHolder.getContext().setAuthentication(new AuthenticationImpl(standardTokenClaims));
+                    LOG.debug("doAdminFilter: OK");
                     filterChain.doFilter(httpServletRequest, httpServletResponse);
                 } catch (IAMSecurityException iamSecurityException) {
-                    LOG.info("Unauthorized: invalid Authorization token !");
+                    LOG.debug("Unauthorized: invalid Authorization token !");
                     httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             } else {
-                LOG.info("Unauthorized: missing Authorization token !");
+                LOG.debug("Unauthorized: missing Authorization token !");
                 httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
             return;

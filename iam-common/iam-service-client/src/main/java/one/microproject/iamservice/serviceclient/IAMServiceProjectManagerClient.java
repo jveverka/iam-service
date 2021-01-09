@@ -7,8 +7,10 @@ import one.microproject.iamservice.core.dto.RoleInfo;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.PermissionId;
 import one.microproject.iamservice.core.model.RoleId;
+import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.ProjectInfo;
+import one.microproject.iamservice.core.services.dto.UserInfo;
 import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
 import one.microproject.iamservice.serviceclient.impl.ProjectInfoProvider;
 
@@ -31,6 +33,8 @@ public interface IAMServiceProjectManagerClient extends ProjectInfoProvider {
     ProjectInfo getInfo() throws IOException;
 
     ClientInfo getClientInfo(ClientId clientId) throws IOException;
+
+    UserInfo getUserInfo(UserId userId) throws IOException;
 
     void createClient(CreateClient createClient) throws AuthenticationException;
 

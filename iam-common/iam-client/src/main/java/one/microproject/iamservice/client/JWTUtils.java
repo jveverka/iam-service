@@ -119,6 +119,7 @@ public final class JWTUtils {
     }
 
     private static StandardTokenClaims getStandardTokenClaims(SigningKeyResolver signingKeyResolver, JWToken token) throws URISyntaxException {
+        LOG.debug("getStandardTokenClaims");
         Jwt jwt = Jwts.parserBuilder()
                 .setSigningKeyResolver(signingKeyResolver)
                 .build()
@@ -135,6 +136,7 @@ public final class JWTUtils {
         OrganizationId issOrganizationId = OrganizationId.from(split[organizationIndex]);
         ProjectId issProjectId = ProjectId.from(split[projectIndex]);
         String tokenType = (String) claims.get("typ");
+        LOG.debug("getStandardTokenClaims: OK");
         return new StandardTokenClaims(kid, iss, sub, aud, scopes, issOrganizationId, issProjectId, TokenType.getTokenType(tokenType));
     }
 

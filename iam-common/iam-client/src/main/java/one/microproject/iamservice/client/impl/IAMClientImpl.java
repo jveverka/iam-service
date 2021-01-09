@@ -73,8 +73,8 @@ public class IAMClientImpl implements IAMClient {
     }
 
     @Override
-    public void updateKeyCache() {
-        iamServiceProxy.updateKeyCache();
+    public boolean updateKeyCache() {
+        return iamServiceProxy.updateKeyCache();
     }
 
     @Override

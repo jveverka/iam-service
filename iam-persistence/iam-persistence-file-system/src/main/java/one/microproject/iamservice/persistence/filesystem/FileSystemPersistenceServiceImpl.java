@@ -27,7 +27,7 @@ public class FileSystemPersistenceServiceImpl implements PersistenceService {
     public void onModelChange(ModelWrapper modelWrapper) throws IOException {
         long timestamp = System.nanoTime();
         mapper.writeValue(dataFile.toFile(), modelWrapper);
-        LOG.info("onModelChange: {}, saved in {}ms", modelWrapper.getModel().getId(), ((System.nanoTime() - timestamp)/1_000_000F));
+        LOG.debug("onModelChange: {}, saved in {}ms", modelWrapper.getModel().getId(), ((System.nanoTime() - timestamp)/1_000_000F));
     }
 
 }

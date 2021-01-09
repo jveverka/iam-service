@@ -83,12 +83,12 @@ public class AdminServicesController {
     @Operation(summary = "Create new project within an organization, with default project admin user.")
     @PostMapping("/organization/setup")
     public ResponseEntity<SetupOrganizationResponse> setUpOrganization(@RequestBody SetupOrganizationRequest request) throws PKIException {
+        LOG.info("Organization setup {}/{}", request.getOrganizationId(), request.getProjectId());
         OrganizationId organizationId = OrganizationId.from(request.getOrganizationId());
         ProjectId projectId = ProjectId.from(request.getProjectId());
         ClientId clientId = ClientId.from(request.getAdminClientId());
         UserId userId = UserId.from(request.getAdminUserId());
         RoleId adminRoleId = createProjectAdminRoleId(organizationId, projectId);
-        LOG.info("Organization setup {}/{}", organizationId.getId(), projectId.getId());
         //Data Check Actions
         if (organizationManagerService.get(organizationId).isEmpty()) {
             CreateOrganizationRequest createOrganizationRequest = new CreateOrganizationRequest(organizationId, request.getOrganizationName());

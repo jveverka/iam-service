@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMAdminTokens;
+import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminTokens;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -167,7 +167,7 @@ public class MethodSecurityTestsIT {
     @Test
     @Order(11)
     public void testSecureAccessInvalidIAMAdminTokens() throws IOException {
-        TokenResponseWrapper tokenResponseWrapper = getIAMAdminTokens(iamServiceManagerClient);
+        TokenResponseWrapper tokenResponseWrapper = getGlobalAdminTokens(iamServiceManagerClient);
         TokenResponse iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + iamAdminTokens.getAccessToken()));

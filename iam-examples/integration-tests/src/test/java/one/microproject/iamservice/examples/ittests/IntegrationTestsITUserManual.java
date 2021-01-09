@@ -6,6 +6,7 @@ import one.microproject.iamservice.core.dto.CreateClient;
 import one.microproject.iamservice.core.dto.CreateRole;
 import one.microproject.iamservice.core.dto.CreateUser;
 import one.microproject.iamservice.core.dto.PermissionInfo;
+import one.microproject.iamservice.core.dto.RoleInfo;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
@@ -172,6 +173,15 @@ public class IntegrationTestsITUserManual {
                 new PermissionInfo(projectId.getId(), "all", "all")
         ));
         iamServiceProjectClient.createRole(createAdminRole);
+
+        Collection<RoleInfo> roles = iamServiceProjectClient.getRoles();
+        Optional<RoleInfo> readerRoleInfo = roles.stream().filter(r->r.getId().equals("reader-role")).findFirst();
+        assertTrue(readerRoleInfo.isPresent());
+        assertEquals(1L, readerRoleInfo.get().getPermissions().size());
+
+        Optional<RoleInfo> writerRoleInfo = roles.stream().filter(r->r.getId().equals("writer-role")).findFirst();
+        assertTrue(writerRoleInfo.isPresent());
+        assertEquals(1L, writerRoleInfo.get().getPermissions().size());
     }
 
     @Test

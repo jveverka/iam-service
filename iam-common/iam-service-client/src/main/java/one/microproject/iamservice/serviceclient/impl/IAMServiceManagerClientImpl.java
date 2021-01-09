@@ -137,6 +137,20 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     }
 
     @Override
+    public ProjectInfo getProject(OrganizationId organizationId, ProjectId projectId) throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId())
+                .get()
+                .build();
+        Response response = client.newCall(request).execute();
+        if (response.code() == 200) {
+            return mapper.readValue(response.body().string(), ProjectInfo.class);
+        } else {
+            throw new IOException();
+        }
+    }
+
+    @Override
     public ClientInfo getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws IOException {
         Request request = new Request.Builder()
                 .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId())

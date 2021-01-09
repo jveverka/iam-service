@@ -23,6 +23,8 @@ public interface IAMServiceManagerClient {
 
     Collection<OrganizationInfo> getOrganizations() throws IOException;
 
+    ProjectInfo getProject(OrganizationId organizationId, ProjectId projectId) throws IOException;
+
     ClientInfo getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws IOException;
 
     UserInfo getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) throws IOException;

@@ -21,7 +21,7 @@ import static one.microproject.iamservice.core.utils.ModelUtils.createDefaultMod
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class FileSystemPersistenceTests {
+class FileSystemPersistenceTests {
 
     @TempDir
     static Path sharedTempDir;
@@ -34,7 +34,7 @@ public class FileSystemPersistenceTests {
     }
 
     @Test
-    public void testPersistenceSerializationAndLoading() throws Exception {
+    void testPersistenceSerializationAndLoading() throws Exception {
         Path tempDirFile = Path.of(sharedTempDir.toString(), "model-data.json");
         FileSystemPersistenceServiceImpl persistenceService = new FileSystemPersistenceServiceImpl(tempDirFile);
         ModelWrapper modelWrapper = new ModelWrapperImpl(ModelUtils.DEFAULT_MODEL, persistenceService, false);

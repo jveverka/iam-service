@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MongoPersistenceTests {
+class MongoPersistenceTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoPersistenceTests.class);
 
@@ -90,7 +90,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(1)
-    public void testInitialCache() throws Exception {
+    void testInitialCache() throws Exception {
         modelCache.flush();
         boolean initialized = modelWrapper.isInitialized();
         assertFalse(initialized);
@@ -98,7 +98,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(10)
-    public void testModelInfoReadWrite() {
+    void testModelInfoReadWrite() {
         Model model = ModelUtils.DEFAULT_MODEL;
         modelCache.setModel(model);
         Model modelFromDb = modelCache.getModel();
@@ -111,7 +111,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(11)
-    public void testCreateOrganizations() throws PKIException {
+    void testCreateOrganizations() throws PKIException {
         Organization organization = new OrganizationImpl(organizationId01, "");
         Optional<OrganizationId> idOptional = modelCache.add(organization);
         assertTrue(idOptional.isPresent());
@@ -139,7 +139,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(12)
-    public void testCreateProjects() throws PKIException {
+    void testCreateProjects() throws PKIException {
         Optional<Project> projectOptional = modelCache.add(organizationId01, new CreateProjectRequest(projectId01, "", Set.of()));
         assertTrue(projectOptional.isPresent());
 
@@ -153,7 +153,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(13)
-    public void testCreateRolesOnProject() throws PKIException {
+    void testCreateRolesOnProject() throws PKIException {
         Optional<RoleId> roleIdOptional = modelCache.add(organizationId01, projectId01, new RoleImpl(roleId, "", Collections.EMPTY_LIST));
         assertTrue(roleIdOptional.isPresent());
 
@@ -163,7 +163,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(14)
-    public void testCreateClientsOnProject() throws PKIException {
+    void testCreateClientsOnProject() throws PKIException {
         Optional<Client> clientOptional = modelCache.add(organizationId01, projectId01,
                 new CreateClientRequest(clientId, "", 3600L, 3600L, "secret",
                         new ClientProperties("", true, true, true, new HashMap<>())));
@@ -184,7 +184,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(15)
-    public void testCreateUsersOnProject() throws PKIException {
+    void testCreateUsersOnProject() throws PKIException {
         Optional<User> userOptional = modelCache.add(organizationId01, projectId01, new CreateUserRequest(userId, "", 3600L, 3600L, "", UserProperties.getDefault()));
         assertTrue(userOptional.isPresent());
 
@@ -205,7 +205,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(35)
-    public void testRemoveUsersFromProject() throws PKIException {
+    void testRemoveUsersFromProject() throws PKIException {
         boolean removed = modelCache.remove(organizationId01, projectId01, userId);
         assertTrue(removed);
 
@@ -215,7 +215,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(36)
-    public void testRemoveClientsFromProject() throws PKIException {
+    void testRemoveClientsFromProject() throws PKIException {
         boolean removed = modelCache.remove(organizationId01, projectId01, clientId);
         assertTrue(removed);
 
@@ -225,7 +225,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(37)
-    public void testRemoveRolesFromProject() throws PKIException {
+    void testRemoveRolesFromProject() throws PKIException {
         boolean removed = modelCache.remove(organizationId01, projectId01, roleId);
         assertTrue(removed);
 
@@ -235,7 +235,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(38)
-    public void testRemoveProjects() throws PKIException {
+    void testRemoveProjects() throws PKIException {
         boolean removed = modelCache.remove(organizationId01, projectId01);
         assertTrue(removed);
 
@@ -245,7 +245,7 @@ public class MongoPersistenceTests {
 
     @Test
     @Order(39)
-    public void testRemoveOrganizations() throws PKIException {
+    void testRemoveOrganizations() throws PKIException {
         boolean removed = modelCache.remove(organizationId01);
         assertTrue(removed);
 

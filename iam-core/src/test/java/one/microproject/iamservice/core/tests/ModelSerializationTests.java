@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ModelSerializationTests {
+class ModelSerializationTests {
 
     private static ObjectMapper mapper;
     private static KeyPairSerialized keyPairSerialized;
@@ -68,7 +68,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeModel() throws JsonProcessingException {
+    void serializeAndDeserializeModel() throws JsonProcessingException {
         Model model = new ModelImpl(ModelId.from("model-001"), "model1");
         assertEquals(MODEL_VERSION, model.getVersion());
         String serialized = mapper.writeValueAsString(model);
@@ -80,7 +80,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeOrganization() throws PKIException, JsonProcessingException {
+    void serializeAndDeserializeOrganization() throws PKIException, JsonProcessingException {
         Map<String, String> properties = new HashMap<>();
         properties.put("key", "value");
         Organization organization = new OrganizationImpl(OrganizationId.from("org-001"), "name", Collections.emptyList(), keyPairSerialized, properties);
@@ -97,7 +97,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeClient() throws JsonProcessingException {
+    void serializeAndDeserializeClient() throws JsonProcessingException {
         ClientProperties properties = ClientProperties.from("http://localhost:8080");
         ClientCredentials credentials = new ClientCredentials(ClientId.from("client-001"), "secret");
         Client client = new ClientImpl(credentials, "name", 10L, 10L, Collections.emptyList(), properties);
@@ -113,7 +113,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializePermission() throws JsonProcessingException {
+    void serializeAndDeserializePermission() throws JsonProcessingException {
         Permission permission = new Permission("service", "resource", "action");
         String serialized = mapper.writeValueAsString(permission);
         Permission permissionDeserialized = mapper.readValue(serialized, Permission.class);
@@ -122,7 +122,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeRole() throws JsonProcessingException {
+    void serializeAndDeserializeRole() throws JsonProcessingException {
         Role role = new RoleImpl(RoleId.from("role-001"), "role1", Collections.emptyList());
         String serialized = mapper.writeValueAsString(role);
         Role roleDeserialized = mapper.readValue(serialized, Role.class);
@@ -131,7 +131,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeUser() throws PKIException, JsonProcessingException {
+    void serializeAndDeserializeUser() throws PKIException, JsonProcessingException {
         Credentials<UPAuthenticationRequest> credentials = new UPCredentials(UserId.from("user"), "secret");
         List<Credentials> credentialsList = new ArrayList<>();
         credentialsList.add(credentials);
@@ -150,7 +150,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeProject() throws PKIException, JsonProcessingException {
+    void serializeAndDeserializeProject() throws PKIException, JsonProcessingException {
         Map<String, String> properties = new HashMap<>();
         Project project = new ProjectImpl(ProjectId.from("project-001"), "name", OrganizationId.from("organization-001"), keyPairSerialized,
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), properties);
@@ -165,7 +165,7 @@ public class ModelSerializationTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void serializeAndDeserializeModelKeys() throws JsonProcessingException {
+    void serializeAndDeserializeModelKeys() throws JsonProcessingException {
         ModelKey<User> userKey = new ModelKey(User.class, OrganizationId.from("o1"), ProjectId.from("p1"), UserId.from("u1"));
         String serialized = mapper.writeValueAsString(userKey);
         ModelKey<User> userKeyDeserialized = mapper.readValue(serialized, ModelKey.class);
@@ -180,7 +180,7 @@ public class ModelSerializationTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void serializeAndDeserializeModelKeyOrganization() throws JsonProcessingException {
+    void serializeAndDeserializeModelKeyOrganization() throws JsonProcessingException {
         ModelKey<Organization> organizationKey = new ModelKey(Organization.class, OrganizationId.from("o1"));
         String serialized = mapper.writeValueAsString(organizationKey);
         ModelKey<User> userKeyDeserialized = mapper.readValue(serialized, ModelKey.class);
@@ -193,7 +193,7 @@ public class ModelSerializationTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void serializeAndDeserializeOrganizationWrapper() throws JsonProcessingException, PKIException {
+    void serializeAndDeserializeOrganizationWrapper() throws JsonProcessingException, PKIException {
         ModelKey<Organization> organizationKey = new ModelKey(Organization.class, OrganizationId.from("o1"));
         Organization organization = new OrganizationImpl(OrganizationId.from("o1"), "name");
         OrganizationWrapper wrapper = new OrganizationWrapper(organizationKey, organization);
@@ -214,7 +214,7 @@ public class ModelSerializationTests {
     }
 
     @Test
-    public void serializeAndDeserializeUPCredentials() throws PKIException, JsonProcessingException {
+    void serializeAndDeserializeUPCredentials() throws PKIException, JsonProcessingException {
         UPAuthenticationRequest validRequest = new UPAuthenticationRequest(UserId.from("user-001"), "secret", null, null);
         UPAuthenticationRequest inValidRequest = new UPAuthenticationRequest(UserId.from("user-001"), "safd", null, null);
         UPCredentials upCredentials = new UPCredentials(UserId.from("user-001"),  "secret");

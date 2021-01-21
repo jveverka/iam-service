@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AuthorizationCodeCacheTests {
+class AuthorizationCodeCacheTests {
 
     private static Long maxDuration = 3L;
     private static TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -50,14 +50,14 @@ public class AuthorizationCodeCacheTests {
 
     @Test
     @Order(1)
-    public void testCacheAfterInit() {
+    void testCacheAfterInit() {
         int purged = authorizationCodeCache.purgeCodes();
         assertEquals(0, purged);
     }
 
     @Test
     @Order(2)
-    public void testIssueCode() {
+    void testIssueCode() {
         Code code = Code.from(UUID.randomUUID().toString());
         AuthorizationCodeContext authorizationCodeContext =
                 new AuthorizationCodeContext(code, issuerUri, OrganizationId.from("org01"), ProjectId.from("proj01"),

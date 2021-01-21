@@ -19,7 +19,7 @@ import static one.microproject.iamservice.examples.ittests.ITTestUtils.getIAMSer
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class IntegrationTestsITCleanup {
+class IntegrationTestsITCleanup {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationTestsITCleanup.class);
 
@@ -38,7 +38,7 @@ public class IntegrationTestsITCleanup {
 
     @Test
     @Order(0)
-    public void checkIamServerIsAliveBeforeCleanup() throws IOException {
+    void checkIamServerIsAliveBeforeCleanup() throws IOException {
         assertTrue(iamServiceManagerClient.isServerAlive());
     }
 

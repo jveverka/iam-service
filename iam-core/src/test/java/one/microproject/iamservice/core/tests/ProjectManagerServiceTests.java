@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ProjectManagerServiceTests {
+class ProjectManagerServiceTests {
 
     private static ModelCache modelCache;
     private static OrganizationManagerService organizationManagerService;
@@ -53,7 +53,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(1)
-    public void checkEmptyModelTest() {
+    void checkEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(0, all.size());
         Optional<Project> projectOptional = projectManagerService.get(oid001, pId001);
@@ -64,7 +64,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(2)
-    public void createOrganizationsTest() throws PKIException {
+    void createOrganizationsTest() throws PKIException {
         Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-001", "org-001-name"));
         assertTrue(result.isPresent());
         oid001 = result.get();
@@ -77,7 +77,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(3)
-    public void createFirstProjectTest() throws PKIException {
+    void createFirstProjectTest() throws PKIException {
         Optional<Project> result = projectManagerService.create(oid001, CreateProjectRequest.from(pId001, "p001-name"));
         assertTrue(result.isPresent());
         Collection<Project> all = projectManagerService.getAll(oid001);
@@ -88,7 +88,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(4)
-    public void createSecondProjectTest() throws PKIException {
+    void createSecondProjectTest() throws PKIException {
         Optional<Project> result = projectManagerService.create(oid002, CreateProjectRequest.from(pId001, "p001-name"));
         assertTrue(result.isPresent());
         Collection<Project> all = projectManagerService.getAll(oid001);
@@ -99,7 +99,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(5)
-    public void addAndRemoveRolesTest() {
+    void addAndRemoveRolesTest() {
         CreateRoleRequest request1 = new CreateRoleRequest(RoleId.from("role-001"), "role-001");
         CreateRoleRequest request2 = new CreateRoleRequest(RoleId.from("role-002"), "role-002");
         Collection<Role> roles = projectManagerService.getRoles(oid001, pId001);
@@ -120,7 +120,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(6)
-    public void setAudienceTest() {
+    void setAudienceTest() {
         Set<String> audience1 = Set.of("a1", "a2");
         Set<String> audience2 = Set.of("a5", "a6");
         projectManagerService.setAudience(oid001, pId001, audience1);
@@ -135,7 +135,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(7)
-    public void removeFirstProject() {
+    void removeFirstProject() {
         boolean result = projectManagerService.remove(oid001, pId001);
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid001);
@@ -144,7 +144,7 @@ public class ProjectManagerServiceTests {
 
     @Test
     @Order(8)
-    public void removeSecondProject() {
+    void removeSecondProject() {
         boolean result = projectManagerService.remove(oid002, pId001);
         assertTrue(result);
         Collection<Project> all = projectManagerService.getAll(oid002);

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SystemController {
 
     @GetMapping("/info")
-    ResponseEntity<SystemInfo> getSystemInfo() {
+    public ResponseEntity<SystemInfo> getSystemInfo() {
         return ResponseEntity.ok(new SystemInfo("resource-server-microservice", "1.0.0"));
     }
 

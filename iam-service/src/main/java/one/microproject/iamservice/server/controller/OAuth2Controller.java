@@ -53,7 +53,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -75,6 +74,7 @@ import static one.microproject.iamservice.server.controller.support.ControllerUt
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getCodeVerifier;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getContextPath;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getIssuerUri;
+import static one.microproject.iamservice.server.controller.support.ControllerUtils.getResponse;
 
 @RestController
 @RequestMapping(path = "/services/oauth2")
@@ -295,7 +295,7 @@ public class OAuth2Controller {
     @PostMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
-                                                        @RequestBody ConsentRequest request) throws URISyntaxException {
+                                                        @RequestBody ConsentRequest request) {
         LOG.info("consentProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         Optional<AuthorizationCodeContext> authorizationCodeContext = authenticationService.setScope(request.getCode(), scopes);
@@ -319,16 +319,8 @@ public class OAuth2Controller {
         String codeVerifier = getCodeVerifier(bodyValueMap);
         LOG.info("default redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         LOG.info("default redirect: codeVerifier={}", codeVerifier);
-        RestTemplate restTemplate = new RestTemplate();
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId, baseUrlMapper);
-        String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
-        //TODO: replace with OKHTTP3
-        ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
-        if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
-            return ResponseEntity.ok(tokenResponseResponseEntity.getBody());
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return ResponseEntity.of(getResponse(issuerUri, code, state));
     }
 
     @Operation(description = "__OpenID Connect Discovery__ \n" +

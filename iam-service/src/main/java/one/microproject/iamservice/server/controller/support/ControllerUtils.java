@@ -1,10 +1,14 @@
 package one.microproject.iamservice.server.controller.support;
 
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.model.ClientCredentials;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.TokenType;
 import one.microproject.iamservice.server.services.BaseUrlMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -98,6 +102,18 @@ public final class ControllerUtils {
             return null;
         } else {
             return codeVerifier.toString();
+        }
+    }
+
+    public static Optional<TokenResponse> getResponse(URI issuerUri, String code, String state) {
+        RestTemplate restTemplate = new RestTemplate();
+        String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
+        //TODO: replace with OKHTTP3
+        ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
+        if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
+            return Optional.ofNullable(tokenResponseResponseEntity.getBody());
+        } else {
+            return Optional.empty();
         }
     }
 

@@ -74,7 +74,6 @@ import static one.microproject.iamservice.server.controller.support.ControllerUt
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getCodeVerifier;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getContextPath;
 import static one.microproject.iamservice.server.controller.support.ControllerUtils.getIssuerUri;
-import static one.microproject.iamservice.server.controller.support.ControllerUtils.getResponse;
 
 @RestController
 @RequestMapping(path = "/services/oauth2")
@@ -312,6 +311,7 @@ public class OAuth2Controller {
     @GetMapping(path = "/{organization-id}/{project-id}/redirect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> redirect(@PathVariable("organization-id") String organizationId,
                                                   @PathVariable("project-id") String projectId,
+                                                  @RequestParam(name = "nonce", required = false) String nonce,
                                                   @RequestParam("code") String code,
                                                   @RequestParam("state") String state,
                                                   @RequestBody MultiValueMap bodyValueMap,
@@ -320,7 +320,9 @@ public class OAuth2Controller {
         LOG.info("default redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         LOG.info("default redirect: codeVerifier={}", codeVerifier);
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId, baseUrlMapper);
-        return ResponseEntity.of(getResponse(issuerUri, code, state));
+        IdTokenRequest idTokenRequest = new IdTokenRequest(issuerUri.toString(), nonce, codeVerifier);
+        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
+        return ResponseEntity.of(tokensOptional);
     }
 
     @Operation(description = "__OpenID Connect Discovery__ \n" +

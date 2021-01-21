@@ -23,7 +23,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(iamSecurityFilter, SecurityContextPersistenceFilter.class)
                 .antMatcher("/services/**")
                 .csrf()
-                .disable();
+                .ignoringAntMatchers("/services/**");
+                //.disable();
     }
 
 }

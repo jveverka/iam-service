@@ -36,12 +36,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().and().csrf().disable()
+        httpSecurity
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests().antMatchers("/services/public/**",  "/swagger-ui/**", "/v3/api**").permitAll()
                 .and()
-                .authorizeRequests().anyRequest().authenticated();
+                .authorizeRequests().anyRequest().authenticated()
+                .and()
+                .csrf().ignoringAntMatchers("/services/secure/**", "/services/public/**",  "/swagger-ui/**", "/v3/api**");
 
         httpSecurity.addFilterBefore(iamSecurityFilter, UsernamePasswordAuthenticationFilter.class);
     }

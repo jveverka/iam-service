@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static one.microproject.iamservice.examples.ittests.ITTestUtils.getGlobalAdminTokens;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -49,7 +50,7 @@ import static one.microproject.iamservice.examples.ittests.ITTestUtils.appAdminU
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MethodSecurityTestsIT {
+class MethodSecurityTestsIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodSecurityTestsIT.class);
 
@@ -88,7 +89,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(2)
-    public void checkResourceServerIsAlive() {
+    void checkResourceServerIsAlive() {
         ResponseEntity<SystemInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/public/info", SystemInfo.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -96,7 +97,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(5)
-    public void getAppAdminUserTokens() throws IOException {
+    void getAppAdminUserTokens() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
         TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appAdminUserId.getId(), "secret", clientId, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
@@ -107,24 +108,24 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(6)
-    public void createOrdinaryAppUsers() throws AuthenticationException {
+    void createOrdinaryAppUsers() {
         IAMServiceProjectManagerClient iamServiceProject = iamServiceManagerClient.getIAMServiceProject(appAdminTokens.getAccessToken(), organizationId, projectId);
         CreateRole createReaderRole = new CreateRole(appUserRoleReader.getId(), "Reader Role", readerPermissions);
-        iamServiceProject.createRole(createReaderRole);
+        assertDoesNotThrow(() -> iamServiceProject.createRole(createReaderRole));
         CreateRole createWriterRole = new CreateRole(appUserRoleWriter.getId(), "Writer Role", writerPermissions);
-        iamServiceProject.createRole(createWriterRole);
+        assertDoesNotThrow(() -> iamServiceProject.createRole(createWriterRole));
         IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(appAdminTokens.getAccessToken(), organizationId, projectId);
         CreateUser createReaderUser = new CreateUser(appReaderUserId.getId(), "", 3600L, 3600L, "", "789456", UserProperties.getDefault());
-        iamServiceUserManagerClient.createUser(createReaderUser);
-        iamServiceUserManagerClient.addRoleToUser(appReaderUserId, appUserRoleReader);
+        assertDoesNotThrow(() -> iamServiceUserManagerClient.createUser(createReaderUser));
+        assertDoesNotThrow(() -> iamServiceUserManagerClient.addRoleToUser(appReaderUserId, appUserRoleReader));
         CreateUser createWriterUser = new CreateUser(appWriterUserId.getId(), "", 3600L, 3600L, "", "456789", UserProperties.getDefault());
-        iamServiceUserManagerClient.createUser(createWriterUser);
-        iamServiceUserManagerClient.addRoleToUser(appWriterUserId, appUserRoleWriter);
+        assertDoesNotThrow(() -> iamServiceUserManagerClient.createUser(createWriterUser));
+        assertDoesNotThrow(() -> iamServiceUserManagerClient.addRoleToUser(appWriterUserId, appUserRoleWriter));
     }
 
     @Test
     @Order(7)
-    public void updateIamClientCache() {
+    void updateIamClientCache() {
         ResponseEntity<ServerData> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/public/update-iam-client-cache", ServerData.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -132,7 +133,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(8)
-    public void getAppReaderTokens() throws IOException {
+    void getAppReaderTokens() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
         TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appReaderUserId.getId(), "789456", clientId, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
@@ -143,7 +144,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(9)
-    public void getAppWriterTokens() throws IOException {
+    void getAppWriterTokens() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
         TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword(appWriterUserId.getId(), "456789", clientId, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
@@ -154,7 +155,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(10)
-    public void testUnSecureAccessNoAccessTokens() {
+    void testUnSecureAccessNoAccessTokens() {
         ResponseEntity<ServerData> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", ServerData.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -166,7 +167,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(11)
-    public void testSecureAccessInvalidIAMAdminTokens() throws IOException {
+    void testSecureAccessInvalidIAMAdminTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = getGlobalAdminTokens(iamServiceManagerClient);
         TokenResponse iamAdminTokens = tokenResponseWrapper.getTokenResponse();
         HttpHeaders headers = new HttpHeaders();
@@ -184,7 +185,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(12)
-    public void testSecureAccessInvalidIAppAdminTokens() {
+    void testSecureAccessInvalidIAppAdminTokens() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appAdminTokens.getAccessToken()));
         HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
@@ -200,7 +201,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(13)
-    public void testSecureAccessReaderUserTokensReadAccess() {
+    void testSecureAccessReaderUserTokensReadAccess() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appReaderTokens.getAccessToken()));
         HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
@@ -213,7 +214,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(14)
-    public void testSecureAccessReaderUserTokensWriteAccess() {
+    void testSecureAccessReaderUserTokensWriteAccess() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appReaderTokens.getAccessToken()));
         ServerData serverData = new ServerData("update");
@@ -225,7 +226,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(15)
-    public void testSecureAccessWriterUserTokensReadAccess() {
+    void testSecureAccessWriterUserTokensReadAccess() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appWriterTokens.getAccessToken()));
         HttpEntity<ServerData> requestEntity = new HttpEntity<>(headers);
@@ -238,7 +239,7 @@ public class MethodSecurityTestsIT {
 
     @Test
     @Order(16)
-    public void testSecureAccessWriterUserTokensWriteAccess() {
+    void testSecureAccessWriterUserTokensWriteAccess() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + appWriterTokens.getAccessToken()));
         ServerData serverData = new ServerData("update");

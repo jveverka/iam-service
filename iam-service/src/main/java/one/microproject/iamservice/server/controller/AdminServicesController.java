@@ -46,7 +46,6 @@ import java.util.Set;
 
 import static one.microproject.iamservice.core.ModelCommons.createProjectAdminPermissions;
 import static one.microproject.iamservice.core.ModelCommons.createProjectAdminRoleId;
-import static one.microproject.iamservice.server.controller.support.ControllerUtils.normalize;
 
 @RestController
 @RequestMapping(path = "/services/admin")
@@ -84,7 +83,7 @@ public class AdminServicesController {
     @Operation(summary = "Create new project within an organization, with default project admin user.")
     @PostMapping("/organization/setup")
     public ResponseEntity<SetupOrganizationResponse> setUpOrganization(@RequestBody SetupOrganizationRequest request) throws PKIException {
-        LOG.info("Organization setup {}/{}", normalize(request.getOrganizationId()), normalize(request.getProjectId()));
+        LOG.info("Organization setup {}/{}", request.getOrganizationId(), request.getProjectId());
         OrganizationId organizationId = OrganizationId.from(request.getOrganizationId());
         ProjectId projectId = ProjectId.from(request.getProjectId());
         ClientId clientId = ClientId.from(request.getAdminClientId());
@@ -95,20 +94,20 @@ public class AdminServicesController {
             CreateOrganizationRequest createOrganizationRequest = new CreateOrganizationRequest(organizationId, request.getOrganizationName());
             Optional<OrganizationId> organizationIdOptional = organizationManagerService.create(createOrganizationRequest);
             if (organizationIdOptional.isEmpty()) {
-                LOG.warn("Error: create Organization id={} failed !", normalize(organizationId.getId()));
+                LOG.warn("Error: create Organization id={} failed !", organizationId.getId());
                 return ResponseEntity.badRequest().build();
             } else {
-                LOG.info("Organization id={} created !", normalize(organizationId.getId()));
+                LOG.info("Organization id={} created !", organizationId.getId());
             }
         }
         if (projectManagerService.get(organizationId, projectId).isEmpty()) {
             CreateProjectRequest createProjectRequest = new CreateProjectRequest(projectId, request.getProjectName(), request.getProjectAudience());
             Optional<Project> projectOptional = projectManagerService.create(organizationId, createProjectRequest);
             if (projectOptional.isEmpty()) {
-                LOG.warn("Error: create Project id={} failed !", normalize(projectId.getId()));
+                LOG.warn("Error: create Project id={} failed !", projectId.getId());
                 return ResponseEntity.badRequest().build();
             } else {
-                LOG.info("Project id={} created !", normalize(projectId.getId()));
+                LOG.info("Project id={} created !", projectId.getId());
             }
         }
         //Create Actions
@@ -118,10 +117,10 @@ public class AdminServicesController {
                 request.getAdminClientSecret(), properties);
         Optional<ClientCredentials> clientCredentials = clientManagementService.createClient(organizationId, projectId, createClientRequest);
         if (clientCredentials.isEmpty()) {
-            LOG.warn("Error: create Client id={} failed !", normalize(clientId.getId()));
+            LOG.warn("Error: create Client id={} failed !", clientId.getId());
             return ResponseEntity.badRequest().build();
         } else {
-            LOG.info("Client id={} created !", normalize(clientId.getId()));
+            LOG.info("Client id={} created !", clientId.getId());
         }
 
         CreateUserRequest createUserRequest =  new CreateUserRequest(userId, "", 3600*1000L, 24*3600*1000L,
@@ -130,10 +129,10 @@ public class AdminServicesController {
         UPCredentials credentials = new UPCredentials(userId, request.getAdminUserPassword());
         userManagerService.setCredentials(organizationId, projectId, userId, credentials);
         if (userOptional.isEmpty()) {
-            LOG.warn("Error: create User id={} failed !", normalize(userId.getId()));
+            LOG.warn("Error: create User id={} failed !", userId.getId());
             return ResponseEntity.badRequest().build();
         } else {
-            LOG.info("User id={} created !", normalize(userId.getId()));
+            LOG.info("User id={} created !", userId.getId());
         }
 
         Optional<RoleId> optionalAdminRoleId = projectManagerService.addRole(organizationId, projectId, new CreateRoleRequest(adminRoleId, "Admin Role"));
@@ -141,7 +140,7 @@ public class AdminServicesController {
             LOG.warn("Error: create Role id={} failed !", adminRoleId.getId());
             return ResponseEntity.badRequest().build();
         } else {
-            LOG.info("Role id={} created !", normalize(adminRoleId.getId()));
+            LOG.info("Role id={} created !", adminRoleId.getId());
         }
 
         clientManagementService.addRole(organizationId, projectId, clientId, adminRoleId);

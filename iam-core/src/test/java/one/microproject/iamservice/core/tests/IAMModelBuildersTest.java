@@ -24,7 +24,7 @@ import static one.microproject.iamservice.core.utils.ModelUtils.createInMemoryMo
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class IAMModelBuildersTest {
+class IAMModelBuildersTest {
 
     private static Role adminFullAccess;
     private static Role adminReadAccess;
@@ -37,21 +37,23 @@ public class IAMModelBuildersTest {
 
     @Test
     @Order(1)
-    public void testRoleBuilders() {
+    void testRoleBuilders() {
         adminFullAccess = IAMModelBuilders.roleBuilder("Admin Full Access Role")
                 .addPermission("administration", "user-management", "create")
                 .addPermission("administration", "user-management", "delete")
                 .addPermission("administration", "user-management", "update")
                 .addPermission("administration", "user-management", "read")
                 .build();
+        assertNotNull(adminFullAccess);
         adminReadAccess = IAMModelBuilders.roleBuilder("Admin Read Access Role")
                 .addPermission("administration", "user-management", "read")
                 .build();
+        assertNotNull(adminReadAccess);
     }
 
     @Test
     @Order(2)
-    public void testModelBuilder() throws PKIException {
+    void testModelBuilder() throws PKIException {
         ModelCache modelCache = IAMModelBuilders.modelBuilder(createInMemoryModelWrapper("my model"))
                 .addOrganization("first organization")
                     .addProject("first project", audience)
@@ -77,21 +79,23 @@ public class IAMModelBuildersTest {
 
     @Test
     @Order(3)
-    public void testRoleBuildersWithIds() {
+    void testRoleBuildersWithIds() {
         adminFullAccess = IAMModelBuilders.roleBuilder(RoleId.from("role-001"),"Admin Full Access Role")
                 .addPermission("administration", "user-management", "create")
                 .addPermission("administration", "user-management", "delete")
                 .addPermission("administration", "user-management", "update")
                 .addPermission("administration", "user-management", "read")
                 .build();
+        assertNotNull(adminFullAccess);
         adminReadAccess = IAMModelBuilders.roleBuilder(RoleId.from("role-002"),"Admin Read Access Role")
                 .addPermission("administration", "user-management", "read")
                 .build();
+        assertNotNull(adminReadAccess);
     }
 
     @Test
     @Order(4)
-    public void testModelBuilderWithIds() throws PKIException {
+    void testModelBuilderWithIds() throws PKIException {
         ModelCache modelCache = IAMModelBuilders.modelBuilder(createInMemoryModelWrapper("model-001", "my model"))
                 .addOrganization(OrganizationId.from("org-001"), "first organization")
                     .addProject(ProjectId.from("project-001"), "first project", audience)
@@ -114,4 +118,5 @@ public class IAMModelBuildersTest {
                 .build();
         assertNotNull(modelCache);
     }
+
 }

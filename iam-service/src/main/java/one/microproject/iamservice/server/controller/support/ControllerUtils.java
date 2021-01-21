@@ -101,8 +101,4 @@ public final class ControllerUtils {
         }
     }
 
-    public static String normalize(String data) {
-        return data.replaceAll("[\n|\r|\t]", "_");
-    }
-
 }

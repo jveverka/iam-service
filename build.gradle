@@ -1,3 +1,15 @@
+plugins {
+    id "org.sonarqube" version "3.0"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "jveverka_iam-service"
+        property "sonar.organization", "osuxueki"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'

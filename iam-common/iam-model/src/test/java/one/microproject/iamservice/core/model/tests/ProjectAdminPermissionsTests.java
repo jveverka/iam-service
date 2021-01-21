@@ -16,7 +16,7 @@ import static one.microproject.iamservice.core.ModelCommons.verifyProjectAdminPe
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ProjectAdminPermissionsTests {
+class ProjectAdminPermissionsTests {
 
     private static final OrganizationId organizationId = OrganizationId.from("org-999");
     private static final ProjectId projectId = ProjectId.from("proj-999");
@@ -30,13 +30,13 @@ public class ProjectAdminPermissionsTests {
     }
 
     @Test
-    public void testMinimalValidProjectPermissions() {
+    void testMinimalValidProjectPermissions() {
         boolean result = verifyProjectAdminPermissions(organizationId, projectId, projectAdminScopes);
         assertTrue(result);
     }
 
     @Test
-    public void testValidProjectPermissions() {
+    void testValidProjectPermissions() {
         Set<String> extendedScopes = new HashSet<>(projectAdminScopes);
         extendedScopes.add("service.resource.action");
         boolean result = verifyProjectAdminPermissions(organizationId, projectId, extendedScopes);
@@ -44,7 +44,7 @@ public class ProjectAdminPermissionsTests {
     }
 
     @Test
-    public void testInValidProjectPermissions() {
+    void testInValidProjectPermissions() {
         Set<String> extendedScopes = new HashSet<>();
         extendedScopes.add("service.resource.action");
         boolean result = verifyProjectAdminPermissions(organizationId, projectId, extendedScopes);
@@ -52,7 +52,7 @@ public class ProjectAdminPermissionsTests {
     }
 
     @Test
-    public void testInsufficientValidProjectPermissions() {
+    void testInsufficientValidProjectPermissions() {
         Set<String> extendedScopes = new HashSet<>(projectAdminScopes);
         extendedScopes.remove(organizationId.getId() + "-" + projectId.getId() + "." + CLIENTS_RESOURCE + "." + ACTION_ALL);
         boolean result = verifyProjectAdminPermissions(organizationId, projectId, extendedScopes);

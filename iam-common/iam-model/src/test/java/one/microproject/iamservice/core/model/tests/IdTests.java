@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IdTests {
+class IdTests {
 
     private static Stream<Arguments> provideTestEqualsData() {
         return Stream.of(
@@ -21,7 +21,7 @@ public class IdTests {
 
     @ParameterizedTest
     @MethodSource("provideTestEqualsData")
-    public void testEqualsAndHashCode(Id first, Id second, boolean expected) {
+    void testEqualsAndHashCode(Id first, Id second, boolean expected) {
         assertEquals(first.equals(second), expected);
         assertEquals(first.hashCode() == second.hashCode(), expected);
     }

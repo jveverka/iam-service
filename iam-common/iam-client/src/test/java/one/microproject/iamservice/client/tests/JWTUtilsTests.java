@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class JWTUtilsTests {
+class JWTUtilsTests {
 
     @Test
-    public void testExtractToken() {
+    void testExtractToken() {
         JWToken token = JWTUtils.extractJwtToken("Bearer token");
         assertNotNull(token);
         assertEquals("token", token.getToken());
@@ -23,7 +23,7 @@ public class JWTUtilsTests {
     }
 
     @Test
-    public void testCreateHeader() {
+    void testCreateHeader() {
         String authorizationHeader = JWTUtils.createAuthorizationHeader("token");
         assertEquals("Bearer token", authorizationHeader);
         authorizationHeader = JWTUtils.createAuthorizationHeader("  token");

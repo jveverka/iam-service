@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class PermissionParsingTests {
+class PermissionParsingTests {
 
     private static Stream<Arguments> providePropertiesData() {
         return Stream.of(
@@ -28,7 +28,7 @@ public class PermissionParsingTests {
 
     @ParameterizedTest
     @MethodSource("providePropertiesData")
-    public void testPersistenceStringTransformations(String input, boolean expected) {
+    void testPersistenceStringTransformations(String input, boolean expected) {
         try {
             Permission permission = Permission.from(input);
             assertTrue(expected);

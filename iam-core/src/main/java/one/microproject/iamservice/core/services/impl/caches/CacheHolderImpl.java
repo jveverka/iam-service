@@ -47,9 +47,7 @@ public class CacheHolderImpl<V> implements CacheHolder<V> {
                 keysToRemove.add(k);
             }
         });
-        keysToRemove.forEach(k->{
-            cache.remove(k);
-        });
+        keysToRemove.forEach(cache::remove);
     }
 
 }

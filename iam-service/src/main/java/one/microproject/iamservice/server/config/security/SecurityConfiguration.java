@@ -24,7 +24,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatcher("/services/**")
                 .csrf()
                 .ignoringAntMatchers("/services/**");
-                //.disable();
     }
 
 }

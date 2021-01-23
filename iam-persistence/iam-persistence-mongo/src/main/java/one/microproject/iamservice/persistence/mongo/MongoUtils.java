@@ -6,9 +6,12 @@ import one.microproject.iamservice.core.model.keys.ModelKey;
 import org.bson.UuidRepresentation;
 import org.mongojack.JacksonMongoCollection;
 
-public class MongoUtils {
+public final class MongoUtils {
 
-    public final static String SEPARATOR = "/";
+    private MongoUtils() {
+    }
+
+    public static final String SEPARATOR = "/";
 
     public static <T> JacksonMongoCollection<T> createJacksonMongoCollection(MongoConfiguration configuration, Class<T> type, String collectionName) {
         MongoClient mongoClient = MongoClients.create(configuration.getConnectionString());
@@ -17,14 +20,14 @@ public class MongoUtils {
     }
 
     public static <T> String convertToId(ModelKey<T> key) {
-        String stringKey = "";
+        StringBuilder stringKey = new StringBuilder();
         for (int i=0; i<key.getIds().length; i++) {
-            stringKey = stringKey + key.getIds()[i].getId();
+            stringKey.append(key.getIds()[i].getId());
             if (i < (key.getIds().length - 1)) {
-                stringKey = stringKey + SEPARATOR;
+                stringKey.append(SEPARATOR);
             }
         }
-        return stringKey;
+        return stringKey.toString();
     }
 
 }

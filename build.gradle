@@ -9,6 +9,9 @@ sonarqube {
         property "sonar.organization", "osuxueki"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.tests", "src/test"
+        property "sonar.java.test.binaries", "build/classes/java/test"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
 
@@ -26,6 +29,12 @@ subprojects {
                         "${result.failedTestCount} failed, " +
                         "${result.skippedTestCount} skipped"
             }
+        }
+        finalizedBy jacocoTestReport
+    }
+    jacocoTestReport {
+        reports {
+            xml.enabled true
         }
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.net.MalformedURLException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SecuredNegativeTestsIT {
+class SecuredNegativeTestsIT {
 
     private static String baseUrl;
 

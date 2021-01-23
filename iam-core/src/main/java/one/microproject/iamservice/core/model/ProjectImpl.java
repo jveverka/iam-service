@@ -42,9 +42,7 @@ public class ProjectImpl implements Project {
         this.keyPairData = TokenUtils.createSignedKeyPairData(organizationId.getId(), id.getId(), ModelUtils.DURATION_10YEARS, TimeUnit.DAYS, organizationPrivateKey);
         this.keyPairSerialized = ModelUtils.serializeKeyPair(keyPairData);
         this.audience = new HashSet<>();
-        audience.forEach(a->
-                this.audience.add(a)
-        );
+        audience.forEach(this.audience::add);
         this.properties = new ConcurrentHashMap<>();
     }
 
@@ -69,21 +67,11 @@ public class ProjectImpl implements Project {
         this.audience = new HashSet<>();
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
-        users.forEach(u->
-            this.users.add(u)
-        );
-        roles.forEach(r->
-            this.roles.add(r)
-        );
-        permissions.forEach(p->
-            this.permissions.add(p)
-        );
-        clients.forEach(c->
-            this.clients.add(c)
-        );
-        audience.forEach(a->
-                this.audience.add(a)
-        );
+        users.forEach(this.users::add);
+        roles.forEach(this.roles::add);
+        permissions.forEach(this.permissions::add);
+        clients.forEach(this.clients::add);
+        audience.forEach(this.audience::add);
         this.properties = properties;
     }
 

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SecuredUserControllerTestsIT {
+class SecuredUserControllerTestsIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecuredUserControllerTestsIT.class);
 

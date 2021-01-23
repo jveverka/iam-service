@@ -8,6 +8,7 @@ sonarqube {
         property "sonar.projectKey", "jveverka_iam-service"
         property "sonar.organization", "osuxueki"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.java.coveragePlugin", "jacoco"
     }
 }
 

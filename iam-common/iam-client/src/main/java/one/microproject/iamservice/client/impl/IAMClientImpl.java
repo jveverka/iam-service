@@ -4,7 +4,6 @@ import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.core.TokenValidator;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
-import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.JWToken;
 import one.microproject.iamservice.core.model.OrganizationId;

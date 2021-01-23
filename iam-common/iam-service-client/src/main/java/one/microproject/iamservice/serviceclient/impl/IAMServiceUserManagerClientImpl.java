@@ -18,6 +18,12 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.net.URL;
 
+import static one.microproject.iamservice.serviceclient.impl.Constants.AUTH_FAILED_ERROR;
+import static one.microproject.iamservice.serviceclient.impl.Constants.DELIMITER;
+import static one.microproject.iamservice.serviceclient.impl.Constants.SERVICES_DISCOVERY;
+import static one.microproject.iamservice.serviceclient.impl.Constants.SERVICES_MANAGEMENT;
+import static one.microproject.iamservice.serviceclient.impl.Constants.USERS;
+
 public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerClient {
 
     private final String accessToken;
@@ -39,7 +45,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
     @Override
     public UserInfo getUserInfo(UserId userId) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
+                .url(baseURL + SERVICES_DISCOVERY + DELIMITER + organizationId.getId() + DELIMITER + projectId.getId() + USERS + userId.getId())
                 .get()
                 .build();
         Response response = client.newCall(request).execute();
@@ -53,7 +59,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
     public void createUser(CreateUser createUser) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users")
+                    .url(baseURL + SERVICES_MANAGEMENT + organizationId.getId() + DELIMITER + projectId.getId() + USERS)
                     .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
                     .post(RequestBody.create(mapper.writeValueAsString(createUser), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
@@ -61,7 +67,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
             if (response.code() == 200) {
                 return;
             }
-            throw new AuthenticationException("Authentication failed: " + response.code());
+            throw new AuthenticationException(AUTH_FAILED_ERROR + response.code());
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
@@ -71,7 +77,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
     public void deleteUser(UserId userId) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
+                    .url(baseURL + SERVICES_MANAGEMENT + organizationId.getId() + DELIMITER + projectId.getId() + USERS + userId.getId())
                     .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
                     .delete()
                     .build();
@@ -79,7 +85,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
             if (response.code() == 200) {
                 return;
             }
-            throw new AuthenticationException("Authentication failed: " + response.code());
+            throw new AuthenticationException(AUTH_FAILED_ERROR + response.code());
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
@@ -89,7 +95,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
     public void addRoleToUser(UserId userId, RoleId roleId) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId())
+                    .url(baseURL + SERVICES_MANAGEMENT + organizationId.getId() + DELIMITER + projectId.getId() + USERS + userId.getId() + "/roles/" + roleId.getId())
                     .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
                     .put(RequestBody.create("{}", MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
@@ -97,7 +103,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
             if (response.code() == 200) {
                 return;
             }
-            throw new AuthenticationException("Authentication failed: " + response.code());
+            throw new AuthenticationException(AUTH_FAILED_ERROR + response.code());
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
@@ -107,7 +113,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
     public void removeRoleFromUser(UserId userId, RoleId roleId) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId() + "/roles/" + roleId.getId())
+                    .url(baseURL + SERVICES_MANAGEMENT + organizationId.getId() + DELIMITER + projectId.getId() + USERS + userId.getId() + "/roles/" + roleId.getId())
                     .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
                     .delete()
                     .build();
@@ -115,7 +121,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
             if (response.code() == 200) {
                 return;
             }
-            throw new AuthenticationException("Authentication failed: " + response.code());
+            throw new AuthenticationException(AUTH_FAILED_ERROR + response.code());
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }
@@ -125,7 +131,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
     public void changeUserCredentials(UserId userId, String userAccessToken, UserCredentialsChangeRequest userCredentialsChangeRequest) throws AuthenticationException {
         try {
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/management/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId() + "/change-password")
+                    .url(baseURL + SERVICES_MANAGEMENT + organizationId.getId() + DELIMITER + projectId.getId() + USERS + userId.getId() + "/change-password")
                     .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + userAccessToken)
                     .put(RequestBody.create(mapper.writeValueAsString(userCredentialsChangeRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
@@ -133,7 +139,7 @@ public class IAMServiceUserManagerClientImpl implements IAMServiceUserManagerCli
             if (response.code() == 200) {
                 return;
             }
-            throw new AuthenticationException("Authentication failed: " + response.code());
+            throw new AuthenticationException(AUTH_FAILED_ERROR + response.code());
         } catch (IOException e) {
             throw new AuthenticationException(e);
         }

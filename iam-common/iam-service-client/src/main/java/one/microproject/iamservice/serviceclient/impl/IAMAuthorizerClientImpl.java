@@ -24,6 +24,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
+import static one.microproject.iamservice.serviceclient.impl.Constants.CLIENT_ID;
+import static one.microproject.iamservice.serviceclient.impl.Constants.CLIENT_SECRET;
+import static one.microproject.iamservice.serviceclient.impl.Constants.DELIMITER;
+import static one.microproject.iamservice.serviceclient.impl.Constants.SCOPE;
+import static one.microproject.iamservice.serviceclient.impl.Constants.SERVICES_OAUTH2;
+import static one.microproject.iamservice.serviceclient.impl.Constants.TOKEN;
 import static one.microproject.iamservice.serviceclient.impl.IAMServiceManagerClientImpl.APPLICATION_FORM_URLENCODED;
 
 public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
@@ -45,12 +51,12 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     @Override
     public TokenResponseWrapper refreshTokens(String refreshToken, ClientId clientId, String clientSecret) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + TOKEN +
                         "?grant_type=refresh_token" +
                         "&refresh_token=" + refreshToken +
-                        "&scope=" +
-                        "&client_id=" + clientId.getId() +
-                        "&client_secret=" + clientSecret)
+                        SCOPE +
+                        CLIENT_ID + clientId.getId() +
+                        CLIENT_SECRET + clientSecret)
                 .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                 .build();
         Response response = client.newCall(request).execute();
@@ -74,7 +80,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
             AuthorizationCodeGrantRequest authorizationCodeGrantRequest =
                     new AuthorizationCodeGrantRequest(userName, password, clientId.getId(), scopes, state, redirectUri.toString(), codeChallenge, method);
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/authorize")
+                    .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/authorize")
                     .post(RequestBody.create(mapper.writeValueAsString(authorizationCodeGrantRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -93,7 +99,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
             //2. provide consent
             ConsentRequest consentRequest = new ConsentRequest(authorizationCode.getCode(), authorizationCode.getAvailableScopes().getValues());
             Request request = new Request.Builder()
-                    .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/consent")
+                    .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/consent")
                     .post(RequestBody.create(mapper.writeValueAsString(consentRequest), MediaType.parse(IAMServiceManagerClientImpl.APPLICATION_JSON)))
                     .build();
             Response response = client.newCall(request).execute();
@@ -120,7 +126,7 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
         }
         Request request = new Request.Builder()
                 .header("Content-Type", APPLICATION_FORM_URLENCODED)
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + TOKEN +
                         "?grant_type=authorization_code" +
                         "&code=" + code.getCodeValue() + "&state=" + state)
                 .post(builder.build())
@@ -136,13 +142,13 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     @Override
     public TokenResponseWrapper getAccessTokensOAuth2UsernamePassword(String userName, String password, ClientId clientId, String clientSecret) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + TOKEN +
                         "?grant_type=password" +
                         "&username=" + userName +
-                        "&scope=" +
+                        SCOPE +
                         "&password=" + password +
-                        "&client_id=" + clientId.getId() +
-                        "&client_secret=" + clientSecret)
+                        CLIENT_ID + clientId.getId() +
+                        CLIENT_SECRET + clientSecret)
                 .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                 .build();
         Response response = client.newCall(request).execute();
@@ -156,11 +162,11 @@ public class IAMAuthorizerClientImpl implements IAMAuthorizerClient {
     @Override
     public TokenResponseWrapper getAccessTokensOAuth2ClientCredentials(ClientId clientId, String clientSecret) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/token" +
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + TOKEN +
                         "?grant_type=client_credentials" +
-                        "&scope=" +
-                        "&client_id=" + clientId.getId() +
-                        "&client_secret=" + clientSecret)
+                        SCOPE +
+                        CLIENT_ID + clientId.getId() +
+                        CLIENT_SECRET + clientSecret)
                 .post(RequestBody.create("{}", MediaType.parse(APPLICATION_FORM_URLENCODED)))
                 .build();
         Response response = client.newCall(request).execute();

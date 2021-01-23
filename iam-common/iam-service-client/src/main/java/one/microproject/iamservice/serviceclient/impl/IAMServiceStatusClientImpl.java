@@ -17,6 +17,9 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.net.URL;
 
+import static one.microproject.iamservice.serviceclient.impl.Constants.DELIMITER;
+import static one.microproject.iamservice.serviceclient.impl.Constants.SERVICES_OAUTH2;
+
 public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
 
     private final URL baseURL;
@@ -36,7 +39,7 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
     @Override
     public ProviderConfigurationResponse getProviderConfiguration() throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/openid-configuration")
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/.well-known/openid-configuration")
                 .get()
                 .build();
         Response response = client.newCall(request).execute();
@@ -49,7 +52,7 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
     @Override
     public JWKResponse getJWK() throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/.well-known/jwks.json")
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/.well-known/jwks.json")
                 .get()
                 .build();
         Response response = client.newCall(request).execute();
@@ -62,7 +65,7 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
     @Override
     public UserInfoResponse getUserInfo(String accessToken) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/userinfo")
+                .url(baseURL + SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/userinfo")
                 .addHeader(IAMServiceManagerClientImpl.AUTHORIZATION, IAMServiceManagerClientImpl.BEARER_PREFIX + accessToken)
                 .get()
                 .build();
@@ -75,7 +78,7 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
 
     @Override
     public void revokeToken(String accessToken, String tokenTypeHint) throws IOException {
-        String url = "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/revoke?token=" + accessToken;
+        String url = SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/revoke?token=" + accessToken;
         if (tokenTypeHint != null) {
             url = url + "&token_type_hint=" + tokenTypeHint;
         }
@@ -97,7 +100,7 @@ public class IAMServiceStatusClientImpl implements IAMServiceStatusClient {
 
     @Override
     public IntrospectResponse tokenIntrospection(String accessToken, String tokenTypeHint) throws IOException {
-        String url = "/services/oauth2/" + organizationId.getId() + "/" + projectId.getId() + "/introspect?token=" + accessToken;
+        String url = SERVICES_OAUTH2 + organizationId.getId() + DELIMITER + projectId.getId() + "/introspect?token=" + accessToken;
         if (tokenTypeHint != null) {
             url = url + "&token_type_hint=" + tokenTypeHint;
         }

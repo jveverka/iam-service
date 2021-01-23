@@ -25,34 +25,37 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @Configuration
 public class Routers {
 
+    private static final String USERS_PREFIX = "/secured/users";
+    private static final String SECURED_PREFIX = "/secured";
+
     @Bean
     public RouterFunction<ServerResponse> route(UserService userService, SystemInfoService systemInfoService,
                                                 IAMClient iamClient) {
         return RouterFunctions
                 //Secured endpoints
-                .route(GET("/secured/users/{id}").and(accept(APPLICATION_JSON)), request -> {
+                .route(GET(USERS_PREFIX + "/{id}").and(accept(APPLICATION_JSON)), request -> {
                     Mono<UserData> userDataMono = userService.getEmployee(request.pathVariable("id"));
                     return ServerResponse.ok().body(userDataMono, UserData.class);
                 })
-                .andRoute(GET("/secured/users").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(GET(USERS_PREFIX).and(accept(APPLICATION_JSON)), request -> {
                     Flux<UserData> userDataFlux = userService.getAll();
                     return ServerResponse.ok().body(userDataFlux, UserData.class);
                 })
-                .andRoute(POST("/secured/users").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(POST(USERS_PREFIX).and(accept(APPLICATION_JSON)), request -> {
                     Mono<CreateUserData> monoBody = request.bodyToMono(CreateUserData.class);
                     Mono<UserData> userDataMono = monoBody.flatMap(userService::create);
                     return ServerResponse.ok().body(userDataMono, UserData.class);
                 })
-                .andRoute(DELETE("/secured/users/{id}").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(DELETE(USERS_PREFIX + "/{id}").and(accept(APPLICATION_JSON)), request -> {
                     Mono<UserData> userDataMono = userService.delete(request.pathVariable("id"));
                     return ServerResponse.ok().body(userDataMono, UserData.class);
                 })
-                .andRoute(PUT("/secured/users").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(PUT(USERS_PREFIX).and(accept(APPLICATION_JSON)), request -> {
                     Mono<UserData> monoBody = request.bodyToMono(UserData.class);
                     Mono<UserData> userDataMono = monoBody.flatMap(userService::update);
                     return ServerResponse.ok().body(userDataMono, UserData.class);
                 })
-                .andRoute(PUT("/secured/create/{n}").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(PUT(SECURED_PREFIX + "/create/{n}").and(accept(APPLICATION_JSON)), request -> {
                     userService.createUsersBulk(Integer.parseInt(request.pathVariable("n")));
                     return ServerResponse.ok().build();
                 })

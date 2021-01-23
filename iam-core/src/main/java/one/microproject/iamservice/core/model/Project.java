@@ -1,5 +1,6 @@
 package one.microproject.iamservice.core.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.security.PrivateKey;
@@ -10,9 +11,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
+        use = JsonTypeInfo.Id.NAME,
         property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ProjectImpl.class, name = "iam-user") }
+)
 public interface Project {
 
     ProjectId getId();

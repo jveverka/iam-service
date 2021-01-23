@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.Collection;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
+        use = JsonTypeInfo.Id.NAME,
         property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = RoleImpl.class, name = "role") })
+        @JsonSubTypes.Type(value = RoleImpl.class, name = "iam-role") }
+        )
 public interface Role {
 
     RoleId getId();

@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ClientCCAuthenticationTests {
+class ClientCCAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
     private static final String adminSecret = "top-secret";
@@ -92,7 +92,7 @@ public class ClientCCAuthenticationTests {
     @Test
     @Order(1)
     @SuppressWarnings("unchecked")
-    public void authenticateTest() {
+    void authenticateTest() {
         ClientCredentials clientCredentials = new ClientCredentials(testClientId, testClientSecret);
         String issuerClaim = issuerUri.toString();
         Scope scope = new Scope(Set.of("iam-admin-client"));
@@ -111,7 +111,7 @@ public class ClientCCAuthenticationTests {
 
     @Test
     @Order(2)
-    public void verifyValidTokensTest() {
+    void verifyValidTokensTest() {
         IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
         IntrospectRequest requestRefreshToken = new IntrospectRequest(refreshToken, TokenType.REFRESH);
         IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
@@ -122,7 +122,7 @@ public class ClientCCAuthenticationTests {
 
     @Test
     @Order(3)
-    public void logoutTest() {
+    void logoutTest() {
         RevokeTokenRequest revokeAccessTokenRequest = new RevokeTokenRequest(accessToken, TokenType.BEARER);
         RevokeTokenRequest revokeRefreshTokenRequest = new RevokeTokenRequest(refreshToken, TokenType.REFRESH);
         boolean result = authenticationService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
@@ -133,7 +133,7 @@ public class ClientCCAuthenticationTests {
 
     @Test
     @Order(4)
-    public void verifyInvalidTokensTest() {
+    void verifyInvalidTokensTest() {
         IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
         IntrospectRequest requestRefreshToken = new IntrospectRequest(refreshToken, TokenType.REFRESH);
         IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);

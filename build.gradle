@@ -1,3 +1,44 @@
+plugins {
+    id "org.sonarqube" version "3.0"
+    id "jacoco"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "jveverka_iam-service"
+        property "sonar.organization", "osuxueki"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.tests", "src/test"
+        property "sonar.java.test.binaries", "build/classes/java/test"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    task allDeps(type: DependencyReportTask) {}
+    test {
+        useJUnitPlatform()
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\nTest result: ${result.resultType}"
+                println "Test summary: ${result.testCount} tests, " +
+                        "${result.successfulTestCount} succeeded, " +
+                        "${result.failedTestCount} failed, " +
+                        "${result.skippedTestCount} skipped"
+            }
+        }
+        finalizedBy jacocoTestReport
+    }
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+        }
+    }
+}
+/*
 subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
@@ -28,6 +69,7 @@ subprojects {
 
     task allDeps(type: DependencyReportTask) {}
 }
+*/
 
 project(':iam-model') {
 }

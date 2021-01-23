@@ -36,9 +36,9 @@ public final class UserBuilder {
     }
 
     public UserBuilder addUserNamePasswordCredentials(String userName, String password) throws PKIException {
-        UserId userId = UserId.from(userName);
-        UPCredentials upCredentials = new UPCredentials(userId, password);
-        modelCache.setCredentials(organizationId, projectId, userId, upCredentials);
+        UserId newUserId = UserId.from(userName);
+        UPCredentials upCredentials = new UPCredentials(newUserId, password);
+        modelCache.setCredentials(organizationId, projectId, newUserId, upCredentials);
         return this;
     }
 

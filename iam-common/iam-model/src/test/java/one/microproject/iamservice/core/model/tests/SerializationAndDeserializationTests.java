@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SerializationAndDeserializationTests {
+class SerializationAndDeserializationTests {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    public void testRoleIdSerializationAndDeserialization() throws JsonProcessingException {
+    void testRoleIdSerializationAndDeserialization() throws JsonProcessingException {
         RoleId roleId = RoleId.from("role-001");
         String jsonData = mapper.writeValueAsString(roleId);
         RoleId roleIdDeserialized = mapper.readValue(jsonData, RoleId.class);

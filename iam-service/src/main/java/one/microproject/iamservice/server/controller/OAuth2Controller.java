@@ -53,7 +53,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -295,7 +294,7 @@ public class OAuth2Controller {
     @PostMapping(path = "/{organization-id}/{project-id}/consent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> consentProgrammatically(@PathVariable("organization-id") String organizationId,
                                                         @PathVariable("project-id") String projectId,
-                                                        @RequestBody ConsentRequest request) throws URISyntaxException {
+                                                        @RequestBody ConsentRequest request) {
         LOG.info("consentProgrammatically: {}/{}", organizationId, projectId);
         Scope scopes = new Scope(Set.copyOf(request.getScopes()));
         Optional<AuthorizationCodeContext> authorizationCodeContext = authenticationService.setScope(request.getCode(), scopes);
@@ -312,6 +311,7 @@ public class OAuth2Controller {
     @GetMapping(path = "/{organization-id}/{project-id}/redirect", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> redirect(@PathVariable("organization-id") String organizationId,
                                                   @PathVariable("project-id") String projectId,
+                                                  @RequestParam(name = "nonce", required = false) String nonce,
                                                   @RequestParam("code") String code,
                                                   @RequestParam("state") String state,
                                                   @RequestBody MultiValueMap bodyValueMap,
@@ -319,16 +319,10 @@ public class OAuth2Controller {
         String codeVerifier = getCodeVerifier(bodyValueMap);
         LOG.info("default redirect: {}/{} code={} state={}", organizationId, projectId, code, state);
         LOG.info("default redirect: codeVerifier={}", codeVerifier);
-        RestTemplate restTemplate = new RestTemplate();
         URI issuerUri = getIssuerUri(servletContext, request, organizationId, projectId, baseUrlMapper);
-        String tokenUrl = issuerUri.toString() + "/token" + "?grant_type=authorization_code&code=" + code + "&state=" + state;
-        //TODO: replace with OKHTTP3
-        ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.postForEntity(tokenUrl, null, TokenResponse.class);
-        if (HttpStatus.OK.equals(tokenResponseResponseEntity.getStatusCode())) {
-            return ResponseEntity.ok(tokenResponseResponseEntity.getBody());
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        IdTokenRequest idTokenRequest = new IdTokenRequest(issuerUri.toString(), nonce, codeVerifier);
+        Optional<TokenResponse> tokensOptional = authenticationService.authenticate(Code.from(code), idTokenRequest);
+        return ResponseEntity.of(tokensOptional);
     }
 
     @Operation(description = "__OpenID Connect Discovery__ \n" +

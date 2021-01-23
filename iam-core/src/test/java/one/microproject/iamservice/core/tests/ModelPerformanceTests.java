@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ModelPerformanceTests {
+class ModelPerformanceTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelPerformanceTests.class);
 
@@ -52,7 +52,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(1)
-    public void generateBigModel() throws PKIException {
+    void generateBigModel() throws PKIException {
         modelWrapper = createInMemoryModelWrapper("default");
         long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         model = ModelUtils.createModel(organizations, projects, clients, users, permissions, roles, modelWrapper);
@@ -67,7 +67,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(2)
-    public void checkModelCache() {
+    void checkModelCache() {
         assertNotNull(modelWrapper);
         assertNotNull(modelWrapper.getModel());
         assertEquals(organizations, modelWrapper.getOrganizations().size());
@@ -79,7 +79,7 @@ public class ModelPerformanceTests {
     
     @Test
     @Order(3)
-    public void checkProjects() {
+    void checkProjects() {
         Optional<Organization> organization = model.getOrganization(OrganizationId.from("organization-0"));
         assertTrue(organization.isPresent());
         Collection<ProjectId> projectsCollection = organization.get().getProjects();
@@ -89,7 +89,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(4)
-    public void removeOrganizationWithExistingProjects() {
+    void removeOrganizationWithExistingProjects() {
         boolean result = model.remove(OrganizationId.from("organization-0"));
         assertFalse(result);
         assertEquals(organizations, modelWrapper.getOrganizations().size());
@@ -97,7 +97,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(5)
-    public void removeProjectWithExistingUsersAndClientsAndRoles() {
+    void removeProjectWithExistingUsersAndClientsAndRoles() {
         boolean result = model.remove(OrganizationId.from("organization-0"), ProjectId.from("project-0"));
         assertFalse(result);
         assertEquals(organizations*projects, modelWrapper.getProjects().size());
@@ -105,7 +105,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(6)
-    public void removeRoleInUse() {
+    void removeRoleInUse() {
         boolean result = model.remove(OrganizationId.from("organization-0"), ProjectId.from("project-0"), RoleId.from("role-0"));
         assertFalse(result);
         assertEquals(organizations*projects*roles, modelWrapper.getRoles().size());
@@ -113,14 +113,14 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(7)
-    public void removePermissionInUse() {
+    void removePermissionInUse() {
         boolean result = model.removePermission(OrganizationId.from("organization-0"), ProjectId.from("project-0"), PermissionId.from("service1.resource-0.action"));
         assertFalse(result);
     }
 
     @Test
     @Order(8)
-    public void removeAllUsers() {
+    void removeAllUsers() {
         for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
             for (int projectIndex=0; projectIndex<projects; projectIndex++) {
                 for (int userIndex=0; userIndex<users; userIndex++) {
@@ -139,7 +139,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(9)
-    public void removeAllClients() {
+    void removeAllClients() {
         for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
             for (int projectIndex=0; projectIndex<projects; projectIndex++) {
                 for (int clientIndex=0; clientIndex<clients; clientIndex++) {
@@ -158,7 +158,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(10)
-    public void removeAllRoles() {
+    void removeAllRoles() {
         for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
             for (int projectIndex=0; projectIndex<projects; projectIndex++) {
                 for (int roleIndex=0; roleIndex<roles; roleIndex++) {
@@ -177,7 +177,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(11)
-    public void removeAllPermissions() {
+    void removeAllPermissions() {
         for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
             for (int projectIndex=0; projectIndex<projects; projectIndex++) {
                 for (int permissionIndex=0; permissionIndex<permissions; permissionIndex++) {
@@ -196,7 +196,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(12)
-    public void removeAllProjects() {
+    void removeAllProjects() {
         for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
             for (int projectIndex=0; projectIndex<projects; projectIndex++) {
                  boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex),
@@ -213,7 +213,7 @@ public class ModelPerformanceTests {
 
     @Test
     @Order(13)
-    public void removeAllOrganizations() {
+    void removeAllOrganizations() {
         for (int organizationsIndex=0; organizationsIndex<organizations; organizationsIndex++) {
              boolean result = model.remove(OrganizationId.from("organization-" + organizationsIndex));
              assertTrue(result);

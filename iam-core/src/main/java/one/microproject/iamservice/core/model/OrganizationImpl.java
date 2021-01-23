@@ -43,7 +43,7 @@ public class OrganizationImpl implements Organization {
         this.id = id;
         this.name = name;
         this.projects = new HashSet<>();
-        projects.forEach(project -> this.projects.add(project));
+        projects.forEach(this.projects::add);
         this.keyPairData = ModelUtils.deserializeKeyPair(keyPairSerialized);
         this.keyPairSerialized = keyPairSerialized;
         this.properties = properties;

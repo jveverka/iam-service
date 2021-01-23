@@ -37,7 +37,7 @@ public class CacheSchedulerConfig {
     public void init() {
         LOG.info("#CONFIG iam-service.cache-cleanup-interval.duration: {}", duration);
         LOG.info("#CONFIG iam-service.cache-cleanup-interval.timeunit: {}", timeunit);
-        this.cacheCleanupScheduler = new CacheCleanupSchedulerImpl(getDuration(), getTimeUnit(), authorizationCodeCache, tokenCache);
+        this.cacheCleanupScheduler = new CacheCleanupSchedulerImpl(getDuration(), getTimeUnitValue(), authorizationCodeCache, tokenCache);
         this.cacheCleanupScheduler.start();
     }
 
@@ -67,7 +67,7 @@ public class CacheSchedulerConfig {
         this.timeunit = timeunit;
     }
 
-    public TimeUnit getTimeUnit() {
+    public TimeUnit getTimeUnitValue() {
         return TimeUnit.valueOf(timeunit);
     }
 

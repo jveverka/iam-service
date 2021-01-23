@@ -23,13 +23,13 @@ public class SystemController {
     }
 
     @GetMapping("/info")
-    ResponseEntity<SystemInfo> getSystemInfo() {
+    public ResponseEntity<SystemInfo> getSystemInfo() {
         LOG.info("getSystemInfo");
         return ResponseEntity.ok(new SystemInfo("method-security-microservice", "1.0.0"));
     }
 
     @GetMapping("/update-iam-client-cache")
-    ResponseEntity<Void> updateIamClientCache() {
+    public ResponseEntity<Void> updateIamClientCache() {
         LOG.info("updateIamClientCache");
         iamSecurityFilterConfiguration.getIamClient().updateKeyCache();
         return ResponseEntity.ok().build();

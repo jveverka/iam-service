@@ -20,10 +20,10 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class AuthorizationCodeContextTests {
+class AuthorizationCodeContextTests {
 
     @Test
-    public void serializationAndDeserialization() throws URISyntaxException, JsonProcessingException {
+    void serializationAndDeserialization() throws URISyntaxException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         AuthorizationCodeContext authCodeContext = new AuthorizationCodeContext(Code.from("code-001"),
                 new URI("http://localhost:8080"), OrganizationId.from("org-001"), ProjectId.from("proj-001"),

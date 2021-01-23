@@ -49,6 +49,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,7 +57,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProjectManagementTests {
+class ProjectManagementTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProjectManagementTests.class);
 
@@ -85,7 +86,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(101)
-    public void initTest() throws IOException {
+    void initTest() throws IOException {
         baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
@@ -102,7 +103,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(102)
-    public void createNewOrganizationWithAdminUser() throws AuthenticationException, InterruptedException, IOException {
+    void createNewOrganizationWithAdminUser() throws AuthenticationException, InterruptedException, IOException {
         Set<String> projectAudience = new HashSet<>();
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "My Organization 001",
                 projectId.getId(), "My Project 001",
@@ -127,7 +128,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(103)
-    public void getTokenOrganizationForAdminUser() throws IOException {
+    void getTokenOrganizationForAdminUser() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAuthorizerClient(organizationId, projectId)
                 .getAccessTokensOAuth2UsernamePassword(adminUserId.getId(), adminPassword,
@@ -141,7 +142,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(104)
-    public void checkOrganizations() throws IOException {
+    void checkOrganizations() throws IOException {
         Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();
         assertNotNull(organizations);
         assertEquals(2, organizations.size());
@@ -149,7 +150,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(105)
-    public void checkNewProjectRolesAndPermissions() throws AuthenticationException {
+    void checkNewProjectRolesAndPermissions() throws AuthenticationException {
         Set<PermissionInfo> permissions = iamServiceProjectManagerClient.getPermissions();
         assertNotNull(permissions);
         assertEquals(4, permissions.size());
@@ -159,7 +160,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(106)
-    public void createRoleWithPermissionsTest() throws AuthenticationException {
+    void createRoleWithPermissionsTest() throws AuthenticationException {
         Set<PermissionInfo> permissionInfos = new HashSet<>();
         permissionInfos.add(new PermissionInfo(organizationId.getId() + "-" + projectId.getId() , "data", "read"));
         permissionInfos.add(new PermissionInfo(organizationId.getId() + "-" + projectId.getId() , "users", "read"));
@@ -174,7 +175,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(201)
-    public void createNewUser() throws AuthenticationException, IOException {
+    void createNewUser() throws AuthenticationException, IOException {
         CreateUser createUser = new CreateUser(newUserId.getId(),  "User 2", 3600L, 3600L,
                 "user@email.com", "s3cr3t", UserProperties.getDefault());
         iamServiceUserManagerClient.createUser(createUser);
@@ -184,7 +185,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(202)
-    public void createNewClient() throws AuthenticationException, IOException {
+    void createNewClient() throws AuthenticationException, IOException {
         CreateClient createClient = new CreateClient(newClientId.getId(), "", 3600L, 3600L, "top-s3cre3t", newClientProperties);
         iamServiceProjectManagerClient.createClient(createClient);
         ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(newClientId);
@@ -193,7 +194,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(202)
-    public void addRoleToUser() throws AuthenticationException, IOException {
+    void addRoleToUser() throws AuthenticationException, IOException {
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(newUserId);
         Optional<String> roleIdOptional = userInfo.getRoles().stream().filter(r -> r.equals(newRoleId.getId())).findFirst();
         assertTrue(roleIdOptional.isEmpty());
@@ -208,7 +209,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(203)
-    public void getTokensForUser() throws IOException {
+    void getTokensForUser() throws IOException {
         IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId);
         TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient
                 .getAccessTokensOAuth2UsernamePassword(newUserId.getId(), "s3cr3t", newClientId, "top-s3cre3t");
@@ -225,7 +226,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(204)
-    public void removeRoleFromUser() throws AuthenticationException, IOException {
+    void removeRoleFromUser() throws AuthenticationException, IOException {
         iamServiceUserManagerClient.removeRoleFromUser(newUserId, newRoleId);
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(newUserId);
         Optional<String> roleIdOptional = userInfo.getRoles().stream().filter(r -> r.equals(newRoleId.getId())).findFirst();
@@ -234,7 +235,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(205)
-    public void deleteNewUser() throws AuthenticationException, IOException {
+    void deleteNewUser() throws AuthenticationException, IOException {
         iamServiceUserManagerClient.deleteUser(newUserId);
         ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         Optional<String> userIdOptional = projectInfo.getUsers().stream().filter(u -> u.equals(newUserId.getId())).findFirst();
@@ -243,7 +244,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(206)
-    public void deleteNewClient() throws AuthenticationException, IOException {
+    void deleteNewClient() throws AuthenticationException, IOException {
         Optional<String> optional = iamServiceProjectManagerClient.getInfo().getClients().stream().filter(c -> c.equals(newClientId.getId())).findFirst();
         assertTrue(optional.isPresent());
         iamServiceProjectManagerClient.deleteClient(newClientId);
@@ -253,7 +254,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(207)
-    public void setAudienceTest() throws AuthenticationException, IOException {
+    void setAudienceTest() throws AuthenticationException, IOException {
         Set<String> audience1 = Set.of("a1", "a2");
         Set<String> audience2 = Set.of("a5", "a6");
         iamServiceProjectManagerClient.setAudience(audience1);
@@ -266,7 +267,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(807)
-    public void deleteRole() throws AuthenticationException {
+    void deleteRole() throws AuthenticationException {
         iamServiceProjectManagerClient.deleteRole(newRoleId);
         Collection<RoleInfo> roles = iamServiceProjectManagerClient.getRoles();
         assertEquals(1, roles.size());
@@ -274,7 +275,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(808)
-    public void deletePermissions() throws AuthenticationException {
+    void deletePermissions() throws AuthenticationException {
         iamServiceProjectManagerClient.deletePermission(PermissionId.from(organizationId.getId() + "-" + projectId.getId() + ".data" + ".read"));
         Set<PermissionInfo> permissions = iamServiceProjectManagerClient.getPermissions();
         assertEquals(5, permissions.size());
@@ -285,7 +286,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(809)
-    public void getProjectInfo() throws IOException {
+    void getProjectInfo() throws IOException {
         ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         assertNotNull(projectInfo);
         assertEquals(projectId.getId(), projectInfo.getId());
@@ -293,7 +294,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(810)
-    public void getUserInfo() throws IOException {
+    void getUserInfo() throws IOException {
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(adminUserId);
         assertNotNull(userInfo);
         assertEquals(userInfo.getId(), adminUserId.getId());
@@ -301,7 +302,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(811)
-    public void getClientInfo() throws IOException {
+    void getClientInfo() throws IOException {
         ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(adminClientId);
         assertNotNull(clientInfo);
         assertEquals(clientInfo.getId(), adminClientId.getId());
@@ -309,7 +310,7 @@ public class ProjectManagementTests {
 
     @Test
     @Order(990)
-    public void cleanupProjectInvalidTokenTest() {
+    void cleanupProjectInvalidTokenTest() {
         AuthenticationException exception = assertThrows(AuthenticationException.class, () -> {
             iamServiceManagerClient.deleteOrganizationRecursively(jwt_organization_admin_token, organizationId);
         });
@@ -317,8 +318,10 @@ public class ProjectManagementTests {
 
     @Test
     @Order(991)
-    public void cleanupProjectTest() throws AuthenticationException {
-        iamServiceManagerClient.deleteOrganizationRecursively(jwt_admin_token, organizationId);
+    void cleanupProjectTest() {
+        assertDoesNotThrow(() ->
+            iamServiceManagerClient.deleteOrganizationRecursively(jwt_admin_token, organizationId)
+        );
     }
 
 }

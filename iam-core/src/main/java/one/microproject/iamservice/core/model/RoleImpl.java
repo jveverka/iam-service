@@ -28,9 +28,7 @@ public class RoleImpl implements Role {
         this.id = id;
         this.name = name;
         this.permissions = new HashSet<>();
-        permissions.forEach(permission ->
-            this.permissions.add(permission)
-        );
+        permissions.forEach(this.permissions::add);
     }
 
     @Override

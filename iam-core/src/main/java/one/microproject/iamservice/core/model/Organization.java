@@ -11,10 +11,10 @@ import java.util.Map;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
         property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = OrganizationImpl.class, name = "organization") })
+        @JsonSubTypes.Type(value = OrganizationImpl.class, name = "iam-organization") }
+        )
 public interface Organization {
 
     OrganizationId getId();

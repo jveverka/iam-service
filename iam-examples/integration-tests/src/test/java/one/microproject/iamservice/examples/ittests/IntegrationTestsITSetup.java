@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class IntegrationTestsITSetup {
+class IntegrationTestsITSetup {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationTestsITSetup.class);
 
@@ -52,13 +52,13 @@ public class IntegrationTestsITSetup {
 
     @Test
     @Order(1)
-    public void checkIamServerIsAliveBeforeSetup() throws IOException {
+    void checkIamServerIsAliveBeforeSetup() throws IOException {
         assertTrue(iamServiceManagerClient.isServerAlive());
     }
 
     @Test
     @Order(2)
-    public void getIamAdminAccessTokens() throws IOException {
+    void getIamAdminAccessTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = getGlobalAdminTokens(iamServiceManagerClient);
         assertTrue(tokenResponseWrapper.isOk());
         iamAdminTokens = tokenResponseWrapper.getTokenResponse();
@@ -68,7 +68,7 @@ public class IntegrationTestsITSetup {
 
     @Test
     @Order(3)
-    public void createOrganizationProjectAndAdminUser() throws AuthenticationException {
+    void createOrganizationProjectAndAdminUser() throws AuthenticationException {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "Method Security Project",
                 clientId.getId(), "top-secret", appAdminUserId.getId(),  "secret", "admin@email.com",

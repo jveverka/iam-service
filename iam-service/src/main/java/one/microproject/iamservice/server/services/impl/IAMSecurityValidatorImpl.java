@@ -30,6 +30,7 @@ import static one.microproject.iamservice.core.ModelCommons.verifyProjectAdminPe
 public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMSecurityValidatorImpl.class);
+    private static final String AUTH_TOKEN_VALIDATION_ERROR = "Authorization token validation has failed.";
 
     private final ProviderConfigurationService providerConfigurationService;
     private final TokenValidator tokenValidator;
@@ -41,7 +42,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     }
 
     @Override
-    public StandardTokenClaims verifyGlobalAdminAccess(String authorization) throws IAMSecurityException {
+    public StandardTokenClaims verifyGlobalAdminAccess(String authorization) {
         StandardTokenClaims standardTokenClaims = verifyToken(authorization);
         boolean result = JWTUtils.validatePermissions(standardTokenClaims, GLOBAL_ADMIN_PERMISSIONS, Set.of());
         if (!result) {
@@ -51,7 +52,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
     }
 
     @Override
-    public StandardTokenClaims verifyToken(String authorization) throws IAMSecurityException {
+    public StandardTokenClaims verifyToken(String authorization) {
         LOG.debug("verifyToken: {}", authorization);
         JWToken token = tokenValidator.extractJwtToken(authorization);
         KeyProvider provider = keyId -> {
@@ -67,22 +68,22 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
             LOG.debug("verifyToken: OK");
             return tokenClaimsOptional.get();
         } else {
-            throw new IAMSecurityException("Authorization token validation has failed.");
+            throw new IAMSecurityException(AUTH_TOKEN_VALIDATION_ERROR);
         }
     }
 
     @Override
-    public void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) throws IAMSecurityException {
+    public void verifyProjectAdminAccess(OrganizationId organizationId, ProjectId projectId) {
         AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
         StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
         LOG.info("JWT iss: {}", standardTokenClaims.getIssuer());
         if (!verifyProjectAdminPermissions(organizationId, projectId, standardTokenClaims.getScope())) {
-            throw new IAMSecurityException("Authorization token validation has failed.");
+            throw new IAMSecurityException(AUTH_TOKEN_VALIDATION_ERROR);
         }
     }
 
     @Override
-    public void verifyUserAccess(OrganizationId organizationId, ProjectId projectId, UserId userId) throws IAMSecurityException {
+    public void verifyUserAccess(OrganizationId organizationId, ProjectId projectId, UserId userId) {
         AuthenticationImpl authentication = (AuthenticationImpl)SecurityContextHolder.getContext().getAuthentication();
         StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
         if (organizationId.equals(standardTokenClaims.getOrganizationId())
@@ -90,7 +91,7 @@ public class IAMSecurityValidatorImpl implements IAMSecurityValidator {
                 && userId.getId().equals(standardTokenClaims.getSubject())) {
             LOG.debug("User Access: OK");
         } else {
-            throw new IAMSecurityException("Authorization token validation has failed.");
+            throw new IAMSecurityException(AUTH_TOKEN_VALIDATION_ERROR);
         }
     }
 

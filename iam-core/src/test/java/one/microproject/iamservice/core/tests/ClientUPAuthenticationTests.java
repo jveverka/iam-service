@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ClientUPAuthenticationTests {
+class ClientUPAuthenticationTests {
 
     private static final String adminPassword = "top-secret";
     private static final String adminSecret = "top-secret";
@@ -87,7 +87,7 @@ public class ClientUPAuthenticationTests {
     @Test
     @Order(1)
     @SuppressWarnings("unchecked")
-    public void authenticateTest() {
+    void authenticateTest() {
         String issuerClaim = issuerUri.toString();
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         UPAuthenticationRequest authenticationRequest = new UPAuthenticationRequest(ModelUtils.IAM_ADMIN_USER, adminPassword, scope, clientCredentials);
@@ -106,7 +106,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(2)
-    public void verifyValidTokensTest() {
+    void verifyValidTokensTest() {
         IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
         IntrospectRequest requestRefreshToken = new IntrospectRequest(refreshToken, TokenType.REFRESH);
         IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
@@ -117,7 +117,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(3)
-    public void refreshTokenTest() {
+    void refreshTokenTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
@@ -127,7 +127,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(4)
-    public void verifyValidRefreshedTokenTest() {
+    void verifyValidRefreshedTokenTest() {
         IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
         IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
         assertTrue(result.getActive());
@@ -135,7 +135,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(5)
-    public void logoutTest() {
+    void logoutTest() {
         RevokeTokenRequest revokeAccessTokenRequest = new RevokeTokenRequest(accessToken, TokenType.BEARER);
         boolean result = authenticationService.revoke(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, revokeAccessTokenRequest);
         assertTrue(result);
@@ -143,7 +143,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(6)
-    public void verifyInvalidTokenTest() {
+    void verifyInvalidTokenTest() {
         IntrospectRequest requestAccessToken = new IntrospectRequest(accessToken, TokenType.BEARER);
         IntrospectResponse result = resourceServerService.introspect(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, requestAccessToken);
         assertFalse(result.getActive());
@@ -151,7 +151,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(7)
-    public void verifyInvalidTokenRenewTest() {
+    void verifyInvalidTokenRenewTest() {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, accessToken, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isEmpty());
@@ -159,7 +159,7 @@ public class ClientUPAuthenticationTests {
 
     @Test
     @Order(8)
-    public void externalTokenVerificationTest() {
+    void externalTokenVerificationTest() {
         Optional<Organization> organizationOptional = resourceServerService.getOrganization(ModelUtils.IAM_ADMINS_ORG);
         assertTrue(organizationOptional.isPresent());
         Optional<Project> projectInfo = resourceServerService.getProject(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);

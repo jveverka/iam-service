@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class OrganizationManagerServiceTests {
+class OrganizationManagerServiceTests {
 
     private static ModelCache modelCache;
     private static OrganizationManagerService organizationManagerService;
@@ -42,14 +42,14 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(1)
-    public void checkEmptyModelTest() {
+    void checkEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(0, all.size());
     }
 
     @Test
     @Order(2)
-    public void createFirstOrganizationTest() throws PKIException {
+    void createFirstOrganizationTest() throws PKIException {
         Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-001", "org-001-name"));
         assertTrue(result.isPresent());
         oid001 = result.get();
@@ -63,7 +63,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(2)
-    public void createSecondOrganizationTest() throws PKIException {
+    void createSecondOrganizationTest() throws PKIException {
         Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-002", "org-002-name"));
         oid002 = result.get();
         assertTrue(result.isPresent());
@@ -77,7 +77,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(3)
-    public void createExistingOrganizationTest() throws PKIException {
+    void createExistingOrganizationTest() throws PKIException {
         Optional<OrganizationId> result = organizationManagerService.create(CreateOrganizationRequest.from("org-001", "org-001-name"));
         assertFalse(result.isPresent());
         result = organizationManagerService.create(CreateOrganizationRequest.from("org-002", "org-002-name"));
@@ -92,7 +92,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(4)
-    public void removeFirstOrganizationTest() {
+    void removeFirstOrganizationTest() {
         boolean removed = organizationManagerService.remove(oid001);
         assertTrue(removed);
         Collection<Organization> all = organizationManagerService.getAll();
@@ -105,7 +105,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(5)
-    public void removeSecondOrganizationTest() {
+    void removeSecondOrganizationTest() {
         boolean removed = organizationManagerService.remove(oid002);
         assertTrue(removed);
         Collection<Organization> all = organizationManagerService.getAll();
@@ -118,7 +118,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(6)
-    public void removeNotExistingOrganizationTest() {
+    void removeNotExistingOrganizationTest() {
         boolean removed = organizationManagerService.remove(oid001);
         assertFalse(removed);
         removed = organizationManagerService.remove(oid002);
@@ -127,7 +127,7 @@ public class OrganizationManagerServiceTests {
 
     @Test
     @Order(7)
-    public void checkFinalEmptyModelTest() {
+    void checkFinalEmptyModelTest() {
         Collection<Organization> all = organizationManagerService.getAll();
         assertEquals(0,all.size());
     }

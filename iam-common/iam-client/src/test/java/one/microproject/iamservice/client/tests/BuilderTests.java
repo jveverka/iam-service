@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class BuilderTests {
+class BuilderTests {
 
     @Test
-    public void testBuilder() throws MalformedURLException, URISyntaxException {
+    void testBuilder() throws MalformedURLException, URISyntaxException {
         IAMClient iamClient = IAMClientBuilder.builder()
                 .setOrganizationId("org-01")
                 .setProjectId("project-01")

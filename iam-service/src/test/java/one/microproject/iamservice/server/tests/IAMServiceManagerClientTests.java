@@ -37,13 +37,14 @@ import static one.microproject.iamservice.core.ModelCommons.IAM_SERVICE_PROJECTS
 import static one.microproject.iamservice.core.ModelCommons.IAM_SERVICE_USERS_RESOURCE_ACTION_ALL;
 import static one.microproject.iamservice.core.utils.ModelUtils.IAM_ADMINS_ORG;
 import static one.microproject.iamservice.core.utils.ModelUtils.IAM_ADMINS_PROJECT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class IAMServiceManagerClientTests {
+class IAMServiceManagerClientTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(IAMServiceManagerClientTests.class);
 
@@ -68,7 +69,7 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(1)
-    public void createIamClient() throws MalformedURLException, InterruptedException {
+    void createIamClient() throws MalformedURLException, InterruptedException {
         URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
@@ -79,14 +80,16 @@ public class IAMServiceManagerClientTests {
                 .setProjectId(IAM_ADMINS_PROJECT.getId())
                 .withHttpProxy(baseUrl, 10L, TimeUnit.SECONDS)
                 .build();
+        assertNotNull(iamClient);
         while(!iamClient.waitForInit(15L, TimeUnit.SECONDS)) {
             LOG.info("waiting for iam-client initialization ...");
         }
+        assertNotNull(iamServiceManagerClient);
     }
 
     @Test
     @Order(2)
-    public void getTokens() throws IOException {
+    void getTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
@@ -97,14 +100,14 @@ public class IAMServiceManagerClientTests {
         assertNotNull(tokenResponse.getRefreshToken());
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
-        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        assertEquals(tokenResponse.getTokenType(), TokenType.BEARER.getType());
         LOG.info("AccessToken : {}", tokenResponse.getAccessToken());
         LOG.info("RefreshToken: {}", tokenResponse.getRefreshToken());
     }
 
     @Test
     @Order(3)
-    public void testValidateTokens() {
+    void testValidateTokens() {
         Optional<StandardTokenClaims> claimsSet = iamClient.validate(JWToken.from(tokenResponse.getAccessToken()));
         assertNotNull(claimsSet);
         assertTrue(claimsSet.isPresent());
@@ -115,7 +118,7 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(4)
-    public void testValidateTokensForOrganizationAndProjectOK() {
+    void testValidateTokensForOrganizationAndProjectOK() {
         Optional<StandardTokenClaims> claimsSet = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, JWToken.from(tokenResponse.getAccessToken()));
         assertNotNull(claimsSet);
         assertTrue(claimsSet.isPresent());
@@ -126,7 +129,7 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(5)
-    public void testValidateTokensForOrganizationAndProjectInvalid() {
+    void testValidateTokensForOrganizationAndProjectInvalid() {
         Optional<StandardTokenClaims> claimsSet = iamClient.validate(IAM_ADMINS_ORG, ProjectId.from("unknown-project"), JWToken.from(tokenResponse.getAccessToken()));
         assertNotNull(claimsSet);
         assertTrue(claimsSet.isEmpty());
@@ -140,7 +143,7 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(6)
-    public void testValidateTokensForOrganizationAndProjectWithPermissionsOK() {
+    void testValidateTokensForOrganizationAndProjectWithPermissionsOK() {
         boolean result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, GLOBAL_ADMIN_PERMISSIONS, JWToken.from(tokenResponse.getAccessToken()));
         assertTrue(result);
         result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, GLOBAL_ADMIN_PERMISSIONS, JWToken.from(tokenResponse.getRefreshToken()));
@@ -149,7 +152,7 @@ public class IAMServiceManagerClientTests {
 
     @Test
     @Order(7)
-    public void testValidateTokensForOrganizationAndProjectWithPermissionsInvalid() {
+    void testValidateTokensForOrganizationAndProjectWithPermissionsInvalid() {
         boolean result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, NEW_ADMIN_ORGANIZATION_SET, JWToken.from(tokenResponse.getAccessToken()));
         assertFalse(result);
         result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, NEW_ADMIN_ORGANIZATION_SET, JWToken.from(tokenResponse.getRefreshToken()));

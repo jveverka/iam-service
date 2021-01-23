@@ -311,16 +311,12 @@ public final class TokenUtils {
     }
 
     public static boolean isPKCEEnabled(String codeChallenge, String codeVerifier) {
-        if (codeChallenge == null && codeVerifier == null) {
-            return false;
-        }
-        if (codeChallenge.isEmpty() && codeVerifier == null) {
-            return false;
-        }
-        if (codeChallenge.isEmpty() && codeVerifier.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !(isNullOrEmpty(codeChallenge) && isNullOrEmpty(codeVerifier));
+    }
+
+    private static boolean isNullOrEmpty(String str) {
+        if (str == null) return true;
+        return str.isEmpty();
     }
 
 }

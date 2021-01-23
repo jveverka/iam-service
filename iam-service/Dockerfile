@@ -2,7 +2,7 @@
 
 # https://hub.docker.com/r/adoptopenjdk/openjdk11
 FROM adoptopenjdk/openjdk11:alpine-jre
-COPY build/libs/iam-service-2.4.3-RELEASE.jar /iam-service-2.4.3-RELEASE.jar
+COPY build/libs/iam-service-2.5.0-RELEASE.jar /iam-service-2.5.0-RELEASE.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY src/main/resources/application.yml /application.yml
 RUN chmod +x /iam-service-start.sh

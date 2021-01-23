@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PKCETests {
+class PKCETests {
 
     private static Stream<Arguments> createPKCEVerifierArguments() {
         return Stream.of(
@@ -29,7 +29,7 @@ public class PKCETests {
 
     @ParameterizedTest
     @MethodSource("createPKCEVerifierArguments")
-    public void testPKCEVerifier(String codeChallenge, PKCEMethod codeChallengeMethod, String codeVerifier, Boolean expectedResult) throws NoSuchAlgorithmException {
+    void testPKCEVerifier(String codeChallenge, PKCEMethod codeChallengeMethod, String codeVerifier, Boolean expectedResult) throws NoSuchAlgorithmException {
         boolean result = verifyPKCE(codeChallenge, codeChallengeMethod, codeVerifier);
         assertEquals(expectedResult, result);
     }
@@ -43,7 +43,7 @@ public class PKCETests {
 
     @ParameterizedTest
     @MethodSource("createPKCEGeneratorAndVerifierArguments")
-    public void testPKCEGeneratorAndVerifier(PKCEMethod codeChallengeMethod) throws NoSuchAlgorithmException {
+    void testPKCEGeneratorAndVerifier(PKCEMethod codeChallengeMethod) throws NoSuchAlgorithmException {
         String codeVerifier = generateCodeVerifier();
         String codeChallenge = generateCodeChallenge(codeVerifier, codeChallengeMethod);
         boolean result = verifyPKCE(codeChallenge, codeChallengeMethod, codeVerifier);

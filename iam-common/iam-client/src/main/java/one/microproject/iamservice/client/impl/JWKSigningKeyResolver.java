@@ -31,7 +31,7 @@ public class JWKSigningKeyResolver extends SigningKeyResolverAdapter {
                 throw new UnsupportedJwtException("Key kid=" + keyId + " for JWT token not found !");
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new KeyResolveException(e);
         }
     }
 

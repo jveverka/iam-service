@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ResourceServerTestsIT {
+class ResourceServerTestsIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceServerTestsIT.class);
 
@@ -57,7 +57,7 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(1)
-    public void checkIamServerIsAliveTestsIT() {
+    void checkIamServerIsAliveTestsIT() {
         ResponseEntity<String> response = restTemplate.getForEntity(
                 "http://localhost:" + iamServerPort + "/actuator/info", String.class);
         assertNotNull(response);
@@ -66,7 +66,7 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(2)
-    public void checkResourceServerIsAliveTestsITNoTokens() {
+    void checkResourceServerIsAliveTestsITNoTokens() {
         ResponseEntity<SystemInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/public/info", SystemInfo.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -74,7 +74,7 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(3)
-    public void getIamAdminAccessTokens() throws IOException {
+    void getIamAdminAccessTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
@@ -86,7 +86,7 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(4)
-    public void checkResourceServerIsAliveTestsITWithToken() {
+    void checkResourceServerIsAliveTestsITWithToken() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + iamAdminTokens.getAccessToken()));
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
@@ -100,7 +100,7 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(5)
-    public void checkResourceDataITNoTokens() {
+    void checkResourceDataITNoTokens() {
         ResponseEntity<SystemInfo> response = restTemplate.getForEntity(
                 "http://localhost:" + resourceServerPort + "/services/secure/data", SystemInfo.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -108,7 +108,7 @@ public class ResourceServerTestsIT {
 
     @Test
     @Order(6)
-    public void checkResourceDataITWithToken() {
+    void checkResourceDataITWithToken() {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Authorization", List.of("Bearer " + iamAdminTokens.getAccessToken()));
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);

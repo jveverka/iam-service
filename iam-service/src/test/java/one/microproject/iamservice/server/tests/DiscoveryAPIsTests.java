@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class DiscoveryAPIsTests {
+class DiscoveryAPIsTests {
 
     private static IAMServiceManagerClient iamServiceManagerClient;
     private static IAMServiceProjectManagerClient iamServiceProjectManagerClient;
@@ -39,19 +39,20 @@ public class DiscoveryAPIsTests {
 
     @Test
     @Order(1)
-    public void initTest() throws MalformedURLException {
+    void initTest() throws MalformedURLException {
         URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
+        assertNotNull(iamServiceManagerClient);
         iamServiceProjectManagerClient = iamServiceManagerClient.getIAMServiceProject(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
         iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(null, ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
     }
 
     @Test
     @Order(2)
-    public void getOrganizationsInfoTest() throws IOException {
+    void getOrganizationsInfoTest() throws IOException {
         Collection<OrganizationInfo> organizationInfo = iamServiceManagerClient.getOrganizations();
         assertNotNull(organizationInfo);
         assertTrue(organizationInfo.size() > 0);
@@ -65,7 +66,7 @@ public class DiscoveryAPIsTests {
 
     @Test
     @Order(3)
-    public void getOrganizationInfoTest() throws IOException {
+    void getOrganizationInfoTest() throws IOException {
         OrganizationInfo organizationInfo = iamServiceManagerClient.getOrganization(ModelUtils.IAM_ADMINS_ORG);
         assertNotNull(organizationInfo);
         assertNotNull(organizationInfo.getName());
@@ -76,7 +77,7 @@ public class DiscoveryAPIsTests {
 
     @Test
     @Order(4)
-    public void getProjectInfoTest() throws IOException {
+    void getProjectInfoTest() throws IOException {
         ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         assertNotNull(projectInfo);
         assertNotNull(projectInfo.getId());
@@ -90,7 +91,7 @@ public class DiscoveryAPIsTests {
 
     @Test
     @Order(5)
-    public void getUserInfoTest() throws IOException {
+    void getUserInfoTest() throws IOException {
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(ModelUtils.IAM_ADMIN_USER);
         assertNotNull(userInfo);
         assertNotNull(userInfo.getId());
@@ -105,7 +106,7 @@ public class DiscoveryAPIsTests {
 
     @Test
     @Order(6)
-    public void getClientInfoTest() throws IOException {
+    void getClientInfoTest() throws IOException {
         ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(ModelUtils.IAM_ADMIN_CLIENT_ID);
         assertNotNull(clientInfo);
         assertNotNull(clientInfo.getId());

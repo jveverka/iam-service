@@ -39,6 +39,7 @@ import static one.microproject.iamservice.persistence.mongo.MongoUtils.createJac
 public class MongoModelWrapperImpl implements ModelWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoModelWrapperImpl.class);
+    private static final String OPERATION_NOT_IMPLEMENTED = "Operation is not implemented.";
 
     private final JacksonMongoCollection<ModelInfoWrapper> modelInfoCollection;
     private final JacksonMongoCollection<OrganizationMongoWrapper> organizationCollection;
@@ -85,27 +86,27 @@ public class MongoModelWrapperImpl implements ModelWrapper {
 
     @Override
     public List<OrganizationWrapper> getOrganizations() {
-        throw new UnsupportedOperationException("Operation is not implemented.");
+        throw new UnsupportedOperationException(OPERATION_NOT_IMPLEMENTED);
     }
 
     @Override
     public List<ProjectWrapper> getProjects() {
-        throw new UnsupportedOperationException("Operation is not implemented.");
+        throw new UnsupportedOperationException(OPERATION_NOT_IMPLEMENTED);
     }
 
     @Override
     public List<UserWrapper> getUsers() {
-        throw new UnsupportedOperationException("Operation is not implemented.");
+        throw new UnsupportedOperationException(OPERATION_NOT_IMPLEMENTED);
     }
 
     @Override
     public List<ClientWrapper> getClients() {
-        throw new UnsupportedOperationException("Operation is not implemented.");
+        throw new UnsupportedOperationException(OPERATION_NOT_IMPLEMENTED);
     }
 
     @Override
     public List<RoleWrapper> getRoles() {
-        throw new UnsupportedOperationException("Operation is not implemented.");
+        throw new UnsupportedOperationException(OPERATION_NOT_IMPLEMENTED);
     }
 
     @Override

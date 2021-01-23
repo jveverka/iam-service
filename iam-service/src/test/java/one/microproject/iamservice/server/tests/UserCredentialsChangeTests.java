@@ -21,35 +21,41 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserCredentialsChangeTests {
+class UserCredentialsChangeTests {
 
     private static IAMServiceManagerClient iamServiceManagerClient;
     private static TokenResponse tokenResponse;
+
+    private static final String ADMIN_NAME = "admin";
+    private static final String ADMIN_PASSWORD = "secret";
 
     @LocalServerPort
     private int port;
 
     @Test
     @Order(0)
-    public void initTests() throws MalformedURLException {
+    void initTests() throws MalformedURLException {
         URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
+        assertNotNull(iamServiceManagerClient);
     }
 
     @Test
     @Order(1)
-    public void getTokens() throws IOException {
+    void getTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+                .getAccessTokensOAuth2UsernamePassword(ADMIN_NAME, ADMIN_PASSWORD, ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
         tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
@@ -57,24 +63,26 @@ public class UserCredentialsChangeTests {
         assertNotNull(tokenResponse.getRefreshToken());
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
-        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        assertEquals(tokenResponse.getTokenType(), TokenType.BEARER.getType());
     }
 
     @Test
     @Order(2)
-    public void changeAdminUserPassword() throws AuthenticationException {
+    void changeAdminUserPassword() {
         IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient
                 .getIAMServiceUserManagerClient(tokenResponse.getAccessToken(), ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
         UserCredentialsChangeRequest request = new UserCredentialsChangeRequest("new-secret");
-        iamServiceUserManagerClient.changeUserCredentials(ModelUtils.IAM_ADMIN_USER, tokenResponse.getAccessToken(), request);
+        assertDoesNotThrow(() ->
+            iamServiceUserManagerClient.changeUserCredentials(ModelUtils.IAM_ADMIN_USER, tokenResponse.getAccessToken(), request)
+        );
     }
 
     @Test
     @Order(3)
-    public void getTokensAfterPasswordChange() throws IOException {
+    void getTokensAfterPasswordChange() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .getAccessTokensOAuth2UsernamePassword("admin", "new-secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+                .getAccessTokensOAuth2UsernamePassword(ADMIN_NAME, "new-secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
         tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
@@ -82,24 +90,26 @@ public class UserCredentialsChangeTests {
         assertNotNull(tokenResponse.getRefreshToken());
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
-        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        assertEquals(tokenResponse.getTokenType(), TokenType.BEARER.getType());
     }
 
     @Test
     @Order(4)
-    public void changeBackAdminUserPassword() throws AuthenticationException {
+    void changeBackAdminUserPassword() {
         IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient
                 .getIAMServiceUserManagerClient(tokenResponse.getAccessToken(), ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT);
-        UserCredentialsChangeRequest request = new UserCredentialsChangeRequest("secret");
-        iamServiceUserManagerClient.changeUserCredentials(ModelUtils.IAM_ADMIN_USER, tokenResponse.getAccessToken(), request);
+        UserCredentialsChangeRequest request = new UserCredentialsChangeRequest(ADMIN_PASSWORD);
+        assertDoesNotThrow(() ->
+            iamServiceUserManagerClient.changeUserCredentials(ModelUtils.IAM_ADMIN_USER, tokenResponse.getAccessToken(), request)
+        );
     }
 
     @Test
     @Order(5)
-    public void getTokensAgain() throws IOException {
+    void getTokensAgain() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
+                .getAccessTokensOAuth2UsernamePassword(ADMIN_NAME, ADMIN_PASSWORD, ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
         tokenResponse = tokenResponseWrapper.getTokenResponse();
         assertNotNull(tokenResponse);
@@ -107,7 +117,7 @@ public class UserCredentialsChangeTests {
         assertNotNull(tokenResponse.getRefreshToken());
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
-        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        assertEquals(tokenResponse.getTokenType(), TokenType.BEARER.getType());
     }
 
 }

@@ -31,6 +31,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static one.microproject.iamservice.serviceclient.impl.Constants.DELIMITER;
+import static one.microproject.iamservice.serviceclient.impl.Constants.SERVICES_DISCOVERY;
+
 
 public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
 
@@ -125,7 +128,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     @Override
     public Collection<OrganizationInfo> getOrganizations() throws IOException {
          Request request = new Request.Builder()
-                 .url(baseURL + "/services/discovery")
+                 .url(baseURL + SERVICES_DISCOVERY)
                  .get()
                  .build();
          Response response = client.newCall(request).execute();
@@ -139,7 +142,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     @Override
     public ProjectInfo getProject(OrganizationId organizationId, ProjectId projectId) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId())
+                .url(baseURL + SERVICES_DISCOVERY + DELIMITER + organizationId.getId() + DELIMITER + projectId.getId())
                 .get()
                 .build();
         Response response = client.newCall(request).execute();
@@ -153,7 +156,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     @Override
     public ClientInfo getClient(OrganizationId organizationId, ProjectId projectId, ClientId clientId) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/clients/" + clientId.getId())
+                .url(baseURL + SERVICES_DISCOVERY + DELIMITER + organizationId.getId() + DELIMITER + projectId.getId() + "/clients/" + clientId.getId())
                 .get()
                 .build();
         Response response = client.newCall(request).execute();
@@ -167,7 +170,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     @Override
     public UserInfo getUser(OrganizationId organizationId, ProjectId projectId, UserId userId) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/discovery/" + organizationId.getId() + "/" + projectId.getId() + "/users/" + userId.getId())
+                .url(baseURL + SERVICES_DISCOVERY + DELIMITER + organizationId.getId() + DELIMITER + projectId.getId() + "/users/" + userId.getId())
                 .get()
                 .build();
         Response response = client.newCall(request).execute();
@@ -181,7 +184,7 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
     @Override
     public OrganizationInfo getOrganization(OrganizationId organizationId) throws IOException {
         Request request = new Request.Builder()
-                .url(baseURL + "/services/discovery/" + organizationId.getId())
+                .url(baseURL + SERVICES_DISCOVERY + DELIMITER + organizationId.getId())
                 .get()
                 .build();
         Response response = client.newCall(request).execute();

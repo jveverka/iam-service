@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TokenUtilsTests {
+class TokenUtilsTests {
 
     private static final String ISSUER = "issuer";
     private static final String SUBJECT = "subject";
@@ -81,14 +81,14 @@ public class TokenUtilsTests {
     }
 
     @Test
-    public void keyPairGenerateTest() throws NoSuchAlgorithmException, NoSuchProviderException {
+    void keyPairGenerateTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
+    void jwTokenValidityTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         assertNotNull(keyPair);
         JWToken jwt = TokenUtils.issueToken(issuerUri, ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, new Scope(ROLES), claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
@@ -109,7 +109,7 @@ public class TokenUtilsTests {
     }
 
     @Test
-    public void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
+    void jwTokenExpiredTest() throws NoSuchAlgorithmException, InterruptedException, NoSuchProviderException {
         Long duration = 1L;
         KeyPair keyPair = TokenUtils.generateKeyPair();
         JWToken jwt = TokenUtils.issueToken(issuerUri, ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, duration, TIME_UNIT, Scope.empty(), claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
@@ -119,7 +119,7 @@ public class TokenUtilsTests {
     }
 
     @Test
-    public void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
+    void jwTokenInvalidKeyTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         JWToken jwt = TokenUtils.issueToken(issuerUri, ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, Scope.empty(), claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         keyPair = TokenUtils.generateKeyPair();
@@ -129,7 +129,7 @@ public class TokenUtilsTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
+    void extractTokenTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         JWToken jwt = TokenUtils.issueToken(issuerUri, ORGANIZATION_ID, PROJECT_ID, AUDIENCE, USER_ID, DURATION, TIME_UNIT, Scope.empty(), claimRoles, KEY_ID, keyPair.getPrivate(), TokenType.BEARER);
         DefaultClaims defaultClaims = TokenUtils.extractClaims(jwt);
@@ -140,7 +140,7 @@ public class TokenUtilsTests {
     }
 
     @Test
-    public void identicalTokenGenerationTest() throws NoSuchAlgorithmException, NoSuchProviderException {
+    void identicalTokenGenerationTest() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         Date issuedAt = new Date();
         Date notBefore = issuedAt;
@@ -151,7 +151,7 @@ public class TokenUtilsTests {
     }
 
     @Test
-    public void signedCertificateHierarchyTest() throws PKIException {
+    void signedCertificateHierarchyTest() throws PKIException {
         String organizationId = "organization-001";
         String projectId = "project-001";
         String userId = "user-001";
@@ -174,7 +174,7 @@ public class TokenUtilsTests {
 
     @ParameterizedTest
     @MethodSource("createRoleFilterArguments")
-    public void roleFilteringTest(Set<Permission> availablePermissions, Scope scope, Scope expectedResult) {
+    void roleFilteringTest(Set<Permission> availablePermissions, Scope scope, Scope expectedResult) {
         Scope filterScopes = TokenUtils.filterScopes(availablePermissions, scope);
         assertNotNull(filterScopes);
         assertTrue(expectedResult.getValues().size() == filterScopes.getValues().size());
@@ -197,14 +197,14 @@ public class TokenUtilsTests {
 
     @ParameterizedTest
     @MethodSource("createScopeArguments")
-    public void scopeParsingTest(String scopes, Scope expectedResult) {
+    void scopeParsingTest(String scopes, Scope expectedResult) {
         Scope result = ModelUtils.getScopes(scopes);
         assertNotNull(result);
         assertEquals(result, expectedResult);
     }
 
     @Test
-    public void testBigIntegerConversion() {
+    void testBigIntegerConversion() {
         BigInteger bigInteger = BigInteger.valueOf(System.currentTimeMillis());
         byte[] bytes = TokenUtils.toBytesUnsigned(bigInteger);
         BigInteger deserialized =  new BigInteger(bytes);
@@ -212,7 +212,7 @@ public class TokenUtilsTests {
     }
 
     @Test
-    public void testPublicKeySerializationAndDeserialization() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException {
+    void testPublicKeySerializationAndDeserialization() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException {
         KeyPair keyPair = TokenUtils.generateKeyPair();
         RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
         BigInteger exponent = rsaPublicKey.getPublicExponent();

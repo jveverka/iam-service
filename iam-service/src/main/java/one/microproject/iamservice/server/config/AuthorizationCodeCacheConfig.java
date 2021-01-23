@@ -32,7 +32,7 @@ public class AuthorizationCodeCacheConfig {
     @Bean
     @Scope("singleton")
     public AuthorizationCodeCache getCodeCache(CacheHolder<AuthorizationCodeContext> cache) {
-        return new AuthorizationCodeCacheImpl(getDuration(), getTimeUnit(), cache);
+        return new AuthorizationCodeCacheImpl(getDuration(), getTimeUnitValue(), cache);
     }
 
     public long getDuration() {
@@ -51,7 +51,7 @@ public class AuthorizationCodeCacheConfig {
         this.timeunit = timeunit;
     }
 
-    public TimeUnit getTimeUnit() {
+    public TimeUnit getTimeUnitValue() {
         return TimeUnit.valueOf(timeunit);
     }
 

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class HealthCheckTests {
+class HealthCheckTests {
 
     @LocalServerPort
     private int port;
@@ -27,17 +27,18 @@ public class HealthCheckTests {
 
     @Test
     @Order(1)
-    public void initTest() throws MalformedURLException {
+    void initTest() throws MalformedURLException {
         URL baseUrl = new URL("http://localhost:" + port);
         iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
+        assertNotNull(iamServiceManagerClient);
     }
 
     @Test
     @Order(2)
-    public void getHealthCheck() throws IOException {
+    void getHealthCheck() throws IOException {
         String response = iamServiceManagerClient.getActuatorInfo();
         assertNotNull(response);
     }

@@ -58,7 +58,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class IntegrationTestsITUserManual {
+class IntegrationTestsITUserManual {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationTestsITUserManual.class);
 
@@ -108,13 +108,13 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(1)
-    public void checkIamServerIsAliveBeforeSetup() throws IOException {
+    void checkIamServerIsAliveBeforeSetup() throws IOException {
         assertTrue(iamServiceManagerClient.isServerAlive());
     }
 
     @Test
     @Order(2)
-    public void getIamAdminAccessTokens() throws IOException {
+    void getIamAdminAccessTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = getGlobalAdminTokens(iamServiceManagerClient, globalAdminPassword, globalAdminClientSecret);
         assertTrue(tokenResponseWrapper.isOk());
         globalAdminTokens = tokenResponseWrapper.getTokenResponse();
@@ -124,7 +124,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(3)
-    public void createOrganizationProjectAndAdminUser() throws AuthenticationException, IOException {
+    void createOrganizationProjectAndAdminUser() throws AuthenticationException, IOException {
         SetupOrganizationRequest setupOrganizationRequest = new SetupOrganizationRequest(organizationId.getId(), "IT Testing",
                 projectId.getId(),  "User Manual Example Project",
                 projectAdminClientId.getId(), projectAdminClientSecret, projectAdminUserId.getId(),  projectAdminUserPassword, projectAdminEmail,
@@ -140,7 +140,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(4)
-    public void getProjectAdminTokens() throws IOException {
+    void getProjectAdminTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId)
                 .getAccessTokensOAuth2UsernamePassword(projectAdminUserId.getId(), projectAdminUserPassword, projectAdminClientId, projectAdminClientSecret);
         assertTrue(tokenResponseWrapper.isOk());
@@ -151,7 +151,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(5)
-    public void createProjectClient() throws IOException, AuthenticationException {
+    void createProjectClient() throws IOException, AuthenticationException {
         iamServiceProjectClient = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), organizationId, projectId);
         ClientProperties clientProperties =  new ClientProperties("", true, true, true, Map.of());
         CreateClient createClient = new CreateClient(projectClientId.getId(), "Second Client", 3600L,  3600L, "ds65f",  clientProperties);
@@ -164,7 +164,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(6)
-    public void createProjectRoles() throws IOException, AuthenticationException {
+    void createProjectRoles() throws IOException, AuthenticationException {
         iamServiceProjectClient = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), organizationId, projectId);
         iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(projectAdminTokens.getAccessToken(), organizationId, projectId);
         CreateRole createReaderRole = new CreateRole("reader-role", "", Set.of(
@@ -192,14 +192,14 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(7)
-    public void testUsersExist() {
+    void testUsersExist() {
         assertThrows(IOException.class, () -> iamServiceUserManagerClient.getUserInfo(readerUserId));
         assertThrows(IOException.class, () -> iamServiceUserManagerClient.getUserInfo(writerUserId));
     }
 
     @Test
     @Order(8)
-    public void createReadUser() throws IOException, AuthenticationException {
+    void createReadUser() throws IOException, AuthenticationException {
         CreateUser createReadOnlyUser = new CreateUser(readerUserId.getId(), "", 3600L, 3600L, "", "as87d6a", new UserProperties(Map.of()));
         iamServiceUserManagerClient.createUser(createReadOnlyUser);
 
@@ -209,7 +209,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(9)
-    public void createWriteUser() throws IOException, AuthenticationException {
+    void createWriteUser() throws IOException, AuthenticationException {
         CreateUser createReadWriteUser = new CreateUser(writerUserId.getId(), "", 3600L, 3600L, "", "6a57dfa", new UserProperties(Map.of()));
         iamServiceUserManagerClient.createUser(createReadWriteUser);
 
@@ -219,7 +219,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(10)
-    public void assignRoles() throws IOException, AuthenticationException {
+    void assignRoles() throws IOException, AuthenticationException {
         iamServiceUserManagerClient.addRoleToUser(readerUserId, RoleId.from("reader-role"));
         iamServiceUserManagerClient.addRoleToUser(writerUserId, RoleId.from("writer-role"));
         iamServiceUserManagerClient.addRoleToUser(projectAdminUserId, RoleId.from("admin-role"));
@@ -235,7 +235,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(11)
-    public void getReadUserTokens() throws IOException {
+    void getReadUserTokens() throws IOException {
         TokenResponseWrapper readUserWrapper = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId)
                 .getAccessTokensOAuth2UsernamePassword(readerUserId.getId(), "as87d6a", projectClientId, "ds65f");
         assertTrue(readUserWrapper.isOk());
@@ -245,7 +245,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(12)
-    public void getWriteUserTokens() throws IOException {
+    void getWriteUserTokens() throws IOException {
         TokenResponseWrapper writeUserWrapper = iamServiceManagerClient.getIAMAuthorizerClient(organizationId, projectId)
                 .getAccessTokensOAuth2UsernamePassword(writerUserId.getId(), "6a57dfa", projectClientId, "ds65f");
         assertTrue(writeUserWrapper.isOk());
@@ -255,21 +255,21 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(13)
-    public void reloadKeyCache() {
+    void reloadKeyCache() {
         boolean result = iamClient.updateKeyCache();
         assertTrue(result);
     }
 
     @Test
     @Order(14)
-    public void validateProjectAdminTokens() {
+    void validateProjectAdminTokens() {
         Optional<StandardTokenClaims> adminUserClaims = iamClient.validate(new JWToken(projectAdminTokens.getAccessToken()));
         assertTrue(adminUserClaims.isPresent());
     }
 
     @Test
     @Order(15)
-    public void validateReadUserTokens() {
+    void validateReadUserTokens() {
         Optional<StandardTokenClaims> readUserClaims = iamClient.validate(new JWToken(readUserTokens.getAccessToken()));
         assertTrue(readUserClaims.isPresent());
         assertEquals(readerUserId.getId(), readUserClaims.get().getSubject());
@@ -280,7 +280,7 @@ public class IntegrationTestsITUserManual {
 
     @Test
     @Order(16)
-    public void validateWriteUserTokens() {
+    void validateWriteUserTokens() {
         Optional<StandardTokenClaims> writeUserClaims = iamClient.validate(new JWToken(writeUserTokens.getAccessToken()));
         assertTrue(writeUserClaims.isPresent());
         assertEquals(writerUserId.getId(), writeUserClaims.get().getSubject());
@@ -294,28 +294,28 @@ public class IntegrationTestsITUserManual {
      */
     @Test
     @Order(80)
-    public void deleteProjectClient() throws AuthenticationException {
+    void deleteProjectClient() throws AuthenticationException {
         iamServiceProjectClient.deleteClient(projectClientId);
         assertThrows(IOException.class, () -> iamServiceProjectClient.getClientInfo(projectClientId));
     }
 
     @Test
     @Order(81)
-    public void deleteReadUser() throws AuthenticationException {
+    void deleteReadUser() throws AuthenticationException {
         iamServiceUserManagerClient.deleteUser(readerUserId);
         assertThrows(IOException.class, () -> iamServiceProjectClient.getUserInfo(readerUserId));
     }
 
     @Test
     @Order(82)
-    public void deleteWriteUser() throws AuthenticationException {
+    void deleteWriteUser() throws AuthenticationException {
         iamServiceUserManagerClient.deleteUser(writerUserId);
         assertThrows(IOException.class, () -> iamServiceProjectClient.getUserInfo(writerUserId));
     }
 
     @Test
     @Order(83)
-    public void deleteOrganization() throws AuthenticationException, IOException {
+    void deleteOrganization() throws AuthenticationException, IOException {
         iamServiceManagerClient.deleteOrganizationRecursively(globalAdminTokens.getAccessToken(), organizationId);
 
         Collection<OrganizationInfo> organizations = iamServiceManagerClient.getOrganizations();

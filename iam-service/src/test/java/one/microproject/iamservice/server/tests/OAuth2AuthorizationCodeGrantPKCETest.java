@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import static one.microproject.iamservice.core.IAMUtils.generateCodeChallenge;
 import static one.microproject.iamservice.core.IAMUtils.generateCodeVerifier;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class OAuth2AuthorizationCodeGrantPKCETest {
+class OAuth2AuthorizationCodeGrantPKCETest {
 
     private static IAMServiceManagerClient iamServiceManagerClient;
     private static TokenResponse tokenResponse;
@@ -58,7 +59,7 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(0)
-    public void initTests() throws MalformedURLException, NoSuchAlgorithmException {
+    void initTests() throws MalformedURLException, NoSuchAlgorithmException {
         codeVerifier = generateCodeVerifier();
         codeChallenge = generateCodeChallenge(codeVerifier,PKCEMethod.S256);
         URL baseUrl = new URL("http://localhost:" + port);
@@ -66,11 +67,12 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
+        assertNotNull(iamServiceManagerClient);
     }
 
     @Test
     @Order(2)
-    public void getAuthorizationCodeTest() throws MalformedURLException, AuthenticationException {
+    void getAuthorizationCodeTest() throws MalformedURLException, AuthenticationException {
         authorizationCode = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAuthorizationCodeOAuth2AuthorizationCodeGrant("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, Set.of(),
@@ -82,15 +84,16 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(3)
-    public void getProvideConsentTest() throws AuthenticationException {
-        iamServiceManagerClient
+    void getProvideConsentTest() {
+        assertDoesNotThrow(() -> iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
-                .setOAuth2AuthorizationCodeGrantConsent(authorizationCode);
+                .setOAuth2AuthorizationCodeGrantConsent(authorizationCode)
+        );
     }
 
     @Test
     @Order(4)
-    public void getTokensTest() throws IOException {
+    void getTokensTest() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2AuthorizationCodeGrant(authorizationCode.getCode(), state, codeVerifier);
@@ -101,12 +104,12 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
         assertNotNull(tokenResponse.getRefreshToken());
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
-        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        assertEquals(tokenResponse.getTokenType(), TokenType.BEARER.getType());
     }
 
     @Test
     @Order(5)
-    public void testUserInfo() throws IOException {
+    void testUserInfo() throws IOException {
         UserInfoResponse response = iamServiceManagerClient
                 .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
                 .getUserInfo(tokenResponse.getAccessToken());
@@ -116,7 +119,7 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(6)
-    public void verifyTokens() throws IOException {
+    void verifyTokens() throws IOException {
         IntrospectResponse response = iamServiceManagerClient
                 .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
                 .tokenIntrospection(tokenResponse.getAccessToken());
@@ -131,7 +134,7 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(7)
-    public void getRefreshTokens() throws IOException {
+    void getRefreshTokens() throws IOException {
         TokenResponseWrapper tokenResponseWrapper = iamServiceManagerClient.getIAMAdminAuthorizerClient()
                 .refreshTokens(tokenResponse.getRefreshToken(), ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
@@ -141,12 +144,12 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
         assertNotNull(tokenResponse.getRefreshToken());
         assertNotNull(tokenResponse.getExpiresIn());
         assertNotNull(tokenResponse.getRefreshExpiresIn());
-        assertNotNull(tokenResponse.getTokenType().equals(TokenType.BEARER.getType()));
+        assertEquals(tokenResponse.getTokenType(), TokenType.BEARER.getType());
     }
 
     @Test
     @Order(8)
-    public void verifyRefreshedTokens() throws IOException {
+    void verifyRefreshedTokens() throws IOException {
         IntrospectResponse response = iamServiceManagerClient
                 .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
                 .tokenIntrospection(tokenResponse.getAccessToken());
@@ -161,18 +164,20 @@ public class OAuth2AuthorizationCodeGrantPKCETest {
 
     @Test
     @Order(9)
-    public void revokeTokens() throws IOException {
-        iamServiceManagerClient
+    void revokeTokens() {
+        assertDoesNotThrow(() -> iamServiceManagerClient
                 .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
-                .revokeToken(tokenResponse.getRefreshToken());
-        iamServiceManagerClient
+                .revokeToken(tokenResponse.getRefreshToken())
+        );
+        assertDoesNotThrow(() -> iamServiceManagerClient
                 .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
-                .revokeToken(tokenResponse.getAccessToken());
+                .revokeToken(tokenResponse.getAccessToken())
+        );
     }
 
     @Test
     @Order(10)
-    public void verifyRevokedTokens() throws IOException {
+    void verifyRevokedTokens() throws IOException {
         IntrospectResponse response = iamServiceManagerClient
                 .getIAMServiceStatusClient(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT)
                 .tokenIntrospection(tokenResponse.getAccessToken());

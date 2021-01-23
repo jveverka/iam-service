@@ -13,7 +13,7 @@ public class AuthenticationImpl implements Authentication {
 
     private final String name;
     private final Collection<GrantedAuthorityImpl> grantedAuthorities;
-    private final StandardTokenClaims standardTokenClaims;
+    private final transient StandardTokenClaims standardTokenClaims;
 
     private boolean isAuthenticated;
 
@@ -46,8 +46,9 @@ public class AuthenticationImpl implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return name;
+        return standardTokenClaims.getSubject();
     }
+
 
     @Override
     public boolean isAuthenticated() {
@@ -55,7 +56,7 @@ public class AuthenticationImpl implements Authentication {
     }
 
     @Override
-    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+    public void setAuthenticated(boolean isAuthenticated) {
         this.isAuthenticated = isAuthenticated;
     }
 

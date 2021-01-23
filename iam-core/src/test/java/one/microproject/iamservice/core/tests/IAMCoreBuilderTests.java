@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class IAMCoreBuilderTests {
+class IAMCoreBuilderTests {
 
     @Test
-    public void testMinimalBuilder() throws Exception {
+    void testMinimalBuilder() throws Exception {
         IAMCoreBuilder.IAMCore iamCore = IAMCoreBuilder.builder()
                 .withBCProvider()
                 .withDefaultModel("secret", "top-secret", "admin@email.com", Boolean.FALSE)
@@ -27,7 +27,7 @@ public class IAMCoreBuilderTests {
     }
 
     @Test
-    public void testBuilder() throws Exception {
+    void testBuilder() throws Exception {
         IAMCoreBuilder.IAMCore iamCore = IAMCoreBuilder.builder()
                 .withBCProvider()
                 .withDefaultModel("secret", "top-secret", "admin@email.com", Boolean.FALSE)

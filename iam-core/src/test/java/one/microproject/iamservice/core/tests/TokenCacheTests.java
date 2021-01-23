@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TokenCacheTests {
+class TokenCacheTests {
 
     private static final OrganizationId ORGANIZATION_ID = OrganizationId.from("unique-organization-id");
     private static final ProjectId PROJECT_ID = ProjectId.from("unique-project-id");
@@ -71,7 +71,7 @@ public class TokenCacheTests {
 
     @Test
     @Order(1)
-    public void afterInitializationTest() {
+    void afterInitializationTest() {
         int size = tokenCache.size();
         assertEquals(0,size);
         assertFalse(tokenCache.isRevoked(jwToken));
@@ -79,7 +79,7 @@ public class TokenCacheTests {
 
     @Test
     @Order(2)
-    public void addRevokedTokenTest() {
+    void addRevokedTokenTest() {
         assertFalse(tokenCache.isRevoked(jwToken));
         tokenCache.addRevokedToken(jwToken);
         assertEquals(1, tokenCache.size());
@@ -88,7 +88,7 @@ public class TokenCacheTests {
 
     @Test
     @Order(3)
-    public void waitForTokensToExpireTest() throws InterruptedException {
+    void waitForTokensToExpireTest() throws InterruptedException {
         while(tokenCache.purgeRevokedTokens() > 0) {
             Thread.sleep(1000);
         };
@@ -98,7 +98,7 @@ public class TokenCacheTests {
 
     @Test
     @Order(4)
-    public void afterCachePurgeTest() {
+    void afterCachePurgeTest() {
         assertFalse(tokenCache.isRevoked(jwToken));
     }
 

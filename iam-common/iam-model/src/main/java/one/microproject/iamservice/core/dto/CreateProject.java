@@ -20,7 +20,7 @@ public class CreateProject {
         this.id = id;
         this.name = name;
         this.audience = new HashSet<>();
-        audience.forEach(a->this.audience.add(a));
+        audience.forEach(this.audience::add);
     }
 
     public String getId() {

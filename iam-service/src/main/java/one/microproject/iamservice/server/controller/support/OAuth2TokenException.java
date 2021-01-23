@@ -4,7 +4,7 @@ import one.microproject.iamservice.core.dto.TokenResponseError;
 
 public class OAuth2TokenException extends Exception {
 
-    private final TokenResponseError tokenResponseError;
+    private final transient TokenResponseError tokenResponseError;
 
     public OAuth2TokenException(TokenResponseError tokenResponseError) {
         super();

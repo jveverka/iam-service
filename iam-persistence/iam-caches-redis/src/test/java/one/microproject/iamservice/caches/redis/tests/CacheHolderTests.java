@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class CacheHolderTests {
+class CacheHolderTests {
 
     private static GenericContainer<?> redisContainer = new GenericContainer<>("redis:6-alpine")
             .withExposedPorts(6379)
@@ -40,7 +40,7 @@ public class CacheHolderTests {
 
     @Test
     @Order(0)
-    public void initTest() {
+    void initTest() {
         Set<String> keys = cacheHolder.keys();
         assertNotNull(keys);
         assertEquals(0, keys.size());
@@ -48,7 +48,7 @@ public class CacheHolderTests {
 
     @Test
     @Order(1)
-    public void insertDataTest() {
+    void insertDataTest() {
         cacheHolder.put("001", JWToken.from("data-001"));
         cacheHolder.put("002", JWToken.from("data-002"));
         Set<String> keys = cacheHolder.keys();
@@ -62,7 +62,7 @@ public class CacheHolderTests {
 
     @Test
     @Order(3)
-    public void deleteDataTest() {
+    void deleteDataTest() {
         JWToken removed = cacheHolder.remove("001");
         assertNotNull(removed);
         removed = cacheHolder.remove("001");
@@ -75,7 +75,7 @@ public class CacheHolderTests {
 
     @Test
     @Order(4)
-    public void lastTest() {
+    void lastTest() {
         Set<String> keys = cacheHolder.keys();
         assertNotNull(keys);
         assertEquals(0, keys.size());

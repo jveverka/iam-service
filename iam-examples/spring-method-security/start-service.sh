@@ -7,4 +7,4 @@ until $(curl --silent --output /dev/null -f http://127.0.0.1:8080/services/oauth
   sleep 1
 done
 
-java -Xms32m -Xmx128M -jar /spring-method-security-2.5.0-RELEASE.jar
+java -Xms32m -Xmx128M -jar /spring-method-security-2.5.1-RELEASE.jar

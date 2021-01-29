@@ -6,7 +6,7 @@ plugins {
 
 group = 'one.microproject.iamservice'
 archivesBaseName = "iam-service-client"
-version = '2.5.0-RELEASE'
+version = '2.5.1-RELEASE'
 
 sourceCompatibility = '11'
 

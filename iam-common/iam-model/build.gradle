@@ -6,7 +6,7 @@ plugins {
 
 group = 'one.microproject.iamservice'
 archivesBaseName = "iam-model"
-version = '2.5.0-RELEASE'
+version = '2.5.1-RELEASE'
 
 sourceCompatibility = '11'
 
@@ -15,9 +15,9 @@ repositories {
 }
 
 dependencies {
-    implementation('com.fasterxml.jackson.core:jackson-annotations:2.11.3')
-    implementation('com.fasterxml.jackson.core:jackson-core:2.11.3')
-    implementation('com.fasterxml.jackson.core:jackson-databind:2.11.3')
+    implementation('com.fasterxml.jackson.core:jackson-annotations:2.11.4')
+    implementation('com.fasterxml.jackson.core:jackson-core:2.11.4')
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.11.4')
 
     testImplementation('org.junit.jupiter:junit-jupiter:5.7.0')
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')

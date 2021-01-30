@@ -2,7 +2,7 @@
 [![Java11](https://img.shields.io/badge/java-11-blue)](https://img.shields.io/badge/java-11-blue)
 [![Gradle](https://img.shields.io/badge/gradle-v6.5-blue)](https://img.shields.io/badge/gradle-v6.5-blue)
 ![Build and Test](https://github.com/jveverka/iam-service/workflows/Build%20and%20Test/badge.svg)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/one.microproject.iamservice/iam-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/one.microproject.iamservice/iam-client)
+[![Maven Central](https://img.shields.io/badge/maven%20central-release-green.svg)](https://search.maven.org/search?q=one.microproject.iamservice)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=jveverka_iam-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=jveverka_iam-service)
 
 ![logo](docs/iam-icon.svg) 

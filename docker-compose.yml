@@ -6,16 +6,16 @@ services:
       context: iam-service
       dockerfile: Dockerfile
     network_mode: "host"
-    ports:
-      - "8080:8080"
+    #ports:
+    #  - "8080:8080"
   spring-method-security:
     image: spring-method-security:2.5.1-RELEASE
     build:
       context: iam-examples/spring-method-security
       dockerfile: Dockerfile
     network_mode: "host"
-    ports:
-      - "8082:8082"
+    #ports:
+    #  - "8082:8082"
     depends_on:
       - iam-service
   spring-resource-server:
@@ -24,8 +24,8 @@ services:
       context: iam-examples/spring-resource-server
       dockerfile: Dockerfile
     network_mode: "host"
-    ports:
-      - "8081:8081"
+    #ports:
+    #  - "8081:8081"
     depends_on:
       - iam-service
   spring-webflux-secured:
@@ -34,7 +34,7 @@ services:
       context: iam-examples/spring-webflux-secured
       dockerfile: Dockerfile
     network_mode: "host"
-    ports:
-      - "8083:8083"
+    #ports:
+    #  - "8083:8083"
     depends_on:
       - iam-service

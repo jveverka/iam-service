@@ -17,11 +17,12 @@
 * [Spring Authorization Server](https://github.com/spring-projects-experimental/spring-authorization-server)
 * [Spring Method Security with PreAuthorize](https://developer.okta.com/blog/2019/06/20/spring-preauthorize)
 
-## IAM servers
+## OAuth2 servers
 Some stan-alone (on-premises) IAM servers.
 * [connect2id](https://connect2id.com/downloads)
 * [keycloak](https://www.keycloak.org/)
 * [wso2](https://wso2.com/identity-and-access-management/)
+* [kratos](https://github.com/ory/kratos)
 
-## OAuth2 Proxies
+## OAuth2 proxies
 * [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy)

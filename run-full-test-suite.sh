@@ -1,9 +1,5 @@
 #!/bin/bash
-
-NOCOLOR='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+. release/common.sh
 
 START_TIME=$(date +%s.%N)
 BUILD_RESULT="${RED}FAILED${NOCOLOR}"
@@ -30,35 +26,13 @@ echo ""
 
 #00. Check system dependencies.
 which java
-if [ $? = 0  ]; then
-  echo -e "Java           ${GREEN}OK${NOCOLOR}"
-else
-  echo -e "${RED}ERROR: java not installed.${NOCOLOR}"
-  exit 1
-fi
+eval_result_exit $? "Java           ${GREEN}OK${NOCOLOR}" "${RED}ERROR: java not installed.${NOCOLOR}"
 which gradle
-if [ $? = 0  ]; then
-  echo -e "Gradle         ${GREEN}OK${NOCOLOR}"
-else
-  echo -e "${RED}ERROR: gradle not installed.${NOCOLOR}"
-  exit 1
-fi
-
+eval_result_exit $? "Gradle         ${GREEN}OK${NOCOLOR}" "${RED}ERROR: gradle not installed.${NOCOLOR}"
 which docker
-if [ $? = 0  ]; then
-  echo -e "Docker         ${GREEN}OK${NOCOLOR}"
-else
-  echo -e "${RED}ERROR: docker not installed.${NOCOLOR}"
-  exit 1
-fi
-
+eval_result_exit $? "Docker         ${GREEN}OK${NOCOLOR}" "${RED}ERROR: docker not installed.${NOCOLOR}"
 which docker-compose
-if [ $? = 0  ]; then
-  echo -e "docker-compose ${GREEN}OK${NOCOLOR}"
-else
-  echo -e "${RED}ERROR: docker-compose not installed.${NOCOLOR}"
-  exit 1
-fi
+eval_result_exit $? "docker-compose ${GREEN}OK${NOCOLOR}" "${RED}ERROR: docker-compose not installed.${NOCOLOR}"
 
 #01. Build project and run JUnit tests
 gradle clean build test

@@ -1,19 +1,11 @@
 #!/bin/bash
-
-NOCOLOR='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
+. common.sh
 
 HOME_DIR=`pwd`
 
 cd ..
 ./run-full-test-suite.sh
-if [ $? = 0  ]; then
-  echo -e "Build ${GREEN}OK${NOCOLOR}"
-else
-  echo -e "ERROR: ${RED}build failed !${NOCOLOR}"
-  exit 1
-fi
+eval_result_exit $? "Build ${GREEN}OK${NOCOLOR}" "${RED}ERROR: build failed !${NOCOLOR}"
 
 VERSION=2.5.1-RELEASE
 RELEASE_DIR=build/iam-service-${VERSION}
@@ -42,6 +34,3 @@ else
   echo -e "ERROR: ${RED}release has failed !${NOCOLOR}"
   exit 1
 fi
-
-#cd ..
-#rm -rf ${RELEASE_DIR}

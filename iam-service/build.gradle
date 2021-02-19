@@ -17,26 +17,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.5.4'
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-
-    implementation 'org.mongodb:mongodb-driver-sync:4.1.1'
-    implementation 'org.mongodb:mongodb-driver-core:4.1.1'
-    implementation ('org.mongojack:mongojack:4.0.2') {
-        exclude group: 'org.mongodb', module: 'mongodb-driver-sync'
-        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
-        exclude group: 'com.fasterxml.jackson.datatype', module: 'jackson-datatype-jsr310'
-    }
-
-    implementation('redis.clients:jedis:3.3.0')
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
 
 springBoot {

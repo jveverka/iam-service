@@ -14,17 +14,8 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
-    implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
-    testImplementation('com.squareup.okhttp3:okhttp:4.9.0')
 }
 
 test {

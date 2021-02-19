@@ -16,10 +16,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testImplementation('com.squareup.okhttp3:okhttp:4.9.0')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
 springBoot {

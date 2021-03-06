@@ -1,6 +1,6 @@
-# IAM Service 2.5.1-RELEASE
+# IAM Service 2.5.2-RELEASE
 Really simple standalone OAuth2/OIDC
-[*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service/tree/2.5.1-RELEASE), 
+[*Identity Access Management* (IAM) service](https://github.com/jveverka/iam-service/tree/2.5.2-RELEASE), 
 authentication and authorization server. 
 
 ## Quick startup guide
@@ -12,12 +12,12 @@ authentication and authorization server.
   ``` 
 * Start __iam-service__ (Requires JVM installed).
   ```
-  java -Xms32m -Xmx128m -jar iam-service-2.5.1-RELEASE.jar --spring.config.location=file:application.yml
+  java -Xms32m -Xmx128m -jar iam-service-2.5.2-RELEASE.jar --spring.config.location=file:application.yml
   ```
 * Start __iam-service__ as docker container.
   ```
-  docker run -d --name iam-service-2.5.1-RELEASE \
-     -p 8080:8080 jurajveverka/iam-service:2.5.1-RELEASE-amd64
+  docker run -d --name iam-service-2.5.2-RELEASE \
+     -p 8080:8080 jurajveverka/iam-service:2.5.2-RELEASE-amd64
   ```
 
 ### Next Steps

@@ -58,7 +58,7 @@ public class ITTestUtils {
     }
 
     public static Float successRatePercent(long total, long success) {
-        return (success/total)*100F;
+        return (success/((float)total))*100F;
     }
 
 }

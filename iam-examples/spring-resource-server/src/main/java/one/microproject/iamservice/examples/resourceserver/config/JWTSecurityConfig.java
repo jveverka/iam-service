@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 
 @Configuration
 public class JWTSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -14,7 +15,7 @@ public class JWTSecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/services/secure/**").hasAuthority("SCOPE_iam-admins-iam-admins.users.all")
                         .antMatchers(HttpMethod.POST, "/services/secure/**").hasAuthority("SCOPE_iam-admins-iam-admins.users.all")
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt())
+                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                 .cors().disable();
     }
 

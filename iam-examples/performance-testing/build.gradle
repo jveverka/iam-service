@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group = 'one.microproject.iamservice'
+version = '2.5.2-RELEASE'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    if (System.properties['test.profile'] != 'performance-testing') {
+        exclude '**/*TestsITPerformance*'
+    }
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    testLogging.showStandardStreams = true
+    systemProperty "iamservice.url", System.getProperty("iamservice.url")
+    systemProperty "admin.pwd", System.getProperty("admin.pwd")
+    systemProperty "client.secret", System.getProperty("client.secret")
+}

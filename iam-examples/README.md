@@ -2,6 +2,7 @@
 Listed below are show-cases for various integration scenarios of __iam-service__ in micro-service environment.
 
 ## iam-client and automated setup examples
+* [x] [performance-testing](performance-testing) - validate __iam-service__ performance.
 * [x] [integration-tests](integration-tests) - validate __iam-service__ deployments.
 
 ## Microservice Examples

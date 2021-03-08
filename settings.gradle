@@ -19,6 +19,8 @@ include "iam-caches-redis"
 project(":iam-caches-redis").projectDir = new File("iam-persistence/iam-caches-redis")
 
 // Spring EXAMPLES
+include "performance-testing"
+project(":performance-testing").projectDir = new File("iam-examples/performance-testing")
 include "integration-tests"
 project(":integration-tests").projectDir = new File("iam-examples/integration-tests")
 include "spring-resource-server"

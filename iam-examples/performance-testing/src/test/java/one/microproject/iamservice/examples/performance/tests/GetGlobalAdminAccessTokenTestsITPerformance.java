@@ -6,8 +6,9 @@ import one.microproject.iamservice.examples.performance.tests.dto.RunnerResult;
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioContext;
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioRequest;
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioResult;
+import one.microproject.iamservice.examples.performance.tests.impl.GetGlobalAdminAccessTokensTestScenarioProducer;
 import one.microproject.iamservice.examples.performance.tests.impl.GlobalAdminContext;
-import one.microproject.iamservice.examples.performance.tests.impl.GetGlobalAdminAccessTokensTestScenarioFactory;
+import one.microproject.iamservice.examples.performance.tests.impl.ScenarioRunner;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -41,9 +42,19 @@ class GetGlobalAdminAccessTokenTestsITPerformance {
 
     @BeforeAll
     static void init() {
-        GetGlobalAdminAccessTokensTestScenarioFactory scenarioFactory = new GetGlobalAdminAccessTokensTestScenarioFactory();
-        warmupRunner = new ScenarioRunner<>(1, 10, 1, scenarioFactory);
-        scenarioRunner = new ScenarioRunner<>(2, nThreads, repeat, scenarioFactory);
+        GetGlobalAdminAccessTokensTestScenarioProducer scenarioFactory = new GetGlobalAdminAccessTokensTestScenarioProducer();
+        warmupRunner = new ScenarioRunnerBuilder<GlobalAdminContext, TokenResponse>()
+                .setIndex(1)
+                .setNumberOfThreads(10)
+                .setRepeat(1)
+                .withScenarioProducer(scenarioFactory)
+                .build();
+        scenarioRunner = new ScenarioRunnerBuilder<GlobalAdminContext, TokenResponse>()
+                .setIndex(2)
+                .setNumberOfThreads(nThreads)
+                .setRepeat(repeat)
+                .withScenarioProducer(scenarioFactory)
+                .build();
     }
 
     public static Stream<Arguments> provideParameters() {

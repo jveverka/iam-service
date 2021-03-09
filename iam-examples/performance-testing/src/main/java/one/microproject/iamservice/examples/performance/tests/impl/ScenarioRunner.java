@@ -1,4 +1,4 @@
-package one.microproject.iamservice.examples.performance.tests;
+package one.microproject.iamservice.examples.performance.tests.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import one.microproject.iamservice.examples.performance.tests.TestScenarioProducer;
+import one.microproject.iamservice.examples.performance.tests.dto.RunnerContext;
 import one.microproject.iamservice.examples.performance.tests.dto.RunnerResult;
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioContext;
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioRequest;
@@ -25,28 +27,30 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
     private final int runnerIndex;
     private final ExecutorService executorService;
     private final Map<Integer, ScenarioContext<T,R>> scenarios;
-    private final ScenarioFactory<T,R> scenarioFactory;
+    private final TestScenarioProducer<T,R> scenarioProducer;
     private final int nThreads;
     private final int repeat;
 
     private long started;
     private long duration;
 
-    public ScenarioRunner(int runnerIndex, int nThreads, int repeat, ScenarioFactory<T,R> scenarioFactory) {
+    public ScenarioRunner(int runnerIndex, int nThreads, int repeat, TestScenarioProducer<T,R> scenarioProducer) {
         this.runnerIndex = runnerIndex;
         this.nThreads = nThreads;
         this.repeat = repeat;
         this.executorService = Executors.newFixedThreadPool(nThreads);
         this.scenarios = new ConcurrentHashMap<>();
-        this.scenarioFactory = scenarioFactory;
+        this.scenarioProducer = scenarioProducer;
     }
 
     public void execTests() throws InterruptedException {
         started = System.nanoTime();
         for (int i=0; i<nThreads*repeat; i++) {
             try {
-                TestScenario<T, R> testScenario = scenarioFactory.createTestScenario(this, i);
-                executorService.submit(testScenario);
+                RunnerContext context = new RunnerContext(runnerIndex, i);
+                TestScenarioTask<T, R> testScenarioTask =
+                        new TestScenarioTask<>(this, scenarioProducer.createRequest(context), scenarioProducer.createScenario(context));
+                executorService.submit(testScenarioTask);
             } catch (ScenarioInitException e) {
                 onInitFailed(i);
             }
@@ -93,4 +97,5 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
             scenarioContext.setScenarioResult(result);
         }
     }
+
 }

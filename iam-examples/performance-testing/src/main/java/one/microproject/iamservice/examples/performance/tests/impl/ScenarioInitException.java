@@ -1,4 +1,4 @@
-package one.microproject.iamservice.examples.performance.tests;
+package one.microproject.iamservice.examples.performance.tests.impl;
 
 public class ScenarioInitException extends Exception {
 

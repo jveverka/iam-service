@@ -1,38 +1,20 @@
 package one.microproject.iamservice.examples.performance.tests;
 
-import one.microproject.iamservice.examples.performance.tests.dto.ScenarioRequest;
-import one.microproject.iamservice.examples.performance.tests.dto.ScenarioResult;
+import one.microproject.iamservice.examples.performance.tests.impl.ScenarioExecException;
 
-import java.util.concurrent.Callable;
+/**
+ * Implementations of this interface is a Test Scenario. It is executed in single thread.
+ * @param <T> - request type, input data into scenario execution.
+ * @param <R> - response type, the result of scenario execution.
+ */
+public interface TestScenario<T, R> {
 
-public abstract class TestScenario<T,R> implements Callable<ScenarioResult<R>> {
-
-    private final ScenarioRequest<T> request;
-    private final ResultCache<T,R> resultCache;
-
-    protected TestScenario(ResultCache<T,R> resultCache, ScenarioRequest<T> request) {
-        this.request = request;
-        this.resultCache = resultCache;
-    }
-
-    @Override
-    public ScenarioResult<R> call() throws Exception {
-        ScenarioResult<R> scenarioResult = null;
-        long started = System.nanoTime();
-        resultCache.onStarted(request);
-        try {
-            R result = getResult(request.getRequest());
-            long duration = (System.nanoTime() - started)/1000000;
-            scenarioResult = new ScenarioResult<>(request.getId(), true, "OK", started/1000000, duration, result);
-            resultCache.onResult(scenarioResult);
-        } catch (Exception e) {
-            long duration = (System.nanoTime() - started)/1000000;
-            scenarioResult = new ScenarioResult<>(request.getId(), false, "ERROR", started/1000000, duration, null);
-            resultCache.onResult(scenarioResult);
-        }
-        return scenarioResult;
-    }
-
-    public abstract R getResult(T request) throws ScenarioExecException;
+    /**
+     * This method is called only once and represents single scenario run.
+     * @param request - input data into scenario execution.
+     * @return - the result of scenario execution.
+     * @throws ScenarioExecException - thrown in case that scenario execution fails.
+     */
+    R getResult(T request) throws ScenarioExecException;
 
 }

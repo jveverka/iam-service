@@ -3,28 +3,17 @@ package one.microproject.iamservice.examples.performance.tests.impl;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.utils.ModelUtils;
-import one.microproject.iamservice.examples.performance.tests.ResultCache;
-import one.microproject.iamservice.examples.performance.tests.ScenarioExecException;
 import one.microproject.iamservice.examples.performance.tests.TestScenario;
-import one.microproject.iamservice.examples.performance.tests.dto.ScenarioRequest;
-import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
-public class GetGlobalAdminAccessTokensTestScenario extends TestScenario<GlobalAdminContext, TokenResponse> {
+public class GetGlobalAdminAccessTokensTestScenario implements TestScenario<GlobalAdminContext, TokenResponse> {
 
     private final IAMServiceManagerClient iamServiceManagerClient;
-    private final ScenarioRequest<GlobalAdminContext> request;
 
-    public GetGlobalAdminAccessTokensTestScenario(ResultCache<GlobalAdminContext, TokenResponse> resultCache, ScenarioRequest<GlobalAdminContext> request) {
-        super(resultCache, request);
-        this.request = request;
-        this.iamServiceManagerClient = IAMServiceClientBuilder.builder()
-                .withBaseUrl(request.getRequest().getBaseUrl())
-                .withConnectionTimeout(10L, TimeUnit.SECONDS)
-                .build();
+    public GetGlobalAdminAccessTokensTestScenario(IAMServiceManagerClient iamServiceManagerClient) {
+        this.iamServiceManagerClient = iamServiceManagerClient;
     }
 
     @Override

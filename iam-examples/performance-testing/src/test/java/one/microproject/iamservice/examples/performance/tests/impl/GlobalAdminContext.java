@@ -4,18 +4,12 @@ import java.net.URL;
 
 public class GlobalAdminContext {
 
-    private final URL baseUrl;
     private final String password;
     private final String clientSecret;
 
-    public GlobalAdminContext(URL baseUrl, String password, String clientSecret) {
-        this.baseUrl = baseUrl;
+    public GlobalAdminContext(String password, String clientSecret) {
         this.password = password;
         this.clientSecret = clientSecret;
-    }
-
-    public URL getBaseUrl() {
-        return baseUrl;
     }
 
     public String getPassword() {

@@ -1,4 +1,4 @@
-package one.microproject.iamservice.examples.performance.tests;
+package one.microproject.iamservice.examples.performance.tests.impl;
 
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioRequest;
 import one.microproject.iamservice.examples.performance.tests.dto.ScenarioResult;

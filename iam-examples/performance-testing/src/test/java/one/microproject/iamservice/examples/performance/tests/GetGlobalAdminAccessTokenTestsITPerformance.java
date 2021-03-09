@@ -42,8 +42,8 @@ class GetGlobalAdminAccessTokenTestsITPerformance {
     @BeforeAll
     static void init() {
         GetGlobalAdminAccessTokensTestScenarioFactory scenarioFactory = new GetGlobalAdminAccessTokensTestScenarioFactory();
-        warmupRunner = new ScenarioRunner<>(10, 1, scenarioFactory);
-        scenarioRunner = new ScenarioRunner<>(nThreads, repeat, scenarioFactory);
+        warmupRunner = new ScenarioRunner<>(1, 10, 1, scenarioFactory);
+        scenarioRunner = new ScenarioRunner<>(2, nThreads, repeat, scenarioFactory);
     }
 
     public static Stream<Arguments> provideParameters() {

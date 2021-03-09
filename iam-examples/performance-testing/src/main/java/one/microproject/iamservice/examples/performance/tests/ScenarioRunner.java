@@ -22,6 +22,7 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioRunner.class);
 
+    private final int runnerIndex;
     private final ExecutorService executorService;
     private final Map<Integer, ScenarioContext<T,R>> scenarios;
     private final ScenarioFactory<T,R> scenarioFactory;
@@ -31,7 +32,8 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
     private long started;
     private long duration;
 
-    public ScenarioRunner(int nThreads, int repeat, ScenarioFactory<T,R> scenarioFactory) {
+    public ScenarioRunner(int runnerIndex, int nThreads, int repeat, ScenarioFactory<T,R> scenarioFactory) {
+        this.runnerIndex = runnerIndex;
         this.nThreads = nThreads;
         this.repeat = repeat;
         this.executorService = Executors.newFixedThreadPool(nThreads);
@@ -69,7 +71,7 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
     }
 
     public RunnerResult getRunnerResult() {
-        return new RunnerResult(nThreads, repeat,started/1000000, duration);
+        return new RunnerResult(runnerIndex, nThreads, repeat,started/1000000, duration);
     }
 
     @Override

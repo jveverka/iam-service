@@ -16,14 +16,10 @@ import static one.microproject.iamservice.examples.performance.tests.ITTestUtils
 public class GetGlobalAdminAccessTokensTestScenarioFactory implements ScenarioFactory<GlobalAdminContext, TokenResponse> {
 
     @Override
-    public TestScenario<GlobalAdminContext, TokenResponse> createTestScenario(ResultCache<GlobalAdminContext, TokenResponse> resultCache, int ordinal) throws ScenarioInitException {
-        try {
-            GlobalAdminContext globalAdminContext = new GlobalAdminContext(getIAMServiceURL(), getGlobalAdminPassword(), getGlobalAdminClientSecret());
-            ScenarioRequest<GlobalAdminContext> request = new ScenarioRequest<>(ordinal, globalAdminContext);
-            return new GetGlobalAdminAccessTokensTestScenario(resultCache, request);
-        } catch (MalformedURLException e) {
-            throw new ScenarioInitException(e);
-        }
+    public TestScenario<GlobalAdminContext, TokenResponse> createScenario(ResultCache<GlobalAdminContext, TokenResponse> cache, int ordinal) throws Exception {
+        GlobalAdminContext globalAdminContext = new GlobalAdminContext(getIAMServiceURL(), getGlobalAdminPassword(), getGlobalAdminClientSecret());
+        ScenarioRequest<GlobalAdminContext> request = new ScenarioRequest<>(ordinal, globalAdminContext);
+        return new GetGlobalAdminAccessTokensTestScenario(cache, request);
     }
 
 }

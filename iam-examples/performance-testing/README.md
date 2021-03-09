@@ -1,4 +1,5 @@
 # Performance Tests
+Parallel performance load tests.
 
 ## Run all Test Suites
 ```

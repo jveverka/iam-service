@@ -52,7 +52,7 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
                         new TestScenarioTask<>(this, scenarioProducer.createRequest(context), scenarioProducer.createScenario(context));
                 executorService.submit(testScenarioTask);
             } catch (ScenarioInitException e) {
-                onInitFailed(i);
+                onInitFailed(i, e);
             }
         }
         executorService.shutdown();
@@ -79,9 +79,9 @@ public class ScenarioRunner<T, R> implements ResultCache<T, R> {
     }
 
     @Override
-    public void onInitFailed(int i) {
+    public void onInitFailed(int i, Throwable t) {
         onStarted(new ScenarioRequest<>(i, null));
-        onResult(new ScenarioResult<>(i, false, "Init Error", System.nanoTime()/1000000, 0L, null));
+        onResult(new ScenarioResult<>(i, false, "INIT ERROR: " + t.getMessage(), System.nanoTime()/1000000, 0L, null));
     }
 
     @Override

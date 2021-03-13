@@ -9,28 +9,28 @@ public class ScenarioRunnerBuilder<T,R> {
     private int repeat = 1;
     private TestScenarioProducer<T,R> scenarioProducer;
 
-    ScenarioRunnerBuilder<T,R> setIndex(int runnerIndex) {
+    public ScenarioRunnerBuilder<T,R> setIndex(int runnerIndex) {
         this.runnerIndex = runnerIndex;
         return this;
     }
 
-    ScenarioRunnerBuilder<T,R> setNumberOfThreads(int nThreads) {
+    public ScenarioRunnerBuilder<T,R> setNumberOfThreads(int nThreads) {
         this.nThreads = nThreads;
         return this;
     }
 
-    ScenarioRunnerBuilder<T,R> setRepeat(int repeat) {
+    public ScenarioRunnerBuilder<T,R> setRepeat(int repeat) {
         this.repeat = repeat;
         return this;
     }
 
-    ScenarioRunnerBuilder<T,R> withScenarioProducer(TestScenarioProducer<T,R> scenarioProducer) {
+    public ScenarioRunnerBuilder<T,R> withScenarioProducer(TestScenarioProducer<T,R> scenarioProducer) {
         this.scenarioProducer = scenarioProducer;
         return this;
     }
 
     public ScenarioRunner<T,R> build() {
-        return new ScenarioRunner(runnerIndex, nThreads, repeat, scenarioProducer);
+        return new ScenarioRunner<>(runnerIndex, nThreads, repeat, scenarioProducer);
     }
 
 }

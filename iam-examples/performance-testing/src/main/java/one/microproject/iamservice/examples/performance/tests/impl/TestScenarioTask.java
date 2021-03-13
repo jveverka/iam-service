@@ -30,7 +30,7 @@ public class TestScenarioTask<T,R> implements Callable<ScenarioResult<R>> {
             resultCache.onResult(scenarioResult);
         } catch (Exception e) {
             long duration = (System.nanoTime() - started)/1000000;
-            scenarioResult = new ScenarioResult<>(request.getId(), false, "ERROR", started/1000000, duration, null);
+            scenarioResult = new ScenarioResult<>(request.getId(), false, "ERROR: " + e.getMessage(), started/1000000, duration, null);
             resultCache.onResult(scenarioResult);
         }
         return scenarioResult;

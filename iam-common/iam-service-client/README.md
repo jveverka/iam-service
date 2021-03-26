@@ -8,12 +8,12 @@ Java client library providing APIs for all iam-service management functions.
      <dependency>
        <groupId>one.microproject.iamservice</groupId>
        <artifactId>iam-service-client</artifactId>
-       <version>2.5.2-RELEASE</version>
+       <version>2.5.3-RELEASE</version>
      <dependency/>
      ```
    * gradle dependency
      ```
-     implementation 'one.microproject.iamservice:iam-service-client:2.5.2-RELEASE'
+     implementation 'one.microproject.iamservice:iam-service-client:2.5.3-RELEASE'
      ```
 2. Create client instance programmatically.
    ```

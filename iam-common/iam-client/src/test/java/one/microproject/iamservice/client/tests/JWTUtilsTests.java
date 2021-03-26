@@ -34,4 +34,10 @@ class JWTUtilsTests {
         assertEquals("Bearer token", authorizationHeader);
     }
 
+    @Test
+    void testCreateAuthorizationHeader() {
+        String token = JWTUtils.createAuthorizationHeader("token");
+        assertEquals("Bearer token", token);
+    }
+
 }

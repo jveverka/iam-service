@@ -164,7 +164,7 @@ public class OAuth2Controller {
                 if (tokensOptional.isPresent()) {
                     return ResponseEntity.ok(tokensOptional.get());
                 } else {
-                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.ACCESS_DENIED, "Access denied."));
                 }
             } else if (GrantType.PASSWORD.equals(grantTypeEnum)) {
                 Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
@@ -177,11 +177,11 @@ public class OAuth2Controller {
                     if (tokensOptional.isPresent()) {
                         return ResponseEntity.ok(tokensOptional.get());
                     } else {
-                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.ACCESS_DENIED, "Access denied."));
                     }
                 } else {
                     LOG.warn("Can't get client credentials !");
-                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.unauthorized_client, "Can't get client credentials !"));
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.UNAUTHORIZED_CLIENT, "Can't get client credentials !"));
                 }
             } else if (GrantType.CLIENT_CREDENTIALS.equals(grantTypeEnum)) {
                 Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
@@ -193,11 +193,11 @@ public class OAuth2Controller {
                     if (tokensOptional.isPresent()) {
                         return ResponseEntity.ok(tokensOptional.get());
                     } else {
-                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.ACCESS_DENIED, "Access denied."));
                     }
                 } else {
                     LOG.warn("Can't get client credentials !");
-                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.unauthorized_client, "Can't get client credentials !"));
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.UNAUTHORIZED_CLIENT, "Can't get client credentials !"));
                 }
             } else if (GrantType.REFRESH_TOKEN.equals(grantTypeEnum)) {
                 Optional<ClientCredentials> ccOptional = getClientCredentials(request, clientId, clientSecret);
@@ -210,20 +210,20 @@ public class OAuth2Controller {
                     if (tokensOptional.isPresent()) {
                         return ResponseEntity.ok(tokensOptional.get());
                     } else {
-                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.access_denied, "Access denied."));
+                        throw new OAuth2TokenException(TokenResponseError.from(ErrorType.ACCESS_DENIED, "Access denied."));
                     }
                 } else {
                     LOG.warn("Can't get client credentials !");
-                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.unauthorized_client, "Can't get client credentials !"));
+                    throw new OAuth2TokenException(TokenResponseError.from(ErrorType.UNAUTHORIZED_CLIENT, "Can't get client credentials !"));
                 }
             } else {
                 LOG.warn("Unsupported grant_type={} !", grantType);
-                throw new OAuth2TokenException(TokenResponseError.from(ErrorType.invalid_request, "Unsupported grant_type=", grantType));
+                throw new OAuth2TokenException(TokenResponseError.from(ErrorType.INVALID_REQUEST, "Unsupported grant_type=", grantType));
             }
         } catch (URISyntaxException e) {
-            throw new OAuth2TokenException(e, TokenResponseError.from(ErrorType.invalid_request, "Callback URI invalid syntax."));
+            throw new OAuth2TokenException(e, TokenResponseError.from(ErrorType.INVALID_REQUEST, "Callback URI invalid syntax."));
         } catch (MalformedURLException e) {
-            throw new OAuth2TokenException(e, TokenResponseError.from(ErrorType.invalid_request, "Callback URI malformed."));
+            throw new OAuth2TokenException(e, TokenResponseError.from(ErrorType.INVALID_REQUEST, "Callback URI malformed."));
         }
     }
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TokenResponseError {
 
     @JsonProperty("error")
-    private final ErrorType error;
+    private final String error;
 
     @JsonProperty("error_description")
     private final String errorDescription;
@@ -15,7 +15,7 @@ public class TokenResponseError {
     private final String state;
 
     @JsonCreator
-    public TokenResponseError(@JsonProperty("error") ErrorType error,
+    public TokenResponseError(@JsonProperty("error") String error,
                               @JsonProperty("error_description") String errorDescription,
                               @JsonProperty("state") String state) {
         this.error = error;
@@ -24,7 +24,7 @@ public class TokenResponseError {
     }
 
     @JsonProperty("error")
-    public ErrorType getError() {
+    public String getError() {
         return error;
     }
 
@@ -39,11 +39,11 @@ public class TokenResponseError {
     }
 
     public static TokenResponseError from(ErrorType error, String errorDescription) {
-        return new TokenResponseError(error, errorDescription, null);
+        return new TokenResponseError(error.getError(), errorDescription, null);
     }
 
     public static TokenResponseError from(ErrorType error, String errorDescription, String state) {
-        return new TokenResponseError(error, errorDescription, state);
+        return new TokenResponseError(error.getError(), errorDescription, state);
     }
 
 }

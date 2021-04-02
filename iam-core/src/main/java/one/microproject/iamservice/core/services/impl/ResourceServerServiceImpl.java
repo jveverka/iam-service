@@ -4,6 +4,7 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.Client;
 import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.Permission;
 import one.microproject.iamservice.core.model.User;
 import one.microproject.iamservice.core.model.UserId;
 import one.microproject.iamservice.core.model.Organization;
@@ -11,6 +12,7 @@ import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.Project;
 import one.microproject.iamservice.core.model.ProjectId;
 import one.microproject.iamservice.core.TokenValidator;
+import one.microproject.iamservice.core.model.keys.Id;
 import one.microproject.iamservice.core.services.caches.ModelCache;
 import one.microproject.iamservice.core.services.caches.TokenCache;
 import one.microproject.iamservice.core.utils.TokenUtils;
@@ -82,7 +84,7 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             if (projectOptional.isPresent()) {
                 Project project = projectOptional.get();
                 Set<String> userIds = modelCache.getUsers(organizationId, projectId).stream().map(user -> user.getId().getId()).collect(Collectors.toSet());
-                Set<String> clientIds = project.getClients().stream().map(c -> c.getId()).collect(Collectors.toSet());
+                Set<String> clientIds = project.getClients().stream().map(Id::getId).collect(Collectors.toSet());
                 ProjectInfo projectInfo = new ProjectInfo(project.getId().getId(), project.getOrganizationId().getId(),
                         project.getName(), organizationOptional.get().getKeyPairData(), project.getKeyPairData(),
                         project.getAudience(), clientIds, userIds);
@@ -99,9 +101,9 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<User> userOptional = modelCache.getUser(organizationId, projectId, userId);
-                Set<String> permissions = modelCache.getPermissions(organizationId, projectId, userId).stream().map(p->p.asStringValue()).collect(Collectors.toSet());
+                Set<String> permissions = modelCache.getPermissions(organizationId, projectId, userId).stream().map(Permission::asStringValue).collect(Collectors.toSet());
                 if (userOptional.isPresent()) {
-                    Set<String> roles = userOptional.get().getRoles().stream().map(r->r.getId()).collect(Collectors.toSet());
+                    Set<String> roles = userOptional.get().getRoles().stream().map(Id::getId).collect(Collectors.toSet());
                     UserInfo userInfo = new UserInfo(userId.getId(), projectId.getId(), organizationId.getId(),
                             userOptional.get().getName(), organizationOptional.get().getKeyPairData(),
                             projectOptional.get().getKeyPairData(), userOptional.get().getKeyPairData(),
@@ -120,9 +122,9 @@ public class ResourceServerServiceImpl implements ResourceServerService {
             Optional<Project> projectOptional = modelCache.getProject(organizationId, projectId);
             if (projectOptional.isPresent()) {
                 Optional<Client> clientOptional = modelCache.getClient(organizationId, projectId, clientId);
-                Set<String> permissions = modelCache.getPermissions(organizationId, projectId, clientId).stream().map(p->p.asStringValue()).collect(Collectors.toSet());
+                Set<String> permissions = modelCache.getPermissions(organizationId, projectId, clientId).stream().map(Permission::asStringValue).collect(Collectors.toSet());
                 if (clientOptional.isPresent()) {
-                    Set<String> roles = clientOptional.get().getRoles().stream().map(r->r.getId()).collect(Collectors.toSet());
+                    Set<String> roles = clientOptional.get().getRoles().stream().map(Id::getId).collect(Collectors.toSet());
                     ClientInfo clientInfo = new ClientInfo(clientId.getId(), clientOptional.get().getName(), roles, permissions);
                     return Optional.of(clientInfo);
                 }

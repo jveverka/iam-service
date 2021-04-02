@@ -35,7 +35,7 @@ public class RedisCacheHolderImpl<V> implements CacheHolder<V> {
     @Override
     public void put(String key, V value) throws CacheReadException {
         try {
-            LOG.trace("put {}:{}", key, value.toString());
+            LOG.trace("put {}:{}", key, value);
             jedis.set(keyPrefix + ":" + key, mapper.writeValueAsString(value));
         } catch (JsonProcessingException e) {
             throw new CacheReadException(e);

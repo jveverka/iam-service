@@ -47,8 +47,9 @@ public class IAMClientImpl implements IAMClient {
     public Optional<StandardTokenClaims> validate(OrganizationId organizationId, ProjectId projectId, JWToken token) {
         try {
             return tokenValidator.validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), token);
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             LOG.info("Exception: ", e);
+            Thread.currentThread().interrupt();
         }
         LOG.debug("token validation has failed.");
         return Optional.empty();

@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests().anyRequest().authenticated()
                 .and()
-                .csrf().ignoringAntMatchers("/services/secure/**", "/services/public/**",  "/swagger-ui/**", "/v3/api**");
+                .csrf().ignoringAntMatchers("/**");
 
         httpSecurity.addFilterBefore(iamSecurityFilter, UsernamePasswordAuthenticationFilter.class);
     }

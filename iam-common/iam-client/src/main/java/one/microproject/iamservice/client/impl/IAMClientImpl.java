@@ -61,8 +61,9 @@ public class IAMClientImpl implements IAMClient {
                             JWToken token) {
         try {
             return tokenValidator.validateToken(organizationId, projectId, iamServiceProxy.getJWKResponse(), requiredAdminPermissions, requiredApplicationPermissions, token);
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             LOG.info("Exception: ", e);
+            Thread.currentThread().interrupt();
         }
         return false;
     }

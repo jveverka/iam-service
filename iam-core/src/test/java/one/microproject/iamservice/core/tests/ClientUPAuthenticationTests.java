@@ -48,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -121,7 +122,7 @@ class ClientUPAuthenticationTests {
         ClientCredentials clientCredentials = new ClientCredentials(ModelUtils.IAM_ADMIN_CLIENT_ID, adminSecret);
         Optional<TokenResponse> tokensOptional = authenticationService.refreshTokens(ModelUtils.IAM_ADMINS_ORG, ModelUtils.IAM_ADMINS_PROJECT, refreshToken, clientCredentials, scope, idTokenRequest);
         assertTrue(tokensOptional.isPresent());
-        assertFalse(accessToken.equals(tokensOptional.get().getAccessToken()));
+        assertNotEquals(accessToken, JWToken.from(tokensOptional.get().getAccessToken()));
         accessToken = JWToken.from(tokensOptional.get().getAccessToken());
     }
 

@@ -53,6 +53,7 @@ project(':iam-model') {
 project(':iam-client') {
     dependencies {
         implementation project(':iam-model')
+        testImplementation project(':iam-core')
 
         implementation('org.slf4j:slf4j-api:1.7.30')
         implementation('io.jsonwebtoken:jjwt-api:0.11.2')

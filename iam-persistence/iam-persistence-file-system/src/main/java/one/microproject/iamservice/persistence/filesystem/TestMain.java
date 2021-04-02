@@ -19,10 +19,9 @@ public class TestMain {
 
     public static void main(String[] args) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
-        Path dataFilePath = Paths.get("/tmp/iam-data.json");
+        Path dataFilePath = Paths.get(args[0]);
         long timeStamp = System.nanoTime();
         PersistenceService persistenceService = new FileSystemPersistenceServiceImpl(dataFilePath);
-        //PersistenceService persistenceService = new LoggingPersistenceServiceImpl();
         ModelWrapper modelWrapper = new ModelWrapperImpl(ModelUtils.DEFAULT_MODEL, persistenceService, false);
         ModelUtils.createModel(3, 3, 4, 100, 5, 3, modelWrapper);
         LOG.info("model create time: {} ms", ((System.nanoTime() - timeStamp)/1_000_000F));

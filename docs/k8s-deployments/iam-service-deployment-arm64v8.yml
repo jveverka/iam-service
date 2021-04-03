@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: iam-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-service
+  namespace: iam-service
+spec:
+  selector:
+    app: iam-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      nodePort: 30081
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-service
+  namespace: iam-service
+spec:
+  selector:
+    matchLabels:
+      app: iam-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: iam-service
+    spec:
+      containers:
+        - name: iam-service
+          image: jurajveverka/iam-service:2.5.3-RELEASE-arm64v8
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 1000m
+            requests:
+              memory: 256Mi
+              cpu: 500m

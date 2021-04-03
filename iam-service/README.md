@@ -41,3 +41,15 @@ docker stop iam-service-2.5.3-RELEASE
 docker rm iam-service-2.5.3-RELEASE
 docker image rm -f iam-service:2.5.3-RELEASE
 ```
+
+### Deploy to Kubernetes
+Kubernetes deployment
+```
+kubectl apply -f iam-service-deployment-<paltform>.yml
+```
+Undeploy from kubernetes
+```
+kubectl delete service/iam-service -n iam-service
+kubectl delete deployment.apps/iam-service -n iam-service
+kubectl delete namespace/iam-service
+```

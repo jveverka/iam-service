@@ -20,6 +20,7 @@ and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com
   curl 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/.well-known/openid-configuration'
   ```
 * OpenAPI documentation: ``http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/``  
+* Deploy into [__kubernetes cluster__](docs/k8s-deployments). 
 
 ## Features & Mission
 * [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 

@@ -1,4 +1,4 @@
-# IAM-common components
+# IAM-commons components
 
 * [__iam-client__](iam-client) - plain java client for resource servers. 
 * [__iam-client-spring__](iam-client-spring) - spring support for springboot resource servers.

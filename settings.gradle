@@ -1,14 +1,15 @@
 
 include "iam-model"
-project(":iam-model").projectDir = new File("iam-common/iam-model")
+project(":iam-model").projectDir = new File("iam-commons/iam-model")
 include "iam-client"
-project(":iam-client").projectDir = new File("iam-common/iam-client")
+project(":iam-client").projectDir = new File("iam-commons/iam-client")
 include "iam-client-spring"
-project(":iam-client-spring").projectDir = new File("iam-common/iam-client-spring")
+project(":iam-client-spring").projectDir = new File("iam-commons/iam-client-spring")
 include "iam-service-client"
-project(":iam-service-client").projectDir = new File("iam-common/iam-service-client")
-
+project(":iam-service-client").projectDir = new File("iam-commons/iam-service-client")
 include "iam-core"
+project(":iam-core").projectDir = new File("iam-commons/iam-core")
+
 include "iam-service"
 
 include "iam-persistence-file-system"

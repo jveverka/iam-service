@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: iam-service
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam-service
+  namespace: iam-service
+  data:
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: iam-service
+  namespace: iam-service
+data:
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-service
+  namespace: iam-service
+spec:
+  selector:
+    app: iam-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      nodePort: 30081
+  type: LoadBalancer
+#  externalIPs:
+#    - 192.168.44.210

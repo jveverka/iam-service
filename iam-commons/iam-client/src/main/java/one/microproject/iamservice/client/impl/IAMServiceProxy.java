@@ -1,5 +1,6 @@
 package one.microproject.iamservice.client.impl;
 
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
 import one.microproject.iamservice.core.dto.JWKResponse;
@@ -26,5 +27,7 @@ public interface IAMServiceProxy extends AutoCloseable {
     TokenResponseWrapper getTokens(Code code, String state) throws IOException;
 
     TokenResponseWrapper getTokens(Code code, String state, String codeVerifier) throws IOException;
+
+    BuildInfo getBuildInfo() throws IOException;
 
 }

@@ -2,6 +2,7 @@ package one.microproject.iamservice.serviceclient.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -123,6 +124,22 @@ public class IAMServiceManagerClientImpl implements IAMServiceManagerClient {
                 .build();
         Response response = client.newCall(request).execute();
         return (response.code() == 200);
+    }
+
+    @Override
+    public BuildInfo getBuildInfo() throws IOException {
+        Request request = new Request.Builder()
+                .url(baseURL + "/services/discovery/build-info")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return mapper.readValue(response.body().string(), BuildInfo.class);
+            } else {
+                throw new IOException();
+            }
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     @Override

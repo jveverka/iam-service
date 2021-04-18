@@ -1,0 +1,54 @@
+server:
+  port: ${IAM_PORT}
+  shutdown: graceful
+  servlet:
+    context-path: ${IAM_CONTEXT_PATH}
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+iam-service:
+  base-url-mapping:
+    base-url: ${IAM_BASE_URL}
+    mapped-url: ${IAM_MAPPED_URL}
+  #Auth. Code duration interval
+  authorization-code-cache:
+    duration: ${IAM_AUTH_CODE_CACHE_CLEANUP_INTERVAL}
+    timeunit: ${IAM_CACHE_TIME_UNIT}
+  #Caches cleanup interval
+  cache-cleanup-interval:
+    duration: ${IAM_CACHE_CLEANUP_INTERVAL}
+    timeunit: ${IAM_CACHE_TIME_UNIT}
+  #Cache Backing
+  cache-type:
+    type: ${IAM_CACHE_TYPE}
+    host: ${IAM_REDIS_HOST}
+    port: ${IAM_REDIS_PORT}
+  #Default application model parameters
+  data-model:
+    default-admin-password: ${IAM_ADMIN_PASSWORD}
+    default-admin-client-secret: ${IAM_ADMIN_SECRET}
+    default-admin-email: ${IAM_ADMIN_EMAIL}
+    enable-client-credentials-flow: ${IAM_ADMIN_ENABLE_CLIENT_CREDENTIALS}
+
+    #options: in-memory | file-system | mongo-db
+    persistence: ${IAM_PERSISTENCE_TYPE}
+
+    #only for file-system persistence
+    #persistence: file-system
+    path: ${IAM_FILE_PERSISTENCE_PATH}
+
+    #only for mongo-db persistence
+    #persistence: mongo-db
+    mongo-host: ${IAM_MONGO_PERSISTENCE_HOST}
+    mongo-port: ${IAM_MONGO_PERSISTENCE_PORT}
+    mongo-database: ${IAM_MONGO_PERSISTENCE_DATABASE}
+    mongo-username: ${IAM_MONGO_PERSISTENCE_USERNAME}
+    mongo-password: ${IAM_MONGO_PERSISTENCE_PASSWORD}
+
+logging:
+  level:
+    root: ${IAM_ROOT_LOGLEVEL}
+    one:
+      microproject:
+        iamservice: ${IAM_LOGLEVEL}

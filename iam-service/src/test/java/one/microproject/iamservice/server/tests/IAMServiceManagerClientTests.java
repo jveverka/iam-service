@@ -2,6 +2,7 @@ package one.microproject.iamservice.server.tests;
 
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.IAMClientBuilder;
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.model.JWToken;
@@ -157,6 +158,14 @@ class IAMServiceManagerClientTests {
         assertFalse(result);
         result = iamClient.validate(IAM_ADMINS_ORG, IAM_ADMINS_PROJECT, NEW_ADMIN_ORGANIZATION_SET, JWToken.from(tokenResponse.getRefreshToken()));
         assertFalse(result);
+    }
+
+    @Test
+    @Order(8)
+    void getBuildInfoTest() throws IOException {
+        BuildInfo buildInfo = iamClient.getBuildInfo();
+        assertNotNull(buildInfo);
+        assertNotNull(buildInfo.getId());
     }
 
 }

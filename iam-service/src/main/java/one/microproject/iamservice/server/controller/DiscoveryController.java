@@ -13,7 +13,11 @@ import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
 import one.microproject.iamservice.core.services.dto.ProjectInfo;
 import one.microproject.iamservice.core.services.dto.UserInfo;
+import one.microproject.iamservice.core.dto.BuildInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,19 +29,38 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.cert.CertificateEncodingException;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/services/discovery")
 @Tag(name = "Discovery", description = "APIs providing public data about Organizations and Projects.")
 public class DiscoveryController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryController.class);
+
     private final OrganizationManagerService organizationManagerService;
     private final ResourceServerService resourceServerService;
+    private final BuildProperties buildProperties;
+    private final String appInstanceId;
 
     public DiscoveryController(@Autowired OrganizationManagerService organizationManagerService,
-                               @Autowired ResourceServerService resourceServerService) {
+                               @Autowired ResourceServerService resourceServerService,
+                               @Autowired(required = false) BuildProperties buildProperties) {
         this.organizationManagerService = organizationManagerService;
         this.resourceServerService = resourceServerService;
+        this.buildProperties = buildProperties;
+        this.appInstanceId = UUID.randomUUID().toString();
+        LOG.info("IAM APP ID: {}", appInstanceId);
+    }
+
+    @GetMapping("/build-info")
+    public ResponseEntity<BuildInfo> getBuildInfo() {
+        if (buildProperties != null) {
+            return ResponseEntity.ok(new BuildInfo(appInstanceId,
+                    buildProperties.getGroup(), buildProperties.getArtifact(), buildProperties.getName(), buildProperties.getVersion()));
+        } else {
+            return ResponseEntity.ok(new BuildInfo(appInstanceId));
+        }
     }
 
     @Operation(description = "Get list of all organizations managed by this service.")

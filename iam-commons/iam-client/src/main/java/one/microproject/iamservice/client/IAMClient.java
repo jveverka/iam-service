@@ -1,5 +1,6 @@
 package one.microproject.iamservice.client;
 
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.TokenResponse;
@@ -103,5 +104,12 @@ public interface IAMClient extends AutoCloseable {
      * @throws IOException in case of data serialization problem.
      */
     TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException;
+
+    /**
+     * Get info about target iam-service.
+     * @return instance of {@link BuildInfo}.
+     * @throws IOException in case of data serialization problem.
+     */
+    BuildInfo getBuildInfo() throws IOException;
 
 }

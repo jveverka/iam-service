@@ -1,5 +1,6 @@
 package one.microproject.iamservice.server.tests;
 
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.utils.ModelUtils;
 import one.microproject.iamservice.core.services.dto.ClientInfo;
 import one.microproject.iamservice.core.services.dto.OrganizationInfo;
@@ -52,6 +53,14 @@ class DiscoveryAPIsTests {
 
     @Test
     @Order(2)
+    void getBuildInfoTest() throws IOException {
+        BuildInfo buildInfo = iamServiceManagerClient.getBuildInfo();
+        assertNotNull(buildInfo);
+        assertNotNull(buildInfo.getId());
+    }
+
+    @Test
+    @Order(3)
     void getOrganizationsInfoTest() throws IOException {
         Collection<OrganizationInfo> organizationInfo = iamServiceManagerClient.getOrganizations();
         assertNotNull(organizationInfo);
@@ -65,7 +74,7 @@ class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void getOrganizationInfoTest() throws IOException {
         OrganizationInfo organizationInfo = iamServiceManagerClient.getOrganization(ModelUtils.IAM_ADMINS_ORG);
         assertNotNull(organizationInfo);
@@ -76,7 +85,7 @@ class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void getProjectInfoTest() throws IOException {
         ProjectInfo projectInfo = iamServiceProjectManagerClient.getInfo();
         assertNotNull(projectInfo);
@@ -90,7 +99,7 @@ class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void getUserInfoTest() throws IOException {
         UserInfo userInfo = iamServiceUserManagerClient.getUserInfo(ModelUtils.IAM_ADMIN_USER);
         assertNotNull(userInfo);
@@ -105,7 +114,7 @@ class DiscoveryAPIsTests {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void getClientInfoTest() throws IOException {
         ClientInfo clientInfo = iamServiceProjectManagerClient.getClientInfo(ModelUtils.IAM_ADMIN_CLIENT_ID);
         assertNotNull(clientInfo);

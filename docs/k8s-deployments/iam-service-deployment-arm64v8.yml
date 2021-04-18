@@ -17,6 +17,8 @@ spec:
       port: 8080
       nodePort: 30081
   type: LoadBalancer
+#  externalIPs:
+#    - 192.168.44.210
 ---
 apiVersion: apps/v1
 kind: Deployment

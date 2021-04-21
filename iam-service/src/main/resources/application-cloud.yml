@@ -46,6 +46,21 @@ iam-service:
     mongo-username: ${IAM_MONGO_PERSISTENCE_USERNAME}
     mongo-password: ${IAM_MONGO_PERSISTENCE_PASSWORD}
 
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 logging:
   level:
     root: ${IAM_ROOT_LOGLEVEL}

@@ -47,6 +47,21 @@ iam-service:
     #mongo-username: iam-admin
     #mongo-password: secret
 
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 logging:
   level:
     root: INFO

@@ -5,20 +5,15 @@ metadata:
   name: iam-service
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: iam-service
-  namespace: iam-service
-  data:
-
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: iam-service
   namespace: iam-service
 data:
-
+  IAM_ADMIN_PASSWORD: c2VjcmV0Cg==
+  IAM_ADMIN_CLIENT_SECRET: dG9wLXNlY3JldAo=
+  IAM_ADMIN_EMAIL: YWRtaW5AZW1haWwuY29tCg==
+  IAM_MONGO_PERSISTENCE_PASSWORD: c2VjcmV0Cg==
 ---
 apiVersion: v1
 kind: Service

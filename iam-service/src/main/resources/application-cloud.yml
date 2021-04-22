@@ -1,5 +1,5 @@
 server:
-  port: ${IAM_PORT}
+  port: 8080
   shutdown: graceful
   servlet:
     context-path: ${IAM_CONTEXT_PATH}
@@ -27,7 +27,7 @@ iam-service:
   #Default application model parameters
   data-model:
     default-admin-password: ${IAM_ADMIN_PASSWORD}
-    default-admin-client-secret: ${IAM_ADMIN_SECRET}
+    default-admin-client-secret: ${IAM_ADMIN_CLIENT_SECRET}
     default-admin-email: ${IAM_ADMIN_EMAIL}
     enable-client-credentials-flow: ${IAM_ADMIN_ENABLE_CLIENT_CREDENTIALS}
 

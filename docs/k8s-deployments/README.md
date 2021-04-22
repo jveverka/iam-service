@@ -11,7 +11,6 @@
   kubectl delete service/iam-service -n iam-service
   kubectl delete deployment.apps/iam-service -n iam-service
   kubectl delete secret/iam-service -n iam-service
-  kubectl delete configmap/iam-service -n iam-service 
   kubectl delete namespace/iam-service
   ```
   

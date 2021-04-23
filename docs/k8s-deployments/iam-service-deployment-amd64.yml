@@ -61,3 +61,23 @@ spec:
               value: "INFO"
             - name: IAM_LOGLEVEL
               value: "INFO"
+            - name: IAM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_ADMIN_PASSWORD
+            - name: IAM_ADMIN_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_ADMIN_CLIENT_SECRET
+            - name: IAM_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_ADMIN_EMAIL
+            - name: IAM_MONGO_PERSISTENCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_MONGO_PERSISTENCE_PASSWORD

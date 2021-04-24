@@ -1,6 +1,10 @@
 ### Deploy iam-service to Kubernetes
 
 ### Single node deployment
+* Setup environment variables and secrets.
+  ```
+  echo -n value | base64
+  ```
 * Deployment
   ```
   kubectl apply -f iam-service-setup.yml

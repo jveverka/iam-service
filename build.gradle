@@ -157,6 +157,7 @@ project(':iam-service') {
 
         implementation 'org.mongodb:mongodb-driver-sync:4.2.3'
         implementation 'org.mongodb:mongodb-driver-core:4.2.3'
+        implementation 'org.mongodb:bson:4.2.3'
         implementation ('org.mongojack:mongojack:4.2.0') {
             exclude group: 'org.mongodb', module: 'mongodb-driver-sync'
             exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'

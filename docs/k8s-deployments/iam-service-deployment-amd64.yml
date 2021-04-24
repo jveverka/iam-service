@@ -33,12 +33,10 @@ spec:
               value: "/auth"
             - name: IAM_AUTH_CODE_CACHE_CLEANUP_INTERVAL
               value: "10"
-            - name: IAM_CACHE_TIME_UNIT
-              value: "MINUTE"
             - name: IAM_CACHE_CLEANUP_INTERVAL
               value: "10"
             - name: IAM_CACHE_TIME_UNIT
-              value: "MINUTE"
+              value: "MINUTES"
             - name: IAM_CACHE_TYPE
               value: "redis"
             - name: IAM_REDIS_HOST

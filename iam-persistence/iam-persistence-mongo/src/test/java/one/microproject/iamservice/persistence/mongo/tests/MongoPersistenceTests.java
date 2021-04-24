@@ -71,7 +71,7 @@ class MongoPersistenceTests {
     private static ModelWrapper modelWrapper;
 
     @Container
-    private static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.2.9");
+    private static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.4.4-bionic");
 
     @BeforeAll
     public static void init() {

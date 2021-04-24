@@ -118,7 +118,9 @@ public class ModelConfig {
     public void shutdown() {
         try {
             LOG.info("#CONFIG: Flushing model data ...");
-            modelCache.flush();
+            if (modelCache != null) {
+                modelCache.flush();
+            }
         } catch (Exception e) {
             LOG.error("Error: ", e);
         }

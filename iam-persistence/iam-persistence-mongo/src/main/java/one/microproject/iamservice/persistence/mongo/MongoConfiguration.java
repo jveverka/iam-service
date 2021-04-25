@@ -49,7 +49,7 @@ public class MongoConfiguration {
         if (username != null) {
             usernameAndPassword = username + ":" + password + "@";
         }
-        return "mongodb://" + usernameAndPassword + hostname + ":" + port;
+        return "mongodb://" + usernameAndPassword + hostname + ":" + port + "/" + database;
     }
 
 }

@@ -28,6 +28,7 @@ authentication and authorization OAuth2 server.
 
 ### Advanced Configuration
 * [Running IAM-Service behind proxy](Advanced-Config-Running-Behind-Proxy.md)
+* [Kubernetes Deployment](../k8s-deployments)
 
 ### References
 * [Terms and Vocabulary](Terms-and-Vocabulary.md)

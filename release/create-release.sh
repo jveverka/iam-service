@@ -7,7 +7,7 @@ cd ..
 ./run-full-test-suite.sh
 eval_result_exit $? "Build ${GREEN}OK${NOCOLOR}" "${RED}ERROR: build failed !${NOCOLOR}"
 
-VERSION=2.5.3-RELEASE
+VERSION=2.5.4-RELEASE
 RELEASE_DIR=build/iam-service-${VERSION}
 
 cd ${HOME_DIR}
@@ -21,6 +21,7 @@ cp README-release.md ${RELEASE_DIR}/README.md
 cp Dockerfile.* ${RELEASE_DIR}
 cp docker-compose* ${RELEASE_DIR}
 cp ../iam-service/src/main/resources/application.yml ${RELEASE_DIR}
+cp ../iam-service/src/main/resources/application-cloud.yml ${RELEASE_DIR}
 cp ../iam-service/iam-service-start.sh ${RELEASE_DIR}
 cp docker-create-image.sh ${RELEASE_DIR}
 

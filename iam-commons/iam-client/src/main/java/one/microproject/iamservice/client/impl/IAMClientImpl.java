@@ -2,6 +2,7 @@ package one.microproject.iamservice.client.impl;
 
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.core.TokenValidator;
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
@@ -86,6 +87,11 @@ public class IAMClientImpl implements IAMClient {
     @Override
     public TokenResponseWrapper getAccessTokensOAuth2AuthorizationCodeGrant(Code code, String state, String codeVerifier) throws IOException {
         return iamServiceProxy.getTokens(code, state, codeVerifier);
+    }
+
+    @Override
+    public BuildInfo getBuildInfo() throws IOException {
+        return iamServiceProxy.getBuildInfo();
     }
 
     @Override

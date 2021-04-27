@@ -5,8 +5,6 @@
 [![Maven Central](https://img.shields.io/badge/maven%20central-release-green.svg)](https://search.maven.org/search?q=one.microproject.iamservice)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=jveverka_iam-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=jveverka_iam-service)
 
-![logo](docs/iam-icon.svg) 
-
 # IAM service - OAuth2 server
 Really simple standalone *Identity Access Management* (IAM) service, [OAuth2](https://tools.ietf.org/html/rfc6749) authentication and authorization server. 
 Project is compliant with subset of [OpenID-connect](https://openid.net/specs/openid-connect-core-1_0.html) 
@@ -21,6 +19,13 @@ and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com
   ```
 * OpenAPI documentation: ``http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/``  
 * Deploy into [__kubernetes cluster__](docs/k8s-deployments). 
+
+![deployments](docs/iam-service-deployments.svg)
+
+1. Unit test deployments, rapid deployments.
+2. Simple use, JSON file as database.
+3. Single instance deployments.
+4. Cluster deployments, docker or kubernetes.
 
 ## Features & Mission
 * [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 

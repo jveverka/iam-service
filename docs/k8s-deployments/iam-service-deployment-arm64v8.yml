@@ -1,25 +1,3 @@
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: iam-service
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: iam-service
-  namespace: iam-service
-spec:
-  selector:
-    app: iam-service
-  ports:
-    - protocol: TCP
-      port: 8080
-      nodePort: 30081
-  type: LoadBalancer
-#  externalIPs:
-#    - 192.168.44.210
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: iam-service
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -37,7 +15,7 @@ spec:
     spec:
       containers:
         - name: iam-service
-          image: jurajveverka/iam-service:2.5.3-RELEASE-arm64v8
+          image: jurajveverka/iam-service:2.5.4-RELEASE-arm64v8
           ports:
             - name: http
               containerPort: 8080
@@ -48,3 +26,56 @@ spec:
             requests:
               memory: 256Mi
               cpu: 500m
+          env:
+            - name: APP_CONFIG_PATH
+              value: "/application-cloud.yml"
+            - name: IAM_CONTEXT_PATH
+              value: "/auth"
+            - name: IAM_AUTH_CODE_CACHE_CLEANUP_INTERVAL
+              value: "10"
+            - name: IAM_CACHE_CLEANUP_INTERVAL
+              value: "10"
+            - name: IAM_CACHE_TIME_UNIT
+              value: "MINUTES"
+            - name: IAM_CACHE_TYPE
+              value: "redis"
+            - name: IAM_REDIS_HOST
+              value: "redis.host.com"
+            - name: IAM_REDIS_PORT
+              value: "6379"
+            - name: IAM_ADMIN_ENABLE_CLIENT_CREDENTIALS
+              value: "true"
+            - name: IAM_PERSISTENCE_TYPE
+              value: "mongo-db"
+            - name: IAM_MONGO_PERSISTENCE_HOST
+              value: "mongo.host.com"
+            - name: IAM_MONGO_PERSISTENCE_PORT
+              value: "27017"
+            - name: IAM_MONGO_PERSISTENCE_DATABASE
+              value: "iam-service-db"
+            - name: IAM_MONGO_PERSISTENCE_USERNAME
+              value: "iam-admin"
+            - name: IAM_ROOT_LOGLEVEL
+              value: "INFO"
+            - name: IAM_LOGLEVEL
+              value: "INFO"
+            - name: IAM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_ADMIN_PASSWORD
+            - name: IAM_ADMIN_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_ADMIN_CLIENT_SECRET
+            - name: IAM_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_ADMIN_EMAIL
+            - name: IAM_MONGO_PERSISTENCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iam-service
+                  key: IAM_MONGO_PERSISTENCE_PASSWORD

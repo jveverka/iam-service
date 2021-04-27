@@ -16,6 +16,9 @@
 
 ### Service discovery
 
+* Get IAM-service instance info.  
+  __GET__ ``http://localhost:8080/services/discovery/build-info``
+  
 * Get all organizations managed by this instance of IAM-service.  
   __GET__ ``http://localhost:8080/services/discovery``
 

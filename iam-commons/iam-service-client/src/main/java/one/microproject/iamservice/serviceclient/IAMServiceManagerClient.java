@@ -1,5 +1,6 @@
 package one.microproject.iamservice.serviceclient;
 
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.model.ClientId;
 import one.microproject.iamservice.core.model.OrganizationId;
 import one.microproject.iamservice.core.model.ProjectId;
@@ -44,5 +45,7 @@ public interface IAMServiceManagerClient {
     IAMServiceUserManagerClient getIAMServiceUserManagerClient(String accessToken, OrganizationId organizationId, ProjectId projectId);
 
     boolean isServerAlive() throws IOException;
+
+    BuildInfo getBuildInfo() throws IOException;
 
 }

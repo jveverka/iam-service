@@ -2,6 +2,7 @@ package one.microproject.iamservice.client.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.FormBody;
+import one.microproject.iamservice.core.dto.BuildInfo;
 import one.microproject.iamservice.core.dto.Code;
 import one.microproject.iamservice.core.dto.IntrospectRequest;
 import one.microproject.iamservice.core.dto.IntrospectResponse;
@@ -132,6 +133,24 @@ public class IAMServiceHttpProxyImpl implements IAMServiceProxy {
             return TokenResponseWrapper.ok(mapper.readValue(response.body().string(), TokenResponse.class));
         } else {
             return TokenResponseWrapper.error(mapper.readValue(response.body().string(), TokenResponseError.class));
+        }
+    }
+
+    @Override
+    public BuildInfo getBuildInfo() throws IOException {
+        Request request = new Request.Builder()
+                .url(baseUrl.toString() + "/services/discovery/build-info")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                return mapper.readValue(response.body().string(), BuildInfo.class);
+            } else {
+                LOG.warn("HTTP response failed");
+                throw new IOException();
+            }
+        } catch (Exception e) {
+            LOG.error("Error: ", e);
+            throw new IOException(e);
         }
     }
 

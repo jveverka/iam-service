@@ -1,7 +1,5 @@
 package one.microproject.iamservice.examples.performance.tests.impl;
 
-import java.net.URL;
-
 public class GlobalAdminContext {
 
     private final String password;

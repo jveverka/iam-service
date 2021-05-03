@@ -3,8 +3,9 @@ package one.microproject.iamservice.examples.performance.tests.impl;
 import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
 import one.microproject.iamservice.core.utils.ModelUtils;
-import one.microproject.iamservice.examples.performance.tests.TestScenario;
+import one.microproject.testmeter.TestScenario;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
+import one.microproject.testmeter.impl.ScenarioExecException;
 
 import java.io.IOException;
 

@@ -1,19 +1,20 @@
 package one.microproject.iamservice.examples.performance.tests.impl;
 
 import one.microproject.iamservice.core.dto.TokenResponse;
-import one.microproject.iamservice.examples.performance.tests.TestScenario;
-import one.microproject.iamservice.examples.performance.tests.TestScenarioProducer;
-import one.microproject.iamservice.examples.performance.tests.dto.RunnerContext;
-import one.microproject.iamservice.examples.performance.tests.dto.ScenarioRequest;
+import one.microproject.testmeter.TestScenario;
+import one.microproject.testmeter.TestScenarioProducer;
+import one.microproject.testmeter.dto.RunnerContext;
+import one.microproject.testmeter.dto.ScenarioRequest;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
+import one.microproject.testmeter.impl.ScenarioInitException;
 
 import java.net.MalformedURLException;
 import java.util.concurrent.TimeUnit;
 
-import static one.microproject.iamservice.examples.performance.tests.ITTestUtils.getGlobalAdminClientSecret;
-import static one.microproject.iamservice.examples.performance.tests.ITTestUtils.getGlobalAdminPassword;
-import static one.microproject.iamservice.examples.performance.tests.ITTestUtils.getIAMServiceURL;
+import static one.microproject.testmeter.ITTestUtils.getGlobalAdminClientSecret;
+import static one.microproject.testmeter.ITTestUtils.getGlobalAdminPassword;
+import static one.microproject.testmeter.ITTestUtils.getIAMServiceURL;
 
 public class GetGlobalAdminAccessTokensTestScenarioProducer implements TestScenarioProducer<GlobalAdminContext, TokenResponse> {
 

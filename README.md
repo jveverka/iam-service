@@ -13,7 +13,7 @@ and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com
 * Please check [__User's Guide__](docs/IAM-user-manual/README.md) and [__Examples__](iam-examples) for more details.
 * Check [__Docker Hub releases__](https://hub.docker.com/r/jurajveverka/iam-service).
   ```
-  docker run -d -p 8080:8080 jurajveverka/iam-service:2.5.4-RELEASE-amd64
+  docker run -d -p 8080:8080 jurajveverka/iam-service:2.5.5-RELEASE-amd64
   curl 'http://localhost:8080/services/discovery'
   curl 'http://localhost:8080/services/oauth2/iam-admins/iam-admins/.well-known/openid-configuration'
   ```

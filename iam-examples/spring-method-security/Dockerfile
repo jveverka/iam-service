@@ -1,5 +1,5 @@
 FROM adoptopenjdk/openjdk11:alpine-jre
-COPY build/libs/spring-method-security-2.5.4-RELEASE.jar /spring-method-security-2.5.4-RELEASE.jar
+COPY build/libs/spring-method-security-2.5.5-RELEASE.jar /spring-method-security-2.5.5-RELEASE.jar
 COPY start-service.sh /start-service.sh
 RUN chmod +x /start-service.sh
 RUN apk --no-cache add curl

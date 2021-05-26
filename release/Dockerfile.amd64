@@ -2,7 +2,7 @@
 
 # https://hub.docker.com/r/adoptopenjdk/openjdk11
 FROM adoptopenjdk/openjdk11:alpine-jre
-COPY iam-service-2.5.4-RELEASE.jar /iam-service-2.5.4-RELEASE.jar
+COPY iam-service-2.5.5-RELEASE.jar /iam-service-2.5.5-RELEASE.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY application-filesystem.yml /application.yml
 COPY application-cloud.yml /application-cloud.yml

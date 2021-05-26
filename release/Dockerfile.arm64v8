@@ -3,7 +3,7 @@
 
 #https://hub.docker.com/r/arm64v8/adoptopenjdk
 FROM arm64v8/adoptopenjdk:11-jre-hotspot-focal
-COPY iam-service-2.5.4-RELEASE.jar /iam-service-2.5.4-RELEASE.jar
+COPY iam-service-2.5.5-RELEASE.jar /iam-service-2.5.5-RELEASE.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY application-filesystem.yml /application.yml
 COPY application-cloud.yml /application-cloud.yml

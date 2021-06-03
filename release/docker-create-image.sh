@@ -15,9 +15,6 @@ fi
 if [ "${ARCH}" = "aarch64" ]; then
   ARCH=arm64v8
 fi
-if [ "${ARCH}" = "armv7l" ]; then
-  ARCH=arm32v7
-fi
 
 echo "ARCH         : ${ARCH}"
 echo "VERSION      : ${VERSION}"

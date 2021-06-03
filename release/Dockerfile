@@ -1,8 +1,5 @@
-# Tested on AWS (m6g.large) ARM Graviton2 (Neoverse-N1), Architecture: aarch64
-# Tested on AWS (a1.large)  ARM (Cortex-A72), Architecture: aarch64
-
-#https://hub.docker.com/r/arm64v8/adoptopenjdk
-FROM arm64v8/adoptopenjdk:11-jre-hotspot-focal
+ARG ARCH="amd64"
+FROM ${ARCH}/adoptopenjdk:11-jre
 COPY iam-service-2.5.5-RELEASE.jar /iam-service-2.5.5-RELEASE.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY application-filesystem.yml /application.yml

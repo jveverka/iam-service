@@ -28,7 +28,7 @@
     -e APP_CONFIG_PATH=/opt/data/application.yml \
     -e XMX=128m \
     -v '${IAM_DATA_DIR}':/opt/data \
-    -p 8080:8080 jurajveverka/iam-service:2.5.5-RELEASE-amd64
+    -p 8080:8080 jurajveverka/iam-service:2.5.5-RELEASE
   ```
   ``IAM_DATA_DIR`` points to directory where customized ``application.yml`` file is located. 
 * Check docker status and logs

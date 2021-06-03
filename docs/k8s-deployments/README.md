@@ -8,7 +8,7 @@
 * Deployment
   ```
   kubectl apply -f iam-service-setup.yml
-  kubectl apply -f iam-service-deployment-<platform>.yml
+  kubectl apply -f iam-service-deployment.yml
   ```
 * Undeployment
   ```

@@ -51,4 +51,12 @@
   ```
   docker push jurajveverka/iam-service:${VERSION}-${ARCH}
   ```
-  
+* Publish docker manifest
+  ```
+  docker manifest create \
+  jurajveverka/iam-service:2.5.5-RELEASE \
+  --amend jurajveverka/iam-service:2.5.5-RELEASE-amd64 \
+  --amend jurajveverka/iam-service:2.5.5-RELEASE-arm64v8
+
+  docker manifest push jurajveverka/iam-service:2.5.5-RELEASE
+  ```

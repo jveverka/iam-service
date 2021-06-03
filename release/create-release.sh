@@ -18,7 +18,7 @@ mkdir -p ${RELEASE_DIR}
 cp ../iam-service/build/libs/iam-service-${VERSION}.jar ${RELEASE_DIR}
 cp ../LICENSE ${RELEASE_DIR}
 cp README-release.md ${RELEASE_DIR}/README.md
-cp Dockerfile.* ${RELEASE_DIR}
+cp Dockerfile ${RELEASE_DIR}
 cp docker-compose* ${RELEASE_DIR}
 cp ../iam-service/src/main/resources/application.yml ${RELEASE_DIR}
 cp ../iam-service/src/main/resources/application-cloud.yml ${RELEASE_DIR}

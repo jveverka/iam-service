@@ -39,7 +39,7 @@ sed -i "s/persistence: in-memory/#persistence: in-memory/g" application-filesyst
 sed -i "s/#persistence: file-system/persistence: file-system/g" application-filesystem.yml
 sed -i "s/#path: \/path\/to\/model-storage.json/path: \/model-data.json/g" application-filesystem.yml
 
-docker build -t ${DOCKER_IMAGE}:${VERSION}-${ARCH} --file Dockerfile .
+docker build -t ${DOCKER_IMAGE}:${VERSION}-${ARCH} --build-arg ARCH=${ARCH} --file Dockerfile .
 if [ $? = 0  ]; then
   echo -e "Docker build ${GREEN}OK${NOCOLOR}"
 else

@@ -7,7 +7,7 @@ cd ..
 ./run-full-test-suite.sh
 eval_result_exit $? "Build ${GREEN}OK${NOCOLOR}" "${RED}ERROR: build failed !${NOCOLOR}"
 
-VERSION=2.5.5-RELEASE
+VERSION=2.5.6-RELEASE
 RELEASE_DIR=build/iam-service-${VERSION}
 
 cd ${HOME_DIR}

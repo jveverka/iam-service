@@ -27,8 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.cert.CertificateEncodingException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.UUID;
 
 @RestController
@@ -42,6 +44,7 @@ public class DiscoveryController {
     private final ResourceServerService resourceServerService;
     private final BuildProperties buildProperties;
     private final String appInstanceId;
+    private final Long started;
 
     public DiscoveryController(@Autowired OrganizationManagerService organizationManagerService,
                                @Autowired ResourceServerService resourceServerService,
@@ -50,16 +53,21 @@ public class DiscoveryController {
         this.resourceServerService = resourceServerService;
         this.buildProperties = buildProperties;
         this.appInstanceId = UUID.randomUUID().toString();
+        this.started = Instant.now().getEpochSecond();
         LOG.info("IAM APP ID: {}", appInstanceId);
     }
 
     @GetMapping("/build-info")
     public ResponseEntity<BuildInfo> getBuildInfo() {
+        Long timestamp = Instant.now().getEpochSecond();
+        Long uptime = timestamp - started;
+        String timezone = TimeZone.getDefault().getID();
+        LOG.info("build-info: {} {} {} {}", appInstanceId, timestamp, uptime, timezone);
         if (buildProperties != null) {
             return ResponseEntity.ok(new BuildInfo(appInstanceId,
-                    buildProperties.getGroup(), buildProperties.getArtifact(), buildProperties.getName(), buildProperties.getVersion()));
+                    buildProperties.getGroup(), buildProperties.getArtifact(), buildProperties.getName(), buildProperties.getVersion(), timestamp, uptime, timezone));
         } else {
-            return ResponseEntity.ok(new BuildInfo(appInstanceId));
+            return ResponseEntity.ok(new BuildInfo(appInstanceId, timestamp, uptime, timezone));
         }
     }
 

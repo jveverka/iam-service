@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.nio.file.Path;
 import java.security.Security;
+import java.util.TimeZone;
 
 @Configuration
 @ConfigurationProperties(prefix="iam-service.data-model")
@@ -53,6 +54,7 @@ public class ModelConfig {
 
     @PostConstruct
     private void init() {
+        String timeZone = TimeZone.getDefault().getID();
         LOG.info("#CONFIG: initializing Bouncy Castle Provider (BCP) ...");
         Security.addProvider(new BouncyCastleProvider());
         LOG.info("#CONFIG: BCP initialized.");
@@ -62,6 +64,7 @@ public class ModelConfig {
         LOG.info("#CONFIG: admin organization/project {}/{}", adminOrganization, adminProject);
         LOG.info("#CONFIG: persistence={}", persistence);
         LOG.info("#CONFIG: enableClientCredentialsFlow={}", enableClientCredentialsFlow);
+        LOG.info("#CONFIG: timezone {}", timeZone);
     }
 
     @Bean

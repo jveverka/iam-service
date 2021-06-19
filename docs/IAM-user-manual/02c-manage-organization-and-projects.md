@@ -27,8 +27,8 @@ All actions described below must be performed under project admin user identity.
   --data-raw '{
       "id": "client-002",
       "name": "Second Client",
-      "defaultAccessTokenDuration": 3600,
-      "defaultRefreshTokenDuration": 3600,
+      "defaultAccessTokenDuration": 3600000,
+      "defaultRefreshTokenDuration": 3600000,
       "secret": "s3cr3t",
       "properties":  {
           "redirectURL": "",
@@ -66,8 +66,8 @@ All actions described below must be performed under project admin user identity.
   --data-raw '{
       "id": "user-001",
       "name": "User Name",
-      "defaultAccessTokenDuration": 3600,
-      "defaultRefreshTokenDuration": 3600,
+      "defaultAccessTokenDuration": 3600000,
+      "defaultRefreshTokenDuration": 3600000,
       "email": "user@server.com",
       "password": "secret",
       "userProperties": {

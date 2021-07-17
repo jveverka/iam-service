@@ -1,6 +1,6 @@
 ARG ARCH="amd64"
 FROM ${ARCH}/adoptopenjdk:11-jre
-COPY iam-service-2.5.6-RELEASE.jar /iam-service-2.5.6-RELEASE.jar
+COPY iam-service-2.5.7-RELEASE.jar /iam-service-2.5.7-RELEASE.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY application-filesystem.yml /application.yml
 COPY application-cloud.yml /application-cloud.yml

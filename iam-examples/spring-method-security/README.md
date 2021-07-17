@@ -36,14 +36,14 @@ JWT tokens issued by __iam-service__ are used to get access to resources hosted 
 ## Build and Run
 ```
 gradle clean build
-java -jar build/libs/spring-method-security-2.5.6-RELEASE.jar
+java -jar build/libs/spring-method-security-2.5.7-RELEASE.jar
 ```
 
 ### Build Docker image 
 ```
-docker build . -t spring-method-security:2.5.6-RELEASE
+docker build . -t spring-method-security:2.5.7-RELEASE
 docker image list
-docker save --output="build/spring-method-security:2.5.6-RELEASE.tar" spring-method-security:2.5.6-RELEASE
+docker save --output="build/spring-method-security:2.5.7-RELEASE.tar" spring-method-security:2.5.7-RELEASE
 docker image rm -f <imageid>
-docker run -p 8082:8082 spring-method-security:2.5.6-RELEASE
+docker run -p 8082:8082 spring-method-security:2.5.7-RELEASE
 ```

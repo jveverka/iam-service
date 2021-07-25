@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'one.microproject.iamservice'
-version = '2.5.7-RELEASE'
+version = '2.5.8-RELEASE'
 sourceCompatibility = '11'
 
 repositories {

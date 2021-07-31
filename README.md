@@ -20,12 +20,13 @@ and [OAuth2](https://tools.ietf.org/html/rfc6749) and [other](https://github.com
 * OpenAPI documentation: ``http://localhost:8080/swagger-ui/index.html?url=/v3/api-docs#/``  
 * Deploy into [__kubernetes cluster__](docs/k8s-deployments). 
 
+## Modes of deployment
 ![deployments](docs/iam-service-deployments.svg)
 
-1. Unit test deployments, rapid deployments.
-2. Simple use, JSON file as database.
-3. Single instance deployments.
-4. Cluster deployments, docker or kubernetes.
+1. Unit test deployments, rapid deployments, replicas=1.
+2. Simple use, single JSON file as database, replicas=1.
+3. Single instance deployments, replicas>1.
+4. Cluster deployments, docker or kubernetes, replicas>1.
 
 ## Features & Mission
 * [x] Provide minimalistic, simple and small OAuth2/OIDC identity server. 

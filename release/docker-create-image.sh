@@ -4,7 +4,7 @@ NOCOLOR='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 
-VERSION=2.5.8-RELEASE
+VERSION=2.5.9-RELEASE
 DOCKER_IMAGE=jurajveverka/iam-service
 DOCKER_NAME=iam-service
 
@@ -37,7 +37,7 @@ docker image rm ${DOCKER_IMAGE}:${VERSION}-${ARCH}
 cp application.yml application-filesystem.yml
 sed -i "s/persistence: in-memory/#persistence: in-memory/g" application-filesystem.yml
 sed -i "s/#persistence: file-system/persistence: file-system/g" application-filesystem.yml
-sed -i "s/#path: \/path\/to\/model-storage.json/path: \/model-data.json/g" application-filesystem.yml
+sed -i "s/#path: \/path\/to\/model-storage.json/path: \/opt\/data\/model-data.json/g" application-filesystem.yml
 
 docker build -t ${DOCKER_IMAGE}:${VERSION}-${ARCH} --build-arg ARCH=${ARCH} --file Dockerfile .
 if [ $? = 0  ]; then

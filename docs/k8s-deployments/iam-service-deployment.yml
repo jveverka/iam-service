@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: iam-service
-          image: jurajveverka/iam-service:2.5.8-RELEASE
+          image: jurajveverka/iam-service:2.5.9-RELEASE
           ports:
             - name: http
               containerPort: 8080

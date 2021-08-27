@@ -45,7 +45,7 @@
 * Test created docker image.
   ```
   docker logs --follow iam-service-2.5.10-RELEASE 
-  docker exec -it iam-service-2.5.10-RELEASE /bin/sh
+  docker exec -it iam-service-2.5.10-RELEASE /bin/bash
   ```
 * Publish docker image to dockerhub.
   ```

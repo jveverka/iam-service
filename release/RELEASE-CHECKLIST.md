@@ -3,7 +3,7 @@
 * Make sure all changes are committed and pushed.
 * Make sure the documentation is up-to date.
 * Make sure all tests are passing.
-* ``NEW_RELEASE_VERSION=2.5.9-RELEASE``
+* ``NEW_RELEASE_VERSION=2.5.10-RELEASE``
 * Upgrade component version in script below.
   ```
   ./version-upgrade.sh
@@ -44,8 +44,8 @@
   ```
 * Test created docker image.
   ```
-  docker logs --follow iam-service-2.5.9-RELEASE 
-  docker exec -it iam-service-2.5.9-RELEASE /bin/sh
+  docker logs --follow iam-service-2.5.10-RELEASE 
+  docker exec -it iam-service-2.5.10-RELEASE /bin/sh
   ```
 * Publish docker image to dockerhub.
   ```
@@ -54,9 +54,9 @@
 * Publish docker manifest
   ```
   docker manifest create \
-  jurajveverka/iam-service:2.5.9-RELEASE \
-  --amend jurajveverka/iam-service:2.5.9-RELEASE-amd64 \
-  --amend jurajveverka/iam-service:2.5.9-RELEASE-arm64v8
+  jurajveverka/iam-service:2.5.10-RELEASE \
+  --amend jurajveverka/iam-service:2.5.10-RELEASE-amd64 \
+  --amend jurajveverka/iam-service:2.5.10-RELEASE-arm64v8
 
-  docker manifest push jurajveverka/iam-service:2.5.9-RELEASE
+  docker manifest push jurajveverka/iam-service:2.5.10-RELEASE
   ```

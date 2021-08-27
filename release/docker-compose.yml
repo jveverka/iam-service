@@ -2,18 +2,17 @@ version: '3.7'
 
 services:
   mongodb_container:
-    image: mongo:4.2.9
-    network_mode: host
+    image: mongo:4.4.4-bionic
     environment:
-      MONGO_INITDB_ROOT_USERNAME: iam-admin
+      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
     ports:
       - 27017:27017
     volumes:
       - mongodb_data_container:/data/db
   redis_container:
-    image: redis:6.0.9-alpine
-    network_mode: host
+    image: redis:6.2.5-alpine
     ports:
       - 6379:6379
 

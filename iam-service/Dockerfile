@@ -1,6 +1,7 @@
 ARG ARCH="amd64"
 FROM ${ARCH}/adoptopenjdk:11-jre
-MAINTAINER Juraj Veverka <gergej123@gmail.com>
+
+LABEL org.opencontainers.image.authors="gergej123@gmail.com"
 COPY build/libs/iam-service-2.5.10-RELEASE.jar /iam-service-2.5.10-RELEASE.jar
 COPY iam-service-start.sh /iam-service-start.sh
 COPY src/main/resources/application.yml /application.yml
